@@ -1,4 +1,21 @@
-# Research execution report — 22 August 2026 (updated)
+# Research execution report — 22 August 2026 (updated twice)
+
+## Second update: the real FF49 result
+
+The user supplied the official `49_Industry_Portfolios_daily_CSV.zip` directly (the sandbox's network policy still blocks a live download of it from this session; this file was obtained by the user on their own machine and uploaded). It was placed at `data/raw/49_Industry_Portfolios_daily_CSV.zip` and run through the unmodified, already-tested pipeline via `python -m src.run_empirical --config config/default.yaml`.
+
+The parser (`read_ff49_daily`, fixed and tested in the first update below) worked correctly on the first try: 48 industries (`Other` excluded), daily data from 1969-07-01 to 2026-06-30 (the daily file starts later than the monthly one, which goes back to 1926 — the earlier version of this README/report incorrectly stated 1926 for the daily series; now corrected), restricted to the configured sample 1990-01-01–2026-06-30, giving 8,939 rolling 252-day windows in ~38 seconds.
+
+This is now the paper's intended empirical test, not a synthetic or small pilot substitute. Results (full statement in `paper/main.tex`, Section "Empirical results: the FF49 industry cross-section"):
+
+- **H1 confirmed:** stress dates (top decile of trailing 21-day market vol) show `H_vol = -190.6` vs `-210.1` calm, and `H_dep = -31.6` vs `-23.1` calm.
+- **H2 confirmed, and stronger than the earlier 4-asset pilot:** `corr(ΔH_vol, ΔH_dep) = -0.63` overall (-0.74 calm, -0.40 stress). `sd(ΔH_cov)` is well below the "independent components" benchmark in both regimes.
+- **H3 significant in sample, not confirmed out of sample:** `H_dep` coefficient p ≈ 9.5e-5, train R² 0.282 → 0.311, but test MSE is not improved (0.2066 → 0.2079) on the 70/30 chronological split. Diagnosed as most likely an artifact of the 252-day window overlap inflating apparent significance beyond what the HAC correction absorbs — flagged explicitly in the paper's Limitations with a proposed fix (non-overlapping frequency, walk-forward evaluation).
+- Independent sanity check: the stress-date clustering lines up with known crises without having been tuned to do so — 1997–98 (Asian crisis/LTCM), 2000–02 (dot-com), 2008–11 (GFC + Euro debt crisis), 2015–16, 2018, 2020 (COVID), 2022 (rate hikes).
+
+The paper now reports the FF49 result as the primary empirical section and keeps the earlier EuStockMarkets pilot as a secondary, independent robustness check (both datasets agree on the sign of H1–H2). Abstract, Limitations and Conclusion were updated to match. README updated with the real numbers and corrected data-availability date (1969, not 1926, for the daily series).
+
+## First update
 
 This update follows a full review of the repository (math, code, reproducibility) and closes the three action items raised by that review: code fixes, a mathematical consistency correction in the paper, and a real-data run to replace the earlier synthetic-only validation.
 

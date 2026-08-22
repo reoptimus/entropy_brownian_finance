@@ -23,7 +23,7 @@ The repository **does not assume that the compensation hypothesis is true**.
 
 ## Data
 
-The primary planned dataset is the **Kenneth R. French 49 Industry Portfolios, daily returns**, covering July 1, 1926 through June 30, 2026 according to the current Data Library page. The portfolios are built from NYSE, AMEX and NASDAQ firms using SIC-based industry assignments.
+The primary dataset is the **Kenneth R. French 49 Industry Portfolios, daily value-weighted returns**. The daily file is available from July 1, 1969 through June 30, 2026 (the monthly series goes back further, to 1926, but the daily series does not). The portfolios are built from NYSE, AMEX and NASDAQ firms using SIC-based industry assignments.
 
 Source: https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/Data_Library/det_49_ind_port.html
 
@@ -43,11 +43,21 @@ python -m src.run_empirical --config config/default.yaml
 pytest -q
 ```
 
-The environment used to develop this repository is on an outbound network allowlist that does not include `mba.tuck.dartmouth.edu`, so the FF49 download above could not be executed from here — this is a network-policy restriction of that environment, not a code defect. **No FF49 real-data result is claimed by this repository yet.**
+Note on the development environment: the sandbox this repository was developed in sits behind an outbound network allowlist that does not include `mba.tuck.dartmouth.edu`, so `download_data.py` cannot reach it from there — a network-policy restriction of that sandbox, not a code defect, and it does not affect a normal machine. This is why the results below were produced from a manually supplied copy of the official zip rather than a live download in that session.
 
-### Pilot real-data run (included, reproducible)
+### Real FF49 result (included, reproducible)
 
-To avoid shipping only a synthetic validation, the same pipeline was also run, unmodified, on a second real dataset reachable from that environment: the classic `EuStockMarkets` panel (DAX, SMI, CAC, FTSE daily closes, 1991–1998, Bollerslev & Ghysels), mirrored as CSV by the Rdatasets project:
+The paper's intended empirical test has been run on the official FF49 daily file: **48 industries** (the residual *Other* portfolio excluded), **1990-01-01 to 2026-06-30**, 8,939 rolling 252-day windows. Findings — see `paper/main.tex`, Section "Empirical results: the FF49 industry cross-section", for the full statement and caveats:
+
+- **H1 (stress contraction): confirmed.** Stress dates show higher `H_vol` and lower `H_dep` than calm dates.
+- **H2 (compensation): confirmed.** `corr(ΔH_vol, ΔH_dep) = −0.63` over the full sample; `sd(ΔH_cov)` is well below the value implied by treating the two components as uncorrelated, in both calm and stress regimes.
+- **H3 (predictive value): significant in sample, not confirmed out of sample.** Adding `H_dep` to `H_vol` is highly significant under HAC standard errors (p ≈ 9.5×10⁻⁵) and raises train R² from 0.28 to 0.31, but does not reduce test MSE on a chronological 70/30 split — most likely because the 252-day rolling window induces heavy autocorrelation that a simple HAC correction does not fully absorb (see Limitations in the paper for a proposed walk-forward fix).
+
+The stress-regime dates independently line up with known market history (1997–98, 2000–02, 2008–11, 2015–16, 2018, 2020, 2022), which is itself a sanity check on the pipeline unrelated to the paper's hypotheses.
+
+### Second real dataset (robustness / pilot)
+
+The identical pipeline was also run, unmodified, on a second, independent real dataset: the classic `EuStockMarkets` panel (DAX, SMI, CAC, FTSE daily closes, 1991–1998, Bollerslev & Ghysels), mirrored as CSV by the Rdatasets project:
 
 `https://raw.githubusercontent.com/vincentarelbundock/Rdatasets/master/csv/datasets/EuStockMarkets.csv`
 
@@ -56,7 +66,7 @@ python -m src.download_data --config config/pilot_eu_stock_markets.yaml
 python -m src.run_empirical --config config/pilot_eu_stock_markets.yaml
 ```
 
-This is a genuine real-data run (not synthetic), but it is a 4-asset pilot over one 8-year window, not the paper's intended 49-industry, century-scale test — see `paper/main.tex`, Section "Pilot empirical illustration on real data", for the numbers and their interpretation. Switch back to `config/default.yaml` for the FF49 analysis as soon as the download is reachable (e.g. run locally, outside this sandbox).
+This is a smaller (4-asset, single 8-year window) but genuinely independent real-data check, kept as a robustness diagnostic — see `paper/main.tex`, Section "Robustness check on a second, independent real dataset". It replicates the sign and shape of H1–H2 on an unrelated market and period.
 
 ## Main outputs
 
