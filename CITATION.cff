@@ -1,0 +1,8 @@
+cff-version: 1.2.0
+title: "Maximum Entropy, Brownian Motion and Volatility–Dependence Compensation"
+authors:
+  - family-names: Researcher
+    given-names: Draft
+version: 0.1.0
+date-released: 2026-08-22
+message: "Please cite the repository and the associated paper draft."

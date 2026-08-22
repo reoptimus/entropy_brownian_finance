@@ -1,0 +1,160 @@
+\documentclass[11pt]{article}
+\usepackage{amsmath,amssymb,amsthm,booktabs,geometry}
+\geometry{margin=1in}
+\title{From Maximum Entropy to Geometric Brownian Motion: Covariance Entropy and Volatility--Dependence Compensation in Financial Markets}
+\author{Research draft}
+\date{August 2026}
+\newtheorem{proposition}{Proposition}
+\begin{document}
+\maketitle
+
+\begin{abstract}
+This paper develops an information-theoretic interpretation of Gaussian diffusion models in finance. We first show that, among absolutely continuous distributions with fixed mean and covariance, the multivariate Gaussian maximizes differential entropy. We then state the additional temporal assumptions required for Gaussian increments with covariance proportional to elapsed time to define a Brownian diffusion for log-prices, and obtain geometric Brownian motion through It\^o's formula. The main empirical contribution is a covariance-entropy decomposition. Writing $\Sigma_t=D_tR_tD_t$, the Gaussian maximum entropy equals, up to a time-dependent constant, $\sum_i\log\sigma_{i,t} + \frac12\log\det R_t$. The first term measures marginal fluctuation scale; the second measures dependence-induced contraction of covariance volume. We formulate, rather than assume, an empirical volatility--dependence compensation hypothesis and test whether changes in the two components offset one another during market stress. The paper deliberately distinguishes exact mathematical results from empirical hypotheses and does not claim that maximum entropy proves that financial returns are Gaussian.
+\end{abstract}
+
+\section{Introduction}
+The geometric Brownian motion (GBM) remains a benchmark model for asset prices. Its usefulness is partly computational, but its Gaussian log-return structure is often treated as a modelling assumption. This paper asks whether that Gaussian structure admits an information-theoretic interpretation and whether the same interpretation yields a useful decomposition of financial risk.
+
+The first result is exact: fixing the first two moments and maximizing differential entropy yields a multivariate Gaussian distribution. The second result is conditional: Gaussian increments become Brownian motion only after imposing temporal consistency, independent increments, continuity, and covariance proportionality to elapsed time. Exponentiation then produces a GBM-type price process through It\^o's lemma.
+
+The empirical question is separate. For a covariance matrix $\Sigma_t=D_tR_tD_t$, the Gaussian maximum entropy contains the term $\frac12\log\det\Sigma_t$. Hence
+\[
+\frac12\log\det\Sigma_t=\sum_i\log\sigma_{i,t}+\frac12\log\det R_t.
+\]
+We test whether the marginal-volatility component and dependence component display systematic compensation, particularly during stress regimes.
+
+\section{Maximum entropy under first and second moment constraints}
+Let $p(x)$ be an absolutely continuous density on $\mathbb R^N$. Its differential entropy is
+\[
+h(p)=-\int p(x)\log p(x)\,dx.
+\]
+Suppose $E[X]=\mu$ and $\operatorname{Cov}(X)=\Sigma$, where $\Sigma$ is positive definite.
+
+\begin{proposition}[Maximum entropy]
+Among all absolutely continuous distributions with mean $\mu$ and covariance $\Sigma$, the Gaussian $\mathcal N(\mu,\Sigma)$ uniquely maximizes differential entropy.
+\end{proposition}
+
+\paragraph{Proof sketch.} The Lagrangian for normalization, mean and covariance constraints has the form
+\[
+\mathcal L(p)=-\int p\log p+\lambda_0(\int p-1)+\lambda^T(\int xp-\mu)+\operatorname{tr}\left[\Lambda\left(\int (x-\mu)(x-\mu)^Tp-\Sigma\right)\right].
+\]
+The first-order condition implies $\log p(x)$ is a quadratic function of $x$, so $p$ is Gaussian. Strict concavity of entropy on the feasible set gives uniqueness.
+
+The resulting entropy is
+\[
+h^{\max}(\Sigma)=\frac12\log\left((2\pi e)^N\det\Sigma\right).
+\]
+This is an entropy of the maximum-entropy reference distribution, not necessarily the entropy of observed financial returns.
+
+\section{From Gaussian increments to Brownian motion}
+Let $X_t$ denote log-prices and define $\Delta X_{t,\Delta}=X_{t+\Delta}-X_t$. Suppose conditionally on the information available at $t$,
+\[
+\Delta X_{t,\Delta}\sim\mathcal N(\mu_t\Delta,\Sigma_t\Delta).
+\]
+This distribution follows from maximum entropy at each increment when its conditional mean and covariance are fixed. It does not by itself define a Brownian process. We additionally require temporal consistency: independent increments over disjoint intervals in the constant-coefficient case, continuity, and covariance linear in elapsed time.
+
+Under constant $\mu$ and $\Sigma$, there exists a matrix $B$ with $BB^T=\Sigma$ such that
+\[
+X_t=X_0+\mu t+BW_t,
+\]
+where $W_t$ is an $N$-dimensional standard Brownian motion. For time-varying predictable covariance,
+\[
+dX_t=\mu_tdt+B_tdW_t,\qquad B_tB_t^T=\Sigma_t,
+\]
+is the corresponding diffusion representation. In this conditional model, increments need not be independent unconditionally when $\Sigma_t$ is stochastic.
+
+\section{From Brownian log-prices to geometric Brownian motion}
+Let $S_{i,t}=\exp(X_{i,t})$. If
+\[
+dX_{i,t}=a_{i,t}dt+\sigma_{i,t}dW_{i,t},
+\]
+It\^o's formula gives
+\[
+\frac{dS_{i,t}}{S_{i,t}}=\left(a_{i,t}+\frac12\sigma_{i,t}^2\right)dt+\sigma_{i,t}dW_{i,t}.
+\]
+Thus the drift of the price is not identical to the drift of the log-price. Under a risk-neutral measure, the drift is replaced by the short rate (subject to the usual multi-asset and dividend conventions); the maximum-entropy construction in this paper concerns the physical/conditional return distribution unless otherwise stated.
+
+\section{Covariance entropy and dependence decomposition}
+Write
+\[
+\Sigma_t=D_tR_tD_t,\qquad D_t=\operatorname{diag}(\sigma_{1,t},\ldots,\sigma_{N,t}).
+\]
+Then
+\[
+\det\Sigma_t=\left(\prod_i\sigma_{i,t}^2\right)\det R_t.
+\]
+Therefore
+\[
+h_t^{\max}=C_{N,\Delta}+\sum_i\log\sigma_{i,t}+\frac12\log\det R_t,
+\]
+where $C_{N,\Delta}=\frac N2\log(2\pi e\Delta)$.
+
+Define
+\[
+H_t^{vol}=\sum_i\log\sigma_{i,t},\qquad H_t^{dep}=\frac12\log\det R_t.
+\]
+The second term should be interpreted as a dependence-induced covariance-volume term, not as a generic scalar measure of correlation. In the bivariate case, $\det R=1-\rho^2$, so positive and negative correlations of equal magnitude have the same contribution.
+
+\section{Volatility--dependence compensation hypothesis}
+The empirical hypothesis is
+\[
+\Delta H_t^{cov}=\Delta H_t^{vol}+\Delta H_t^{dep}\approx0
+\]
+in selected market regimes. Equivalently,
+\[
+\Delta\log\det\Sigma_t\approx0.
+\]
+This is an empirical hypothesis and is not implied by maximum entropy. In differential notation,
+\[
+dH_t^{dep}=\frac12\operatorname{tr}(R_t^{-1}dR_t),
+\]
+so compensation would imply
+\[
+\sum_i\frac{d\sigma_{i,t}}{\sigma_{i,t}}
+\approx -\frac12\operatorname{tr}(R_t^{-1}dR_t).
+\]
+The empirical analysis uses finite changes rather than continuous-time differentials.
+
+\section{Geometric and spectral interpretation}
+The covariance matrix defines ellipsoidal level sets of the Gaussian density. The determinant controls their volume, while eigenvectors determine orientation and eigenvalues determine directional scales. If $R=Q\Lambda Q^T$, then
+\[
+\frac12\log\det R=\frac12\sum_k\log\lambda_k.
+\]
+This connects the dependence entropy term to the concentration of risk into collective modes.
+
+\section{Empirical methodology}
+The primary dataset is the Kenneth R. French 49 Industry Portfolios daily return series. The planned sample uses daily value-weighted industry returns. Simple returns are converted to log returns using $\log(1+r)$. A rolling window estimates the covariance matrix. Because determinants are highly sensitive to covariance-estimation error when dimension is large relative to the window, the baseline uses Ledoit--Wolf shrinkage.
+
+For each date we compute $H^{vol}$, $H^{dep}$, $H^{cov}$ and their first differences. Stress regimes are defined ex ante using high conditional volatility quantiles, with robustness checks based on market drawdowns and alternative volatility measures. The key compensation statistic is the variance and persistence of $\Delta H^{cov}$ relative to the two components.
+
+\section{Tests}
+\textbf{H1:} stress periods exhibit higher marginal volatility and lower $\det R$.\\
+\textbf{H2:} $\Delta H^{vol}$ and $\Delta H^{dep}$ are negatively associated, and $\Delta H^{cov}$ is more stable in selected stress regimes.\\
+\textbf{H3:} $H^{dep}$ improves forecasts of future realized volatility or tail risk beyond $H^{vol}$.
+
+The predictive benchmark compares a volatility-only model with a model including the dependence component, evaluated out of sample. HAC standard errors are used for simple predictive regressions; formal VaR/ES backtests should be added before publication.
+
+\section{Non-Gaussianity and relative entropy}
+The Gaussian reference distribution is not assumed to equal the empirical distribution. If $q_t$ is the Gaussian distribution matching the empirical mean and covariance and $p_t$ is the empirical density, then
+\[
+D_{KL}(p_t\Vert q_t)=h(q_t)-h(p_t).
+\]
+This suggests a useful robustness extension: separate covariance-volume dynamics from deviations from Gaussianity.
+
+\section{Risk-neutral interpretation}
+The maximum-entropy argument is naturally a physical-measure statement. Under $\mathbb P$,
+\[
+\frac{dS_t}{S_t}=\mu_t^{\mathbb P}dt+\sigma_tdW_t^{\mathbb P}.
+\]
+Under $\mathbb Q$ for a non-dividend-paying asset,
+\[
+\frac{dS_t}{S_t}=r_tdt+\sigma_tdW_t^{\mathbb Q}.
+\]
+Maximum entropy under historical constraints does not by itself determine a risk-neutral pricing measure or option prices.
+
+\section{Limitations}
+The principal limitations are non-Gaussian tails, stochastic volatility, unstable dependence, finite-sample covariance error, and the unit dependence of differential entropy. In addition, industry portfolios are not independent firms and can mechanically display common-factor dependence. A future individual-stock analysis using CRSP/WRDS would therefore be a valuable robustness test.
+
+\\section{References}\n\\begin{itemize}\n\\item Jaynes, E. T. (1957). Information Theory and Statistical Mechanics. \\textit{Physical Review}, 106, 620--630.\\n\\item Black, F. and Scholes, M. (1973). The Pricing of Options and Corporate Liabilities. \\textit{Journal of Political Economy}, 81(3), 637--654.\\n\\item Merton, R. C. (1973). Theory of Rational Option Pricing. \\textit{Bell Journal of Economics and Management Science}, 4(1), 141--183.\\n\\item Engle, R. (2002). Dynamic Conditional Correlation: A Simple Class of Multivariate Generalized Autoregressive Conditional Heteroskedasticity Models. \\textit{Journal of Business \& Economic Statistics}, 20(3), 339--350.\\n\\item Ledoit, O. and Wolf, M. (2004). A Well-Conditioned Estimator for Large-Dimensional Covariance Matrices. \\textit{Journal of Multivariate Analysis}, 88(2), 365--411.\\n\\item Fama, E. F. and French, K. R. Kenneth French Data Library, 49 Industry Portfolios.\\n\\end{itemize}\n\n\\section{Conclusion}\nThe theoretical contribution is a clean separation between what maximum entropy proves and what financial modelling assumes. Fixed first and second moments imply a Gaussian maximum-entropy distribution. Temporal assumptions then produce Brownian diffusion, and exponentiation produces GBM. The empirical proposal is different: the covariance determinant may display partial compensation between marginal volatility and dependence-induced contraction. Whether that compensation is economically meaningful is an empirical question, tested through rolling covariance estimation, stress-regime analysis and out-of-sample risk prediction.
+
+\end{document}
