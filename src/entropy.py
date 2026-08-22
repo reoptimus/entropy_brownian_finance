@@ -4,14 +4,28 @@ from sklearn.covariance import LedoitWolf
 
 
 def maxent_entropy_from_cov(cov: np.ndarray, dt: float = 1.0) -> float:
+    """Gaussian maximum-entropy value h_max = 1/2 log((2*pi*e)^N det(cov*dt)).
+
+    Raises ValueError if cov*dt is not positive definite, consistent with
+    covariance_decomposition below (both quantities are undefined otherwise;
+    silently returning NaN would let a degenerate covariance estimate pass
+    unnoticed into downstream aggregation).
+    """
     n = cov.shape[0]
     sign, logdet = np.linalg.slogdet(cov * dt)
     if sign <= 0:
-        return np.nan
+        raise ValueError('Covariance matrix must be positive definite.')
     return 0.5 * (n * np.log(2 * np.pi * np.e) + logdet)
 
 
 def covariance_decomposition(cov: np.ndarray):
+    """Split the Gaussian MaxEnt entropy into volatility and dependence terms.
+
+    Given Sigma = D R D with D = diag(sigma_i), returns h_vol = sum log(sigma_i)
+    and h_dep = 1/2 log det(R), which satisfy h_cov = h_vol + h_dep with
+    h_cov = 1/2 log det(Sigma) (up to the (N/2) log(2 pi e) additive constant
+    carried separately by maxent_entropy_from_cov).
+    """
     vol = np.sqrt(np.clip(np.diag(cov), 0, None))
     Dinv = np.diag(1.0 / vol)
     R = Dinv @ cov @ Dinv

@@ -9,7 +9,7 @@
 \maketitle
 
 \begin{abstract}
-This paper develops an information-theoretic interpretation of Gaussian diffusion models in finance. We first show that, among absolutely continuous distributions with fixed mean and covariance, the multivariate Gaussian maximizes differential entropy. We then state the additional temporal assumptions required for Gaussian increments with covariance proportional to elapsed time to define a Brownian diffusion for log-prices, and obtain geometric Brownian motion through It\^o's formula. The main empirical contribution is a covariance-entropy decomposition. Writing $\Sigma_t=D_tR_tD_t$, the Gaussian maximum entropy equals, up to a time-dependent constant, $\sum_i\log\sigma_{i,t} + \frac12\log\det R_t$. The first term measures marginal fluctuation scale; the second measures dependence-induced contraction of covariance volume. We formulate, rather than assume, an empirical volatility--dependence compensation hypothesis and test whether changes in the two components offset one another during market stress. The paper deliberately distinguishes exact mathematical results from empirical hypotheses and does not claim that maximum entropy proves that financial returns are Gaussian.
+This paper develops an information-theoretic interpretation of Gaussian diffusion models in finance. We first show that, among absolutely continuous distributions with fixed mean and covariance, the multivariate Gaussian maximizes differential entropy. We then state the additional temporal assumptions required for Gaussian increments with covariance proportional to elapsed time to define a Brownian diffusion for log-prices, and obtain geometric Brownian motion through It\^o's formula. The main empirical contribution is a covariance-entropy decomposition. Writing $\Sigma_t=D_tR_tD_t$, the Gaussian maximum entropy equals, up to a time-dependent constant, $\sum_i\log\sigma_{i,t} + \frac12\log\det R_t$. The first term measures marginal fluctuation scale; the second measures dependence-induced contraction of covariance volume. We formulate, rather than assume, an empirical volatility--dependence compensation hypothesis and test whether changes in the two components offset one another during market stress. A small $N=4$ real-data pilot (European stock indices, 1991--1998) gives directionally consistent, non-confirmatory evidence for the hypothesis while the intended $N=49$ industry-level test awaits data access. The paper deliberately distinguishes exact mathematical results from empirical hypotheses and does not claim that maximum entropy proves that financial returns are Gaussian.
 \end{abstract}
 
 \section{Introduction}
@@ -34,11 +34,17 @@ Suppose $E[X]=\mu$ and $\operatorname{Cov}(X)=\Sigma$, where $\Sigma$ is positiv
 Among all absolutely continuous distributions with mean $\mu$ and covariance $\Sigma$, the Gaussian $\mathcal N(\mu,\Sigma)$ uniquely maximizes differential entropy.
 \end{proposition}
 
-\paragraph{Proof sketch.} The Lagrangian for normalization, mean and covariance constraints has the form
+\paragraph{Proof.} Let $q=\mathcal N(\mu,\Sigma)$ and let $p$ be any absolutely continuous density with the same mean and covariance. Since $\log q(x)$ is an exact quadratic function of $x$, its expectation depends only on the first two moments, so $E_p[\log q(X)]=E_q[\log q(X)]=-h(q)$. Non-negativity of Kullback--Leibler divergence gives
 \[
-\mathcal L(p)=-\int p\log p+\lambda_0(\int p-1)+\lambda^T(\int xp-\mu)+\operatorname{tr}\left[\Lambda\left(\int (x-\mu)(x-\mu)^Tp-\Sigma\right)\right].
+0\le D_{KL}(p\Vert q)=E_p[\log p(X)]-E_p[\log q(X)]=-h(p)+h(q),
 \]
-The first-order condition implies $\log p(x)$ is a quadratic function of $x$, so $p$ is Gaussian. Strict concavity of entropy on the feasible set gives uniqueness.
+hence $h(p)\le h(q)$, with equality iff $D_{KL}(p\Vert q)=0$, i.e.\ $p=q$ almost everywhere. This is a direct argument, not merely a heuristic: it requires no assumption about differentiability of $p$ or existence of a maximizer, only that $p$ has finite differential entropy and matches the first two moments of $q$.
+
+\paragraph{Variational heuristic (for intuition).} The same conclusion can be read off a Lagrangian for the normalization, mean and covariance constraints,
+\[
+\mathcal L(p)=-\int p\log p+\lambda_0(\int p-1)+\lambda^T(\int xp-\mu)+\operatorname{tr}\left[\Lambda\left(\int (x-\mu)(x-\mu)^Tp-\Sigma\right)\right],
+\]
+whose first-order condition implies $\log p(x)$ is quadratic in $x$, i.e.\ $p$ is Gaussian. This calculation motivates why the maximizer has Gaussian form, but the KL argument above is the one that establishes optimality and uniqueness rigorously.
 
 The resulting entropy is
 \[
@@ -104,7 +110,7 @@ in selected market regimes. Equivalently,
 \[
 \Delta\log\det\Sigma_t\approx0.
 \]
-This is an empirical hypothesis and is not implied by maximum entropy. In differential notation,
+This is an empirical hypothesis and is not implied by maximum entropy. If $R_t$ is treated as a process of finite variation (i.e.\ predictable, with no diffusive component of its own), the ordinary chain rule applies and
 \[
 dH_t^{dep}=\frac12\operatorname{tr}(R_t^{-1}dR_t),
 \]
@@ -113,7 +119,11 @@ so compensation would imply
 \sum_i\frac{d\sigma_{i,t}}{\sigma_{i,t}}
 \approx -\frac12\operatorname{tr}(R_t^{-1}dR_t).
 \]
-The empirical analysis uses finite changes rather than continuous-time differentials.
+\paragraph{Consistency remark.} Section~4 shows that exponentiating a diffusion is not interchangeable with taking its ordinary differential: It\^o's formula adds a second-order correction. The same caveat applies here. If $R_t$ is itself an It\^o process with a nonzero diffusive part, $\log\det R_t$ is a nonlinear function of a stochastic process and It\^o's formula for the log-determinant contributes an additional quadratic-variation term,
+\[
+dH_t^{dep}=\frac12\operatorname{tr}(R_t^{-1}dR_t)-\frac14\operatorname{tr}\!\left(R_t^{-1}dR_tR_t^{-1}dR_t\right)+o(dt),
+\]
+analogous to the $\tfrac12\sigma^2dt$ correction relating log-price and price drift in Section~4. Dropping the correction term is only valid under the finite-variation assumption stated above. The empirical analysis avoids the issue altogether by working with finite (discrete-time) changes $\Delta H_t^{dep}$ rather than continuous-time differentials, so no assumption about the smoothness of $R_t$ is required there.
 
 \section{Geometric and spectral interpretation}
 The covariance matrix defines ellipsoidal level sets of the Gaussian density. The determinant controls their volume, while eigenvectors determine orientation and eigenvalues determine directional scales. If $R=Q\Lambda Q^T$, then
@@ -134,12 +144,24 @@ For each date we compute $H^{vol}$, $H^{dep}$, $H^{cov}$ and their first differe
 
 The predictive benchmark compares a volatility-only model with a model including the dependence component, evaluated out of sample. HAC standard errors are used for simple predictive regressions; formal VaR/ES backtests should be added before publication.
 
+\section{Pilot empirical illustration on real data}
+\label{sec:pilot}
+The Kenneth French 49-industry download endpoint was unreachable from the environment used to run this pipeline (an outbound network policy restriction, not a code defect), so the full FF49 test described above has not yet been executed. To avoid reporting no real-data evidence at all, the identical pipeline (rolling Ledoit--Wolf covariance, entropy decomposition, stress regime, predictive regression) was run unmodified on a second, independently verifiable real dataset that the environment could reach: the \texttt{EuStockMarkets} panel (Bollerslev and Ghysels), the daily closing levels of the DAX, SMI, CAC and FTSE indices, 1{,}860 contemporaneous trading days from 1991-01-02 through 1998-12-31, obtained from the public Rdatasets mirror. This is a $N=4$ pilot, not a substitute for the $N=49$, century-scale design above; it is reported only as a genuine, reproducible real-data check of the code and a directional read on the hypotheses, using config \texttt{config/pilot\_eu\_stock\_markets.yaml}.
+
+With a 252-day rolling window and the top decile of trailing 21-day market volatility as the stress indicator (161 of 1{,}608 rolling dates, clustering around the September 1992 ERM crisis, the September 1993 ERM turbulence and the October--November 1997 Asian-crisis episode):
+\begin{itemize}
+\item \textbf{H1.} Stress dates show higher marginal volatility ($H^{vol}=-18.25$ vs.\ $-18.93$ in calm dates) and lower $\det R$, i.e.\ lower $H^{dep}$ ($-1.147$ vs.\ $-0.911$). Both effects point in the direction H1 predicts.
+\item \textbf{H2.} $\operatorname{corr}(\Delta H^{vol},\Delta H^{dep})=-0.23$ over the full sample: negative, as the compensation hypothesis requires. In the stress subsample, $\operatorname{sd}(\Delta H^{cov})=0.0210$ is below the value implied by treating the two components as uncorrelated, $\sqrt{\operatorname{sd}(\Delta H^{vol})^2+\operatorname{sd}(\Delta H^{dep})^2}=0.0315$, consistent with partial (not exact) compensation.
+\item \textbf{H3.} Adding $H^{dep}$ to $H^{vol}$ lowers 21-day-ahead realized-volatility test MSE only marginally (0.0849 vs.\ 0.0869) and the coefficient on $H^{dep}$ is not significant on the 70/30 split ($p=0.64$). With $N=4$ assets and one non-overlapping regime cycle, this pilot is underpowered for H3; it neither confirms nor refutes the predictive-value hypothesis.
+\end{itemize}
+These numbers should be read as an existence proof that the pipeline produces sensible, directionally consistent output on genuine market data, and as weak, non-confirmatory support for H1--H2 on a small panel over one historical window. They are not the paper's intended empirical test, which requires the full FF49 cross-section and, ideally, the CRSP/WRDS individual-stock robustness check described in the Limitations section.
+
 \section{Non-Gaussianity and relative entropy}
-The Gaussian reference distribution is not assumed to equal the empirical distribution. If $q_t$ is the Gaussian distribution matching the empirical mean and covariance and $p_t$ is the empirical density, then
+The Gaussian reference distribution is not assumed to equal the empirical distribution. Applying the identity from the proof of Proposition~1 date-by-date: if $q_t$ is the Gaussian distribution matching the empirical mean and covariance at $t$ and $p_t$ is the true empirical density, then
 \[
-D_{KL}(p_t\Vert q_t)=h(q_t)-h(p_t).
+D_{KL}(p_t\Vert q_t)=h(q_t)-h(p_t)\ge0.
 \]
-This suggests a useful robustness extension: separate covariance-volume dynamics from deviations from Gaussianity.
+This suggests a useful robustness extension: separate covariance-volume dynamics ($h(q_t)$, driven entirely by $\Sigma_t$) from time variation in $D_{KL}(p_t\Vert q_t)$, i.e.\ from how far the conditional return distribution is from Gaussian at each date. A stress episode could in principle show compensation in $h(q_t)$ while simultaneously showing rising $D_{KL}(p_t\Vert q_t)$ (fatter tails, more skewness) that the covariance-only decomposition does not capture.
 
 \section{Risk-neutral interpretation}
 The maximum-entropy argument is naturally a physical-measure statement. Under $\mathbb P$,
@@ -153,8 +175,20 @@ Under $\mathbb Q$ for a non-dividend-paying asset,
 Maximum entropy under historical constraints does not by itself determine a risk-neutral pricing measure or option prices.
 
 \section{Limitations}
-The principal limitations are non-Gaussian tails, stochastic volatility, unstable dependence, finite-sample covariance error, and the unit dependence of differential entropy. In addition, industry portfolios are not independent firms and can mechanically display common-factor dependence. A future individual-stock analysis using CRSP/WRDS would therefore be a valuable robustness test.
+The principal limitations are non-Gaussian tails, stochastic volatility, unstable dependence, finite-sample covariance error, and the unit dependence of differential entropy. In addition, industry portfolios are not independent firms and can mechanically display common-factor dependence. A future individual-stock analysis using CRSP/WRDS would therefore be a valuable robustness test. The pilot illustration in Section~\ref{sec:pilot} carries its own, additional limitations: $N=4$ is too small to give the covariance-determinant a meaningful ``volume'' interpretation, the sample spans a single 8-year window with essentially one stress cycle, and dates are reconstructed from a business-day count rather than the true exchange calendar.
 
-\\section{References}\n\\begin{itemize}\n\\item Jaynes, E. T. (1957). Information Theory and Statistical Mechanics. \\textit{Physical Review}, 106, 620--630.\\n\\item Black, F. and Scholes, M. (1973). The Pricing of Options and Corporate Liabilities. \\textit{Journal of Political Economy}, 81(3), 637--654.\\n\\item Merton, R. C. (1973). Theory of Rational Option Pricing. \\textit{Bell Journal of Economics and Management Science}, 4(1), 141--183.\\n\\item Engle, R. (2002). Dynamic Conditional Correlation: A Simple Class of Multivariate Generalized Autoregressive Conditional Heteroskedasticity Models. \\textit{Journal of Business \& Economic Statistics}, 20(3), 339--350.\\n\\item Ledoit, O. and Wolf, M. (2004). A Well-Conditioned Estimator for Large-Dimensional Covariance Matrices. \\textit{Journal of Multivariate Analysis}, 88(2), 365--411.\\n\\item Fama, E. F. and French, K. R. Kenneth French Data Library, 49 Industry Portfolios.\\n\\end{itemize}\n\n\\section{Conclusion}\nThe theoretical contribution is a clean separation between what maximum entropy proves and what financial modelling assumes. Fixed first and second moments imply a Gaussian maximum-entropy distribution. Temporal assumptions then produce Brownian diffusion, and exponentiation produces GBM. The empirical proposal is different: the covariance determinant may display partial compensation between marginal volatility and dependence-induced contraction. Whether that compensation is economically meaningful is an empirical question, tested through rolling covariance estimation, stress-regime analysis and out-of-sample risk prediction.
+\section{References}
+\begin{itemize}
+\item Jaynes, E. T. (1957). Information Theory and Statistical Mechanics. \textit{Physical Review}, 106, 620--630.
+\item Black, F. and Scholes, M. (1973). The Pricing of Options and Corporate Liabilities. \textit{Journal of Political Economy}, 81(3), 637--654.
+\item Merton, R. C. (1973). Theory of Rational Option Pricing. \textit{Bell Journal of Economics and Management Science}, 4(1), 141--183.
+\item Engle, R. (2002). Dynamic Conditional Correlation: A Simple Class of Multivariate Generalized Autoregressive Conditional Heteroskedasticity Models. \textit{Journal of Business \& Economic Statistics}, 20(3), 339--350.
+\item Ledoit, O. and Wolf, M. (2004). A Well-Conditioned Estimator for Large-Dimensional Covariance Matrices. \textit{Journal of Multivariate Analysis}, 88(2), 365--411.
+\item Fama, E. F. and French, K. R. Kenneth French Data Library, 49 Industry Portfolios.
+\item Bollerslev, T. and Ghysels, E. (1996). Periodic Autoregressive Conditional Heteroscedasticity. \textit{Journal of Business \& Economic Statistics}, 14(2), 139--151. (Source of the EuStockMarkets pilot series, mirrored at https://github.com/vincentarelbundock/Rdatasets.)
+\end{itemize}
+
+\section{Conclusion}
+The theoretical contribution is a clean separation between what maximum entropy proves and what financial modelling assumes. Fixed first and second moments imply a Gaussian maximum-entropy distribution. Temporal assumptions then produce Brownian diffusion, and exponentiation produces GBM. The empirical proposal is different: the covariance determinant may display partial compensation between marginal volatility and dependence-induced contraction. Whether that compensation is economically meaningful is an empirical question, tested through rolling covariance estimation, stress-regime analysis and out-of-sample risk prediction. A small real-data pilot on European stock indices gives directionally consistent evidence for H1 and H2 while the intended industry-level test awaits data access (Section~\ref{sec:pilot}).
 
 \end{document}
