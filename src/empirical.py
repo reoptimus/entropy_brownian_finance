@@ -1,10 +1,14 @@
 from __future__ import annotations
-from pathlib import Path
 import numpy as np
 import pandas as pd
 import statsmodels.api as sm
-from .data import read_ff49_daily
+from .data import read_ff49_daily, read_eu_stock_markets_daily
 from .entropy import estimate_covariance, covariance_decomposition
+
+DATA_READERS = {
+    'ff49': lambda cfg: read_ff49_daily(cfg['data']['raw_file'], cfg['estimation']['exclude_other']),
+    'eu_stock_markets': lambda cfg: read_eu_stock_markets_daily(cfg['data']['raw_file']),
+}
 
 
 def rolling_entropy(logret: pd.DataFrame, window: int, method='ledoit_wolf') -> pd.DataFrame:
@@ -58,8 +62,10 @@ def run_regressions(df: pd.DataFrame):
 
 
 def main(cfg):
-    raw = Path(cfg['data']['raw_zip'])
-    logret = read_ff49_daily(raw, cfg['estimation']['exclude_other'])
+    data_type = cfg['data'].get('type', 'ff49')
+    if data_type not in DATA_READERS:
+        raise ValueError(f"Unknown data.type '{data_type}'; expected one of {list(DATA_READERS)}")
+    logret = DATA_READERS[data_type](cfg)
     start, end = cfg['sample']['start'], cfg['sample']['end']
     logret = logret.loc[start:end]
     ent = rolling_entropy(logret, cfg['sample']['window'], cfg['estimation']['covariance'])

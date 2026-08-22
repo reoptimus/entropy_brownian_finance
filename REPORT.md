@@ -1,85 +1,44 @@
-# Research execution report — 22 August 2026
+# Research execution report — 22 August 2026 (updated)
 
-## What was completed
+This update follows a full review of the repository (math, code, reproducibility) and closes the three action items raised by that review: code fixes, a mathematical consistency correction in the paper, and a real-data run to replace the earlier synthetic-only validation.
 
-### A — Mathematical development
-- Formalized the maximum-entropy result under fixed mean and positive-definite covariance.
-- Separated the exact MaxEnt theorem from the additional temporal assumptions required for Brownian motion.
-- Corrected the Itô drift relation between log-prices and prices.
-- Derived the covariance decomposition
-  `det(Sigma) = (prod sigma_i^2) det(R)`
-  and the associated maximum-entropy decomposition.
-- Reframed the proposed conservation law as an empirical hypothesis about changes in `log det(Sigma)`, not as a theorem.
-- Added the bivariate interpretation and the important sign-symmetry caveat for correlation.
-- Added a route for studying non-Gaussianity via KL divergence to the Gaussian MaxEnt reference.
+## A — Code fixes
 
-### B — Empirical methodology
-- Selected the Kenneth French 49 Industry Portfolios daily value-weighted returns as the primary public dataset.
-- The official current source reports daily data from 1 July 1926 through 30 June 2026.
-- Designed rolling covariance estimation with Ledoit–Wolf shrinkage.
-- Defined the three main empirical quantities: `H_vol`, `H_dep`, `H_cov`.
-- Defined stress independently from the entropy decomposition using a trailing 21-day equal-weight market volatility signal.
-- Added predictive evaluation using a 70/30 chronological train/test split.
-- Added unit tests for the mathematical identities and the synthetic rolling pipeline.
+- **Bug found and fixed:** `read_ff49_daily` silently returned an *empty* DataFrame — no error — when the CSV delimiter assumption did not hold (verified by deliberately feeding it a space-delimited variant of the real format). It now raises `ValueError` when parsing yields zero rows, and no longer crashes with an opaque `StopIteration` when the target section runs to end-of-file with no trailing blank line. Column names are now stripped of incidental whitespace.
+- Harmonized error handling: `maxent_entropy_from_cov` now raises `ValueError` on a non-positive-definite covariance, consistent with `covariance_decomposition` (it previously returned `NaN` silently, which could let a degenerate estimate propagate unnoticed).
+- Added `tests/test_data.py`: fixture-based tests for `read_ff49_daily` (value-weighted block parsing, `Other`-column handling, the empty-result failure mode) and for the new `read_eu_stock_markets_daily` reader — the real-data parsing path had zero test coverage before this pass.
+- Added a dispatch test for `empirical.main` covering the new `data.type` config switch.
+- Generalized `src/data.py`, `src/download_data.py`, `src/empirical.py` to support multiple data sources via `config['data']['type']` (`ff49` or `eu_stock_markets`) instead of being hard-wired to the FF49 zip.
+- Added `.gitignore` and removed previously (accidentally) committed `__pycache__` bytecode.
+- Added `pyproject.toml` so the package installs with `pip install -e .`.
+- Added `.github/workflows/tests.yml` — CI was claimed in the previous version of this report but did not exist; it now does.
+- Docstrings added to `src/entropy.py` and `src/data.py` explaining the formulas and the calendar-reconstruction caveat.
 
-### C — Paper and reproducible code
-- Created a LaTeX paper draft in `paper/main.tex`.
-- Created Python data ingestion, entropy decomposition, rolling estimation, regime analysis and predictive regression code.
-- Created configuration in `config/default.yaml`.
-- Created tests and continuous-integration configuration.
-- Initialized a local Git repository and committed the project.
+All 9 tests pass (`pytest -q`), up from 4.
 
-## Data status
+## B — Mathematical development
 
-The public dataset has been identified and its current official availability verified through Kenneth French's Data Library. However, the execution environment used for this work could not resolve external network requests to download the ZIP file. Therefore **no real-data empirical coefficient, p-value, figure, or confirmation is reported as a finding**.
+- **Itô-consistency fix (Section 6 of the paper):** the paper carefully derives the drift correction between log-price and price via Itô's formula (Section 4), but the differential form of the dependence-entropy compensation, `dH_dep = 1/2 tr(R^{-1} dR)`, implicitly treated `R_t` as finite-variation. If `R_t` is itself a diffusion, `log det R_t` needs the analogous second-order (quadratic-variation) correction. The paper now states this explicitly, gives the corrected differential, and notes that the empirical analysis sidesteps the issue by using discrete finite differences rather than continuous-time differentials.
+- **Tightened the proof of Proposition 1** (Gaussian maximizes entropy under fixed mean/covariance): replaced the informal Lagrangian-only sketch with the direct, rigorous Kullback–Leibler argument (`h(p) ≤ h(q)` from `D_KL(p‖q) ≥ 0`), keeping the Lagrangian as a heuristic for *why* the maximizer has Gaussian form rather than as the proof of optimality/uniqueness.
+- **Fixed a LaTeX source bug:** the References and Conclusion sections were corrupted — a stray extra backslash and literal `\n` text sequences (not real line breaks) had been embedded in the source, which would have rendered as garbled raw text in the compiled PDF. Fixed and recompiled cleanly (`pdflatex`, 7 pages, no warnings).
+- Cross-referenced the non-Gaussianity/KL section to the corrected Proposition 1 proof, and to the new pilot-data section.
 
-This is deliberate. It would be scientifically wrong to manufacture or infer an empirical confirmation from the data description alone.
+## C — Real-data empirical run
 
-## Synthetic validation
+The primary target (Kenneth French 49 Industry Portfolios) remains unreachable from this environment: `python -m src.download_data` fails with a proxy-level 403 on `mba.tuck.dartmouth.edu` — an outbound network-policy restriction of the sandbox, confirmed via the proxy status endpoint, not a bug in the download script. Per policy this was not circumvented.
 
-The code was run on a synthetic two-regime Gaussian system. The tests confirm that:
+Rather than leave the empirical claim at "synthetic only," the identical pipeline was run against a second dataset that the sandbox's network policy does permit: `raw.githubusercontent.com`, which hosts the Rdatasets mirror of the classic `EuStockMarkets` panel (DAX, SMI, CAC, FTSE daily closes, 1991–1998; Bollerslev & Ghysels). This is genuine, independently verifiable real market data — not synthetic, not fabricated — obtained via `python -m src.download_data --config config/pilot_eu_stock_markets.yaml` and analyzed with `python -m src.run_empirical --config config/pilot_eu_stock_markets.yaml`.
 
-1. the covariance entropy decomposition is numerically exact;
-2. the bivariate determinant identity is recovered;
-3. the rolling covariance pipeline produces finite estimates;
-4. all automated tests pass (`4 passed`).
+Results (see `paper/main.tex`, "Pilot empirical illustration on real data", for the full statement and caveats):
 
-The synthetic experiment is only a software/theory validation. It is **not evidence for the financial hypothesis**.
+- **H1 (stress contraction):** confirmed directionally. Stress dates (top decile of trailing 21-day market vol; cluster around Sep 1992 ERM crisis, Sep 1993 ERM turbulence, Oct–Nov 1997 Asian crisis) show higher `H_vol` (−18.25 vs −18.93) and lower `H_dep` (−1.147 vs −0.911) than calm dates.
+- **H2 (compensation):** `corr(ΔH_vol, ΔH_dep) = −0.23` (negative, as required). In the stress subsample, `sd(ΔH_cov) = 0.021` is below the "independent-components" benchmark `sqrt(sd(ΔH_vol)² + sd(ΔH_dep)²) = 0.0315`, consistent with partial compensation.
+- **H3 (predictive value):** inconclusive at this scale. Test MSE improves only marginally (0.0849 vs 0.0869) and the `H_dep` coefficient is not significant (p = 0.64) on the 70/30 split.
 
-## What deserves attention
+This is a 4-asset, single-window pilot — explicitly not a substitute for the intended 49-industry, century-scale test, and reported as such in the paper. It demonstrates the pipeline on genuine market data and gives directionally consistent, non-confirmatory evidence for H1–H2.
 
-### 1. The central empirical hypothesis is still unconfirmed
-The key quantity is
-`Delta log det(Sigma)`. The paper should not claim entropy conservation until this quantity is tested on real data.
+## What still deserves attention
 
-### 2. Covariance estimation is probably the biggest empirical risk
-With 49 industries and a 252-day rolling window, the covariance matrix is estimable, but determinant estimates can still be noisy and biased. Results should be repeated with different windows, sample covariance, Ledoit–Wolf shrinkage, and preferably a nonlinear-shrinkage or factor-based estimator.
-
-### 3. Industry portfolios are not individual assets
-They are useful for a first test, but common factors and portfolio construction may mechanically create the dependence structure. A CRSP/WRDS individual-stock robustness analysis would be important for a serious journal submission.
-
-### 4. `log(det R)` is not the same thing as average correlation
-In two dimensions it depends on `rho^2`; in higher dimensions it is a spectral volume measure. The paper should use the term `dependence-volume component` rather than treating it as a scalar correlation index.
-
-### 5. Stress-regime definition must be robust
-The baseline uses trailing market volatility, but the final paper should repeat the analysis using drawdowns, VIX where available, realized volatility, and dated crisis windows. This prevents the stress result from being an artifact of one regime definition.
-
-### 6. Predictive results need genuine out-of-sample evaluation
-The repository now uses a chronological 70/30 split, but a final paper should add rolling/expanding forecasts, benchmark models, Diebold–Mariano tests where appropriate, and formal VaR/ES backtests.
-
-### 7. Non-Gaussianity is not a minor detail
-The MaxEnt Gaussian is a reference distribution. Actual financial returns have skewness, excess kurtosis and dependence structures that the Gaussian does not capture. The proposed KL extension is worth developing.
-
-### 8. Differential entropy is unit-dependent
-Absolute entropy levels should not be given a physical interpretation. Changes, differences, normalized values, and `log det Sigma` are safer empirical objects.
-
-## Recommended next empirical run
-
-1. Download the FF49 daily file using `python -m src.download_data`.
-2. Run `python -m src.run_empirical --config config/default.yaml`.
-3. Inspect the sign and magnitude of `corr(dH_vol, dH_dep)`.
-4. Compare `std(dH_cov)` with the component standard deviations in calm and stress regimes.
-5. Repeat with windows 126, 252 and 504 days.
-6. Repeat with sample covariance and alternative shrinkage.
-7. Test 25/49 industry universes and, if available, individual-stock CRSP data.
-8. Only then decide whether the compensation hypothesis deserves to be presented as a stylized fact.
+1. Run the real FF49 analysis as soon as the download is reachable (`config/default.yaml` is unchanged and ready).
+2. The pilot's business-day date reconstruction (no exchange-holiday calendar) should not be relied on for exact-date event studies, only for the rolling-window ordering used here.
+3. Points 2–8 of the previous version of this report (covariance estimation robustness, industry portfolios vs. individual assets, `log det R` terminology, stress-regime robustness, genuine walk-forward evaluation, non-Gaussianity via KL, unit-dependence of differential entropy) still stand and are unaffected by this update.
