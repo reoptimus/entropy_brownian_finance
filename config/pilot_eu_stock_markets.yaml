@@ -2,27 +2,44 @@ data:
   type: eu_stock_markets
   raw_file: data/raw/EuStockMarkets.csv
   url: https://raw.githubusercontent.com/vincentarelbundock/Rdatasets/master/csv/datasets/EuStockMarkets.csv
-
+  source: url
 sample:
   start: 1991-01-02
   end: 1998-12-31
   window: 252
   min_obs: 200
   step: 1
-
 estimation:
   covariance: ledoit_wolf
   exclude_other: false
   return_unit: log_price_diff
-
+  jump_covariance: ewma
+  ewma_halflife: 60
+  ewma_shrinkage: 0.1
+  shape_estimator: hyvarinen
 risk:
   forecast_horizon: 21
   realized_vol_annualization: 260
-
 regimes:
-  stress_quantile: 0.90
+  stress_quantile: 0.9
   calm_quantile: 0.25
-
 outputs:
   tables: outputs/pilot_eu/tables
   figures: outputs/pilot_eu/figures
+jumps:
+  threshold: 4.0
+  scale_window: 250
+  event_pre: 30
+  event_post: 120
+stress_test:
+  horizon: 21
+  var_level: 0.99
+  return_periods:
+  - 1
+  - 2
+  - 5
+  - 10
+  - 20
+  - 50
+  classical_vol_multiplier: 2.0
+  classical_correlation: 0.9

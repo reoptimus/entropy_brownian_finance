@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "entropy-brownian-finance"
-version = "0.1.0"
-description = "Maximum entropy, Brownian motion and covariance-entropy compensation in financial markets"
+version = "0.2.0"
+description = "Entropy jumps, information relaxation and entropy-calibrated stress testing in financial markets"
 requires-python = ">=3.10"
 dependencies = [
     "numpy>=1.26",
@@ -20,9 +20,12 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = ["pytest>=8.0"]
+# Only needed to materialise the S&P 500 daily panel; the pipeline
+# itself reads a plain CSV and has no runtime dependency on it.
+sp500 = ["skfolio>=0.5"]
 
 [tool.setuptools]
-packages = ["src"]
+packages = ["src", "scripts"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

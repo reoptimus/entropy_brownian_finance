@@ -3,27 +3,44 @@ data:
   raw_file: data/raw/49_Industry_Portfolios_daily_CSV.zip
   processed_csv: data/processed/ff49_daily_log_returns.csv
   url: https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/ftp/49_Industry_Portfolios_daily_CSV.zip
-
+  source: url
 sample:
   start: 1990-01-01
   end: 2026-06-30
   window: 252
   min_obs: 200
   step: 1
-
 estimation:
   covariance: ledoit_wolf
   exclude_other: true
   return_unit: percent_to_decimal
-
+  jump_covariance: ewma
+  ewma_halflife: 60
+  ewma_shrinkage: 0.1
+  shape_estimator: hyvarinen
 risk:
   forecast_horizon: 21
   realized_vol_annualization: 252
-
 regimes:
-  stress_quantile: 0.90
+  stress_quantile: 0.9
   calm_quantile: 0.25
-
 outputs:
   tables: outputs/tables
   figures: outputs/figures
+jumps:
+  threshold: 4.0
+  scale_window: 250
+  event_pre: 30
+  event_post: 120
+stress_test:
+  horizon: 21
+  var_level: 0.99
+  return_periods:
+  - 1
+  - 2
+  - 5
+  - 10
+  - 20
+  - 50
+  classical_vol_multiplier: 2.0
+  classical_correlation: 0.9

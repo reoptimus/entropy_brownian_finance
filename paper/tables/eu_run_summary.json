@@ -1,0 +1,14 @@
+{
+  "label": "EuStockMarkets",
+  "n_dates": 1608,
+  "n_assets": 4,
+  "sample": [
+    "1991-12-20",
+    "1998-02-17"
+  ],
+  "kappa": 0.004997499170511171,
+  "half_life_days": 138.69880852607454,
+  "n_jump_up": 27,
+  "n_jump_down": 5,
+  "skew_of_dJ": 6.700561534663348
+}

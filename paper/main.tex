@@ -1,257 +1,1523 @@
 \documentclass[11pt]{article}
 \usepackage{amsmath,amssymb,amsthm,booktabs,geometry,graphicx}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[round,authoryear]{natbib}
+\usepackage[colorlinks=true,linkcolor=black,citecolor=black,urlcolor=blue!50!black]{hyperref}
 \geometry{margin=1in}
-\title{From Maximum Entropy to Geometric Brownian Motion: Covariance Entropy and Volatility--Dependence Compensation in Financial Markets}
+
+\newtheorem{proposition}{Proposition}
+\newtheorem{assumption}{Assumption}
+\theoremstyle{definition}
+\newtheorem{postulate}{Postulate}
+\newtheorem{definition}{Definition}
+
+\newcommand{\JJ}{\mathcal{J}}
+\newcommand{\DD}{\mathcal{D}}
+\newcommand{\KL}[2]{D_{KL}\!\left(#1\,\Vert\,#2\right)}
+
+\title{Entropy Jumps and Information Relaxation in Financial Markets:\\
+from maximum entropy in volume time to entropy-calibrated stress testing}
 \author{Research draft}
 \date{August 2026}
-\newtheorem{proposition}{Proposition}
+
 \begin{document}
 \maketitle
 
 \begin{abstract}
-This paper develops an information-theoretic interpretation of Gaussian diffusion models in finance. We first show that, among absolutely continuous distributions with fixed mean and covariance, the multivariate Gaussian maximizes differential entropy. We then state the additional temporal assumptions required for Gaussian increments with covariance proportional to elapsed time to define a Brownian diffusion for log-prices, and obtain geometric Brownian motion through It\^o's formula. The main empirical contribution is a covariance-entropy decomposition. Writing $\Sigma_t=D_tR_tD_t$, the Gaussian maximum entropy equals, up to a time-dependent constant, $\sum_i\log\sigma_{i,t} + \frac12\log\det R_t$. The first term measures marginal fluctuation scale; the second measures dependence-induced contraction of covariance volume. We formulate, rather than assume, an empirical volatility--dependence compensation hypothesis and test it on the Kenneth French 49-industry daily return panel (1990--2026, $N=48$ industries, 8{,}939 rolling windows). Stress periods show higher marginal volatility and lower dependence entropy (H1), and changes in the two components are strongly negatively correlated ($-0.63$), so that the covariance-volume term is markedly more stable than either component alone (H2). A predictive-value hypothesis (H3) is significant in sample but not confirmed out of sample under a simple linear specification, and a second, independent real dataset (European stock indices, 1991--1998) replicates the sign and shape of H1--H2 on an unrelated market and period. The paper deliberately distinguishes exact mathematical results from empirical hypotheses and does not claim that maximum entropy proves that financial returns are Gaussian.
+This paper rebuilds the information-theoretic account of price formation around a
+single asymmetry. We first close the bridge from maximum entropy to Gaussian
+prices where it is usually left open, by defining the price as accumulated order
+flow and applying the maximum-entropy principle in \emph{volume time} rather than
+calendar time: with the traded volume fixing the variance budget, the
+least-committal conditional distribution of the log-price increment is Gaussian,
+and temporal consistency then makes the log-price a Brownian motion subordinated
+to the volume clock, hence the price a geometric Brownian motion. Read
+backwards, the same argument says that non-Gaussian prices are the signature of
+a conditional distribution that is \emph{not} entropy-maximal -- that is, of
+binding information.
+
+We then decompose the entropy of a return vector into three channels: scale
+($\sum_i\log\sigma_i$), dependence ($\tfrac12\log\det R \le 0$) and shape (the
+entropy deficit $\DD=\KL{p}{q}$, which is skewness and fat tails). Combining the
+last two gives a scale-free structural index
+$\JJ_t = \DD_t - \tfrac12\log\det R_t = \KL{p_t}{\prod_i q_{i,t}} \ge 0$,
+which measures how far the market is from the maximum-entropy reference at
+unchanged volatility. Because conditioning cannot raise expected entropy, an
+information event lowers the entropy ceiling by exactly the mutual information
+of the news: downward jumps in entropy are a theorem, not an assumption. What we
+postulate is the other half -- that entropy relaxes back diffusively (P1), and
+that the constraint news imposes is one-sided, so a jump carries negative
+skewness (P2). Together these give $\JJ$ a jump-diffusion of
+Barndorff-Nielsen--Shephard type: up in jumps, down by diffusion.
+
+Seven hypotheses are tested on 33 years of daily individual-stock returns
+(twenty S\&P~500 constituents, 1990--2022), replicated on the
+\texttt{EuStockMarkets} panel, and --- this is the part that matters --- judged
+against two calibrated nulls built by resampling the observed returns: one
+i.i.d., which keeps the fat marginal tails and destroys all temporal structure,
+and one in 21-day blocks, which additionally keeps volatility clustering. Taken at
+face value the results look strong: stress raises $\JJ$ by 2.89 nats, changes in
+$\JJ$ are overwhelmingly one-sided (158 up-jumps against 9 down, skewness
+$+12.3$), up-jumps carry negative market skewness, and the dependence and tail
+channels lock together under stress ($0.04$ calm against $0.66$). Against the
+nulls, most of that evaporates. Jump asymmetry, the skewness signature and the
+channel coupling are all reproduced --- several of them \emph{exceeded} --- by
+resampled data, because a non-negative convex functional of estimated moments
+rises sharply and decays smoothly whenever a fat-tailed observation enters the
+estimator. Exactly two statistics clear both nulls, and they are the ones worth
+keeping: the regime difference in the \emph{dependence} channel ($-1.72$ nats
+against $-0.29$ and $-0.64$), and the range of $\JJ$ over the sample ($18.95$
+against $10.49$ and $14.23$). What distinguishes a crisis from a run of large
+returns is that the cross-section couples --- the effective number of
+independent risk modes falls from $13.2$ to $10.5$ out of $20$ --- not that the
+marginals fatten. The relaxation half-life is not identified: at $120$ days it
+lies above the i.i.d.\ null ($92$) and below the block null ($162$). Two further
+results run against the paper's interest: the volatility--dependence
+compensation reported for industry portfolios does not replicate on individual
+firms, and no entropy channel improves out-of-sample forecasts of forward risk
+over a volatility benchmark.
+
+The applied contribution is a stress-testing construction. A scenario of
+severity $\eta$ is the worst conditional distribution within a
+Kullback--Leibler ball of radius $\eta$ nats around the market's current
+conditional distribution; the radius is calibrated on the market's own realised
+information flow $\KL{p_t}{p_{t-h}}$, so severity carries a return period rather
+than an adjective, and the mean shift and variance inflation are drawn on one
+budget rather than shocked piecemeal. One nat buys $\sqrt2$ sigma. The same
+metric prices existing scenarios: a textbook bundle -- volatilities doubled,
+all correlations forced to $0.9$, a three-sigma shock -- costs 52 nats against
+13 nats for the one-in-fifty-year rung, and we decompose that price to show
+where it goes.
 \end{abstract}
 
+\tableofcontents
+
 \section{Introduction}
-The geometric Brownian motion (GBM) remains a benchmark model for asset prices. Its usefulness is partly computational, but its Gaussian log-return structure is often treated as a modelling assumption. This paper asks whether that Gaussian structure admits an information-theoretic interpretation and whether the same interpretation yields a useful decomposition of financial risk.
+\label{sec:intro}
 
-The first result is exact: fixing the first two moments and maximizing differential entropy yields a multivariate Gaussian distribution. The second result is conditional: Gaussian increments become Brownian motion only after imposing temporal consistency, independent increments, continuity, and covariance proportionality to elapsed time. Exponentiation then produces a GBM-type price process through It\^o's lemma.
+Two facts about financial prices sit awkwardly together. The first is that the
+Gaussian model is the natural answer to a question about ignorance: fix a mean
+and a variance, know nothing else, and the maximum-entropy distribution is
+Gaussian. The second is that returns are not Gaussian -- they are fat-tailed,
+negatively skewed, and their dependence tightens exactly when it matters.
 
-The empirical question is separate. For a covariance matrix $\Sigma_t=D_tR_tD_t$, the Gaussian maximum entropy contains the term $\frac12\log\det\Sigma_t$. Hence
-\[
-\frac12\log\det\Sigma_t=\sum_i\log\sigma_{i,t}+\frac12\log\det R_t.
-\]
-We test whether the marginal-volatility component and dependence component display systematic compensation, particularly during stress regimes.
+The usual reaction is to treat the second fact as a defect of the first model
+and to patch it: add jumps to the price, add a stochastic volatility factor, add
+a copula. This paper takes the opposite route. If the Gaussian is what maximum
+entropy delivers, then every departure from it is a measurement of how far the
+market is from maximal ignorance -- that is, a measurement of information. The
+question is then not how to patch the Gaussian but how to read the size,
+dynamics and direction of the gap.
 
-\section{Maximum entropy under first and second moment constraints}
-Let $p(x)$ be an absolutely continuous density on $\mathbb R^N$. Its differential entropy is
-\[
-h(p)=-\int p(x)\log p(x)\,dx.
-\]
-Suppose $E[X]=\mu$ and $\operatorname{Cov}(X)=\Sigma$, where $\Sigma$ is positive definite.
+The paper is built around one asymmetry in that gap. Information arrives in
+lumps and is absorbed gradually. A central-bank surprise, a default, a war
+removes uncertainty in an instant; the market then spends weeks working out what
+it implies, and the uncertainty rebuilds. If entropy is the right currency for
+uncertainty, its dynamics should be sawtoothed: sharp falls, slow recoveries.
+That shape is not a stylised fact anyone has had to assume -- half of it is a
+theorem. Conditioning cannot raise expected entropy, so the arrival of a signal
+lowers the entropy ceiling by exactly the mutual information between the signal
+and the price. The size of the jump, in nats, \emph{is} the information content
+of the news. What has to be postulated is the recovery, and the direction.
 
-\begin{proposition}[Maximum entropy]
-Among all absolutely continuous distributions with mean $\mu$ and covariance $\Sigma$, the Gaussian $\mathcal N(\mu,\Sigma)$ uniquely maximizes differential entropy.
+Three contributions follow.
+
+\paragraph{The volume bridge (Section~\ref{sec:bridge}).}
+The step from ``maximum entropy gives a Gaussian'' to ``prices are Gaussian'' is
+routinely asserted and rarely argued, because maximum entropy is a statement
+about a distribution with a fixed variance and says nothing about where the
+variance comes from. We close it by defining the price as accumulated order flow
+and applying the principle in volume time: total traded volume, which is
+observable, fixes the variance budget, and the maximum-entropy increment
+conditional on volume is Gaussian with variance proportional to volume. This is
+the mixture-of-distributions hypothesis \citep{clark1973,tauchen1983,ane2000}
+derived rather than assumed. Temporal consistency then makes the log-price a
+Brownian motion subordinated to the volume clock, and Itô's lemma makes the
+price a geometric Brownian motion. The bridge also explains, in the same
+sentence, why calendar-time returns are not Gaussian: either the conditional
+distribution is not entropy-maximal (information binds), or the volume clock is
+random, or both -- and the two sources leave different fingerprints.
+
+\paragraph{Three channels and a scale-free index (Section~\ref{sec:channels}).}
+The Gaussian entropy of a return vector splits exactly into a scale term and a
+dependence term, and the true entropy differs from it by the entropy deficit
+$\DD=\KL{p}{q}$, which is where skewness and fat tails live. The scale term
+dominates the level of differential entropy and is uninformative about
+information; stripping it out leaves
+$\JJ = \DD - \tfrac12\log\det R$, which is exactly
+$\KL{p}{\prod_i q_i}$ -- the divergence from a product of Gaussian marginals
+with the same scales. $\JJ$ is non-negative, invariant to the level of
+volatility, and additive across its two entropy-destroying channels. It is the
+state variable the rest of the paper is about. Empirically it shares only
+$21\%$ of its variance with volatility, and its shape channel is essentially
+orthogonal to volatility ($\text{corr}=0.09$).
+
+\paragraph{Stress testing in nats (Section~\ref{sec:stress}).}
+A scenario of severity $\eta$ is the worst conditional distribution within a
+KL ball of radius $\eta$ around today's. The construction is not new
+\citep{glasserman2014,breuer2013}; the calibration is. The radius is read off
+the market's own realised information flow, the $h$-step revision
+$\KL{p_t}{p_{t-h}}$, which is measured in the same unit as the radius, so a
+severity acquires a return period. Because the mean shift and the variance
+inflation are chosen on one budget, the scenario cannot be internally
+inconsistent, and because \emph{any} scenario can be priced on the same scale,
+``is this stress test severe enough?'' becomes arithmetic.
+
+\paragraph{A warning about measuring any of this.}
+The structural index is a non-negative, convex functional of estimated second,
+third and fourth moments. Estimation noise on fat-tailed data pushes such a
+functional \emph{up} sharply and lets it decay \emph{smoothly}, which is
+precisely the sawtooth the postulates predict. Every jump and relaxation
+statistic below is therefore reported against a null built by i.i.d.\ resampling
+the observed returns --- keeping the marginal fat tails, destroying the timing.
+The result is uncomfortable and, we think, the most useful thing in the paper:
+the jump asymmetry, which looks overwhelming, does not survive; the persistence
+and amplitude do. Anyone building a crisis indicator from a convex functional of
+estimated moments should run this null before believing their own figure.
+
+Section~\ref{sec:dynamics} states the theorem and the two postulates and derives
+the jump-diffusion; Section~\ref{sec:hypotheses} lists the hypotheses;
+Sections~\ref{sec:data}--\ref{sec:results} give data, estimators and results,
+including a placebo null that the jump and relaxation statistics must clear;
+Section~\ref{sec:stress} builds the stress test; Section~\ref{sec:limits} is
+honest about what none of this establishes.
+
+\section{From order flow to a Gaussian price: the volume bridge}
+\label{sec:bridge}
+
+\subsection{The price as accumulated order flow}
+
+Over $[t,t+\Delta]$ let the market execute $M$ trades, trade $k$ carrying signed
+volume $\epsilon_k v_k$ with $\epsilon_k\in\{-1,+1\}$ the sign (buyer- or
+seller-initiated) and $v_k>0$ the size. Write $V=\sum_k v_k$ for total volume
+and $Q=\sum_k \epsilon_k v_k$ for net signed order flow.
+
+\begin{assumption}[Linear impact]\label{as:impact}
+The log-price responds linearly to net signed order flow,
+$\Delta X_{t,\Delta} = X_{t+\Delta}-X_t = \lambda\,Q$, with $\lambda>0$ constant
+over the interval.
+\end{assumption}
+
+This is Kyle's \citeyearpar{kyle1985} equilibrium: the market maker, unable to
+distinguish informed from uninformed flow, sets a linear pricing rule and
+$\lambda$ is the inverse depth. It is the definition of ``price as a function of
+traded volume'' that the rest of the section needs, and it is the weakest link
+in the chain; Section~\ref{sec:bridge-caveats} says what happens when it fails.
+
+\begin{assumption}[Exchangeable signs and a volume-proportional variance]
+\label{as:signs}
+Conditional on $V$ and on the information available at $t$, the market's belief
+about $Q$ is constrained only by its first two moments, with
+$\mathbb{E}[Q\mid V] = m$ and $\mathrm{Var}(Q\mid V) = \varsigma^2 V$.
+\end{assumption}
+
+The variance form is what one gets when trade signs are exchangeable with
+bounded correlation and sizes have a stable mean: for independent signs,
+$\mathrm{Var}(Q)=\sum_k v_k^2 \approx \bar v V$. The economic content is that
+\emph{volume, not time, is the natural measure of how much can happen}.
+
+\subsection{Maximum entropy in volume time}
+
+\begin{proposition}[Maximum entropy under first and second moments]
+\label{prop:maxent}
+Among absolutely continuous distributions on $\mathbb{R}^N$ with mean $\mu$ and
+covariance $\Sigma\succ0$, the Gaussian $\mathcal N(\mu,\Sigma)$ uniquely
+maximises differential entropy, and
+$h^{\max}(\Sigma)=\tfrac12\log\left((2\pi e)^N\det\Sigma\right)$.
 \end{proposition}
 
-\paragraph{Proof.} Let $q=\mathcal N(\mu,\Sigma)$ and let $p$ be any absolutely continuous density with the same mean and covariance. Since $\log q(x)$ is an exact quadratic function of $x$, its expectation depends only on the first two moments, so $E_p[\log q(X)]=E_q[\log q(X)]=-h(q)$. Non-negativity of Kullback--Leibler divergence gives
-\[
-0\le D_{KL}(p\Vert q)=E_p[\log p(X)]-E_p[\log q(X)]=-h(p)+h(q),
-\]
-hence $h(p)\le h(q)$, with equality iff $D_{KL}(p\Vert q)=0$, i.e.\ $p=q$ almost everywhere. This is a direct argument, not merely a heuristic: it requires no assumption about differentiability of $p$ or existence of a maximizer, only that $p$ has finite differential entropy and matches the first two moments of $q$.
+\begin{proof}
+Let $q=\mathcal N(\mu,\Sigma)$ and let $p$ have the same first two moments and
+finite differential entropy. Since $\log q$ is an exact quadratic, its
+expectation depends only on those moments, so
+$\mathbb{E}_p[\log q]=\mathbb{E}_q[\log q]=-h(q)$. Non-negativity of relative
+entropy gives
+$0\le \KL{p}{q} = -h(p)+h(q)$, hence $h(p)\le h(q)$, with equality iff $p=q$
+almost everywhere. The argument requires no differentiability of $p$ and no
+prior existence of a maximiser.
+\end{proof}
 
-\paragraph{Variational heuristic (for intuition).} The same conclusion can be read off a Lagrangian for the normalization, mean and covariance constraints,
-\[
-\mathcal L(p)=-\int p\log p+\lambda_0(\int p-1)+\lambda^T(\int xp-\mu)+\operatorname{tr}\left[\Lambda\left(\int (x-\mu)(x-\mu)^Tp-\Sigma\right)\right],
-\]
-whose first-order condition implies $\log p(x)$ is quadratic in $x$, i.e.\ $p$ is Gaussian. This calculation motivates why the maximizer has Gaussian form, but the KL argument above is the one that establishes optimality and uniqueness rigorously.
+The variational route -- a Lagrangian in the normalisation, mean and covariance
+constraints, whose first-order condition makes $\log p$ quadratic -- explains
+\emph{why} the maximiser is Gaussian, but the divergence argument is what
+establishes optimality and uniqueness.
 
-The resulting entropy is
-\[
-h^{\max}(\Sigma)=\frac12\log\left((2\pi e)^N\det\Sigma\right).
-\]
-This is an entropy of the maximum-entropy reference distribution, not necessarily the entropy of observed financial returns.
+Applying Proposition~\ref{prop:maxent} to Assumption~\ref{as:signs} in one
+dimension and mapping through Assumption~\ref{as:impact}:
 
-\section{From Gaussian increments to Brownian motion}
-Let $X_t$ denote log-prices and define $\Delta X_{t,\Delta}=X_{t+\Delta}-X_t$. Suppose conditionally on the information available at $t$,
-\[
-\Delta X_{t,\Delta}\sim\mathcal N(\mu_t\Delta,\Sigma_t\Delta).
-\]
-This distribution follows from maximum entropy at each increment when its conditional mean and covariance are fixed. It does not by itself define a Brownian process. We additionally require temporal consistency: independent increments over disjoint intervals in the constant-coefficient case, continuity, and covariance linear in elapsed time.
+\begin{equation}
+\label{eq:mdh}
+\Delta X_{t,\Delta}\ \big|\ V \ \sim\ \mathcal{N}\!\left(\lambda m,\ \lambda^2\varsigma^2 V\right).
+\end{equation}
 
-Under constant $\mu$ and $\Sigma$, there exists a matrix $B$ with $BB^T=\Sigma$ such that
-\[
-X_t=X_0+\mu t+BW_t,
-\]
-where $W_t$ is an $N$-dimensional standard Brownian motion. For time-varying predictable covariance,
-\[
-dX_t=\mu_tdt+B_tdW_t,\qquad B_tB_t^T=\Sigma_t,
-\]
-is the corresponding diffusion representation. In this conditional model, increments need not be independent unconditionally when $\Sigma_t$ is stochastic.
+Equation~\eqref{eq:mdh} is the bridge. Three things about it deserve emphasis.
 
-\section{From Brownian log-prices to geometric Brownian motion}
-Let $S_{i,t}=\exp(X_{i,t})$. If
-\[
-dX_{i,t}=a_{i,t}dt+\sigma_{i,t}dW_{i,t},
-\]
-It\^o's formula gives
-\[
-\frac{dS_{i,t}}{S_{i,t}}=\left(a_{i,t}+\frac12\sigma_{i,t}^2\right)dt+\sigma_{i,t}dW_{i,t}.
-\]
-Thus the drift of the price is not identical to the drift of the log-price. Under a risk-neutral measure, the drift is replaced by the short rate (subject to the usual multi-asset and dividend conventions); the maximum-entropy construction in this paper concerns the physical/conditional return distribution unless otherwise stated.
+First, \emph{the conditioning variable is volume, not time}. Maximum entropy
+does not deliver a variance; it delivers the least-committal distribution given
+one. Assumption~\ref{as:signs} supplies the variance from an observable, and
+that observable is traded volume. Equation~\eqref{eq:mdh} is the
+mixture-of-distributions hypothesis of \citet{clark1973} and
+\citet{tauchen1983}, obtained here as a maximum-entropy statement rather than
+posited; \citet{ane2000} show empirically that returns measured in trade time
+are close to Gaussian even though calendar-time returns are not, which is the
+prediction \eqref{eq:mdh} makes.
 
-\section{Covariance entropy and dependence decomposition}
-Write
-\[
-\Sigma_t=D_tR_tD_t,\qquad D_t=\operatorname{diag}(\sigma_{1,t},\ldots,\sigma_{N,t}).
-\]
-Then
-\[
-\det\Sigma_t=\left(\prod_i\sigma_{i,t}^2\right)\det R_t.
-\]
-Therefore
-\[
-h_t^{\max}=C_{N,\Delta}+\sum_i\log\sigma_{i,t}+\frac12\log\det R_t,
-\]
-where $C_{N,\Delta}=\frac N2\log(2\pi e\Delta)$.
+Second, \emph{Gaussianity is conditional}. Unconditionally,
+$\Delta X$ is a scale mixture of normals over the random volume $V$, hence
+leptokurtic even when \eqref{eq:mdh} holds exactly. This is the
+\citet{mandelbrot1967} subordination mechanism, and it means fat tails are not
+by themselves evidence against maximum entropy.
 
-Define
-\[
-H_t^{vol}=\sum_i\log\sigma_{i,t},\qquad H_t^{dep}=\frac12\log\det R_t.
-\]
-The second term should be interpreted as a dependence-induced covariance-volume term, not as a generic scalar measure of correlation. In the bivariate case, $\det R=1-\rho^2$, so positive and negative correlations of equal magnitude have the same contribution.
+Third, the multivariate extension is immediate: with $N$ assets,
+$\Delta \mathbf{X}\mid V \sim \mathcal N(\boldsymbol\mu V, \Sigma V)$, and
+Proposition~\ref{prop:maxent} applies as stated.
 
-\section{Volatility--dependence compensation hypothesis}
-The empirical hypothesis is
-\[
-\Delta H_t^{cov}=\Delta H_t^{vol}+\Delta H_t^{dep}\approx0
-\]
-in selected market regimes. Equivalently,
-\[
-\Delta\log\det\Sigma_t\approx0.
-\]
-This is an empirical hypothesis and is not implied by maximum entropy. If $R_t$ is treated as a process of finite variation (i.e.\ predictable, with no diffusive component of its own), the ordinary chain rule applies and
-\[
-dH_t^{dep}=\frac12\operatorname{tr}(R_t^{-1}dR_t),
-\]
-so compensation would imply
-\[
-\sum_i\frac{d\sigma_{i,t}}{\sigma_{i,t}}
-\approx -\frac12\operatorname{tr}(R_t^{-1}dR_t).
-\]
-\paragraph{Consistency remark.} Section~4 shows that exponentiating a diffusion is not interchangeable with taking its ordinary differential: It\^o's formula adds a second-order correction. The same caveat applies here. If $R_t$ is itself an It\^o process with a nonzero diffusive part, $\log\det R_t$ is a nonlinear function of a stochastic process and It\^o's formula for the log-determinant contributes an additional quadratic-variation term,
-\[
-dH_t^{dep}=\frac12\operatorname{tr}(R_t^{-1}dR_t)-\frac14\operatorname{tr}\!\left(R_t^{-1}dR_tR_t^{-1}dR_t\right)+o(dt),
-\]
-analogous to the $\tfrac12\sigma^2dt$ correction relating log-price and price drift in Section~4. Dropping the correction term is only valid under the finite-variation assumption stated above. The empirical analysis avoids the issue altogether by working with finite (discrete-time) changes $\Delta H_t^{dep}$ rather than continuous-time differentials, so no assumption about the smoothness of $R_t$ is required there.
+\subsection{From Gaussian increments to Brownian motion and to GBM}
 
-\section{Geometric and spectral interpretation}
-The covariance matrix defines ellipsoidal level sets of the Gaussian density. The determinant controls their volume, while eigenvectors determine orientation and eigenvalues determine directional scales. If $R=Q\Lambda Q^T$, then
-\[
-\frac12\log\det R=\frac12\sum_k\log\lambda_k.
-\]
-This connects the dependence entropy term to the concentration of risk into collective modes.
+Let $\theta_t=\int_0^t v_s\,ds$ be the cumulative volume clock. Equation
+\eqref{eq:mdh} gives the one-increment distribution; a process needs more.
 
-\section{Empirical methodology}
-The primary dataset is the Kenneth R. French 49 Industry Portfolios daily value-weighted return series (the daily file is available from 1969-07-01; the sample below uses 1990-01-01 through 2026-06-30). Simple returns are converted to log returns using $\log(1+r)$. A rolling window estimates the covariance matrix. Because determinants are highly sensitive to covariance-estimation error when dimension is large relative to the window, the baseline uses Ledoit--Wolf shrinkage.
+\begin{assumption}[Temporal consistency]\label{as:time}
+In the volume clock, increments over disjoint intervals are independent, sample
+paths are continuous, and the covariance of an increment is proportional to
+elapsed volume.
+\end{assumption}
 
-For each date we compute $H^{vol}$, $H^{dep}$, $H^{cov}$ and their first differences. Stress regimes are defined ex ante using high conditional volatility quantiles, with robustness checks based on market drawdowns and alternative volatility measures. The key compensation statistic is the variance and persistence of $\Delta H^{cov}$ relative to the two components.
+Under Assumption~\ref{as:time} with constant coefficients there is a matrix $B$
+with $BB^{\!\top}=\Sigma$ such that $X_\theta = X_0 + \mu\theta + BW_\theta$ in
+volume time, so in calendar time
+\begin{equation}
+\label{eq:subordination}
+X_t = X_0 + \mu\,\theta_t + B\,W_{\theta_t},
+\end{equation}
+a Brownian motion \emph{subordinated} to the volume clock. If trading intensity
+is constant, $\theta_t=\bar v\,t$ and \eqref{eq:subordination} is ordinary
+Brownian motion in calendar time; exponentiating and applying Itô,
+\begin{equation}
+\frac{dS_{i,t}}{S_{i,t}} = \left(a_{i,t}+\tfrac12\sigma_{i,t}^2\right)dt + \sigma_{i,t}\,dW_{i,t},
+\end{equation}
+so the drift of the price is not the drift of the log-price -- the same
+second-order correction that will reappear in Section~\ref{sec:channels} when we
+differentiate $\log\det R_t$.
 
-\section{Tests}
-\textbf{H1:} stress periods exhibit higher marginal volatility and lower $\det R$.\\
-\textbf{H2:} $\Delta H^{vol}$ and $\Delta H^{dep}$ are negatively associated, and $\Delta H^{cov}$ is more stable in selected stress regimes.\\
-\textbf{H3:} $H^{dep}$ improves forecasts of future realized volatility or tail risk beyond $H^{vol}$.
+It is worth being precise about what Assumption~\ref{as:time} does. By Monroe's
+\citeyearpar{monroe1978} theorem, \emph{every} continuous local martingale is a
+time-changed Brownian motion, so subordination alone has no empirical content.
+The content is in the clock: \eqref{eq:mdh} says the right clock is volume, and
+Assumption~\ref{as:time} says the market has no memory in that clock. Maximum
+entropy is what selects Brownian motion from the class Monroe's theorem allows.
 
-The predictive benchmark compares a volatility-only model with a model including the dependence component, evaluated out of sample. HAC standard errors are used for simple predictive regressions; formal VaR/ES backtests should be added before publication.
+\subsection{The contrapositive}
+\label{sec:contrapositive}
 
-\section{Empirical results: the FF49 industry cross-section}
-\label{sec:ff49results}
-This section reports the paper's intended empirical test, executed on the official Kenneth French 49-industry daily value-weighted return file (\texttt{config/default.yaml}). $N=48$ industries after excluding the residual \emph{Other} portfolio, 1990-01-01 through 2026-06-30, a 252-day Ledoit--Wolf rolling window, 8{,}939 rolling dates. The stress indicator (top decile of trailing 21-day market volatility, 894 of 8{,}939 dates) clusters exactly where expected from market history: 1997--1998 (Asian crisis, LTCM), 2000--2002 (dot-com crash), 2008--2011 (global financial crisis and European debt crisis), 2015--2016, 2018, 2020 (COVID), and 2022 (rate-hike selloff) — a strong sanity check on both the data and the stress signal, independent of the paper's hypotheses.
+Proposition~\ref{prop:maxent} runs both ways. Write $q_t$ for the Gaussian with
+the conditional mean and covariance of $p_t$. Then
 
-\begin{itemize}
-\item \textbf{H1 (stress contraction): confirmed.} Stress dates show higher marginal volatility, $H^{vol}=-190.6$ vs.\ $-210.1$ in calm dates, and lower $\det R$, i.e.\ lower $H^{dep}$, $-31.6$ vs.\ $-23.1$. Both differences are large relative to their unconditional dispersion.
-\item \textbf{H2 (compensation): confirmed, and stronger than in the pilot.} $\operatorname{corr}(\Delta H^{vol},\Delta H^{dep})=-0.63$ over the full sample ($-0.74$ in calm dates, $-0.40$ in stress dates: compensation is present throughout but somewhat weaker exactly when stress is highest). $\operatorname{sd}(\Delta H^{cov})$ is well below the uncorrelated-components benchmark $\sqrt{\operatorname{sd}(\Delta H^{vol})^2+\operatorname{sd}(\Delta H^{dep})^2}$ in both regimes (calm: $0.125$ vs.\ $0.227$; stress: $0.425$ vs.\ $0.513$), i.e.\ the covariance-volume term is substantially more stable than either component taken alone. Equivalently, $\operatorname{Var}(\Delta H^{cov})$ is $56.7\%$ smaller than the uncorrelated-components benchmark $\operatorname{Var}(\Delta H^{vol})+\operatorname{Var}(\Delta H^{dep})$ over the full sample — a single number that summarizes how much of the day-to-day variance in marginal volatility is being absorbed by an offsetting move in dependence, rather than passed through to $\det\Sigma_t$.
-\item \textbf{H3 (predictive value): significant in sample, not confirmed out of sample.} Adding $H^{dep}$ to $H^{vol}$ raises the training $R^2$ from $0.282$ to $0.311$ and the coefficient on $H^{dep}$ is highly significant under HAC standard errors ($\hat\beta=-0.0100$, $p\approx9.5\times10^{-5}$). On the chronological 70/30 out-of-sample split, however, test MSE is not improved ($0.2066\to0.2079$) and test MAE improves only marginally ($0.2757\to0.2752$). Given the 252-day window overlap already discussed, the in-sample $t$-statistic is almost certainly overstated; H3 should be read as \emph{not confirmed} pending a genuine walk-forward or non-overlapping-frequency re-estimation (see Limitations).
-\end{itemize}
+\begin{equation}
+\label{eq:deficit}
+\DD_t \;\equiv\; h(q_t) - h(p_t) \;=\; \KL{p_t}{q_t} \;\ge\; 0,
+\end{equation}
+with equality if and only if $p_t$ is Gaussian. So: \emph{prices are non-Gaussian
+exactly to the extent that their conditional distribution is not
+entropy-maximal}, and $\DD_t$ measures the extent. In the language of
+Section~\ref{sec:bridge}, a positive $\DD_t$ means constraints beyond the first
+two moments are binding -- that somebody knows something the second moment does
+not encode.
 
-H1 and H2 are therefore supported on the dataset and time span the paper was designed around, with a compensation effect (H2) noticeably stronger here than in the smaller pilot below. H3's in-sample significance without matching out-of-sample gain is itself an informative, and honestly reported, negative result: covariance-volume conservation appears to be real and measurable, but does not by itself translate into a usable volatility forecast on top of $H^{vol}$ with this simple linear specification.
+Two sources produce a positive deficit, and separating them matters. A random
+volume clock produces a scale mixture, which is symmetric and leptokurtic.
+Binding directional information produces asymmetry. Section~\ref{sec:channels}
+splits $\DD$ along exactly this line.
+
+\subsection{Where the bridge is weak}
+\label{sec:bridge-caveats}
+
+Assumption~\ref{as:impact} is linear; the empirical impact of a metaorder is
+closer to square-root in size, which makes the mapping from flow to price
+concave and the induced return distribution thinner-tailed than the flow.
+Assumption~\ref{as:signs} treats signs as exchangeable; order flow is in fact
+strongly autocorrelated, which inflates $\mathrm{Var}(Q)$ above $\varsigma^2 V$
+and makes the volume clock an imperfect variance proxy. Neither failure changes
+the \emph{form} of the argument -- maximum entropy given a variance budget is
+still Gaussian -- but both mean the volume clock is an approximation to the
+information clock rather than the thing itself. We use volume-time reasoning to
+motivate the framework and calendar-time estimation throughout the empirical
+work, so no result below depends on \eqref{eq:mdh} holding exactly.
+
+\section{Three channels of entropy}
+\label{sec:channels}
+
+\subsection{Scale and dependence}
+
+Write $\Sigma_t = D_tR_tD_t$ with $D_t=\mathrm{diag}(\sigma_{1,t},\dots,\sigma_{N,t})$.
+Then $\det\Sigma_t = \left(\prod_i\sigma_{i,t}^2\right)\det R_t$ and
+\begin{equation}
+\label{eq:ceiling}
+h(q_t) \;=\; \underbrace{\tfrac{N}{2}\log(2\pi e)}_{\text{constant}}
+\;+\; \underbrace{\sum_i \log\sigma_{i,t}}_{H^{vol}_t}
+\;+\; \underbrace{\tfrac12\log\det R_t}_{H^{dep}_t}.
+\end{equation}
+By Hadamard's inequality $H^{dep}_t\le 0$, with equality iff $R_t=I$:
+\emph{correlation always destroys entropy}, and $-H^{dep}_t$ is precisely the
+Gaussian multi-information (total correlation) of the return vector. A useful
+reading of the same quantity is spectral: with $\lambda_k$ the eigenvalues of
+$R_t$ and $\tilde\lambda_k=\lambda_k/N$, the participation number
+$N^{\text{eff}}_t=\exp\!\left(-\sum_k\tilde\lambda_k\log\tilde\lambda_k\right)$
+is the effective number of independent risk modes; it equals $N$ for $R=I$ and
+falls toward $1$ as one collective mode absorbs the variance.
+
+Equation~\eqref{eq:ceiling} is the ceiling, not the entropy. It is what the
+covariance matrix alone implies, and Proposition~\ref{prop:maxent} says the
+truth sits below it.
+
+\subsection{Shape: the entropy deficit and what it is made of}
+
+Subtracting \eqref{eq:deficit} from \eqref{eq:ceiling} gives the paper's
+decomposition, three channels and a constant:
+\begin{equation}
+\label{eq:three}
+h(p_t) \;=\; \tfrac{N}{2}\log(2\pi e) \;+\; \underbrace{H^{vol}_t}_{\text{scale}} \;+\; \underbrace{H^{dep}_t}_{\text{dependence}} \;-\; \underbrace{\DD_t}_{\text{shape}}.
+\end{equation}
+
+The shape channel is skewness and fat tails, and the Edgeworth expansion says so
+explicitly: for a standardised variable with skewness $S$ and excess kurtosis
+$K$ near Gaussianity,
+\begin{equation}
+\label{eq:edgeworth}
+J \;\approx\; \frac{S^2}{12} + \frac{K^2}{48}.
+\end{equation}
+Equation~\eqref{eq:edgeworth} is the answer to the question ``where would an
+entropy jump be visible?'': in the third and fourth moments, additively, with an
+asymmetry channel and a tail channel. It is also the source of the sign problem
+that Section~\ref{sec:dynamics} has to solve, because $S$ enters squared --
+\emph{negentropy cannot tell a crash from a melt-up}. As an estimator
+\eqref{eq:edgeworth} is unusable on daily returns; Section~\ref{sec:estimators}
+documents how badly and what we use instead.
+
+\subsection{The structural index}
+
+The scale channel is a nuisance for our purposes: it dominates the level of
+\eqref{eq:three} numerically, it moves with volatility, and a change in units
+changes it. The other two channels are scale-free. Combining them, and using the
+exact chain rule
+$\KL{p}{\prod_i q_i} = \sum_i \KL{p_i}{q_i} + I(x)$ with $I$ the
+multi-information:
+
+\begin{definition}[Structural information index]
+\label{def:J}
+\begin{equation}
+\JJ_t \;\equiv\; \DD_t \;-\; H^{dep}_t \;=\; \KL{p_t}{\textstyle\prod_i q_{i,t}} \;\ge\; 0 ,
+\end{equation}
+the divergence of the conditional joint return distribution from a product of
+Gaussian marginals with the same scales.
+\end{definition}
+
+$\JJ$ is zero if and only if returns are independent and Gaussian; it rises when
+assets couple, when marginals fatten, or when they skew. It is measured in nats,
+it is invariant to the level of volatility, and it is additive across its two
+channels, so one can always ask how much of a move came from dependence and how
+much from shape. It is the state variable of Section~\ref{sec:dynamics}.
+
+\section{Information dynamics: one theorem, two postulates}
+\label{sec:dynamics}
+
+\subsection{Downward jumps are a theorem}
+
+\begin{proposition}[Information cannot raise expected entropy]
+\label{prop:conditioning}
+Let $X$ be the return vector and $Y$ a signal. Then
+$\mathbb{E}_Y\!\left[h(X\mid Y)\right] = h(X) - I(X;Y) \le h(X)$,
+with equality iff $X\perp Y$. Equivalently, in maximum-entropy terms: enlarging
+the set of constraints a distribution must satisfy shrinks the feasible set,
+so the attainable maximum entropy weakly falls.
+\end{proposition}
+
+Proposition~\ref{prop:conditioning} is standard \citep{cover2006} and it is the
+whole of the downward half of the postulated dynamics. It says three useful
+things. The fall is \emph{discontinuous}, because the signal arrives at a point
+in time. Its \emph{size in nats is the mutual information of the news} -- the
+jump magnitude is a measurement of how informative the event was, on a scale
+that does not depend on the asset, the currency or the units. And it is an
+\emph{average} statement: for a particular realisation $y$, $h(X\mid Y=y)$ can
+exceed $h(X)$, because a sufficiently surprising signal can leave the market
+more uncertain than before. We should therefore expect the jump component to be
+predominantly, not exclusively, one-sided -- which is what
+Section~\ref{sec:results} finds.
+
+\subsection{Two postulates}
+
+\begin{postulate}[Relaxation]
+\label{p:relax}
+Absent new information, the structural index decays toward a long-run level at a
+constant rate: $d\JJ_t = -\kappa\left(\JJ_t-\bar\JJ\right)dt + \eta\,dW_t$
+with $\kappa>0$.
+\end{postulate}
+
+The economics behind P\ref{p:relax} is that a constraint goes stale. News is
+priced in, disagreement re-forms, positioning disperses, and the cross-section
+recovers the freedom the shock removed. Nothing in information theory delivers
+this; it is the paper's substantive assumption, and $\kappa$ is the object to be
+estimated. It is not innocuous: an estimator with memory will manufacture a
+decay, so Section~\ref{sec:placebo} measures the decay a memoryless world would
+already produce.
+
+\begin{postulate}[Asymmetry of the constraint]
+\label{p:sign}
+The constraint information imposes is one-sided in the loss direction, so an
+entropy jump arrives with negative skewness of the market factor.
+\end{postulate}
+
+P\ref{p:sign} is needed because $\JJ$ is even in skewness and cannot supply a
+direction. Its content is a statement about liquidity supply: on bad news
+market-makers and value buyers withdraw on the sell side while the buy side is
+unaffected, so the same quantity of information produces a larger move down than
+up. It is separately testable (H5) and separately refutable.
+
+\subsection{The resulting dynamics}
+
+Proposition~\ref{prop:conditioning} with P\ref{p:relax} gives a non-Gaussian
+Ornstein--Uhlenbeck process with one-sided jumps, of the class
+\citet{bns2001} introduced for stochastic volatility:
+\begin{equation}
+\label{eq:ou}
+d\JJ_t \;=\; -\kappa\left(\JJ_t-\bar\JJ\right)dt \;+\; \eta\,dW_t \;+\; \int_{z>0} z\,N(dt,dz),
+\end{equation}
+with $N$ the arrival process of information events and $z$ the mutual
+information they carry. Read on the entropy itself rather than on $\JJ$, the
+sign flips: entropy falls in jumps and diffuses upward. The observable
+predictions are sharp, and they are what Section~\ref{sec:hypotheses} tests:
+the distribution of $\Delta\JJ$ is right-skewed; the large moves are up and the
+small moves are down; and after an up-jump the index decays with a half-life
+$\ln 2/\kappa$.
+
+\subsection{Why fat tails, correlation and jumps arrive together}
+
+The framework makes one prediction that neither a volatility model nor a
+correlation model makes on its own. An information event is, by construction, a
+\emph{common} constraint: the same news binds every asset in the cross-section.
+It therefore has to show up in both entropy-destroying channels at once -- in
+dependence, because a common constraint couples the assets, and in shape,
+because a constraint that binds asymmetrically fattens the loss tail of each
+marginal. In calm markets, by contrast, the two channels are driven by unrelated
+idiosyncratic mechanisms and need not comove at all.
+
+The testable form is a \emph{regime-dependent coupling}: the correlation between
+$-\Delta H^{dep}$ and $\Delta\DD$ should be near zero in calm markets and
+strongly positive in stress. This is H6, and it is where the paper's answer to
+``does the link between fat tails, correlation and entropy jumps need an extra
+postulate?'' lies: it does not. Given
+Proposition~\ref{prop:conditioning}, the coupling follows from the news being
+common. Only the \emph{sign} needs P\ref{p:sign}.
+
+\section{Hypotheses}
+\label{sec:hypotheses}
+
+\begin{description}
+\item[H1 (regime signature).] In stress regimes the dependence channel falls
+($H^{dep}\downarrow$), the shape channel rises ($\DD\uparrow$) and therefore the
+structural index rises ($\JJ\uparrow$).
+\item[H2 (ceiling compensation).] $\Delta H^{vol}$ and $\Delta H^{dep}$ are
+negatively associated, so the Gaussian ceiling $H^{cov}$ is more stable than its
+components. This is the hypothesis an earlier draft of this project supported on
+industry portfolios; it is retained here to be tested on individual firms.
+\item[H3 (jump asymmetry).] Changes in $\JJ$ are one-sided: at a common
+threshold, up-jumps outnumber and outweigh down-jumps, and $\Delta\JJ$ is
+right-skewed --- \emph{beyond what the same estimator produces on data with the
+same marginal distribution and no temporal structure}. The qualifier is the
+whole hypothesis; without it the statement is untestable.
+\item[H4 (relaxation).] $\JJ$ mean-reverts with $\kappa>0$ and a half-life
+materially longer than the memory of the estimator itself, judged against the
+same null.
+\item[H5 (skewness signature).] Up-jumps in $\JJ$ coincide with negative market
+skewness and with a rise in the asymmetry channel (postulate P\ref{p:sign}).
+\item[H6 (channel coupling).] The dependence and shape channels are weakly
+coupled in calm markets and strongly coupled under stress.
+\item[H7 (incremental value).] $\JJ$, or an indicator built from its jumps,
+improves out-of-sample forecasts of forward realised volatility, drawdown or
+worst loss relative to a volatility-only benchmark.
+\end{description}
+
+\section{Data and estimation}
+\label{sec:data}
+
+\subsection{Datasets}
+
+The primary panel is twenty S\&P~500 constituents at daily frequency,
+1990-01-03 to 2022-12-28 (8{,}312 return days; 8{,}061 rolling dates after a
+252-day window), obtained from the \texttt{sp500} dataset distributed with the
+\texttt{skfolio} package. These are \emph{individual firms}, not industry
+portfolios. That choice is deliberate: aggregating firms into industries imposes
+common-factor dependence mechanically, and an earlier draft of this project
+listed an individual-stock analysis as the robustness test it most needed. The
+span covers the 1997--98 Asian and LTCM episodes, the dot-com crash, the global
+financial crisis, the euro-area debt crisis, 2015--16, 2018, COVID-19 and the
+2022 selloff.
+
+The replication panel is \texttt{EuStockMarkets} \citep{bollerslev1996}: daily
+closing levels of the DAX, SMI, CAC and FTSE, 1{,}860 contemporaneous trading
+days from 1991 to 1998, $N=4$. It is a different market, a different decade and
+a different cross-sectional size, which is what makes it useful; it is far too
+small to carry a result on its own.
+
+A reader with access to the Kenneth French 49-industry daily file can reproduce
+every table on it via \texttt{config/default.yaml}; the industry results quoted
+below for comparison come from the earlier draft of this project.
+
+\subsection{Estimators}
+\label{sec:estimators}
+
+\paragraph{Covariance.} Two estimators run in parallel. The baseline is a
+252-day rolling window with Ledoit--Wolf shrinkage \citep{ledoit2004}, which
+reproduces the earlier draft's level statistics. The responsive estimator, used
+for everything involving jumps, is exponentially weighted with a 60-day
+half-life plus a $10\%$ shrinkage toward the diagonal. The choice matters: with
+a box-car window, an extreme observation \emph{leaving} the sample produces a
+discontinuity in the entropy series on a date when nothing happened, which would
+contaminate any jump test. Exponential weights remove that artefact by
+construction.
+
+\paragraph{Negentropy.} The shape channel is estimated marginally, asset by
+asset, using Hyvarinen's \citeyearpar{hyvarinen1998} bounded-contrast
+approximation, whose two terms split naturally into an odd (asymmetry) and an
+even (tail-weight) channel. The Edgeworth form \eqref{eq:edgeworth} is retained
+for interpretation only, because it fails badly as an estimator exactly where
+financial data live. Table~\ref{tab:negentropy} makes the failure explicit
+against a non-parametric reference.
+
+\begin{table}[htbp]
+\centering
+\small
+\begin{tabular}{@{}lrrrrr@{}}
+\toprule
+Distribution & $S$ & $K$ & $J$ (Vasicek) & $J$ Edgeworth & $J$ Hyvarinen \\
+\midrule
+Gaussian            & $-0.00$ & $ 0.03$ & 0.012 & 0.000 & 0.000 \\
+Uniform             & $ 0.00$ & $-1.20$ & 0.179 & 0.030 & 0.065 \\
+Skew-normal ($a=-4$)& $-0.80$ & $ 0.67$ & 0.074 & 0.062 & 0.049 \\
+Laplace             & $-0.01$ & $ 2.95$ & 0.087 & 0.181 & \textbf{0.087} \\
+Student $t(8)$      & $-0.02$ & $ 1.63$ & 0.030 & 0.056 & 0.016 \\
+Student $t(5)$      & $ 0.10$ & $ 5.13$ & 0.061 & 0.549 & \textbf{0.052} \\
+Student $t(4)$      & $-0.00$ & $18.34$ & 0.102 & \textbf{7.006} & \textbf{0.105} \\
+Lognormal ($s=0.5$) & $ 1.76$ & $ 5.78$ & 0.203 & 0.954 & 0.167 \\
+Exponential         & $ 2.00$ & $ 6.11$ & 0.424 & 1.112 & 0.268 \\
+\bottomrule
+\end{tabular}
+\caption{Marginal negentropy in nats, $n=200{,}000$ draws. The reference is the
+Vasicek spacing estimator of differential entropy. The Edgeworth form
+$S^2/12+K^2/48$ overstates a Student-$t(4)$ by a factor of 69; Hyvarinen's
+approximation is within $3\%$ of the truth there. Daily equity returns sit
+squarely in the $t(4)$--$t(5)$ region, which is why every deficit reported below
+uses the latter. Reproduced by \texttt{scripts/negentropy\_benchmark.py}.}
+\label{tab:negentropy}
+\end{table}
+
+Two limitations are worth stating rather than burying. Estimating the marginal
+deficits and adding the linear dependence term captures marginal non-Gaussianity
+and Gaussian-copula dependence but omits non-linear tail dependence; we measure
+that separately as an average pairwise co-exceedance rate. And Hyvarinen's
+approximation, while accurate in the leptokurtic region, understates the
+negentropy of a mildly fat-tailed $t(8)$ by about half, so the levels reported
+below are conservative.
+
+\paragraph{Jump detection.} Jumps in $\JJ$ are flagged when
+$|\Delta \JJ_t|$ exceeds four times a trailing local scale built from bipower
+variation \citep{bns2004}, which is consistent for the diffusive scale even in
+the presence of jumps and is lagged by one day so that the threshold judging a
+date never contains it.
+
+\paragraph{Inference.} A 252-day rolling window makes consecutive observations
+share 251 of 252 underlying return days. Every regime comparison therefore uses
+a circular block bootstrap with 252-day blocks under a null that breaks the
+value--label link while preserving both the persistence of the series and the
+clustering of the regime indicator. Predictive comparisons use expanding-window
+walk-forward estimation refitted annually, evaluation on non-overlapping dates,
+and a Diebold--Mariano test \citep{dm1995} on the squared-error differential.
+
+\subsection{The placebo null}
+\label{sec:placebo}
+
+The structural index is a non-negative, convex functional of estimated second,
+third and fourth moments. Estimation noise alone pushes it \emph{up} sharply and
+lets it decay \emph{smoothly} -- which is exactly the signature
+\eqref{eq:ou} predicts. A jump-asymmetry statistic or a relaxation half-life is
+therefore evidence only relative to that mechanical null, never relative to
+zero.
+
+We measure the null in two ways. First, a controlled simulation
+(\texttt{scripts/estimator\_memory.py}): i.i.d.\ Gaussian returns with constant
+covariance -- a world with no dynamics whatsoever -- run through the production
+pipeline. A single injected stress day produces a 2.13-nat spike in $\JJ$ that
+decays with a half-life of \textbf{35 trading days}, purely from the estimator's
+own memory; on clean data with no event at all, the four-sigma detector flags
+\textbf{37 up-jumps and zero down-jumps} and $\Delta\JJ$ has skewness
+$+2.9$. The mechanical asymmetry is real and it is large.
+
+Second, two calibrated nulls (\texttt{scripts/placebo\_null.py}) that resample
+the rows of the observed return matrix, preserving the cross-sectional
+dependence and the fat marginal tails of real data. The i.i.d.\ version
+destroys everything the postulates are about --- volatility clustering,
+time-varying dependence, the arrival dynamics of information. The block version
+resamples 21-day blocks, so short-run clustering survives and only the
+longer-horizon regime dynamics are destroyed. Twenty replications of each give
+the null distributions reported in Table~\ref{tab:placebo}. Both apply the
+identical volatility filter to define stress regimes, so the regime comparisons
+of H1, H2 and H6 are tested on the same footing as they are estimated.
+
+\section{Results}
+\label{sec:results}
+
+\subsection{What the calibrated null leaves standing}
+\label{sec:verdicts}
+
+Table~\ref{tab:placebo} is the paper's central empirical result and it is
+uncomfortable. Two nulls are built, both by resampling the observed return
+matrix and running the identical pipeline --- including the identical volatility
+filter that defines the stress regime --- twenty times each.
+
+\begin{description}
+\item[The i.i.d.\ null] resamples rows independently. It keeps the marginal fat
+tails and the cross-sectional dependence and destroys \emph{all} temporal
+structure. It asks: beyond the fact that turbulent windows contain large
+returns, does the measure detect anything?
+\item[The block null] resamples circular blocks of 21 days. It additionally
+keeps short-run volatility clustering and destroys only the longer-horizon
+regime dynamics. It asks the harder question: beyond clustering, does the
+measure detect information dynamics?
+\end{description}
+
+Neither null is nested in the other in a way that makes one uniformly
+conservative, and the two disagree often enough that reporting only one would be
+misleading. A statistic that clears both is evidence; a statistic that clears
+one and fails the other is not identified.
+
+\begin{table}[htbp]
+\centering
+\footnotesize
+\begin{tabular}{@{}llrrrrrl@{}}
+\toprule
+& & & \multicolumn{2}{c}{i.i.d.\ null} & \multicolumn{2}{c}{block-21 null} & \\
+\cmidrule(lr){4-5}\cmidrule(lr){6-7}
+& Statistic & Obs. & mean & 5--95\% & mean & 5--95\% & Verdict \\
+\midrule
+H1 & $H^{dep}$ gap        & $-1.72$ & $-0.29$ & $-0.46$--$-0.14$ & $-0.64$ & $-1.14$--$-0.37$ & \textbf{clears both} \\
+H1 & $\JJ$ gap            & $2.89$  & $2.32$  & $1.76$--$2.74$   & $2.21$  & $1.51$--$3.02$   & i.i.d.\ only \\
+H1 & $\DD$ gap            & $0.48$  & $1.35$  & $0.98$--$1.64$   & $0.74$  & $0.30$--$1.13$   & fails both \\
+\midrule
+H2 & $\mathrm{corr}(\Delta H^{vol}\!,\Delta H^{dep})$ & $0.10$ & $0.14$ & $-0.29$--$0.47$ & $0.16$ & $-0.23$--$0.57$ & fails both \\
+\midrule
+H3 & up-jumps             & $158$   & $147.7$ & $139$--$157$     & $129.5$ & $117$--$148$     & block only \\
+H3 & down-jumps           & $9$     & $3.2$   & $2$--$5$         & $4.2$   & $0$--$7$         & \emph{more} than both \\
+H3 & mean up-jump (nats)  & $0.62$  & $1.17$  & $0.97$--$1.32$   & $0.91$  & $0.73$--$1.06$   & below both \\
+H3 & skewness of $\Delta\JJ$ & $12.26$ & $14.55$ & $12.0$--$16.9$ & $13.80$ & $10.6$--$18.8$  & fails both \\
+H3 & up-jump var.\ share  & $0.838$ & $0.904$ & $0.87$--$0.92$   & $0.828$ & $0.77$--$0.87$   & fails both \\
+\midrule
+H4 & half-life (days)     & $120.1$ & $91.7$  & $82$--$111$      & $161.6$ & $122$--$200$     & \emph{opposite signs} \\
+H4 & $\mathrm{sd}(\JJ)$   & $2.03$  & $1.61$  & $1.38$--$1.92$   & $2.17$  & $1.45$--$2.78$   & i.i.d.\ only \\
+H4 & $\mathrm{range}(\JJ)$& $18.95$ & $10.49$ & $8.4$--$12.3$    & $14.23$ & $10.0$--$17.9$   & \textbf{clears both} \\
+\midrule
+H5 & $\Delta S_{mkt}$ gap & $-0.053$& $-0.025$& $-0.100$--$0.040$& $-0.001$& $-0.051$--$0.081$& edge (block) \\
+H5 & $\mathrm{corr}(\Delta\JJ,\Delta S_{mkt})$ & $-0.243$ & $-0.067$ & $-0.247$--$0.160$ & $-0.013$ & $-0.239$--$0.293$ & edge (both) \\
+\midrule
+H6 & coupling, stress     & $0.66$  & $0.90$  & $0.86$--$0.93$   & $0.76$  & $0.63$--$0.83$   & fails both \\
+H6 & coupling gap         & $0.617$ & $0.746$ & $0.64$--$0.88$   & $0.667$ & $0.54$--$0.75$   & fails both \\
+\midrule
+-- & $\mathrm{corr}(\JJ,\log\mathrm{vol})$ & $0.461$ & $0.414$ & $0.36$--$0.46$ & $0.265$ & $0.18$--$0.33$ & --- \\
+\bottomrule
+\end{tabular}
+\caption{Observed statistics against two calibrated nulls, twenty replications
+each. ``Clears both'' means the observed value lies outside all forty
+replications on the hypothesised side. Gaps are stress minus calm. Note that
+several statistics are \emph{larger} in a null than in the data.}
+\label{tab:placebo}
+\end{table}
+
+\paragraph{What clears both nulls.} Two things, and only two. The regime
+difference in the \emph{dependence} channel: $-1.72$ nats against $-0.29$ and
+$-0.64$, outside every one of forty replications. And the \emph{range} of the
+structural index: $18.95$ nats against $10.49$ and $14.23$. In words: what
+separates a crisis from a run of large returns is that the cross-section
+couples, and the structural index travels further in real markets than in any
+resampling of the same returns.
+
+\paragraph{What does not.} The jump asymmetry fails the i.i.d.\ null outright
+(H3). The channel coupling fails both, and fails in the direction that matters:
+the nulls couple \emph{more} strongly than the data (H6). The shape channel's
+regime signal is smaller than both nulls. The compensation hypothesis is lost in
+the nulls' own noise (H2).
+
+\paragraph{What is not identified.} The relaxation half-life is $120$ days
+against $92$ under the i.i.d.\ null and $162$ under the block null --- the data
+sit \emph{between} the two, and the sign of the comparison flips. Block
+resampling occasionally concatenates high-volatility blocks and manufactures long
+excursions; i.i.d.\ resampling manufactures short ones. The honest conclusion is
+that the level of the half-life is an artefact of whichever null one chooses to
+believe, and that P\ref{p:relax} is supported by the amplitude result rather than
+by the half-life. The skewness signature (H5) sits at the fifth percentile of
+both nulls with the right sign, which is suggestive and not more.
+
+\paragraph{One thing to note about $\JJ$ and volatility.} Under the block null
+the correlation between $\JJ$ and log volatility is $0.27$; in the data it is
+$0.46$. The structural index tracks volatility \emph{more} closely than a
+clustering-only process would, not less. Table~\ref{tab:vol} shows the shape
+channel is nevertheless orthogonal to volatility, so the extra tracking comes
+through the dependence channel --- correlation and volatility genuinely move
+together in a way clustering alone does not reproduce.
+
+\paragraph{And one thing none of this touches.} The stress-testing construction
+of Section~\ref{sec:stress} is a measurement convention plus a convex
+optimisation. It does not rest on any of H1--H7 being true.
+
+\subsection{H1: the regime signature}
+
+Table~\ref{tab:h1} compares the top decile of trailing 21-day market volatility
+(807 dates) against the remainder (7{,}254). The block-bootstrap $p$-values are
+one-line summaries of a null in which the regime label carries no information
+about the level.
+
+\begin{table}[htbp]
+\centering
+\small
+\begin{tabular}{@{}lrrrr@{}}
+\toprule
+Channel & Stress & Calm & Difference & $p$ \\
+\midrule
+$H^{vol}$ (scale)                & $-75.51$ & $-80.98$ & $+5.47$ & $<0.001$ \\
+$H^{dep}$ (dependence)           & $-5.12$  & $-3.40$  & $-1.72$ & $0.001$ \\
+$H^{cov}$ (Gaussian ceiling)     & $-80.63$ & $-84.37$ & $+3.75$ & $0.013$ \\
+$\DD$ (shape)                    & $1.96$   & $1.48$   & $+0.48$ & $0.033$ \\
+\quad asymmetry channel          & $0.121$  & $0.112$  & $+0.009$& $0.449$ \\
+\quad tail channel               & $1.837$  & $1.364$  & $+0.473$& $0.036$ \\
+$\JJ$ (structural index)         & $8.02$   & $5.13$   & $+2.89$ & $<0.001$ \\
+\midrule
+mean pairwise correlation        & $0.357$  & $0.251$  & $+0.106$& $0.001$ \\
+effective number of modes        & $10.50$  & $13.20$  & $-2.70$ & $0.001$ \\
+tail co-exceedance rate          & $0.305$  & $0.219$  & $+0.086$& $0.002$ \\
+market skewness                  & $-0.188$ & $-0.221$ & $+0.033$& $0.671$ \\
+market excess kurtosis           & $2.39$   & $1.67$   & $+0.72$ & $0.141$ \\
+\bottomrule
+\end{tabular}
+\caption{H1: channel means by regime, S\&P~500 individual stocks, 1990--2022.
+Entropies in nats.}
+\label{tab:h1}
+\end{table}
+
+Every sign is as H1 predicts. Dependence entropy falls by 1.72 nats, the
+effective number of independent risk modes drops from 13.2 to 10.5 out of 20,
+the shape deficit rises by 0.48 nats, and the structural index rises by 2.89
+nats -- a $56\%$ increase, the most significant difference in the table. The
+replication panel agrees on every sign, with $\JJ$ rising from 0.89 to 1.23 nats
+($p<0.001$).
+
+Against the calibrated null the hypothesis splits in two. The
+\emph{dependence} channel carries a real signal: the observed regime difference
+of $-1.72$ nats is roughly six times the null's $-0.29$ and lies outside all
+twenty replications. So does the difference in $\JJ$ itself, though by a much
+narrower margin ($2.89$ against a null mean of $2.32$). The \emph{shape}
+channel does not: its observed regime difference of $+0.48$ nats is smaller than
+the null's $+1.35$. Scrambled data, in which a ``stress'' window is by
+construction a window containing isolated extreme returns, fatten the measured
+marginals more than real stress episodes do. The rise in $\DD$ under stress is
+therefore not evidence of anything beyond the presence of large returns.
+
+The economically meaningful part of H1 is thus narrower than the raw table
+suggests, and it is the part one would want it to be: what distinguishes a real
+crisis from a run of large returns is that \emph{the cross-section couples} ---
+the effective number of independent risk drivers collapses --- not that the
+marginals fatten.
+
+Two entries in the table are as informative as the confirmations. The
+\emph{level} of market skewness barely moves between regimes ($p=0.67$): stress
+is not a state in which returns are persistently more left-skewed, a point we
+return to under H5, where the skewness signature appears at the moment of the
+jump rather than throughout the regime. And the Gaussian ceiling $H^{cov}$ rises
+in stress, by 3.75 nats -- because the scale channel dominates it. Differential
+entropy computed from a covariance matrix goes \emph{up} in a crisis. Any
+attempt to use the level of Gaussian entropy as a stress indicator therefore has
+the sign backwards; this is precisely why the paper works with the scale-free
+$\JJ$.
+
+\subsection{H2: compensation does not survive the move to individual firms}
+
+An earlier draft of this project, on the 49 Fama--French industry portfolios,
+found $\mathrm{corr}(\Delta H^{vol},\Delta H^{dep}) = -0.63$ over 1990--2026 and
+a $57\%$ reduction in the variance of $\Delta H^{cov}$ relative to an
+uncorrelated-components benchmark: marginal volatility and dependence offset,
+leaving the covariance determinant markedly more stable than either component.
+
+On individual stocks that result does not replicate.
+
+\begin{table}[htbp]
+\centering
+\small
+\begin{tabular}{@{}lrrr@{}}
+\toprule
+& All dates & Calm & Stress \\
+\midrule
+S\&P~500, 20 individual stocks & $+0.10$ & $+0.28$ & $-0.40$ \\
+\texttt{EuStockMarkets}, 4 indices & $-0.23$ & $-0.13$ & $-0.67$ \\
+FF49 industry portfolios (earlier draft) & $-0.63$ & $-0.74$ & $-0.40$ \\
+\bottomrule
+\end{tabular}
+\caption{H2: $\mathrm{corr}(\Delta H^{vol},\Delta H^{dep})$ by regime and
+dataset. Compensation is a stress phenomenon on individual firms and on a small
+index panel; the strong unconditional compensation reported for industry
+portfolios is not reproduced on firms.}
+\label{tab:h2}
+\end{table}
+
+Table~\ref{tab:h2} is a negative result for H2 as originally stated, and a
+useful one. Over the full sample the correlation on individual stocks is
+$+0.10$; in calm markets it is $+0.28$, the wrong sign entirely; only in stress
+does it turn to $-0.40$ and the variance of $\Delta H^{cov}$ fall $31\%$ below
+its benchmark. Two readings are available and the data here cannot separate
+them. Industry aggregation may manufacture compensation: an industry portfolio
+is already a diversified bundle, so a common shock raises its volatility and its
+correlation with other bundles in a mechanically linked way that individual
+firms do not share. Or cross-sectional size may drive it, since 48 industries
+offer 1{,}128 pairwise correlations into which risk can be reallocated against
+190 for twenty stocks. What can be said is that the unconditional compensation
+regularity should not be quoted as a general property of equity markets, and
+that an entropy diagnostic resting on it would not have transferred from
+industries to firms.
+
+The consequence for the rest of the paper is the one that motivated
+Section~\ref{sec:channels}: if the Gaussian ceiling is not reliably conserved and
+in any case rises with volatility, the informational content of a crisis has to
+be looked for somewhere other than $\det\Sigma$.
+
+\subsection{H3: the jump component is one-sided}
+
+Taken at face value the evidence looks overwhelming. On the primary panel the
+four-sigma detector finds 158 up-jumps against 9 down-jumps; up-jumps carry
+$83.8\%$ of the variance of $\Delta\JJ$ against $0.3\%$ for down-jumps; the
+skewness of $\Delta\JJ$ is $+12.3$. The replication panel agrees (27 against 5,
+skewness $+6.7$). Figure~\ref{fig:index} is visibly sawtoothed, with sharp rises
+at 1997--98, 2002, September 2008, 2011, 2015, 2018 and a spike to 21 nats in
+March 2020, each followed by a slow decay --- exactly the shape \eqref{eq:ou}
+predicts.
+
+\textbf{The asymmetry does not survive the i.i.d.\ null.} Under it the detector
+finds \emph{on average 148 up-jumps and 3 down-jumps}, with a skewness of
+$\Delta\JJ$ of $+14.6$ --- larger than the observed $+12.3$ --- and an up-jump
+variance share of $90\%$, again larger than observed. Every one-sidedness
+statistic in the data is at or inside that null.
+
+The block null is kinder on one count and not on the others. Preserving
+volatility clustering lowers the null up-jump count to $129.5$, so the observed
+$158$ does lie beyond it; but the skewness of $\Delta\JJ$ ($13.8$) and the
+up-jump variance share ($0.83$) still bracket the observed values, and the mean
+up-jump is still larger in the null than in the data. A count that clears one
+null while every measure of the \emph{shape} of the asymmetry fails both is not
+a result. H3 is \textbf{not supported}.
+
+The explanation is not subtle once stated. $\JJ$ is a non-negative convex
+functional of estimated second, third and fourth moments. A single fat-tailed
+observation entering an exponentially weighted estimator pushes it up sharply,
+and the estimator's own memory then lets it decay smoothly. Sawtooth dynamics
+are what a fat-tailed marginal distribution produces when passed through this
+measurement device, whether or not information arrives in lumps. The visual
+appeal of Figure~\ref{fig:index} is, to this extent, an artefact.
+
+Two things are worth salvaging. First, the null is a strong one and arguably too
+strong for the postulate as stated: because i.i.d.\ resampling preserves the fat
+tails, it preserves the \emph{lumps} of information and scrambles only their
+timing. What the test rejects is therefore not ``information arrives in
+discrete parcels'' but the weaker and more useful claim that \emph{the observed
+one-sidedness of $\Delta\JJ$ carries information about arrival dynamics beyond
+what the marginal distribution already implies}. It does not.
+
+Second, one comparison in Table~\ref{tab:placebo} runs the other way and is
+informative. The largest observed up-jump is $3.21$ nats against a null mean of
+$7.19$, and the mean up-jump is $0.62$ against $1.17$: real entropy jumps are
+about \emph{half} the size the scrambled world produces. The reason is that real
+extreme days arrive when the market is already agitated, so the local scale
+against which they are measured is already elevated; in the scrambled world they
+arrive out of a calm baseline and look correspondingly more surprising. That is
+volatility clustering showing up in the entropy measure --- evidence for
+temporal structure, obtained from a statistic constructed to test something
+else.
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=\linewidth]{figures/ff49_entropy_components.png}
-\caption{FF49, 1990--2026: rolling $H^{vol}$, $H^{dep}$ and $H^{cov}=H^{vol}+H^{dep}$ (252-day Ledoit--Wolf window, 48 industries). $H^{cov}$ visibly tracks a narrower band than either component alone, the graphical counterpart of the compensation statistic reported for H2.}
-\label{fig:ff49-components}
+\includegraphics[width=\linewidth]{figures/sp500_structural_index_jumps.png}
+\caption{The structural index $\JJ_t$ on twenty S\&P~500 stocks, 1990--2022,
+with detected jumps. Red points are entropy-destroying up-jumps, blue points
+down-jumps. The sawtooth --- sharp rise, slow decay --- is the qualitative
+content of \eqref{eq:ou}.}
+\label{fig:index}
 \end{figure}
-
-Figure~\ref{fig:ff49-components} is the visual form of the H2 statistic above. $H^{vol}$ (marginal volatility) and $H^{dep}$ (dependence/$\det R$) each range over a wide band and are visibly anti-phased: every episode where the $H^{vol}$ line rises sharply — 2008, March 2020, 2022 — has a simultaneous drop in $H^{dep}$. $H^{cov}$, their sum, occupies a visibly narrower vertical band than either input series across the whole 36-year sample, not only during the labelled crises; this is the qualitative content behind the $56.7\%$ variance reduction figure. The plot also makes clear what compensation is \emph{not}: $H^{cov}$ still trends and still has its own crisis-related excursions (most visibly in 2008 and 2020) — the hypothesis is that offsetting reduces the volatility of $\det\Sigma_t$ relative to its components, not that $\det\Sigma_t$ is constant.
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.8\linewidth]{figures/ff49_compensation_scatter.png}
-\caption{FF49: $\Delta H^{dep}_t$ against $\Delta H^{vol}_t$. The negative slope is the scatter-plot form of $\operatorname{corr}(\Delta H^{vol},\Delta H^{dep})=-0.63$.}
-\label{fig:ff49-scatter}
+\includegraphics[width=0.62\linewidth]{figures/sp500_jump_asymmetry.png}
+\caption{Distribution of standardised $\Delta\JJ_t$ (log counts). The right tail
+extends far beyond the left.}
+\label{fig:asym}
 \end{figure}
 
-The scatter in Figure~\ref{fig:ff49-scatter} adds two things the correlation coefficient alone does not show. First, an OLS fit through the cloud gives $\Delta H^{dep}_t \approx -0.395\,\Delta H^{vol}_t$ with $R^2=0.398$: on a day-to-day basis, a single linear factor (contemporaneous marginal-volatility change) accounts for about $40\%$ of the variation in the dependence-entropy change, which is a substantial share for a bivariate relationship built from two quantities computed independently from the same rolling window. Second, the cloud is visibly wider than a tight line — plenty of days sit far from the fitted slope — so the relationship is a statistical regularity, not a deterministic offset; $R^2=0.398$ is direct evidence against reading the compensation hypothesis as anything close to an identity, which is exactly the distinction the paper's framing (Section~\ref{sec:pilot} onward) insists on maintaining between an exact theorem and an empirical tendency.
+\subsection{H4: relaxation, against the estimator's own memory}
+
+Estimating \eqref{eq:ou} on non-jump dates only -- so the diffusive channel is
+identified without contamination -- gives $\kappa = 0.0058$ per day
+($t=-3.75$, HAC, $p=0.0002$), a half-life of \textbf{120 trading days} and a
+long-run level of 3.34 nats. The replication panel gives $\kappa=0.0050$, a
+half-life of 139 days, $p=0.023$.
+
+The half-life is where the two nulls disagree most sharply, and the disagreement
+is instructive. Under i.i.d.\ resampling the same estimator returns $91.7$ days
+on average, so the observed $120.1$ exceeds every replication. Under block
+resampling it returns $161.6$ days, so the observed value falls \emph{below}
+every replication. The data sit between the two nulls, and the sign of the
+comparison depends entirely on which one is asked. Block resampling occasionally
+concatenates high-volatility blocks and manufactures long excursions; i.i.d.\
+resampling breaks up the runs that real markets contain and manufactures short
+ones. The level of the half-life is therefore \textbf{not identified}, and the
+$120$-day figure should not be read as an absorption time --- the controlled
+Gaussian simulation of Section~\ref{sec:placebo}, where a single shock decays in
+$35$ days with no economics at all, sets the floor on how much of it is
+estimator memory.
+
+What does survive is the \emph{amplitude}. The range of $\JJ$ over the sample is
+$18.95$ nats against $10.49$ under the i.i.d.\ null and $14.23$ under the block
+null, outside all forty replications. Its standard deviation clears the i.i.d.\
+null ($2.03$ against $1.61$) though not the block null. Real markets move the
+structural index further than any resampling of the same returns does, which is
+the part of P\ref{p:relax} the data support: not a specific relaxation rate, but
+a state variable that genuinely travels.
+
+Figure~\ref{fig:event} adds a caveat the point estimate hides. Averaging the
+index around detected up-jumps shows that $\JJ$ begins rising about twenty days
+\emph{before} the flagged date, peaks about thirteen days after it, and returns
+to the pre-event level after roughly eighty days. Information events cluster:
+a flagged jump is typically not an isolated arrival but one of a sequence. The
+clean single-jump-then-decay picture of \eqref{eq:ou} is therefore an
+idealisation, and a Hawkes-type self-exciting arrival process would fit the
+observed clustering better than the Poisson arrivals assumed here.
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=\linewidth]{figures/ff49_logdet_covariance.png}
-\caption{FF49: $H^{cov}_t=\tfrac12\log\det\Sigma_t$. Visible drops coincide with the stress episodes listed above (2000--2002, 2008, 2020, 2022).}
-\label{fig:ff49-logdet}
+\includegraphics[width=0.62\linewidth]{figures/sp500_relaxation_event_study.png}
+\caption{Average path of $\JJ_t$ around detected up-jumps, demeaned at the event
+date, with the interquartile band. The rise before day zero is jump clustering.}
+\label{fig:event}
 \end{figure}
 
-Figure~\ref{fig:ff49-logdet} plots the level series whose stability is at stake: $H^{cov}_t$ ranges from a maximum of $-201.5$ (January 2001, a low-volatility, low-dependence regime) to a minimum of $-250.3$ (September 2014, a calm period with unusually tight cross-industry dependence — a reminder that a low $\det\Sigma_t$ is not synonymous with a crisis; it can also reflect a quiet market where industries move together for structural reasons). The largest \emph{single-day} drops in $\Delta H^{cov}$, however, do not line up cleanly with the crisis list; several of the sharpest one-day contractions (e.g.\ 2021-03, 2021-06, 2023-11) occur outside any labelled stress episode. This is a known artefact of fixed-length rolling windows: a jump can be produced by an extreme observation entering \emph{or} leaving the 252-day window rather than by anything happening in the market on that specific day. The regime-level statistics reported for H1--H2 (which average over hundreds of stress dates) are robust to this edge effect; a reading of individual daily spikes in $\Delta H^{cov}$ as dated "events" is not, and the paper does not rely on such a reading.
+\subsection{H5: the jumps carry a sign}
 
-\paragraph{Does compensation hold within, and not just across, crises?} Averaging over all 894 stress dates gives $\operatorname{corr}(\Delta H^{vol},\Delta H^{dep})=-0.40$, but this pools episodes that are, on inspection, quite different. Restricting to the 2008 window (August--December 2008) gives $\operatorname{corr}=-0.61$, close to the calm-regime value — compensation held up well through the global financial crisis. Restricting to the acute COVID crash (mid-February to mid-April 2020) gives $\operatorname{corr}=-0.02$: during those eight weeks $H^{vol}$ and $H^{dep}$ moved with no measurable offsetting relationship at all, and $H^{cov}$ barely net-changed over the window ($-237.46\to-237.51$) only because a sharp initial contraction was later reversed, not because the two components offset each other day by day. A plausible reading is that 2008 was a slow-building, rotating stress (credit and liquidity conditions deteriorating unevenly across industries, leaving room for cross-sectional reallocation) whereas COVID was a simultaneous, economy-wide shock that pushed volatility up and correlations up together with little room for the dependence structure to do anything but track volatility. This heterogeneity is itself a substantive, and previously unstated, qualification of H2: the compensation regularity is real on average but is not a universal law of stress episodes, and future work should treat "type of shock" (idiosyncratic/rotating vs.\ systemic/simultaneous) as a moderator rather than folding all stress dates into one bucket.
+Postulate P\ref{p:sign} predicts that up-jumps arrive with negative market
+skewness. On up-jump dates the change in market skewness averages $-0.052$
+against $+0.001$ elsewhere; the level of market skewness on those dates is
+$-0.394$ against $-0.214$; and $\mathrm{corr}(\Delta \JJ, \Delta S_{mkt}) =
+-0.24$. The asymmetry channel of the deficit rises on jump dates ($+0.010$
+against $-0.0002$), and so does tail co-exceedance ($+0.008$ against $-0.0002$,
+correlation with $\Delta\JJ$ of $+0.35$). The replication panel is stronger on
+this dimension: $\mathrm{corr}(\Delta\JJ,\Delta S_{mkt}) = -0.38$ and a mean
+skewness change of $-0.129$ on up-jump dates.
 
-\paragraph{What this contributes to the paper's argument.} The theoretical results (Sections 2--6) establish what maximum entropy proves; nothing in this section is needed to establish those. What Figures~\ref{fig:ff49-components}--\ref{fig:ff49-logdet} and the statistics around them add is evidence that the \emph{empirical} hypothesis motivating the covariance-entropy decomposition — that marginal-volatility and dependence entropy partially offset during stress — is not merely plausible but measurable and repeatable on 36 years of the intended dataset: a $56.7\%$ variance reduction, a significant negative slope with $R^2\approx0.4$, and directional agreement with an unrelated dataset (Section~\ref{sec:pilot}) are the kind of evidence a purely theoretical argument cannot supply. Equally, the COVID-vs-2008 asymmetry and the null out-of-sample result for H3 are evidence \emph{against} overstating the hypothesis: the paper's proof burden for H2 is "a real, partial, regime-dependent tendency," and that is what the data show — not more.
+The qualification already visible in Table~\ref{tab:h1} is that the skewness
+signature is an \emph{event} property, not a regime property: sorting dates by
+volatility finds no significant skewness difference, sorting by entropy jump
+does.
 
-\section{Robustness check on a second, independent real dataset}
-\label{sec:pilot}
-As a second, independent check — collected before the FF49 file was obtained, and left in place as a robustness diagnostic on an unrelated market and period — the identical pipeline (rolling Ledoit--Wolf covariance, entropy decomposition, stress regime, predictive regression) was run unmodified on the \texttt{EuStockMarkets} panel (Bollerslev and Ghysels), the daily closing levels of the DAX, SMI, CAC and FTSE indices, 1{,}860 contemporaneous trading days from 1991-01-02 through 1998-12-31, obtained from the public Rdatasets mirror (\texttt{config/pilot\_eu\_stock\_markets.yaml}). This is a $N=4$, single-window pilot, not a substitute for the $N=48$ result above.
+Against the nulls, H5 is suggestive and no more. Both produce the effect in the
+same direction without any economics, because the mechanical link is obvious
+once stated: a large negative return simultaneously raises $\JJ$ and lowers the
+measured skewness of the window it enters. The observed correlation of $-0.243$
+sits at roughly the fifth percentile of both nulls ($-0.067$ i.i.d., $-0.013$
+block), and the mean skewness change on jump dates does the same under the block
+null while sitting well inside the i.i.d.\ one. We report H5 as \emph{not
+established}: the direction is right, it is consistent across two nulls and two
+datasets (the replication panel gives $-0.38$), but a $p$-value of $0.05$ to
+$0.10$ on twenty replications is a reason to look further, not a finding.
+Postulate P\ref{p:sign} remains a postulate.
 
-With a 252-day rolling window and the top decile of trailing 21-day market volatility as the stress indicator (161 of 1{,}608 rolling dates, clustering around the September 1992 ERM crisis, the September 1993 ERM turbulence and the October--November 1997 Asian-crisis episode):
-\begin{itemize}
-\item \textbf{H1.} Stress dates show higher marginal volatility ($H^{vol}=-18.25$ vs.\ $-18.93$ in calm dates) and lower $\det R$, i.e.\ lower $H^{dep}$ ($-1.147$ vs.\ $-0.911$). Both effects point in the direction H1 predicts.
-\item \textbf{H2.} $\operatorname{corr}(\Delta H^{vol},\Delta H^{dep})=-0.23$ over the full sample: negative, as the compensation hypothesis requires. In the stress subsample, $\operatorname{sd}(\Delta H^{cov})=0.0210$ is below the value implied by treating the two components as uncorrelated, $\sqrt{\operatorname{sd}(\Delta H^{vol})^2+\operatorname{sd}(\Delta H^{dep})^2}=0.0315$, consistent with partial (not exact) compensation. In variance terms, $\operatorname{Var}(\Delta H^{cov})$ is $17.6\%$ below the uncorrelated-components benchmark over the full sample — the same effect as in FF49, but roughly a third the size ($17.6\%$ vs.\ $56.7\%$).
-\item \textbf{H3.} Adding $H^{dep}$ to $H^{vol}$ lowers 21-day-ahead realized-volatility test MSE only marginally (0.0849 vs.\ 0.0869) and the coefficient on $H^{dep}$ is not significant on the 70/30 split ($p=0.64$). With $N=4$ assets and one non-overlapping regime cycle, this pilot is underpowered for H3; it neither confirms nor refutes the predictive-value hypothesis.
-\end{itemize}
-Both datasets agree on the sign and qualitative shape of H1 and H2, on two disjoint asset universes, time spans and market structures; this cross-dataset agreement is itself modest additional evidence that the compensation effect is not an artifact of the FF49 construction. Neither dataset supports H3 out of sample under the simple linear specification used here.
+\subsection{H6: the channels lock together under stress}
+
+\begin{table}[htbp]
+\centering
+\small
+\begin{tabular}{@{}lrrr@{}}
+\toprule
+$\mathrm{corr}\left(-\Delta H^{dep},\,\cdot\,\right)$ & All & Calm & Stress \\
+\midrule
+S\&P~500: with $\Delta\DD$ (shape)      & $0.34$ & $0.04$ & $0.66$ \\
+S\&P~500: with the tail channel         & $0.34$ & $0.03$ & $0.68$ \\
+S\&P~500: with the asymmetry channel    & $0.06$ & $0.15$ & $-0.01$ \\
+\texttt{EuStock}: with $\Delta\DD$      & $0.23$ & $0.05$ & $0.54$ \\
+\bottomrule
+\end{tabular}
+\caption{H6: coupling between the two entropy-destroying channels, by regime.}
+\label{tab:h6}
+\end{table}
+
+In the data the pattern is striking. In calm markets the dependence channel and
+the tail channel are effectively unrelated ($0.03$); under stress their
+correlation is $0.68$. The replication panel reproduces it at $0.05$ against
+$0.54$, and the coupling is carried entirely by the \emph{tail} channel, with
+the asymmetry channel not participating.
+
+Both nulls reproduce it, and both reproduce it \emph{more strongly} than the
+data: stress coupling of $0.90$ (i.i.d.) and $0.76$ (block) against the observed
+$0.66$, and a stress-minus-calm gap of $0.75$ and $0.67$ against the observed
+$0.62$. The mechanism is mechanical rather than economic. A window containing a
+large common return has both a higher measured correlation and fatter measured
+marginals, so the two channels move together in any data in which large days
+exist, scrambled or not. H6 is \textbf{not supported} as evidence for a common
+binding constraint.
+
+Adding the block null does change the interpretation of the gap between null and
+data. Under i.i.d.\ resampling the null coupling is near-deterministic ($0.90$,
+s.d.\ $0.03$); preserving clustering brings it down to $0.76$ with s.d.\ $0.07$,
+closer to but still above the observed $0.66$. Real stress episodes couple the
+two channels \emph{less} tightly than either null. If that is not noise it points
+the opposite way from Section~\ref{sec:dynamics}: dependence and tail weight
+would have partly independent drivers in real crises, which a common-constraint
+story does not predict.
+
+Over the full sample the variance of $\Delta\JJ$ splits $40\%$ to dependence and
+$60\%$ to shape on individual stocks, and $58\%/42\%$ the other way on the
+four-index panel -- a reminder that the balance between the channels depends on
+the cross-section being measured.
+
+\subsection{H7: no incremental forecasting value}
+
+H7 is rejected. Under expanding-window walk-forward estimation with annual
+refitting, evaluation on non-overlapping dates and Diebold--Mariano tests, no
+entropy channel -- $\JJ$, the deficit $\DD$, the dependence term, the crisis
+indicator or the unhealed-share indicator -- significantly improves
+out-of-sample forecasts of 21-day-ahead realised volatility, drawdown or worst
+daily loss relative to a model using the scale channel alone. The largest
+improvement anywhere is $3.9\%$ in mean squared error, with $p=0.52$; several
+specifications are significantly \emph{worse}. In-sample coefficients are highly
+significant ($p<10^{-4}$ for $\JJ$ in every specification), which is exactly the
+pattern one expects from overlapping windows and is why the in-sample numbers
+are not reported as evidence.
+
+This replicates, on a different dataset and a much more demanding evaluation
+protocol, the negative predictive result the earlier draft of this project
+obtained. Two conclusions follow. The honest one is that the entropy channels
+are diagnostic rather than predictive: they describe the informational state of
+the market well and do not forecast its next move under a linear specification.
+The constructive one is that the value of the framework has to be sought where
+Section~\ref{sec:stress} looks for it -- in the internal consistency and the
+calibration of scenarios, not in point forecasts.
+
+\subsection{Is any of this just volatility?}
+
+\begin{table}[htbp]
+\centering
+\small
+\begin{tabular}{@{}lrr@{}}
+\toprule
+Correlation with log trailing volatility & S\&P~500 & \texttt{EuStock} \\
+\midrule
+$H^{vol}$ (scale channel)          & $+0.56$ & $+0.45$ \\
+$-H^{dep}$ (dependence channel)    & $+0.56$ & $+0.66$ \\
+$\DD$ (shape channel)              & $+0.09$ & $-0.06$ \\
+$\JJ$ (structural index)           & $+0.46$ & $+0.60$ \\
+tail co-exceedance                 & $+0.32$ & $+0.49$ \\
+\bottomrule
+\end{tabular}
+\caption{How much each channel shares with volatility.}
+\label{tab:vol}
+\end{table}
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=\linewidth]{figures/pilot_entropy_components.png}
-\caption{EuStockMarkets, 1991--1998: rolling $H^{vol}$, $H^{dep}$ and $H^{cov}$ (252-day window, $N=4$). Same qualitative pattern as Figure~\ref{fig:ff49-components} on an unrelated market and period.}
-\label{fig:pilot-components}
+\includegraphics[width=\linewidth]{figures/sp500_channels_vs_volatility.png}
+\caption{Each channel against log trailing volatility. The scale and dependence
+channels track it; the shape channel does not.}
+\label{fig:vol}
 \end{figure}
 
-Figure~\ref{fig:pilot-components} shows the same anti-phased pattern as Figure~\ref{fig:ff49-components} — $H^{vol}$ and $H^{dep}$ move in opposite directions around the 1992 ERM and 1997 Asian-crisis episodes, and $H^{cov}$ sits in a visibly tighter band than either component — but the effect is plainly less pronounced: the three lines are closer together throughout, consistent with the smaller ($17.6\%$ vs.\ $56.7\%$) variance reduction. With only $N=4$ indices there are only $4\times3/2=6$ pairwise correlations available to reallocate risk into, against $48\times47/2=1{,}128$ for FF49; if the compensation mechanism works by redistributing risk across a cross-section, a larger cross-section mechanically gives it more room to operate, which is a natural candidate explanation for the size gap and a testable prediction in itself (compensation strength should scale with $N$) that neither dataset alone can confirm.
+Table~\ref{tab:vol} and Figure~\ref{fig:vol} answer the obvious objection. The structural index shares
+about a fifth of its variance with volatility on individual stocks
+($r=0.46$), so it is related but far from redundant. The shape channel is
+\emph{orthogonal} to volatility ($r=0.09$ and $-0.06$): the fat-tailedness of
+the conditional distribution is a dimension of market state that a volatility
+measure does not see at all. Since the shape channel carries $60\%$ of the
+variance of $\Delta\JJ$ on the primary panel, most of what the index moves on is
+information volatility does not contain.
+
+\subsection{Replication}
+
+Figure~\ref{fig:eu} runs the identical pipeline on the four European indices,
+1991--1998. The panel is far too small to carry a result on its own --- four
+assets give six pairwise correlations against 190 for the primary panel, and one
+stress cycle --- but every sign reported above reproduces: $\JJ$ rises in stress
+($1.23$ vs $0.89$, $p<0.001$), the channels couple under stress and not in calm
+($0.54$ against $0.05$), the index relaxes with a half-life of 139 days, and
+up-jumps carry a mean market-skewness change of $-0.129$ against $+0.003$
+elsewhere.
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.8\linewidth]{figures/pilot_compensation_scatter.png}
-\caption{EuStockMarkets: $\Delta H^{dep}_t$ against $\Delta H^{vol}_t$, corresponding to $\operatorname{corr}(\Delta H^{vol},\Delta H^{dep})=-0.23$.}
-\label{fig:pilot-scatter}
+\includegraphics[width=\linewidth]{figures/eu_structural_index_jumps.png}
+\caption{Replication: the structural index on the DAX, SMI, CAC and FTSE,
+1991--1998. The visible rises coincide with the September 1992 and 1993 ERM
+episodes and the October--November 1997 Asian crisis.}
+\label{fig:eu}
 \end{figure}
 
-The corresponding OLS fit is $\Delta H^{dep}_t\approx-0.108\,\Delta H^{vol}_t$ with $R^2=0.052$ — a much shallower slope and a much noisier cloud than Figure~\ref{fig:ff49-scatter} ($R^2=0.398$), visually confirming that the linear relationship, while same-signed, explains an order of magnitude less of the day-to-day variation here than in FF49. Taken together with the variance-reduction gap, the two figures support a consistent story across both datasets: the sign of the compensation effect replicates out of sample (different market, different decade, different number of assets), but its \emph{strength} does not — it is markedly weaker on a 4-asset panel than on a 48-asset one. That combination (sign replicates, magnitude does not) is exactly what the paper can honestly claim as evidence: it argues for compensation being a genuine, cross-sectionally scalable phenomenon rather than a statistical fluke of one dataset, without overstating what a 4-asset, single-window pilot can establish on its own.
+\section{Stress testing by entropy}
+\label{sec:stress}
 
-\section{Non-Gaussianity and relative entropy}
-The Gaussian reference distribution is not assumed to equal the empirical distribution. Applying the identity from the proof of Proposition~1 date-by-date: if $q_t$ is the Gaussian distribution matching the empirical mean and covariance at $t$ and $p_t$ is the true empirical density, then
-\[
-D_{KL}(p_t\Vert q_t)=h(q_t)-h(p_t)\ge0.
-\]
-This suggests a useful robustness extension: separate covariance-volume dynamics ($h(q_t)$, driven entirely by $\Sigma_t$) from time variation in $D_{KL}(p_t\Vert q_t)$, i.e.\ from how far the conditional return distribution is from Gaussian at each date. A stress episode could in principle show compensation in $h(q_t)$ while simultaneously showing rising $D_{KL}(p_t\Vert q_t)$ (fatter tails, more skewness) that the covariance-only decomposition does not capture.
+\subsection{The construction}
 
-\section{Risk-neutral interpretation}
-The maximum-entropy argument is naturally a physical-measure statement. Under $\mathbb P$,
-\[
-\frac{dS_t}{S_t}=\mu_t^{\mathbb P}dt+\sigma_tdW_t^{\mathbb P}.
-\]
-Under $\mathbb Q$ for a non-dividend-paying asset,
-\[
-\frac{dS_t}{S_t}=r_tdt+\sigma_tdW_t^{\mathbb Q}.
-\]
-Maximum entropy under historical constraints does not by itself determine a risk-neutral pricing measure or option prices.
+\begin{definition}[Entropy-ball scenario]
+Given today's conditional distribution $p_0$ and a severity $\eta>0$, the
+scenario of severity $\eta$ for a risk functional $\rho$ is
+\begin{equation}
+\label{eq:ball}
+p^\star_\eta \;=\; \arg\max_{p\,:\,\KL{p}{p_0}\,\le\,\eta} \rho(p).
+\end{equation}
+\end{definition}
+
+For a linear portfolio and a Gaussian reference only the one-dimensional
+projection matters. With $m_0,s_0$ the portfolio mean and standard deviation and
+$u=(m-m_0)/s_0$, $v=s/s_0$, the constraint is
+$g(u,v)=\tfrac12\!\left(u^2+v^2-1-2\log v\right)\le\eta$, and for any $\rho$ of
+the form $-m+cs$ -- Gaussian VaR and expected shortfall are both of that form --
+the solution satisfies $u=-t$, $v-v^{-1}=ct$, with $t$ fixed by
+$g=\eta$. The special case $c=0$ is the sanity check worth remembering:
+
+\begin{equation}
+\text{a pure directional scenario of }\eta\text{ nats is exactly a }\sqrt{2\eta}\text{-sigma move.}
+\end{equation}
+
+One nat buys $1.41$ sigma. This is the exchange rate between information and
+risk, and it is the whole reason the construction is usable by a committee: the
+severity parameter is not an abstraction.
+
+\subsection{Calibrating the radius}
+
+The radius is not a modelling choice here. Define the $h$-step information flow
+\begin{equation}
+I^{(h)}_t \;=\; \KL{p_t}{p_{t-h}},
+\end{equation}
+the divergence between the market's conditional distribution today and $h$ days
+ago -- how much the market revised its own view. This is a proper divergence
+between two conditional return distributions, measured in the same unit as the
+scenario radius, which is what makes the calibration coherent. Quantiles of
+$I^{(21)}$, thinned to non-overlapping blocks, convert a return period into a
+radius.
+
+\begin{table}[htbp]
+\centering
+\small
+\begin{tabular}{@{}lrrrrrr@{}}
+\toprule
+Return period & 1y & 2y & 5y & 10y & 20y & 50y$^\dagger$ \\
+\midrule
+radius $\eta$ (nats)          & 1.04 & 1.63 & 2.34 & 3.88 & 7.54 & 13.16 \\
+directional shock ($\sigma$)  & $-0.58$ & $-0.72$ & $-0.84$ & $-1.06$ & $-1.45$ & $-1.88$ \\
+volatility multiplier         & 2.04 & 2.33 & 2.63 & 3.15 & 4.10 & 5.20 \\
+annualised portfolio vol      & $41\%$ & $47\%$ & $53\%$ & $63\%$ & $82\%$ & $105\%$ \\
+one-day ES$_{99}$             & $7.6\%$ & $8.8\%$ & $9.9\%$ & $12.0\%$ & $15.6\%$ & $19.9\%$ \\
+\bottomrule
+\end{tabular}
+\caption{Severity ladder for an equally weighted portfolio of the twenty stocks,
+calibrated on 383 non-overlapping 21-day information-flow observations. Today's
+baseline is $20\%$ annualised volatility and a one-day ES$_{99}$ of $3.4\%$.
+$^\dagger$ beyond the sample: the 50-year rung requires a quantile the 33-year
+history cannot resolve and is an extrapolation of the empirical tail.}
+\label{tab:ladder}
+\end{table}
+
+Two features of Table~\ref{tab:ladder} are worth reading carefully. The scenario
+spends its budget mostly on \emph{variance} rather than on direction -- at the
+one-year rung, a doubling of volatility and only a $0.58\sigma$ drift shock --
+because expected shortfall is more sensitive to scale than to location. And the
+radius is not comparable across universes: a KL divergence grows with the
+dimension of the return vector, so the four-index panel's ladder runs from
+$0.09$ to $0.21$ nats where the twenty-stock ladder runs from $1.04$ to $13.2$.
+A ladder must be calibrated for the portfolio it will be applied to.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\linewidth]{figures/sp500_stress_ladder.png}
+\caption{Left: stressed one-day ES$_{99}$ against scenario radius, with return
+periods marked. Right: what one nat buys, split between the volatility
+multiplier and the directional shock.}
+\label{fig:ladder}
+\end{figure}
+
+\subsection{What this adds over volatility, mean and skewness stress tests}
+
+The comparison is not rhetorical, because the same metric prices a classical
+scenario. Take today's conditional distribution and build the textbook bundle:
+marginal volatilities multiplied, all pairwise correlations forced to a single
+high number, a directional shock of several sigma. Its informational price is
+$\KL{p_{\text{classical}}}{p_0}$, computable in closed form.
+
+\begin{table}[htbp]
+\centering
+\small
+\begin{tabular}{@{}lrrr@{}}
+\toprule
+Classical bundle & mild & standard & severe \\
+\midrule
+volatility multiplier            & $1.5$ & $2.0$ & $3.0$ \\
+all correlations forced to       & $0.70$ & $0.90$ & $0.95$ \\
+directional shock                & $-2\sigma$ & $-3\sigma$ & $-4\sigma$ \\
+\midrule
+implied one-day ES$_{99}$        & $9.1\%$ & $13.7\%$ & $20.3\%$ \\
+informational price (nats)       & $6.80$ & $9.97$ & $20.19$ \\
+\quad of which: directional leg  & $2.00$ & $4.50$ & $8.00$ \\
+\quad \phantom{of which:} volatility leg & $4.39$ & $16.14$ & $58.03$ \\
+\quad \phantom{of which:} correlation leg & $2.43$ & $8.10$ & $13.50$ \\
+implied return period            & $\sim11$y & $>30$y & beyond sample \\
+\midrule
+\textbf{entropy scenario at the same ES$_{99}$} & $\mathbf{1.85}$ & $\mathbf{5.47}$ & $\mathbf{13.74}$ \\
+\quad its return period          & $2.3$y & $10.6$y & $\sim32$y \\
+\quad informational overpayment  & $73\%$ & $45\%$ & $32\%$ \\
+\bottomrule
+\end{tabular}
+\caption{Pricing textbook stress bundles against the market's own information
+flow, and comparing each with the entropy scenario that delivers the same
+expected shortfall. Reference rungs from Table~\ref{tab:ladder}: the twenty-year
+scenario is $7.54$ nats, the fifty-year scenario $13.16$; the worst single day in
+33 years prices at $9.03$.}
+\label{tab:classical}
+\end{table}
+
+Table~\ref{tab:classical} is the applied point of the paper, and it says
+something sharper than ``classical scenarios are too severe''. The standard
+bundle costs $9.97$ nats, which sits between the twenty-year and fifty-year
+rungs -- a defensible severity for a regulatory stress test, and one nobody at
+the table had any way of knowing they had chosen. What is not defensible is the
+efficiency. An entropy scenario delivers the same $13.7\%$ expected shortfall
+for $5.47$ nats. The committee believes it has specified something on the order
+of a thirty-year event; measured by the loss it actually produces, it has
+specified a ten-year event and paid thirty-year implausibility for it. The mild
+bundle is worse: it prices like an eleven-year event and delivers a
+\emph{two-year} loss, a $73\%$ overpayment.
+
+Where does the money go? The directional leg is cheap and exactly priced:
+shifting the portfolio mean by $k$ standard deviations costs $k^2/2$ nats, so
+$4.5$ for three sigma. The expensive leg is the uniform doubling of every
+marginal volatility, at $16.1$ nats on its own -- more than the entire bundle.
+Forcing all correlations to $0.9$ costs $8.1$ nats on its own.
+
+The legs are not additive, and the way they fail to be is instructive: the three
+sum to $28.7$ nats while the bundle costs $9.97$. Forcing correlations upward
+collapses the covariance onto a near-rank-one subspace that the reference
+distribution already grants generous variance -- the market mode -- so scaling
+that collapsed structure up is far cheaper than scaling the full-rank one
+($\mathrm{tr}(\Sigma_0^{-1}\Sigma_1)$ falls from $20$ to $10.5$ when the
+correlations are forced, before the volatility multiplier is applied at all).
+The volatility shock and the correlation shock partly pay for each other.
+
+This is exactly the structure H6 identified in the data. Real crises do not
+equalise correlations and inflate all volatilities independently; they load the
+cross-section onto one or two collective modes and fatten the tails of the
+marginals together. A framework that shocks volatility, correlation and shape as
+three separate scalars has no way to represent that, and no way to notice that
+its bundle is buying severity at a $30$--$70\%$ markup.
+
+Four concrete advantages over the volatility/mean/skewness approach follow.
+
+\begin{enumerate}
+\item \textbf{One severity scale, in a unit that does not depend on the asset.}
+Scenarios across desks, portfolios and asset classes become comparable, and
+severity is quoted with a return period rather than an adjective.
+\item \textbf{Internal consistency by construction.} The location and scale
+shocks come from one budget and one optimisation. A bundle that shocks
+volatility, correlation and skewness independently can, and often does, describe
+a distribution the market could not produce.
+\item \textbf{Existing scenarios can be audited rather than replaced.} Any
+regulatory template or committee judgement gets a price in nats and a return
+period, so the question of whether a stress test is calibrated becomes
+arithmetic. This is the practical payoff of Table~\ref{tab:classical}.
+\item \textbf{Reverse stress testing comes free.} Instead of asking what a
+scenario does, ask what the cheapest scenario producing a given loss is. On the
+primary panel, the empirical $99\%$ one-day loss ($3.2\%$) costs $1.5$ nats; the
+$99.9\%$ loss ($7.7\%$) costs $4.8$; the worst day in 33 years ($11.5\%$) costs
+$9.0$. Reading those against Table~\ref{tab:ladder} converts a loss the board
+cares about into a frequency.
+\end{enumerate}
+
+A caution on the fourth item. Reverse stress tests computed non-parametrically,
+by tilting the empirical sample, degenerate as the radius grows: at $9.0$ nats
+the tilted measure has an effective sample size of $1.0$, meaning it is the
+single worst day wearing a distribution's clothes. The implementation reports
+the effective sample size for exactly this reason, and the Gaussian-ball
+construction should be used whenever it falls below a few dozen.
+
+\subsection{Two indicators for monitoring}
+
+The jump/diffusion split yields two quantities that can be produced daily at
+negligible cost. The \emph{crisis} indicator is the standardised positive-jump
+component of $\JJ$: how much information arrived today, in units of the local
+diffusive scale, zero when no jump is detected. The \emph{unhealed} indicator is
+$\JJ_t$ as a share of its trailing maximum: how much of what already arrived has
+not yet relaxed away. Under P\ref{p:relax} it should decay with half-life
+$\ln2/\kappa$; a market where it stays near one for materially longer is one
+where the shock has not been absorbed. Neither improves a volatility forecast
+(H7); both describe a state that volatility does not.
+
+\subsection{Relevance to insurance solvency}
+
+Three points connect this to the insurance side of the wider project. First, an
+entropy-ball scenario is a natural ORSA object: it produces a full stressed
+distribution, not a shock vector, so it feeds a capital calculation directly and
+carries a defensible plausibility statement. Second, the leg decomposition
+of Table~\ref{tab:classical} bears on the Solvency~II Standard Formula, whose
+diversification credit is built from a fixed correlation matrix: shocking
+volatilities and correlations as separate scalars, which is the usual
+conservative adjustment, buys a given tail loss at a $30$--$70\%$ markup in
+plausibility terms, because it does not represent the way observed crises
+redistribute dependence -- onto a few collective modes rather than uniformly. Third, the coherence properties of
+entropic risk measures \citep{ahmadijavid2012,artzner1999} make the $\JJ$
+framework compatible in principle with internal-model capital requirements,
+though nothing here has been tested on liability portfolios and the
+short, low-frequency panels typical of insurance data would strain every
+estimator used above.
 
 \section{Limitations}
-The principal limitations are non-Gaussian tails, stochastic volatility, unstable dependence, finite-sample covariance error, and the unit dependence of differential entropy. In addition, industry portfolios are not independent firms and can mechanically display common-factor dependence. A future individual-stock analysis using CRSP/WRDS would therefore be a valuable robustness test. The pilot illustration in Section~\ref{sec:pilot} carries its own, additional limitations: $N=4$ is too small to give the covariance-determinant a meaningful ``volume'' interpretation, the sample spans a single 8-year window with essentially one stress cycle, and dates are reconstructed from a business-day count rather than the true exchange calendar.
+\label{sec:limits}
 
-The FF49 result in Section~\ref{sec:ff49results} has its own specific caveat for H3: the 252-day rolling window means consecutive $H^{vol}_t,H^{dep}_t$ observations share 251 of 252 underlying return days, and the 21-day forecast target is itself an overlapping sum. This heavy overlap inflates the effective persistence of every series involved and is only partially addressed by the HAC standard errors used here (21 lags); it most plausibly explains why $H^{dep}$ is highly significant in sample but does not reduce out-of-sample MSE. A more decisive H3 test would re-estimate at a non-overlapping frequency (e.g.\ one observation per 21-day block), use an expanding or rolling walk-forward evaluation rather than a single 70/30 split, and compare against a GARCH/DCC benchmark rather than only the volatility-only OLS baseline used here.
+\paragraph{The bridge is an argument, not a proof.} Section~\ref{sec:bridge-caveats}
+lists the failures of linear impact and sign exchangeability. Nothing empirical
+below depends on the volume clock, but the framing does.
 
-\section{References}
-\begin{itemize}
-\item Jaynes, E. T. (1957). Information Theory and Statistical Mechanics. \textit{Physical Review}, 106, 620--630.
-\item Black, F. and Scholes, M. (1973). The Pricing of Options and Corporate Liabilities. \textit{Journal of Political Economy}, 81(3), 637--654.
-\item Merton, R. C. (1973). Theory of Rational Option Pricing. \textit{Bell Journal of Economics and Management Science}, 4(1), 141--183.
-\item Engle, R. (2002). Dynamic Conditional Correlation: A Simple Class of Multivariate Generalized Autoregressive Conditional Heteroskedasticity Models. \textit{Journal of Business \& Economic Statistics}, 20(3), 339--350.
-\item Ledoit, O. and Wolf, M. (2004). A Well-Conditioned Estimator for Large-Dimensional Covariance Matrices. \textit{Journal of Multivariate Analysis}, 88(2), 365--411.
-\item Fama, E. F. and French, K. R. Kenneth French Data Library, 49 Industry Portfolios.
-\item Bollerslev, T. and Ghysels, E. (1996). Periodic Autoregressive Conditional Heteroscedasticity. \textit{Journal of Business \& Economic Statistics}, 14(2), 139--151. (Source of the EuStockMarkets pilot series, mirrored at https://github.com/vincentarelbundock/Rdatasets.)
-\end{itemize}
+\paragraph{The deficit is estimated marginally.} The shape channel captures
+marginal non-Gaussianity and Gaussian-copula dependence; non-linear tail
+dependence is measured separately rather than integrated, so $\JJ$ understates
+the true divergence, by an amount that is itself largest under stress.
+
+\paragraph{The mechanical null swallows one hypothesis whole.} The jump
+asymmetry is entirely reproduced by i.i.d.\ data with the same marginal
+distribution, and about two-thirds of the measured relaxation is estimator
+memory. The persistence and amplitude results survive; the asymmetry result does
+not, and no reader should quote the 158-against-9 figure without the null beside
+it. Twenty replications is also few: the null quantiles in
+Table~\ref{tab:placebo} are themselves estimated with visible error, and a
+hundred replications would sharpen the $p$-values that currently sit at $0.05$.
+
+\paragraph{Poisson arrivals are the wrong model.} Figure~\ref{fig:event} shows
+clustering that \eqref{eq:ou} does not accommodate. A Hawkes self-exciting
+arrival process is the obvious next specification.
+
+\paragraph{Twenty stocks is a small cross-section.} The dependence channel is
+sensitive to $N$, the balance between channels shifts with it, and the KL radius
+is not comparable across universes. Results should be reproduced on a wide
+cross-section --- the Kenneth French industry file, or CRSP --- before any
+number here is treated as a constant of nature.
+
+\paragraph{The severity ladder extrapolates in the tail.} With 383
+non-overlapping information-flow observations, rungs beyond about twenty years
+are interpolations of the empirical tail, not measurements. Fitting a
+generalised Pareto tail to $I^{(h)}$ would be the disciplined fix.
+
+\paragraph{Nothing here forecasts.} H7 is rejected on two datasets under a
+demanding protocol. Any use of these measures should be diagnostic.
 
 \section{Conclusion}
-The theoretical contribution is a clean separation between what maximum entropy proves and what financial modelling assumes. Fixed first and second moments imply a Gaussian maximum-entropy distribution. Temporal assumptions then produce Brownian diffusion, and exponentiation produces GBM. The empirical proposal is different: the covariance determinant may display partial compensation between marginal volatility and dependence-induced contraction. On the FF49 industry cross-section (Section~\ref{sec:ff49results}), that compensation is real and economically sizeable: stress raises marginal volatility and contracts $\det R$ (H1), and the two entropy components move in strongly offsetting directions, leaving covariance-volume markedly more stable than either alone (H2). A second, unrelated real dataset (Section~\ref{sec:pilot}) replicates the sign of both effects. Turning this stability into a standalone volatility forecast (H3) is not yet supported out of sample and is left as an open question, most likely requiring a genuine walk-forward evaluation and a non-overlapping estimation frequency rather than the simple 70/30 chronological split used here.
+
+The theoretical contribution is a chain that is explicit about which link is a
+theorem and which is an assumption. Maximum entropy under first and second
+moments gives a Gaussian; applied in volume time, with traded volume supplying
+the variance budget, it gives Gaussian returns conditional on volume, and
+temporal consistency turns those into a subordinated Brownian motion and a
+geometric Brownian price. Read backwards, non-Gaussian prices measure the
+distance from maximal ignorance, and that distance decomposes into a dependence
+channel and a shape channel whose sum, the structural index $\JJ$, is scale-free
+and non-negative. Conditioning cannot raise expected entropy, so entropy falls in
+jumps whose size is the mutual information of the news; that entropy recovers
+diffusively, and that the fall is one-sided in the loss direction, are the two
+postulates the paper adds and tests.
+
+The empirical picture is mostly a warning, and we think that is the useful
+result. Every descriptive claim the framework makes is visible in the data:
+stress raises the structural index, the index is sawtoothed, jumps are one-sided,
+they carry negative skewness, and the dependence and tail channels couple under
+stress. Passed through a null that keeps the marginal distribution and scrambles
+the timing, most of it disappears --- and several statistics come out
+\emph{larger} in the scrambled data than in the real data. A non-negative convex
+functional of estimated second, third and fourth moments rises sharply and
+decays smoothly whenever a fat-tailed observation enters the estimator, and it
+does so whether or not information arrives in parcels. That caution applies to
+any entropy-based crisis indicator, not only to this one, and we have not found
+it stated in the applied literature.
+
+Exactly two statistics clear both nulls, and they are the two worth keeping.
+What separates a crisis from a run of large returns is that the cross-section
+couples: the dependence channel's regime signal is between three and six times
+the nulls', while the shape channel's is smaller than both. And the structural
+index travels further over the sample than in any resampling of the same
+returns. The relaxation rate itself is not identified --- it sits between the
+two nulls --- so P1 is supported by amplitude rather than by a half-life. Two
+further results go against the paper's interest: the volatility--dependence
+compensation obtained on industry portfolios does not survive the move to
+individual firms, and no entropy channel forecasts anything out of sample.
+
+The applied contribution is what the framework buys once one stops asking it to
+forecast. Measuring scenario severity in nats gives stress testing a unit,
+calibrating the unit on the market's realised information flow gives it a
+frequency, and solving for the worst distribution within the resulting ball
+gives a scenario that cannot be internally inconsistent. Applied in reverse it
+prices the scenarios institutions already run: on this sample, a standard
+textbook bundle turns out to sit four times beyond the fifty-year rung, and its
+cost is dominated by the one leg -- forcing all correlations to a single number
+-- that observed crises do not actually take.
+
+\begin{thebibliography}{99}
+\small
+
+\bibitem[Ahmadi-Javid(2012)]{ahmadijavid2012} Ahmadi-Javid, A. (2012). Entropic Value-at-Risk: A New Coherent Risk Measure. \textit{Journal of Optimization Theory and Applications}, 155(3), 1105--1123.
+
+\bibitem[Almog \& Shmueli(2019)]{almog2019} Almog, A., \& Shmueli, E. (2019). Structural Entropy: Monitoring Correlation-Based Networks Over Time With Application To Financial Markets. \textit{Scientific Reports}, 9, 10832.
+
+\bibitem[Ané \& Geman(2000)]{ane2000} Ané, T., \& Geman, H. (2000). Order Flow, Transaction Clock, and Normality of Asset Returns. \textit{Journal of Finance}, 55(5), 2259--2284.
+
+\bibitem[Artzner et al.(1999)]{artzner1999} Artzner, P., Delbaen, F., Eber, J.-M., \& Heath, D. (1999). Coherent Measures of Risk. \textit{Mathematical Finance}, 9(3), 203--228.
+
+\bibitem[Barndorff-Nielsen \& Shephard(2001)]{bns2001} Barndorff-Nielsen, O. E., \& Shephard, N. (2001). Non-Gaussian Ornstein--Uhlenbeck-based Models and Some of Their Uses in Financial Economics. \textit{Journal of the Royal Statistical Society B}, 63(2), 167--241.
+
+\bibitem[Barndorff-Nielsen \& Shephard(2004)]{bns2004} Barndorff-Nielsen, O. E., \& Shephard, N. (2004). Power and Bipower Variation with Stochastic Volatility and Jumps. \textit{Journal of Financial Econometrics}, 2(1), 1--37.
+
+\bibitem[Bollerslev \& Ghysels(1996)]{bollerslev1996} Bollerslev, T., \& Ghysels, E. (1996). Periodic Autoregressive Conditional Heteroscedasticity. \textit{Journal of Business \& Economic Statistics}, 14(2), 139--151.
+
+\bibitem[Breuer \& Csiszár(2013)]{breuer2013} Breuer, T., \& Csiszár, I. (2013). Systematic Stress Tests with Entropic Plausibility Constraints. \textit{Journal of Banking \& Finance}, 37(5), 1552--1559.
+
+\bibitem[Caraiani(2018)]{caraiani2018} Caraiani, P. (2018). Modeling the Comovement of Entropy between Financial Markets. \textit{Entropy}, 20(6), 417.
+
+\bibitem[Clark(1973)]{clark1973} Clark, P. K. (1973). A Subordinated Stochastic Process Model with Finite Variance for Speculative Prices. \textit{Econometrica}, 41(1), 135--155.
+
+\bibitem[Cover \& Thomas(2006)]{cover2006} Cover, T. M., \& Thomas, J. A. (2006). \textit{Elements of Information Theory}, 2nd ed. Wiley.
+
+\bibitem[Csiszár(1975)]{csiszar1975} Csiszár, I. (1975). $I$-Divergence Geometry of Probability Distributions and Minimization Problems. \textit{Annals of Probability}, 3(1), 146--158.
+
+\bibitem[Diebold \& Mariano(1995)]{dm1995} Diebold, F. X., \& Mariano, R. S. (1995). Comparing Predictive Accuracy. \textit{Journal of Business \& Economic Statistics}, 13(3), 253--263.
+
+\bibitem[Engle(2002)]{engle2002} Engle, R. (2002). Dynamic Conditional Correlation. \textit{Journal of Business \& Economic Statistics}, 20(3), 339--350.
+
+\bibitem[Glasserman \& Xu(2014)]{glasserman2014} Glasserman, P., \& Xu, X. (2014). Robust Risk Measurement and Model Risk. \textit{Quantitative Finance}, 14(1), 29--58.
+
+\bibitem[Hyvärinen(1998)]{hyvarinen1998} Hyvärinen, A. (1998). New Approximations of Differential Entropy for Independent Component Analysis and Projection Pursuit. \textit{Advances in Neural Information Processing Systems}, 10, 273--279. (Constants as in Hyvärinen \& Oja, 2000, \textit{Neural Networks} 13, 411--430.)
+
+\bibitem[Jaynes(1957)]{jaynes1957} Jaynes, E. T. (1957). Information Theory and Statistical Mechanics. \textit{Physical Review}, 106, 620--630.
+
+\bibitem[Kyle(1985)]{kyle1985} Kyle, A. S. (1985). Continuous Auctions and Insider Trading. \textit{Econometrica}, 53(6), 1315--1335.
+
+\bibitem[Ledoit \& Wolf(2004)]{ledoit2004} Ledoit, O., \& Wolf, M. (2004). A Well-Conditioned Estimator for Large-Dimensional Covariance Matrices. \textit{Journal of Multivariate Analysis}, 88(2), 365--411.
+
+\bibitem[Mandelbrot \& Taylor(1967)]{mandelbrot1967} Mandelbrot, B., \& Taylor, H. M. (1967). On the Distribution of Stock Price Differences. \textit{Operations Research}, 15(6), 1057--1062.
+
+\bibitem[Monroe(1978)]{monroe1978} Monroe, I. (1978). Processes That Can Be Embedded in Brownian Motion. \textit{Annals of Probability}, 6(1), 42--56.
+
+\bibitem[Papla \& Siedlecki(2024)]{papla2024} Papla, D., \& Siedlecki, R. (2024). Entropy as a Tool for the Analysis of Stock Market Efficiency During Periods of Crisis. \textit{Entropy}, 26(12), 1079.
+
+\bibitem[Politis \& Romano(1994)]{politis1994} Politis, D. N., \& Romano, J. P. (1994). The Stationary Bootstrap. \textit{Journal of the American Statistical Association}, 89(428), 1303--1313.
+
+\bibitem[Tauchen \& Pitts(1983)]{tauchen1983} Tauchen, G. E., \& Pitts, M. (1983). The Price Variability--Volume Relationship on Speculative Markets. \textit{Econometrica}, 51(2), 485--505.
+
+\bibitem[Vasicek(1976)]{vasicek1976} Vasicek, O. (1976). A Test for Normality Based on Sample Entropy. \textit{Journal of the Royal Statistical Society B}, 38(1), 54--59.
+
+\bibitem[Zhou, Cai \& Tong(2013)]{zhou2013} Zhou, R., Cai, R., \& Tong, G. (2013). Applications of Entropy in Finance: A Review. \textit{Entropy}, 15(11), 4909--4931.
+
+\end{thebibliography}
 
 \end{document}

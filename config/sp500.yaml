@@ -1,0 +1,47 @@
+data:
+  type: sp500
+  source: package
+  package_dataset: skfolio.sp500
+  raw_file: data/raw/sp500_prices.csv
+  processed_csv: data/processed/sp500_daily_log_returns.csv
+
+sample:
+  start: 1990-01-02
+  end: 2022-12-28
+  window: 252
+  min_obs: 200
+  step: 1
+
+estimation:
+  covariance: ledoit_wolf        # baseline for the level decomposition
+  jump_covariance: ewma          # responsive estimator for the jump analysis
+  ewma_halflife: 60
+  ewma_shrinkage: 0.10
+  shape_estimator: hyvarinen     # 'moments' is interpretive only, see src/shape.py
+  exclude_other: false
+  return_unit: log_price_diff
+
+risk:
+  forecast_horizon: 21
+  realized_vol_annualization: 252
+
+regimes:
+  stress_quantile: 0.90
+  calm_quantile: 0.25
+
+jumps:
+  threshold: 4.0
+  scale_window: 250
+  event_pre: 30
+  event_post: 120
+
+stress_test:
+  horizon: 21
+  var_level: 0.99
+  return_periods: [1, 2, 5, 10, 20, 50]
+  classical_vol_multiplier: 2.0
+  classical_correlation: 0.90
+
+outputs:
+  tables: outputs/sp500/tables
+  figures: outputs/sp500/figures

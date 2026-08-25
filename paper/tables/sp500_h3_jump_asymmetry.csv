@@ -1,0 +1,2 @@
+,n_obs,n_jump_up,n_jump_down,jump_ratio_up_down,p_binomial_symmetry,intensity_up_per_year,intensity_down_per_year,mean_size_up,mean_size_down,max_size_up,max_size_down,skew_of_changes,share_of_variance_up,share_of_variance_down,column,threshold
+0,7999,158,9,17.555555555555557,2.5326891962067818e-36,4.977622202775347,0.28353544193024127,0.6216475618603958,-0.21923813405997006,3.2094760188885463,-0.349434320142219,12.259691221942399,0.837603535156155,0.003189128648090062,J,4.0
