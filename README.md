@@ -135,8 +135,13 @@ python -m scripts.placebo_null --config config/sp500.yaml --n-rep 20            
 python -m scripts.placebo_null --config config/sp500.yaml --n-rep 20 --block 21 # block null, ~1 h
 
 python -m scripts.build_paper_figures
-cd paper && pdflatex main.tex && pdflatex main.tex
+cd paper && latexmk -pdf main.tex        # English
+cd paper && latexmk -pdf main_fr.tex     # French (needs texlive-lang-french)
 ```
+
+The paper exists in two languages: `paper/main.tex` (English, authoritative) and
+`paper/main_fr.tex` (French translation). Both report the same numbers from the
+same run and share `paper/figures/`. Edits to results must be made in both.
 
 `config/default.yaml` targets the Kenneth French 49-industry daily file. The
 reader and config are kept intact so the whole analysis can be reproduced on it,
