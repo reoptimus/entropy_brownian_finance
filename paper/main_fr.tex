@@ -16,6 +16,7 @@
 
 \newcommand{\JJ}{\mathcal{J}}
 \newcommand{\DD}{\mathcal{D}}
+\newcommand{\Dun}{\mathcal{D}_1}
 \newcommand{\KL}[2]{D_{KL}\!\left(#1\,\Vert\,#2\right)}
 
 \title{Sauts d'entropie et relaxation de l'information sur les marchés financiers :\\
@@ -48,9 +49,10 @@ indice structurel sans échelle
 $\JJ_t = \DD_t - \tfrac12\log\det R_t = \KL{p_t}{\prod_i q_{i,t}} \ge 0$,
 qui mesure la distance du marché à la référence d'entropie maximale à
 volatilité inchangée. Puisque conditionner ne peut pas augmenter l'entropie
-espérée, un événement informationnel abaisse le plafond d'entropie d'exactement
-l'information mutuelle de la nouvelle : les sauts d'entropie vers le bas sont un
-théorème, non une hypothèse. Ce que nous postulons, c'est l'autre moitié : que
+espérée, un événement informationnel abaisse l'entropie conditionnelle
+\emph{moyenne} d'exactement l'information mutuelle de la nouvelle, et abaisse au
+sens large le plafond de maximum d'entropie à chaque réalisation : les sauts
+d'entropie vers le bas sont un théorème, non une hypothèse. Ce que nous postulons, c'est l'autre moitié : que
 l'entropie remonte par diffusion (P1), et que la contrainte imposée par la
 nouvelle est unilatérale, de sorte qu'un saut s'accompagne d'une asymétrie
 négative (P2). Ensemble, ces éléments donnent à $\JJ$ une dynamique de saut et
@@ -107,6 +109,46 @@ pas celle que l'intuition désigne.
 
 \tableofcontents
 
+\section*{Notations}
+\addcontentsline{toc}{section}{Notations}
+
+\noindent Deux mises en garde avant le tableau. D'abord, l'entropie
+différentielle $h$ \textbf{dépend des unités} : $h(aX)=h(X)+\log|a|$, de sorte
+qu'exprimer les rendements en pourcentages plutôt qu'en décimales déplace $h$
+d'une constante. Les divergences ($\KL{\cdot}{\cdot}$, $I$, $\DD$, $\JJ$) sont au
+contraire invariantes par tout changement de variable inversible : c'est la
+raison d'être de l'indice structurel. Ensuite, $K$ désigne un kurtosis et les
+lettres \og KL \fg{} sont les initiales de Kullback et Leibler ; il n'y a aucun
+lien entre les deux.
+
+\begin{center}
+\small
+\begin{tabular}{@{}lll@{}}
+\toprule
+Symbole & Signification & Nature \\
+\midrule
+$p_t$ & loi conditionnelle vraie des rendements en $t$ & --- \\
+$q_t$ & gaussienne de mêmes moyenne et covariance que $p_t$ & --- \\
+$h(\cdot)$ & entropie différentielle & nats, \emph{dépend des unités} \\
+$\KL{p}{q}$ & divergence de Kullback--Leibler & nats, invariante \\
+$\DD_t$ & déficit d'entropie $=\KL{p_t}{q_t}\ge0$ & nats, invariante \\
+$\Dun(z)$ & déficit d'un scalaire standardisé (néguentropie) & nats, invariante \\
+$H^{vol}_t$ & canal d'échelle $=\sum_i\log\sigma_{i,t}$ & nats, \emph{dépend des unités} \\
+$H^{dep}_t$ & canal de dépendance $=\tfrac12\log\det R_t\le0$ & nats, invariante \\
+$H^{cov}_t$ & $H^{vol}_t+H^{dep}_t$ ; la constante $\tfrac N2\log2\pi e$ est omise & nats \\
+$\JJ_t$ & indice structurel $=\DD_t-H^{dep}_t\ge0$ & nats, invariante \\
+$I(X;Y)$ & information mutuelle & nats, invariante \\
+$I^{(h)}_t$ & flux d'information $=\KL{p_t}{p_{t-h}}$ & nats \\
+$S$, $K$ & asymétrie, kurtosis excédentaire & sans dimension \\
+$\Sigma_t=D_tR_tD_t$ & covariance, écarts types, corrélation & --- \\
+$\lambda_k$, $N^{\text{eff}}_t$ & valeurs propres de $R_t$, nombre effectif de modes & $1\le N^{\text{eff}}\le N$ \\
+$\kappa$, $\sigma_\JJ$ & taux de relaxation et coefficient de diffusion de $\JJ$ & --- \\
+$\eta$ & rayon d'un scénario de stress & nats \\
+$N$ & nombre d'actifs & --- \\
+\bottomrule
+\end{tabular}
+\end{center}
+
 \section{Introduction}
 \label{sec:intro}
 
@@ -133,10 +175,15 @@ des semaines à en déduire les implications, et l'incertitude se reconstitue. S
 l'entropie est la bonne monnaie de l'incertitude, sa dynamique devrait être en
 dents de scie : chutes brutales, remontées lentes. Cette forme n'est pas un fait
 stylisé qu'il aurait fallu supposer --- la moitié en est un théorème. Conditionner
-ne peut pas augmenter l'entropie espérée, donc l'arrivée d'un signal abaisse le
-plafond d'entropie d'exactement l'information mutuelle entre le signal et le
-prix. La taille du saut, en nats, \emph{est} le contenu informationnel de la
-nouvelle. Ce qu'il faut postuler, c'est la remontée et la direction.
+ne peut pas augmenter l'entropie espérée, donc l'arrivée d'un signal abaisse
+l'entropie conditionnelle \emph{moyenne} d'exactement l'information mutuelle
+entre le signal et le prix (proposition~\ref{prop:conditioning}) ; et le plafond
+de maximum d'entropie, lui, baisse au sens large à chaque réalisation, sans
+qu'on puisse en général quantifier cette baisse (proposition~\ref{prop:constraint}).
+Les deux énoncés sont distincts et l'annexe~\ref{app:mi} les sépare
+explicitement, avec un exemple gaussien chiffré. La taille \emph{espérée} du
+saut, en nats, est le contenu informationnel de la nouvelle. Ce qu'il faut
+postuler, c'est la remontée et la direction.
 
 Trois contributions en découlent.
 
@@ -461,27 +508,71 @@ forme. C'est la variable d'état de la section~\ref{sec:dynamics}.
 
 \subsection{Les sauts vers le bas sont un théorème}
 
-\begin{proposition}[L'information ne peut pas augmenter l'entropie espérée]
+Deux énoncés distincts sous-tendent la moitié descendante de la dynamique
+postulée. Les confondre est une erreur facile, et les versions antérieures de ce
+travail la commettaient ; nous les séparons donc explicitement.
+
+Rappelons d'abord la définition de l'\emph{information mutuelle} entre le
+vecteur de rendements $X$ et un signal $Y$ :
+\begin{equation}
+\label{eq:mi}
+I(X;Y) \;=\; \KL{p_{XY}}{p_X\otimes p_Y}
+\;=\; \iint p(x,y)\,\log\frac{p(x,y)}{p(x)p(y)}\,dx\,dy ,
+\end{equation}
+c'est-à-dire la divergence de la loi jointe au produit des marginales : de
+combien la loi jointe s'écarte de l'indépendance. Elle est positive, symétrique,
+nulle si et seulement si $X\perp Y$, et --- contrairement à $h$ --- invariante par
+reparamétrisation inversible. Pour un couple gaussien scalaire de corrélation
+$\rho$, $I=-\tfrac12\log(1-\rho^2)$.
+
+\begin{proposition}[Chute de l'entropie conditionnelle moyenne]
 \label{prop:conditioning}
 Soit $X$ le vecteur de rendements et $Y$ un signal. Alors
-$\mathbb{E}_Y\!\left[h(X\mid Y)\right] = h(X) - I(X;Y) \le h(X)$,
-avec égalité si et seulement si $X\perp Y$. De façon équivalente, en termes de
-maximum d'entropie : élargir l'ensemble des contraintes qu'une distribution doit
-satisfaire réduit l'ensemble réalisable, donc le maximum d'entropie atteignable
-décroît au sens large.
+\begin{equation*}
+\mathbb{E}_Y\!\left[h(X\mid Y)\right] \;=\; h(X) - I(X;Y) \;\le\; h(X),
+\end{equation*}
+avec égalité si et seulement si $X\perp Y$.
 \end{proposition}
 
-La proposition~\ref{prop:conditioning} est classique \citep{cover2006} et
-constitue à elle seule la moitié descendante de la dynamique postulée. Elle dit
-trois choses utiles. La chute est \emph{discontinue}, car le signal arrive en un
-point du temps. Sa \emph{taille en nats est l'information mutuelle de la
-nouvelle} --- l'amplitude du saut mesure à quel point l'événement était
-informatif, sur une échelle qui ne dépend ni de l'actif, ni de la devise, ni des
-unités. Et c'est un énoncé \emph{en moyenne} : pour une réalisation particulière
-$y$, $h(X\mid Y=y)$ peut excéder $h(X)$, car un signal suffisamment surprenant
-peut laisser le marché plus incertain qu'avant. Il faut donc s'attendre à une
-composante de saut principalement, et non exclusivement, unilatérale --- ce que
-trouve la section~\ref{sec:results}.
+\begin{proposition}[Monotonie du plafond sous contrainte]
+\label{prop:constraint}
+Soient $\mathcal{C}\subseteq\mathcal{C}'$ deux ensembles de contraintes et
+$\mathcal{Q}(\cdot)$ l'ensemble des lois qui les satisfont. Alors
+$\mathcal{Q}(\mathcal{C}')\subseteq\mathcal{Q}(\mathcal{C})$ et donc
+\begin{equation*}
+\sup_{p\,\in\,\mathcal{Q}(\mathcal{C}')} h(p) \;\le\; \sup_{p\,\in\,\mathcal{Q}(\mathcal{C})} h(p).
+\end{equation*}
+\end{proposition}
+
+Les deux résultats sont classiques \citep{cover2006} et ne sont pas
+équivalents ; la démonstration détaillée et un exemple gaussien chiffré figurent
+en annexe~\ref{app:mi}. Leurs portées diffèrent sur deux axes.
+
+La proposition~\ref{prop:conditioning} \emph{quantifie} la baisse --- exactement
+$I(X;Y)$ nats --- mais seulement \emph{en moyenne} sur les réalisations du
+signal. Pour un $y$ particulier, $h(X\mid Y=y)$ peut excéder $h(X)$ : un signal
+suffisamment déroutant laisse le marché plus incertain qu'avant. Il faut donc
+s'attendre à une composante de saut principalement, et non exclusivement,
+unilatérale --- ce que trouve la section~\ref{sec:results}.
+
+La proposition~\ref{prop:constraint} vaut au contraire \emph{pour chaque
+réalisation}, mais porte sur le \emph{plafond} de maximum d'entropie et non sur
+l'entropie réelle, et elle ne quantifie rien : elle dit que le plafond ne peut
+pas monter, pas de combien il descend.
+
+Ce que les deux disent ensemble, et qui motive tout ce qui suit : la chute est
+\emph{discontinue}, car le signal arrive en un point du temps, et sa taille
+espérée en nats est le contenu informationnel de la nouvelle --- une amplitude
+mesurée sur une échelle qui ne dépend ni de l'actif, ni de la devise, ni des
+unités.
+
+\paragraph{Une réserve d'honnêteté.} Aucune de ces deux propositions n'est
+utilisée pour calculer quoi que ce soit dans la partie empirique. Nous mesurons
+$\JJ$, et non $h(X)-\mathbb{E}_Y[h(X\mid Y)]$ : estimer une entropie
+différentielle en dimension~20 sur une fenêtre de 252~jours est hors de portée
+(annexe~\ref{app:units}). Le lien entre le théorème et les statistiques
+rapportées plus loin est un raisonnement, pas une identité estimée, et le
+lecteur doit le tenir pour tel.
 
 \subsection{Deux postulats}
 
@@ -489,7 +580,7 @@ trouve la section~\ref{sec:results}.
 \label{p:relax}
 En l'absence d'information nouvelle, l'indice structurel décroît vers un niveau
 de long terme à taux constant :
-$d\JJ_t = -\kappa\left(\JJ_t-\bar\JJ\right)dt + \eta\,dW_t$ avec $\kappa>0$.
+$d\JJ_t = -\kappa\left(\JJ_t-\bar\JJ\right)dt + \sigma_\JJ\,dW_t$ avec $\kappa>0$.
 \end{postulate}
 
 L'économie derrière P\ref{p:relax} est qu'une contrainte s'évente. La nouvelle
@@ -522,10 +613,14 @@ d'Ornstein--Uhlenbeck non gaussien à sauts unilatéraux, de la classe introduit
 par \citet{bns2001} pour la volatilité stochastique :
 \begin{equation}
 \label{eq:ou}
-d\JJ_t \;=\; -\kappa\left(\JJ_t-\bar\JJ\right)dt \;+\; \eta\,dW_t \;+\; \int_{z>0} z\,N(dt,dz),
+d\JJ_t \;=\; -\kappa\left(\JJ_t-\bar\JJ\right)dt \;+\; \sigma_\JJ\,dW_t \;+\; \int_{z>0} z\,\mathcal{P}(dt,dz),
 \end{equation}
-avec $N$ le processus d'arrivée des événements informationnels et $z$
-l'information mutuelle qu'ils portent. Lu sur l'entropie elle-même plutôt que sur
+avec $\mathcal{P}$ la mesure aléatoire de Poisson décrivant l'arrivée des
+événements informationnels et $z$ l'information mutuelle qu'ils portent. Le
+coefficient de diffusion est noté $\sigma_\JJ$ et non $\eta$, cette dernière
+lettre étant réservée au rayon des scénarios de stress
+(section~\ref{sec:stress}) ; la mesure de saut est notée $\mathcal{P}$ et non
+$N$, ce dernier symbole désignant le nombre d'actifs. Lu sur l'entropie elle-même plutôt que sur
 $\JJ$, le signe s'inverse : l'entropie chute par sauts et remonte par diffusion.
 Les prédictions observables sont nettes, et ce sont elles que teste la
 section~\ref{sec:hypotheses} : la loi de $\Delta\JJ$ est asymétrique à droite ;
@@ -1535,7 +1630,7 @@ l'envers, des prix non gaussiens mesurent la distance à l'ignorance maximale, e
 cette distance se décompose en un canal de dépendance et un canal de forme dont
 la somme, l'indice structurel $\JJ$, est sans échelle et positive. Conditionner
 ne peut pas augmenter l'entropie espérée, donc l'entropie chute par sauts dont la
-taille est l'information mutuelle de la nouvelle ; que cette entropie se rétablisse
+taille \emph{espérée} est l'information mutuelle de la nouvelle ; que cette entropie se rétablisse
 par diffusion, et que la chute soit unilatérale dans la direction des pertes,
 sont les deux postulats que l'article ajoute et teste.
 
@@ -1577,6 +1672,254 @@ les échelons vicennal et cinquantennal mais achète sa perte de queue avec une
 marge de $45\%$, parce qu'il dépense l'essentiel de son budget à gonfler
 uniformément chaque volatilité marginale --- ce qui n'est pas la voie que
 prennent les crises observées.
+
+
+\appendix
+
+\section{Unités, invariance, et ce qui est calculable}
+\label{app:units}
+
+\paragraph{Le nat.} L'entropie $H=-\sum_i p_i\log p_i$ n'est définie qu'une fois
+la base du logarithme choisie, et ce choix \emph{est} le choix de l'unité. Avec
+$\log_2$ on obtient des bits (shannons), avec $\log_{10}$ des dits, et avec le
+logarithme népérien des \emph{nats}. Un nat est l'information apportée par une
+observation qui divise l'espace des possibles par $e\approx2{,}718$, là où un bit
+le divise par deux. La conversion est
+$1~\text{nat}=1/\log 2\approx1{,}4427$~bit. Tout ce papier emploie le logarithme
+népérien : entropies, déficits, divergences, rayons de scénario et indice
+structurel sont en nats.
+
+Trois lectures opérationnelles, de la plus utile à la plus abstraite. D'abord le
+taux de change établi en section~\ref{sec:stress} : un scénario purement
+directionnel de $\eta$ nats est un mouvement de $\sqrt{2\eta}$ sigmas, donc
+$k$~sigmas coûtent $k^2/2$ nats. Ensuite le codage : $\KL{p}{q}$ nats est
+l'excès de longueur de code attendu lorsqu'on encode des données de loi $p$ avec
+un code optimal pour $q$. Enfin le test d'hypothèse : une divergence de un nat
+par observation signifie que le rapport de vraisemblance en faveur de $p$ croît
+en moyenne d'un facteur $e$ à chaque observation.
+
+\paragraph{$h$ dépend des unités, les divergences non.} L'entropie différentielle
+d'une variable continue vérifie, pour toute transformation affine inversible,
+\begin{equation}
+\label{eq:h-scaling}
+h(aX+b) \;=\; h(X) + \log|a| ,
+\qquad\text{et en dimension } N,\quad h(AX+b)=h(X)+\log|\det A| .
+\end{equation}
+Exprimer les rendements en pourcentages plutôt qu'en décimales ajoute donc
+$N\log 100$ à $h$ : le \emph{niveau} de $h$, et par conséquent celui de
+$H^{vol}$ et de $H^{cov}$, n'a aucune valeur absolue interprétable. En revanche
+$\KL{p}{q}$, $I(X;Y)$, $\DD$ et $\JJ$ sont invariants par tout changement de
+variable inversible, les jacobiens se simplifiant entre numérateur et
+dénominateur du logarithme. \emph{Un chiffre en nats n'est comparable d'un jeu
+de données à l'autre que si c'est une divergence.} C'est la raison structurelle
+pour laquelle l'article construit un indice sans échelle.
+
+\paragraph{Comment calcule-t-on $h(X)$ ?} Dans le cas gaussien, en forme fermée
+(annexe~\ref{app:gauss}). Dans le cas général, on ne le peut pas sans connaître
+$p$. Des estimateurs non paramétriques existent --- espacements de
+\citet{vasicek1976}, plus proches voisins de Kozachenko--Leonenko, méthodes à
+noyau --- mais tous se dégradent rapidement au-delà de trois ou quatre
+dimensions. Estimer une entropie différentielle en dimension~20 sur une fenêtre
+de 252~jours est hors de portée.
+
+L'article ne calcule donc \emph{jamais} $h(p)$. Il calcule $h(q)$ en forme
+fermée à partir de $\widehat\Sigma$, et le déficit $\DD$ par une approximation
+de la \emph{différence} d'entropies marginales. Une différence d'entropies est
+sans dimension et estimable ; une entropie différentielle nue ne l'est pas.
+Toute l'architecture --- décomposer plutôt qu'estimer directement --- découle de
+cette contrainte.
+
+\section{Entropie gaussienne : démonstration de l'équation~\eqref{eq:ceiling}}
+\label{app:gauss}
+
+\begin{proof}[Étape A : entropie d'une gaussienne multivariée]
+Pour $q=\mathcal N(\mu,\Sigma)$ sur $\mathbb{R}^N$,
+\[
+\log q(x) = -\tfrac12\left[N\log 2\pi + \log\det\Sigma + (x-\mu)'\Sigma^{-1}(x-\mu)\right],
+\]
+donc
+\[
+h(q) = -\mathbb{E}_q[\log q] = \tfrac12 N\log 2\pi + \tfrac12\log\det\Sigma
++ \tfrac12\,\mathbb{E}\!\left[(X-\mu)'\Sigma^{-1}(X-\mu)\right].
+\]
+La dernière espérance se calcule par l'astuce de la trace : un scalaire égale sa
+trace, et la trace est cyclique, d'où
+\[
+\mathbb{E}\!\left[(X-\mu)'\Sigma^{-1}(X-\mu)\right]
+= \mathbb{E}\!\left[\operatorname{tr}\!\left(\Sigma^{-1}(X-\mu)(X-\mu)'\right)\right]
+= \operatorname{tr}(\Sigma^{-1}\Sigma) = \operatorname{tr}(I_N) = N .
+\]
+En regroupant, $h(q)=\tfrac12\left[N\log2\pi+\log\det\Sigma+N\right]
+=\tfrac12\log\!\left((2\pi e)^N\det\Sigma\right)$.
+\end{proof}
+
+\begin{proof}[Étape B : factorisation du déterminant]
+Avec $\Sigma=DRD$, $D=\operatorname{diag}(\sigma_1,\dots,\sigma_N)$ et $R$ la
+matrice de corrélation, la multiplicativité du déterminant donne
+$\det\Sigma=\det(D)\det(R)\det(D)=\left(\prod_i\sigma_i\right)^2\det R$.
+\end{proof}
+
+\begin{proof}[Étape C : substitution]
+$\tfrac12\log\det\Sigma
+=\tfrac12\log\!\left[\left(\prod_i\sigma_i\right)^2\det R\right]
+=\sum_i\log\sigma_i+\tfrac12\log\det R$, d'où
+$h(q)=\tfrac N2\log(2\pi e)+\sum_i\log\sigma_i+\tfrac12\log\det R$, qui est
+l'équation~\eqref{eq:ceiling}.
+\end{proof}
+
+\paragraph{Signe du canal de dépendance.} L'inégalité de Hadamard donne
+$\det R\le\prod_i R_{ii}=1$ pour une matrice semi-définie positive. Une
+démonstration plus parlante passe par le spectre : $\det R=\prod_k\lambda_k$
+avec $\sum_k\lambda_k=\operatorname{tr}R=N$, et l'inégalité arithmético-géométrique
+donne $\prod_k\lambda_k\le\left(\sum_k\lambda_k/N\right)^N=1$, avec égalité si
+et seulement si toutes les valeurs propres valent~1, c'est-à-dire $R=I$. Donc
+$H^{dep}\le0$ : \emph{la corrélation détruit toujours de l'entropie}.
+
+Dans le cas bivarié, $\det R=1-\rho^2$ et $H^{dep}=\tfrac12\log(1-\rho^2)$ ; pour
+$\rho=0{,}9$ cela vaut $-0{,}83$~nat. Remarquons que $-H^{dep}$ est alors
+exactement l'information mutuelle entre les deux actifs : la corrélation est de
+l'information partagée, donc de l'entropie détruite.
+
+\paragraph{Note de lecture sur les tableaux.} Les colonnes $H^{cov}$ des
+tableaux~\ref{tab:h1} et suivants rapportent $H^{vol}+H^{dep}$ et
+\textbf{omettent la constante} $\tfrac N2\log(2\pi e)$, qui vaut $28{,}38$~nats
+pour $N=20$. Ce décalage constant est sans conséquence puisque seules les
+différences entre régimes et les variations temporelles sont interprétées, mais
+il explique que les niveaux rapportés soient négatifs.
+
+\section{Le déficit d'entropie : pourquoi $\DD=h(q)-h(p)$}
+\label{app:deficit}
+
+La divergence de Kullback--Leibler entre une loi $p$ et une loi de référence $q$
+est $\KL{p}{q}=\int p\log(p/q)$, positive et nulle si et seulement si $p=q$
+presque partout. Elle n'est ni symétrique ni munie d'une inégalité triangulaire :
+ce n'est pas une distance, d'où le terme de divergence. Les lettres \og KL \fg{}
+sont les initiales de Kullback et Leibler.
+
+\begin{proposition}
+\label{prop:deficit}
+Si $q=\mathcal N(\mu,\Sigma)$ a \emph{les deux premiers moments de $p$}, alors
+$\KL{p}{q}=h(q)-h(p)$.
+\end{proposition}
+
+\begin{proof}
+$\KL{p}{q}=-h(p)-\mathbb{E}_p[\log q(X)]$. Or $\log q$ est exactement
+quadratique en $x$, donc son espérance ne dépend que de la moyenne et de la
+covariance de la loi sous laquelle on l'évalue. Comme $p$ et $q$ partagent ces
+deux moments,
+$\mathbb{E}_p\!\left[(X-\mu)'\Sigma^{-1}(X-\mu)\right]=\operatorname{tr}(\Sigma^{-1}\Sigma)=N
+=\mathbb{E}_q[\cdot]$, d'où $\mathbb{E}_p[\log q]=\mathbb{E}_q[\log q]=-h(q)$ et
+donc $\KL{p}{q}=h(q)-h(p)$.
+\end{proof}
+
+L'hypothèse de coïncidence des moments est essentielle : sans elle l'identité
+tombe. C'est tout le contenu de la proposition~\ref{prop:maxent}, lue comme une
+mesure plutôt que comme un théorème d'existence. Économiquement, $\DD$ est le
+prix en nats du mensonge \og le marché est gaussien \fg{} : l'incertitude
+apparente que la description gaussienne surestime, parce que la loi véritable est
+plus concentrée que ne le laisse croire sa seule covariance.
+
+\section{L'indice structurel est une divergence}
+\label{app:index}
+
+\begin{proposition}
+\label{prop:index}
+Avec $q_i=\mathcal N(\mu_i,\sigma_i^2)$ les marginales gaussiennes de mêmes
+échelles que $p$,
+\[
+\KL{p}{\textstyle\prod_i q_i} \;=\; \DD - H^{dep} \;=\; \JJ .
+\]
+\end{proposition}
+
+\begin{proof}
+Par définition,
+\[
+\KL{p}{\textstyle\prod_i q_i} = -h(p) - \mathbb{E}_p\!\left[\textstyle\sum_i\log q_i(X_i)\right]
+= -h(p) + \sum_i\left[\tfrac12\log(2\pi\sigma_i^2)+\tfrac12\right]
+= -h(p) + \sum_i\log\sigma_i + \tfrac N2\log(2\pi e),
+\]
+où l'on a utilisé $\mathbb{E}_p[(X_i-\mu_i)^2]=\sigma_i^2$, vrai par
+construction. En y injectant l'équation~\eqref{eq:three}, soit
+$h(p)=\tfrac N2\log(2\pi e)+\sum_i\log\sigma_i+H^{dep}-\DD$, les termes
+d'échelle et la constante se télescopent et il reste $\DD-H^{dep}$.
+\end{proof}
+
+C'est une identité exacte, non une approximation, et c'est elle qui justifie la
+définition~\ref{def:J}. Retirer le canal d'échelle de \eqref{eq:three} pourrait
+passer pour un bricolage ; l'objet qui reste se trouve être une divergence de
+Kullback--Leibler en bonne et due forme, et hérite donc gratuitement de trois
+propriétés : elle est positive ; elle est nulle si et seulement si les rendements
+sont indépendants \emph{et} gaussiens, ce qui fournit un point de référence bien
+défini plutôt qu'arbitraire ; et elle est invariante par changement d'unités
+actif par actif, puisque $p$ et $\prod_i q_i$ se transforment de la même façon.
+
+Il est utile de rapprocher cette identité de la règle de chaînage générale
+$\KL{p}{\prod_i q_i}=\sum_i\KL{p_i}{q_i}+I(x)$, où
+$I(x)=\KL{p}{\prod_i p_i}$ est la multi-information. Le premier terme est la
+somme des déficits marginaux $\sum_i\Dun(x_i)$, le second la dépendance totale.
+L'estimateur employé dans l'article estime le premier terme par l'approximation
+de \citet{hyvarinen1998} et remplace le second par sa part linéaire
+$-H^{dep}$ ; la dépendance de queue non linéaire est donc omise de $\JJ$ et
+mesurée séparément par un taux de co-dépassement.
+
+\section{Information mutuelle : les deux propositions et un exemple}
+\label{app:mi}
+
+\paragraph{Démonstration de la proposition~\ref{prop:conditioning}.} Par
+définition de l'entropie conditionnelle,
+$\mathbb{E}_Y[h(X\mid Y)]=h(X,Y)-h(Y)$, et par
+\eqref{eq:mi}, $I(X;Y)=h(X)+h(Y)-h(X,Y)$. En sommant les deux,
+$\mathbb{E}_Y[h(X\mid Y)]=h(X)-I(X;Y)$. La positivité de $I$ découle de celle de
+la divergence de Kullback--Leibler dont elle est un cas particulier, avec
+égalité si et seulement si $p_{XY}=p_X\otimes p_Y$.
+
+\paragraph{Démonstration de la proposition~\ref{prop:constraint}.} Immédiate :
+une contrainte supplémentaire ne peut que réduire l'ensemble réalisable, et le
+supremum d'une fonctionnelle sur un ensemble plus petit ne peut pas augmenter.
+
+\paragraph{Pourquoi les deux ne sont pas équivalents.} La première quantifie
+mais ne vaut qu'en moyenne ; la seconde vaut réalisation par réalisation mais
+porte sur le plafond et ne quantifie rien. Un contre-exemple discret suffit à
+montrer qu'une réalisation particulière peut \emph{augmenter} l'entropie. Soit
+$X$ binaire avec $\mathbb{P}(X=a)=0{,}99$, d'entropie $H(X)=0{,}056$~nat. Soit
+un signal $Y$ qui, avec probabilité $0{,}98$, lève complètement le doute
+($H(X\mid Y=0)=0$), et avec probabilité $0{,}02$ conduit à
+$\mathbb{P}(X=a\mid Y=1)=1/2$, soit $H(X\mid Y=1)=\log 2=0{,}693$~nat --- douze
+fois l'entropie a priori. La moyenne vaut néanmoins
+$0{,}98\times0+0{,}02\times0{,}693=0{,}014$~nat, bien en dessous de $0{,}056$,
+et $I(X;Y)=0{,}042$~nat. C'est exactement la raison pour laquelle l'article
+prédit une composante de saut \emph{principalement}, et non exclusivement,
+unilatérale.
+
+\paragraph{Exemple gaussien chiffré.} Soit $X\sim\mathcal N(0,\sigma^2)$ le
+rendement de demain et $Y=X+\varepsilon$ un signal bruité,
+$\varepsilon\sim\mathcal N(0,\sigma_\varepsilon^2)$ indépendant. Alors
+\begin{equation}
+\label{eq:mi-gauss}
+I(X;Y)=\tfrac12\log\!\left(1+\frac{\sigma^2}{\sigma_\varepsilon^2}\right),
+\qquad
+\operatorname{Var}(X\mid Y)=\frac{\sigma^2\sigma_\varepsilon^2}{\sigma^2+\sigma_\varepsilon^2},
+\end{equation}
+la variance a posteriori ne dépendant pas de la réalisation $y$. Avec
+$\sigma=1\%$ par jour :
+
+\begin{center}
+\small
+\begin{tabular}{@{}lrrrr@{}}
+\toprule
+Qualité du signal & $\sigma_\varepsilon$ & $I(X;Y)$ (nats) & vol.\ a posteriori & équivalent $\sqrt{2\eta}$ \\
+\midrule
+tranchant   & $0{,}5\%$ & $0{,}805$ & $0{,}45\%$ & $1{,}27\sigma$ \\
+moyen       & $1{,}0\%$ & $0{,}347$ & $0{,}71\%$ & $0{,}83\sigma$ \\
+vague       & $3{,}0\%$ & $0{,}053$ & $0{,}95\%$ & $0{,}32\sigma$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Un facteur quinze sépare la taille du saut d'entropie provoqué par une nouvelle
+qui tranche de celui provoqué par une rumeur. La dernière colonne traduit chaque
+saut dans l'échelle de sévérité de la section~\ref{sec:stress} : c'est le
+mouvement directionnel qu'un scénario de même rayon produirait.
 
 \renewcommand{\refname}{Références}
 \begin{thebibliography}{99}
@@ -1637,9 +1980,17 @@ prennent les crises observées.
 \end{thebibliography}
 
 \vspace{10pt}
-\noindent\footnotesize\textit{Note.} Cette version française est la traduction de
-\texttt{paper/main.tex}. Les deux versions rapportent les mêmes chiffres, produits
-par le même code (\texttt{python -m src.run\_empirical}). En cas de divergence,
-la version anglaise fait foi.
+\noindent\footnotesize\textit{Note sur les versions.} \textbf{Cette version
+française est la version de référence.} Elle intègre des corrections d'exposition
+que la version anglaise \texttt{paper/main.tex} ne porte pas encore : séparation
+de la proposition sur le conditionnement en deux énoncés distincts (l'entropie
+conditionnelle moyenne baisse d'exactement $I(X;Y)$ ; le plafond de maximum
+d'entropie baisse au sens large sans quantification), levée des collisions de
+notation ($\Dun$ contre $\JJ$, $\sigma_\JJ$ contre $\eta$, $\mathcal{P}$ contre
+$N$), ajout d'un tableau de notations et des annexes A à E. Les résultats
+numériques sont inchangés et proviennent du même code
+(\texttt{python -m src.run\_empirical}). En cas de divergence entre les deux
+versions, c'est celle-ci qui fait foi jusqu'à ce que l'anglaise soit
+resynchronisée.
 
 \end{document}

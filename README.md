@@ -139,9 +139,13 @@ cd paper && latexmk -pdf main.tex        # English
 cd paper && latexmk -pdf main_fr.tex     # French (needs texlive-lang-french)
 ```
 
-The paper exists in two languages: `paper/main.tex` (English, authoritative) and
-`paper/main_fr.tex` (French translation). Both report the same numbers from the
-same run and share `paper/figures/`. Edits to results must be made in both.
+**`paper/main_fr.tex` (French) is the authoritative version.** `paper/main.tex`
+(English) is behind it: the French edition carries a notation table, five
+mathematical appendices, a split of the conditioning proposition into two
+distinct statements, and the resolution of three notation collisions
+(`D_1` vs `J`, `sigma_J` vs `eta`, `P(dt,dz)` vs `N`). Numerical results are
+identical and come from the same run; both share `paper/figures/`. Edits to
+results must be made in both, and the English edition needs a resync pass.
 
 `config/default.yaml` targets the Kenneth French 49-industry daily file. The
 reader and config are kept intact so the whole analysis can be reproduced on it,

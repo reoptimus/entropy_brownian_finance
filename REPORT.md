@@ -1,5 +1,37 @@
 # Research execution report
 
+## 26 August 2026 — French edition becomes authoritative; exposition corrected
+
+`paper/main_fr.tex` is now the reference version of the paper (33 pages). Four
+corrections were applied there, three of which fix statements that were wrong
+rather than merely terse.
+
+1. **The conditioning proposition was two propositions pretending to be one.**
+   The old text joined them with "equivalently", which is false. Split into
+   Proposition 2 (`E_Y[h(X|Y)] = h(X) − I(X;Y)`: quantified, but only *on
+   average*) and Proposition 3 (constraint monotonicity: holds for every
+   realisation, but bounds the *ceiling* and quantifies nothing). The abstract,
+   introduction and conclusion claimed the *ceiling* falls by *exactly* the
+   mutual information — a conflation of the two. Corrected throughout.
+2. **Three notation collisions removed.** `J` denoted both the scalar marginal
+   negentropy of eq. (7) and the multivariate structural index — renamed to
+   `D_1`, which also makes explicit that it is the one-dimensional case of the
+   deficit `D`. `eta` denoted both the diffusion coefficient of the OU process
+   and the stress-scenario radius — the former is now `sigma_J`. `N` denoted
+   both the asset count and the Poisson random measure — the latter is now `P`.
+3. **A notation table** was added before the introduction, with an explicit
+   warning that differential entropy is unit-dependent while divergences are
+   not, and that the `K` of kurtosis has nothing to do with the `KL` of
+   Kullback–Leibler.
+4. **Five appendices** carry the derivations: units and what is computable (A),
+   the full three-step proof of eq. (5) plus Hadamard and the note that tables
+   omit the `(N/2)log(2πe)` constant (B), why `D = h(q) − h(p)` requires moment
+   matching (C), the exact identity `J = KL(p || prod q_i)` (D), and both
+   propositions with a discrete counterexample and a numerical Gaussian signal
+   example (E).
+
+No result changed. The English edition is now behind and needs a resync pass.
+
 ## 25 August 2026 — structural rework: entropy jumps, relaxation, stress testing
 
 The paper was rebuilt around a different logical spine, on request. What changed,
