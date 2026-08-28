@@ -1,5 +1,155 @@
 # Research execution report
 
+## 28 August 2026 (continued, second follow-up) — block-size sensitivity, H8 scoped to i.i.d., and a composition-calibrated stress scenario
+
+Follow-up to the episode-typology null test below. Three questions in sequence:
+does the block-21 result depend on the specific block length; is it defensible
+to scope the *stress-testing* application to the i.i.d. null only, dropping
+the block-21 null that the dependence/even typology failed; and, if so, what
+does a stress scenario built on that basis actually look like.
+
+### Block-size sensitivity (S&P 500, `share_dependence_dominant`, observed = 0.4615 throughout)
+
+| block (days) | null mean | null 5–95% | `p_greater` | verdict |
+|---|---|---|---|---|
+| 1 (i.i.d.) | 0.260 | 0.193 – 0.334 | 0.00 | clears |
+| 5 | 0.314 | 0.227 – 0.408 | 0.00 | clears |
+| 10 | 0.351 | 0.267 – 0.448 | 0.08 | marginal |
+| 21 | 0.430 | 0.345 – 0.574 | 0.25 | fails |
+| 42 | 0.493 | 0.400 – 0.596 | 0.67 | fails, null **overshoots** observed |
+| 63 | 0.509 | 0.433 – 0.562 | 0.75 | fails, overshoot peaks |
+| 126 | 0.467 | 0.395 – 0.564 | 0.50 | fails, null recedes partway |
+
+So the block-21 failure is not an artefact of that one arbitrary length: the
+crossover from clearing to failing sits between block 10 and 21, and lengthening
+the block further does not help the typology — it makes the null *harder* to
+clear, up to a peak around block 42–63, where the resampled series is long
+enough to replay whole historical clustering episodes and the null distribution
+of `share_dependence_dominant` actually sits *above* the observed value. Block
+126 (half a year) recedes slightly, consistent with the block becoming long
+enough that individual replications start to resemble the original series
+itself (test power collapsing at the limit, as expected). Conclusion: the
+typology is not identified at any block length from 21 days up — this is a
+real result, not a tuning artefact.
+
+### Scope decision: i.i.d.-only null for the stress-testing application
+
+Agreed with the user to narrow scope. The paper's existing stress-testing
+construction (`src/stress.py`: `gaussian_ball_scenario`, `classical_scenario`,
+`severity_ladder`) was already, by design, independent of H1–H7 and never
+null-tested against either resampling scheme — it prices scenarios on a KL
+scale calibrated from realised information flow, a calibration exercise, not a
+hypothesis test. Extending a *typology* into that same construction under only
+the i.i.d. null is therefore not inconsistent cherry-picking, provided the
+narrower scope is stated explicitly (as it is here and in the code below): the
+block-21 null remains the standard for every H1–H7 claim in the paper; it is
+dropped only for this specific calibration use, because a stress-test
+composition only needs to be *more than what unstructured resampling
+produces*, not free of ordinary volatility clustering — clustering is exactly
+what a stress scenario is supposed to reflect.
+
+### H8 (composition of the crisis entropy budget) — i.i.d. null, all three panels
+
+`share_dependence_dominant` (fraction of detected episodes where the
+dependence channel is the largest of the three additive contributions to `J`),
+20 i.i.d. replications (15 for FF49/EuStock, since more episodes per
+replication made 20 slower to justify):
+
+| panel | observed | null mean | null 5–95% | verdict |
+|---|---|---|---|---|
+| S&P 500 (65 episodes) | 0.462 | 0.260 | 0.193 – 0.334 | clears cleanly |
+| FF49 (61 episodes) | 0.787 | 0.398 | 0.307 – 0.468 | clears very cleanly |
+| EuStockMarkets (13 episodes) | 0.692 | 0.568 | 0.343 – 0.766 | does not clear |
+
+EuStockMarkets does not clear — observed sits inside the null's own 90% band —
+but the direction is consistent (observed above the null mean) and the panel
+is the smallest by an order of magnitude (13 episodes vs. 61–65), the same
+underpowered-panel caveat already on record elsewhere in this report for
+EuStockMarkets. Two panels clearing cleanly and a third underpowered but
+directionally consistent is enough to state, under the i.i.d.-only standard
+just adopted: **the dependence channel is disproportionately often the largest
+single contributor to a detected crisis episode, more than unstructured
+resampling of the same return series produces.** This is H8.
+
+### Severity does not predict composition (S&P 500)
+
+Splitting the 65 S&P 500 episodes into quintiles of `dJ` (the size of the
+episode) and averaging `share_dependence` within each quintile:
+
+| severity quintile | mean share dependence | mean share odd | mean share even |
+|---|---|---|---|
+| q1 (calmest 13) | 0.528 | 0.097 | 0.374 |
+| q2 | 0.173 | 0.024 | 0.803 |
+| q3 | 0.368 | 0.041 | 0.591 |
+| q4 | 0.500 | 0.022 | 0.478 |
+| q5 (worst 13) | 0.490 | 0.020 | 0.490 |
+
+Not monotonic (the dip at q2 is real, not noise-rounding), and the
+Spearman/Pearson correlation between episode size (`dJ`) and dependence share
+is essentially zero (0.047 / 0.031) — no clean linear "bigger crisis, more
+dependence-driven" law. This table is reported as a purely empirical lookup,
+the same epistemic status as the existing `severity_ladder` function, not as a
+tested hypothesis.
+
+### Composition-calibrated stress scenario (`src/stress.py`, `scripts/calibrated_stress_demo.py`)
+
+Added `calibrated_covariance` and `composition_calibrated_scenario`. The point:
+`gaussian_ball_scenario` only constrains the portfolio's own *projected*
+distribution — left unconstrained, the simplest asset-level covariance
+consistent with a target severity is pure uniform scaling of the whole matrix,
+correlations untouched. That is a default, not a claim about how real crises
+behave. H1 — the paper's single most robust finding, clearing *both* nulls on
+every panel — says real crises do not take that default route: the dependence
+channel moves on its own. `composition_calibrated_scenario` keeps the severity
+fixed (same portfolio mean, volatility, VaR/ES as `gaussian_ball_scenario`) but
+builds the asset-level covariance with a measured `dependence_share` instead of
+the default 0, interpolating the correlation matrix toward its physical
+ceiling (`rho=1`, capped — a diversified book cannot reach arbitrary severity
+through correlation alone) and closing any remaining gap with uniform scaling,
+so the portfolio-level severity is matched exactly regardless of composition
+(`w'*cov1*w = s_target**2` for every `dependence_share in [0,1]`; the quadratic
+form is linear in the covariance, so a mix of two feasible covariances is
+feasible too — this is the one piece of the construction that is a proven
+identity rather than a design choice, and it is what the unit tests check).
+
+Ran `python -m scripts.calibrated_stress_demo --config config/sp500.yaml`: a
+10-year severity scenario (`eta = 3.88` nats, `stressed_ES99 = 0.120`, identical
+across every composition by construction), priced three ways —
+
+| composition | dependence_share | entropy price (nats) | vs. default |
+|---|---|---|---|
+| default (KL-ball, pure scaling) | 0.00 | 66.9 | — |
+| H1-calibrated (regime-average `h_dep`/`h_vol` split) | 0.24 | 32.2 | −34.8 |
+| H8-refined (severe-episode split) | 0.49 | 13.4 | −53.5 |
+| classical committee bundle (vol x2, corr 0.90) | — | 10.0 | — |
+
+Two things worth flagging plainly. First, `dependence_share` is now sourced
+directly from H1 (`h1_regime_signature`'s stress-minus-calm gap in `h_dep`
+versus `h_vol`, normalised to a 0–1 split) and refined by H8 (the same split
+measured only on the most severe half of detected episodes) — H1 is back in
+the load-bearing position the user asked for: it is the number that decides
+*how* a calibrated scenario spreads risk across assets, not a background
+result the paper mentions and moves past. Second, and unexpected: the
+H1/H8-calibrated compositions are *cheaper* in full (ambient) KL terms than the
+naive default, not more expensive. This is not a bug — the default (pure
+uniform scaling) is only the simplest covariance consistent with the
+*portfolio-level* KL ball, not a proven ambient-KL minimum (the true ambient
+minimiser for a fixed portfolio variance is a different, less interpretable
+rank-one perturbation of the precision matrix, noted but not used here); it
+happens, for this panel's actual correlation structure, that leaning toward
+the historically-observed composition lands closer to that true minimum than
+uniform scaling does. The honest reading: a risk manager who assumes pure
+scale inflation by default is not being conservative by doing so — the
+historically-grounded composition is both more realistic *and* no more (here,
+less) implausible on the market's own information scale.
+
+6 new tests (`tests/test_stress.py`), all passing; 63 total in the suite.
+Not yet written into `paper/main_fr.tex` — this is a validated construction and
+a worked example, pending the user's sign-off on folding it into the stress-
+testing section as the simplified H8-based narrative agreed on above.
+
+---
+
 ## 28 August 2026 (continued) — per-episode channel typology, tested against the null
 
 Follow-up to the same-day re-verification below, on request: identify whether

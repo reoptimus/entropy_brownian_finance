@@ -57,6 +57,8 @@ __all__ = [
     'gaussian_ball_scenario',
     'price_scenario',
     'classical_scenario',
+    'calibrated_covariance',
+    'composition_calibrated_scenario',
     'severity_ladder',
     'return_period_of',
     'build_scenario_table',
@@ -223,6 +225,132 @@ def classical_scenario(
         'price_correlation_leg_nats': leg_corr,
         'entropy_price_nats': price_scenario(mu1, cov1, mu, cov),
     }
+
+
+# --------------------------------------------------------------------------
+# Composition-calibrated scenario: which channel pays for the severity
+# --------------------------------------------------------------------------
+
+def _vol_only_covariance(cov: np.ndarray, weights: np.ndarray, s_target: float) -> np.ndarray:
+    """Uniform-scaling covariance hitting ``s_target``, correlations unchanged.
+
+    This is the composition implicit in :func:`gaussian_ball_scenario`: its
+    geometry only ever constrains the *projected* (portfolio-level) KL ball,
+    is silent on how a multi-asset covariance should move, and uniform
+    scaling is the simplest choice consistent with that geometry -- not a
+    proven ambient-KL minimum. (The actual ambient-KL-minimising covariance
+    for a fixed portfolio variance is a rank-one perturbation of the
+    *precision* matrix, a different and less interpretable object; this
+    module does not use it, for the same reason the docstring below gives:
+    composition is an empirical question, not one to solve by fiat.)
+    """
+    s0 = float(np.sqrt(weights @ cov @ weights))
+    k = s_target / s0
+    return (k * k) * cov
+
+
+def calibrated_covariance(
+    cov: np.ndarray, weights: np.ndarray, s_target: float, dependence_share: float,
+) -> tuple:
+    """Split a target portfolio volatility between the scale and dependence channels.
+
+    A diversified portfolio's volatility cannot be pushed arbitrarily high by
+    correlation alone: at fixed marginal volatilities, ``rho=1`` (everything
+    moving together) is the ceiling, and it is a modest one for a large book
+    -- for the equal-weight, 20-name S&P sector panel this construction is
+    tested on, it is only about 1.5x today's volatility. So "the dependence
+    channel explains ``share`` of a severe scenario" cannot mean literal
+    uniform correlation solving ``w'*Sigma*w = s_target**2`` on its own once
+    ``s_target`` clears that ceiling -- there is no such correlation matrix.
+    What it can mean, and what this function builds: correlation is pushed as
+    far toward its ceiling as ``dependence_share`` calls for (capped at 1, the
+    physical limit), and whatever variance is still missing is closed by a
+    uniform scaling on top. That scaling is applied last and uniformly, so
+    the portfolio severity ``s_target`` is matched *exactly* for every
+    ``dependence_share`` in ``[0, 1]`` -- what changes with the share is only
+    how the same severity is spread across assets, never the severity itself.
+
+    ``share=0`` reproduces :func:`gaussian_ball_scenario`'s own default
+    (pure uniform scaling, see :func:`_vol_only_covariance`); ``share=1``
+    pushes correlation to its ceiling first and scales only what is left. H1
+    measures how much of a real regime's entropy destruction the dependence
+    channel actually accounts for; that is the number this is meant to be
+    called with, not a free parameter to guess.
+
+    Returns ``(cov1, feasible)``; ``feasible`` is ``True`` when a uniform
+    correlation at or below 1 could reach ``s_target`` on its own (so
+    ``share=1`` needs no extra scaling), ``False`` when even ``rho=1`` falls
+    short and scaling is unavoidable regardless of the requested share.
+    """
+    cov = np.asarray(cov, dtype=float)
+    weights = np.asarray(weights, dtype=float)
+    sd0 = np.sqrt(np.diag(cov))
+    n = len(sd0)
+    own = float(np.sum((weights * sd0) ** 2))
+    cross_full = float((weights @ sd0) ** 2 - own)  # cross term at rho=1
+
+    if cross_full <= 0:
+        rho_cap, feasible = 0.0, False
+    else:
+        rho_needed = (s_target * s_target - own) / cross_full
+        rho_cap = float(np.clip(rho_needed, -1.0, 1.0))
+        feasible = rho_needed <= 1.0
+
+    R_cap = np.full((n, n), rho_cap)
+    np.fill_diagonal(R_cap, 1.0)
+    cov_cap = np.outer(sd0, sd0) * R_cap
+
+    share = float(np.clip(dependence_share, 0.0, 1.0))
+    cov_mix = (1.0 - share) * cov + share * cov_cap
+    v_mix = float(np.sqrt(weights @ cov_mix @ weights))
+    k = s_target / v_mix
+    return (k * k) * cov_mix, feasible
+
+
+def composition_calibrated_scenario(
+    mu: np.ndarray, cov: np.ndarray, weights: np.ndarray, eta: float,
+    dependence_share: float, risk_level: float = 0.99, objective: str = 'es',
+) -> dict:
+    """A KL-ball scenario of severity ``eta``, composed the way H1 says crises are.
+
+    :func:`gaussian_ball_scenario` fixes the severity by constraining only the
+    portfolio's own projected distribution; left unconstrained, the simplest
+    consistent choice is pure uniform scaling of the covariance, correlations
+    untouched (:func:`_vol_only_covariance`) -- a default, not a claim about
+    how real crises behave. H1 measures how real crises actually behave: the
+    dependence channel moves on its own, past both the i.i.d. and the
+    block-21 null, in every panel. This function keeps the severity fixed at
+    ``eta`` (same portfolio mean and volatility as
+    :func:`gaussian_ball_scenario`) but builds the *asset-level* covariance
+    with the measured ``dependence_share`` instead of the default, and reports
+    what that composition costs in ambient nats relative to the default's own
+    ambient cost -- the price of choosing a historically-grounded composition
+    over the simplest one.
+    """
+    base = gaussian_ball_scenario(mu, cov, weights, eta, risk_level, objective)
+    mu = np.asarray(mu, dtype=float)
+    cov = np.asarray(cov, dtype=float)
+    w = np.asarray(weights, dtype=float)
+    s0 = base['base_vol_daily']
+
+    mu1 = mu + base['sigma_move'] * (cov @ w) / s0
+    cov_default = _vol_only_covariance(cov, w, base['stressed_vol_daily'])
+    cov1, feasible = calibrated_covariance(
+        cov, w, base['stressed_vol_daily'], dependence_share)
+
+    # ``eta`` is the *projected*, portfolio-level KL radius (see the module
+    # docstring); it is not on the same scale as the full ambient KL that
+    # price_scenario reports, so the composition's cost is measured against
+    # the ambient cost of its own default (share=0) twin, not against eta.
+    base['dependence_share'] = float(dependence_share)
+    base['feasible_at_this_share'] = feasible
+    base['default_composition_cost_nats'] = price_scenario(mu1, cov_default, mu, cov)
+    base['entropy_price_nats'] = price_scenario(mu1, cov1, mu, cov)
+    base['excess_cost_over_default_nats'] = (
+        base['entropy_price_nats'] - base['default_composition_cost_nats'])
+    base['stressed_cov'] = cov1
+    base['stressed_mu'] = mu1
+    return base
 
 
 # --------------------------------------------------------------------------
