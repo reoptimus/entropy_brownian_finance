@@ -34,6 +34,16 @@ from src.empirical import DATA_READERS, rolling_measures
 from src.jumps import detect_jumps, estimate_relaxation, jump_asymmetry
 
 
+def _slope(ent: pd.DataFrame, mask) -> float:
+    """Compensation rate beta of H2, so the null can be asked about the slope
+    and not only about the correlation."""
+    sub = ent if mask is None else ent.loc[mask.astype(bool)]
+    sub = sub.dropna(subset=['dh_vol', 'dh_dep'])
+    if len(sub) < 30 or sub['dh_vol'].var() == 0:
+        return float('nan')
+    return float(-np.polyfit(sub['dh_vol'], sub['dh_dep'], 1)[0])
+
+
 def statistics_of(ent: pd.DataFrame, logret: pd.DataFrame, threshold: float,
                   scale_window: int, stress_quantile: float = 0.90) -> dict:
     jumps = detect_jumps(ent['J'], threshold, scale_window)
@@ -75,6 +85,8 @@ def statistics_of(ent: pd.DataFrame, logret: pd.DataFrame, threshold: float,
         'H2_corr_dhvol_dhdep_all': float(ent['dh_vol'].corr(ent['dh_dep'])),
         'H2_corr_dhvol_dhdep_stress': float(ent.loc[stress, 'dh_vol']
                                             .corr(ent.loc[stress, 'dh_dep'])),
+        'H2_beta_all': _slope(ent, None),
+        'H2_beta_stress': _slope(ent, stress),
         # --- H5: skewness signature -------------------------------------------
         'H5_dskew_on_jump_minus_else': float(ent.loc[up, 'dskew_market'].mean()
                                              - ent.loc[~up, 'dskew_market'].mean()),

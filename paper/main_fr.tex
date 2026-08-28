@@ -587,10 +587,54 @@ L'économie derrière P\ref{p:relax} est qu'une contrainte s'évente. La nouvell
 est intégrée aux prix, le désaccord se reforme, les positions se dispersent, et
 la coupe transversale recouvre la liberté que le choc lui avait retirée. Rien
 dans la théorie de l'information ne délivre cela ; c'est l'hypothèse substantielle
-de l'article, et $\kappa$ est l'objet à estimer. Elle n'est pas anodine : un
-estimateur doté de mémoire fabriquera une décroissance, aussi la
-section~\ref{sec:placebo} mesure-t-elle la décroissance qu'un monde sans mémoire
-produirait déjà.
+de l'article, et $\kappa$ est l'objet à estimer.
+
+\paragraph{Pourquoi un processus d'Ornstein--Uhlenbeck et pas autre chose ?}
+Le choix n'est pas un choix de commodité : il est \emph{forcé} dès qu'on impose
+trois exigences minimales, et il est le seul à les satisfaire toutes les trois.
+
+\begin{enumerate}
+\item \emph{Markov.} L'avenir de $\JJ$ ne dépend du passé qu'à travers son
+niveau présent. C'est l'exigence de parcimonie : ne postuler aucune mémoire
+au-delà de ce que l'état courant contient déjà.
+\item \emph{Stationnaire.} $\JJ$ possède un niveau de long terme et une variance
+finis. Sans cela l'indice dérive, il n'est pas une variable d'état, et les
+comparaisons de régime de la section~\ref{sec:results} n'ont pas de sens.
+\item \emph{Bruit gaussien.} Entre deux arrivées d'information, on ne prétend
+rien savoir du bruit au-delà de sa variance --- c'est le principe de maximum
+d'entropie appliqué au bruit lui-même, exactement comme il l'a été aux
+rendements en section~\ref{sec:bridge}.
+\end{enumerate}
+
+Le théorème de \citet{doob1942} énonce que \textbf{le processus d'Ornstein--Uhlenbeck
+est l'unique processus à la fois markovien, gaussien et stationnaire} en temps
+continu. Les trois exigences ne laissent donc aucune latitude sur la partie
+diffusive : elle est déterminée. Le terme de saut, lui, est ajouté précisément
+pour \emph{briser} la gaussianité là où le cadre affirme qu'elle ne tient pas,
+c'est-à-dire aux arrivées d'information. La structure de \eqref{eq:ou} est ainsi
+un squelette imposé plus une composante délibérément non gaussienne, ce qui est
+exactement la classe introduite par \citet{bns2001}.
+
+\paragraph{Ce qui, en revanche, reste arbitraire.} Trois choses, qu'il faut
+énoncer plutôt que laisser croire qu'elles découlent du théorème. Le taux
+$\kappa$ est supposé \emph{constant} : rien n'interdit qu'une crise soit
+absorbée plus vite, ou plus lentement, qu'une nouvelle ordinaire, et les données
+employées ici ne permettent pas de trancher. Le rappel est \emph{linéaire} en
+l'écart au niveau de long terme, alors qu'un rappel accéléré loin de la moyenne
+serait tout aussi plausible. Enfin, $\JJ$ est positif par construction alors
+qu'un Ornstein--Uhlenbeck muni d'un terme brownien peut devenir négatif : la
+spécification de \citet{bns2001} évite cet écueil en supprimant le terme
+brownien et en pilotant le processus par un subordinateur à sauts positifs, ce
+qui garantit une loi stationnaire portée par $\mathbb{R}^+$. Empiriquement la
+question ne se pose pas --- $\JJ$ reste compris entre $2{,}17$ et $21{,}13$~nats
+sur le panel principal et entre $0{,}42$ et $1{,}69$ sur le panel de
+réplication, donc très loin de la frontière --- mais formellement il faudrait
+soit supprimer $\sigma_\JJ$, soit écrire le processus sur $\log\JJ$.
+
+Le postulat n'est enfin pas anodin sur le plan de la mesure : un estimateur doté
+de mémoire fabriquera une décroissance même en l'absence de toute relaxation
+économique, aussi la section~\ref{sec:placebo} mesure-t-elle la décroissance
+qu'un monde sans mémoire produirait déjà.
 
 \begin{postulate}[Asymétrie de la contrainte]
 \label{p:sign}
@@ -599,12 +643,45 @@ pertes, de sorte qu'un saut d'entropie s'accompagne d'une asymétrie négative d
 facteur de marché.
 \end{postulate}
 
-P\ref{p:sign} est nécessaire parce que $\JJ$ est pair en asymétrie et ne peut
-fournir de direction. Son contenu est un énoncé sur l'offre de liquidité : sur
-mauvaise nouvelle, teneurs de marché et acheteurs de valeur se retirent du côté
-vendeur tandis que le côté acheteur est intact, de sorte que la même quantité
-d'information produit un mouvement plus ample à la baisse qu'à la hausse. Il est
-testable séparément (H5) et réfutable séparément.
+\paragraph{Pourquoi ce postulat est logiquement nécessaire.} L'indice $\JJ$ est
+une fonction \emph{paire} de l'asymétrie : changer le signe de l'asymétrie ne
+change pas sa valeur. La raison est immédiate. Le canal de forme est
+$\Dun(z)=\KL{p_z}{\varphi}$, et la loi normale $\varphi$ est symétrique ; donc
+si l'on remplace $z$ par $-z$, la loi de référence est inchangée et la
+divergence l'est aussi :
+\begin{equation}
+\label{eq:even}
+\Dun(-z)=\Dun(z),\qquad\text{et par conséquent}\qquad \JJ(-x)=\JJ(x).
+\end{equation}
+Le développement d'Edgeworth \eqref{eq:edgeworth} le rend visible à l'\oe il :
+l'asymétrie $S$ y entre au carré.
+
+La conséquence est structurelle et non anecdotique. \textbf{Une distribution à
+longue queue à gauche --- un krach --- et son image en miroir à longue queue à
+droite --- une envolée --- ont exactement le même $\JJ$.} L'indice mesure la
+\emph{taille} de l'information, jamais son sens. Aucun raffinement de
+l'estimateur n'y changera quoi que ce soit : c'est une propriété de l'objet
+mesuré. Si l'article veut dire quoi que ce soit sur la direction, il doit donc
+ajouter un ingrédient extérieur. P\ref{p:sign} est cet ingrédient, et c'est le
+plus petit possible : une seule affirmation, sur le signe, ajoutée à un cadre
+qui par construction n'en produit aucune.
+
+\paragraph{Sur quoi il s'appuie.} Non pas sur un mécanisme que nous
+affirmerions, mais sur une régularité empirique établie : l'\emph{effet de
+levier} au sens de \citet{black1976}, c'est-à-dire le fait que les rendements
+négatifs sont suivis de hausses de volatilité plus fortes que les rendements
+positifs de même amplitude. C'est l'un des faits stylisés les plus robustes de
+la finance empirique \citep{christie1982,engle1993,nelson1991}. Traduit dans le
+langage de cet article : à quantité d'information égale, la réponse du marché
+est plus ample vers le bas que vers le haut, donc un saut de $\JJ$ arrive
+accompagné d'une asymétrie de marché négative.
+
+Nous nous abstenons délibérément de choisir entre les explications causales
+concurrentes de cet effet --- levier financier à proprement parler, rétroaction
+de la volatilité, ou retrait asymétrique de la liquidité du côté vendeur. Le
+postulat ne dépend d'aucune d'entre elles : il n'affirme que l'asymétrie, pas sa
+cause. Il est testable séparément (H5) et réfutable séparément, et la
+section~\ref{sec:results} conclut d'ailleurs qu'il n'est pas établi.
 
 \subsection{La dynamique qui en résulte}
 
@@ -615,12 +692,56 @@ par \citet{bns2001} pour la volatilité stochastique :
 \label{eq:ou}
 d\JJ_t \;=\; -\kappa\left(\JJ_t-\bar\JJ\right)dt \;+\; \sigma_\JJ\,dW_t \;+\; \int_{z>0} z\,\mathcal{P}(dt,dz),
 \end{equation}
-avec $\mathcal{P}$ la mesure aléatoire de Poisson décrivant l'arrivée des
-événements informationnels et $z$ l'information mutuelle qu'ils portent. Le
-coefficient de diffusion est noté $\sigma_\JJ$ et non $\eta$, cette dernière
-lettre étant réservée au rayon des scénarios de stress
-(section~\ref{sec:stress}) ; la mesure de saut est notée $\mathcal{P}$ et non
-$N$, ce dernier symbole désignant le nombre d'actifs. Lu sur l'entropie elle-même plutôt que sur
+Le terme intégral demande d'être lu avec soin, car sa notation est compacte.
+
+\paragraph{Ce que $\mathcal{P}$ n'est pas.} Ce n'est ni une loi gaussienne, ni
+une fonction. La lettre $\mathcal N$ est réservée dans cet article à la loi
+normale, et la mesure de saut porte donc un symbole distinct.
+
+\paragraph{Ce que $\mathcal{P}$ est.} Une \emph{mesure aléatoire de comptage},
+dite mesure aléatoire de Poisson. On peut se la représenter comme un semis
+aléatoire de points dans le plan $(\text{date},\ \text{taille})$ : chaque point
+est un événement informationnel, son abscisse est la date à laquelle il survient
+et son ordonnée la taille du saut qu'il provoque. Formellement,
+$\mathcal{P}(dt,dz)$ vaut $1$ s'il existe un saut dans l'intervalle de temps
+$[t,t+dt)$ dont la taille tombe dans $[z,z+dz)$, et $0$ sinon. L'intégrale
+$\int_{z>0} z\,\mathcal{P}(dt,dz)$ se lit alors simplement : \og s'il y a un
+saut à la date $t$, ajouter sa taille $z$ à $\JJ$ ; sinon n'ajouter rien \fg{}.
+C'est une écriture condensée de $\sum_{j} z_j$, la somme des sauts survenus.
+
+\paragraph{Ce qui la caractérise.} Deux ingrédients, réunis dans sa
+\emph{mesure d'intensité} $\nu(dz)\,dt$, qui est le nombre espéré de sauts de
+taille comprise entre $z$ et $z+dz$ pendant $dt$ : d'une part une
+\emph{fréquence d'arrivée} $\lambda=\nu(\mathbb{R}^+)$, en nombre de sauts par
+unité de temps, d'autre part une \emph{loi des tailles} $\nu(dz)/\lambda$. Sur
+le panel principal, la section~\ref{sec:results} estime $\lambda\approx5$ sauts
+par an, une taille moyenne de $0{,}62$~nat et un maximum de $3{,}21$~nats.
+
+\paragraph{Ce qu'est $z$.} La taille d'un saut individuel, exprimée en nats.
+Conceptuellement, c'est l'information mutuelle de la nouvelle qui l'a provoqué,
+au sens de la proposition~\ref{prop:conditioning}. Opérationnellement, c'est la
+variation de $\JJ$ détectée par le filtre à quatre sigmas de la
+section~\ref{sec:estimators}. Les deux ne coïncident qu'approximativement, et le
+papier ne prétend pas les identifier.
+
+\paragraph{Pourquoi l'intégrale ne porte que sur $z>0$.} Parce que
+$\JJ$ mesure un \emph{déficit} d'entropie et que, par la
+proposition~\ref{prop:conditioning}, l'information ne peut qu'accroître ce
+déficit en espérance. Dans ce cadre, rien ne crée d'\emph{augmentation soudaine}
+d'entropie : l'entropie n'est restituée que par la relaxation lente du premier
+terme, jamais par un saut. D'où des sauts unilatéraux.
+
+Deux réserves, toutefois. La proposition~\ref{prop:conditioning} est un énoncé
+\emph{en moyenne} : une réalisation particulièrement déroutante peut accroître
+l'entropie, donc une spécification fidèle autoriserait une petite probabilité de
+sauts négatifs plutôt que de les interdire. Et la mesure de Poisson suppose des
+arrivées indépendantes, alors que l'étude d'événement de la
+section~\ref{sec:results} montre un regroupement net des sauts ; un processus
+auto-excitant de type Hawkes serait plus fidèle.
+
+Notons enfin que le coefficient de diffusion est noté $\sigma_\JJ$ et non
+$\eta$, cette dernière lettre étant réservée au rayon des scénarios de stress
+(section~\ref{sec:stress}). Lu sur l'entropie elle-même plutôt que sur
 $\JJ$, le signe s'inverse : l'entropie chute par sauts et remonte par diffusion.
 Les prédictions observables sont nettes, et ce sont elles que teste la
 section~\ref{sec:hypotheses} : la loi de $\Delta\JJ$ est asymétrique à droite ;
@@ -630,14 +751,31 @@ saut positif l'indice décroît avec une demi-vie $\ln 2/\kappa$.
 \subsection{Pourquoi queues épaisses, corrélation et sauts arrivent ensemble}
 
 Le cadre produit une prédiction qu'aucun modèle de volatilité ni de corrélation
-ne produit seul. Un événement informationnel est, par construction, une
-contrainte \emph{commune} : la même nouvelle contraint tous les actifs de la
-coupe transversale. Elle doit donc apparaître simultanément dans les deux canaux
-destructeurs d'entropie --- dans la dépendance, parce qu'une contrainte commune
-couple les actifs, et dans la forme, parce qu'une contrainte qui contraint de
-façon asymétrique épaissit la queue de perte de chaque marginale. En marché
-calme, à l'inverse, les deux canaux sont pilotés par des mécanismes
-idiosyncrasiques sans lien et n'ont aucune raison de comouvoir.
+ne produit seul. Elle se déduit en quatre pas, sans vocabulaire technique.
+
+\begin{enumerate}
+\item Une nouvelle importante concerne \emph{tous} les actifs à la fois : c'est
+la même information qui contraint chacun d'eux.
+\item Si la nouvelle est mauvaise, tous les actifs baissent donc \emph{le même
+jour}.
+\item Or ce jour-là apparaît aussi, pris isolément, dans l'historique de chaque
+actif : c'est pour lui une journée de perte inhabituellement grande.
+\item Accumuler de telles journées déforme la distribution des rendements de
+chaque actif : le côté des pertes s'allonge et s'alourdit davantage que le côté
+des gains.
+\end{enumerate}
+
+Le pas 2 est ce que mesure le canal de dépendance : les actifs bougent ensemble,
+la corrélation mesurée monte, $-H^{dep}$ monte. Le pas 4 est ce que mesure le
+canal de forme : des pertes extrêmes plus nombreuses et plus grandes que les
+gains extrêmes, c'est-à-dire un kurtosis plus élevé et une asymétrie négative,
+donc $\DD$ monte. Les deux canaux montent ensemble parce qu'ils décrivent le
+même jour vu de deux endroits différents --- la coupe transversale pour l'un, la
+distribution de chaque actif pour l'autre.
+
+En marché calme, les mouvements marquants sont propres à chaque actif : ils
+n'alignent pas la coupe transversale et n'ont donc aucune raison de faire monter
+les deux canaux en même temps.
 
 La forme testable est un \emph{couplage dépendant du régime} : la corrélation
 entre $-\Delta H^{dep}$ et $\Delta\DD$ devrait être proche de zéro en marché
@@ -654,11 +792,29 @@ commun de la nouvelle. Seul le \emph{signe} exige P\ref{p:sign}.
 \item[H1 (signature de régime).] En régime de stress, le canal de dépendance
 baisse ($H^{dep}\downarrow$), le canal de forme monte ($\DD\uparrow$) et donc
 l'indice structurel monte ($\JJ\uparrow$).
-\item[H2 (compensation du plafond).] $\Delta H^{vol}$ et $\Delta H^{dep}$ sont
-négativement associés, de sorte que le plafond gaussien $H^{cov}$ est plus stable
-que ses composantes. C'est l'hypothèse qu'une version antérieure de ce projet
-soutenait sur des portefeuilles sectoriels ; elle est conservée ici pour être
-testée sur des titres individuels.
+\item[H2 (compensation partielle).] Les variations des deux canaux du plafond
+gaussien sont \emph{de sens opposé et proportionnelles} : il existe un
+coefficient $\beta$ tel que
+\begin{equation}
+\label{eq:h2}
+\Delta H^{dep}_t \;=\; -\beta\,\Delta H^{vol}_t \;+\; u_t ,
+\qquad \mathbb{E}[u_t]=0 ,
+\end{equation}
+et l'hypothèse porte sur le \emph{signe} : $\beta>0$. Le coefficient $\beta$ est
+le \emph{taux de compensation} : la fraction d'un mouvement d'entropie
+d'échelle qui est absorbée par la dépendance. Il se lit directement ---
+$\beta=0$ signifie aucune compensation, $\beta=1$ compensation totale et donc
+conservation de $\det\Sigma$, $0<\beta<1$ compensation partielle, $\beta<0$
+amplification. Une hypothèse secondaire porte sur les régimes :
+$\beta_{\text{stress}}>\beta_{\text{calme}}$.
+
+Cette formulation remplace celle des versions antérieures de ce projet, qui
+affirmait d'un bloc que \og $H^{cov}$ est plus stable que ses composantes \fg.
+Cet énoncé mêlait deux affirmations distinctes --- un signe et une magnitude ---
+et ne se testait que de façon binaire. Le séparer permet de \emph{rapporter} un
+coefficient avec son intervalle de confiance plutôt que de prononcer un verdict,
+et rend la comparaison entre jeux de données quantitative au lieu d'être
+contradictoire.
 \item[H3 (asymétrie des sauts).] Les variations de $\JJ$ sont unilatérales : à
 seuil commun, les sauts positifs sont plus nombreux et plus lourds que les sauts
 négatifs, et $\Delta\JJ$ est asymétrique à droite --- \emph{au-delà de ce que le
@@ -673,9 +829,11 @@ une asymétrie de marché négative et avec une hausse du canal d'asymétrie
 (postulat P\ref{p:sign}).
 \item[H6 (couplage des canaux).] Les canaux de dépendance et de forme sont
 faiblement couplés en marché calme et fortement couplés sous stress.
-\item[H7 (valeur incrémentale).] $\JJ$, ou un indicateur construit sur ses sauts,
-améliore hors échantillon la prévision de la volatilité réalisée future, du
-drawdown ou de la pire perte, par rapport à une référence de volatilité seule.
+\item[H7 (pouvoir prédictif).] Connaître l'entropie d'aujourd'hui dit quelque
+chose sur le risque des 21~prochains jours que la seule volatilité d'aujourd'hui
+ne dit pas déjà. Le mot \og améliore \fg{} s'entend exclusivement sur des dates
+que le modèle n'a jamais vues au moment de l'estimation ; la
+section~\ref{sec:h7} explicite le protocole.
 \end{description}
 
 \section{Données et estimation}
@@ -997,57 +1155,87 @@ niveau d'entropie gaussienne comme indicateur de stress a donc le signe à
 l'envers ; c'est précisément pourquoi l'article travaille avec le $\JJ$ sans
 échelle.
 
-\subsection{H2 : la compensation ne survit pas au passage aux titres individuels}
+\subsection{H2 : la compensation est réelle, partielle, et confinée au stress}
 
 Une version antérieure de ce projet, sur les 49 portefeuilles sectoriels de
 Fama--French, trouvait $\mathrm{corr}(\Delta H^{vol},\Delta H^{dep}) = -0{,}63$
-sur 1990--2026 et une réduction de $57\%$ de la variance de $\Delta H^{cov}$ par
-rapport à une référence à composantes non corrélées : volatilité marginale et
-dépendance se compensent, laissant le déterminant de covariance nettement plus
-stable que l'une ou l'autre composante.
-
-Sur titres individuels, ce résultat ne se réplique pas.
+sur 1990--2026 et une réduction de $57\%$ de la variance de $\Delta H^{cov}$ :
+volatilité marginale et dépendance se compensaient au point de laisser le
+déterminant de covariance nettement plus stable que l'une ou l'autre composante.
+Sous la formulation binaire d'alors, ce résultat ne se répliquait pas sur titres
+individuels et l'affaire s'arrêtait là. L'estimation de \eqref{eq:h2} dit
+quelque chose de plus précis.
 
 \begin{table}[htbp]
 \centering
 \small
 \begin{tabular}{@{}lrrr@{}}
 \toprule
-& Toutes dates & Calme & Stress \\
+Taux de compensation $\widehat\beta$ (IC 95\,\%) & Tout & Calme & Stress \\
 \midrule
-S\&P~500, 20 titres individuels & $+0{,}10$ & $+0{,}28$ & $-0{,}40$ \\
-\texttt{EuStockMarkets}, 4 indices & $-0{,}23$ & $-0{,}13$ & $-0{,}67$ \\
-Portefeuilles sectoriels FF49 (version antérieure) & $-0{,}63$ & $-0{,}74$ & $-0{,}40$ \\
+S\&P~500, 20 titres individuels
+& $-0{,}06$ & $-0{,}19$ & $\mathbf{+0{,}19}$ \\
+& \footnotesize$(-0{,}32;+0{,}19)$ & \footnotesize$(-0{,}49;+0{,}11)$ & \footnotesize$\mathbf{(+0{,}07;+0{,}32)}$ \\
+\texttt{EuStockMarkets}, 4 indices
+& $+0{,}11$ & $+0{,}06$ & $\mathbf{+0{,}36}$ \\
+& \footnotesize$(-0{,}14;+0{,}36)$ & \footnotesize$(-0{,}19;+0{,}31)$ & \footnotesize$\mathbf{(+0{,}29;+0{,}42)}$ \\
+\midrule
+$R^2$ de \eqref{eq:h2}, S\&P~500 & $0{,}01$ & $0{,}08$ & $0{,}16$ \\
+$R^2$ de \eqref{eq:h2}, \texttt{EuStock} & $0{,}05$ & $0{,}02$ & $0{,}45$ \\
+\midrule
+\multicolumn{4}{@{}l}{\footnotesize Rappel, portefeuilles sectoriels FF49 (version antérieure) :
+$\mathrm{corr}=-0{,}63$ toutes dates ; $\beta$ non disponible.} \\
 \bottomrule
 \end{tabular}
-\caption{H2 : $\mathrm{corr}(\Delta H^{vol},\Delta H^{dep})$ par régime et par
-jeu de données. La compensation est un phénomène de stress sur titres individuels
-et sur un petit panel d'indices ; la forte compensation inconditionnelle
-rapportée sur portefeuilles sectoriels n'est pas reproduite sur des firmes.}
+\caption{H2 : taux de compensation $\beta$ estimé par \eqref{eq:h2}, écarts
+types HAC à 21~retards. $\beta>0$ signifie que les deux canaux varient en sens
+opposé. Les valeurs en gras sont significativement positives.}
 \label{tab:h2}
 \end{table}
 
-Le tableau~\ref{tab:h2} est un résultat négatif pour H2 telle qu'énoncée à
-l'origine, et un résultat utile. Sur l'échantillon complet, la corrélation sur
-titres individuels est de $+0{,}10$ ; en marché calme elle vaut $+0{,}28$, soit
-le signe entièrement inverse ; ce n'est que sous stress qu'elle devient $-0{,}40$
-et que la variance de $\Delta H^{cov}$ tombe $31\%$ sous sa référence. Deux
-lectures sont possibles et les données ici ne permettent pas de les départager.
-L'agrégation sectorielle peut fabriquer la compensation : un portefeuille
-sectoriel est déjà un panier diversifié, de sorte qu'un choc commun élève sa
-volatilité et sa corrélation aux autres paniers d'une façon mécaniquement liée
-que des firmes individuelles ne partagent pas. Ou bien la taille de la coupe
-transversale peut en être la cause, puisque 48 secteurs offrent 1~128
-corrélations par paires dans lesquelles redistribuer le risque, contre 190 pour
-vingt titres. Ce qu'on peut dire, c'est que la régularité de compensation
-inconditionnelle ne devrait pas être citée comme une propriété générale des
-marchés actions, et qu'un diagnostic d'entropie qui reposerait dessus n'aurait
-pas été transférable des secteurs aux firmes.
+Trois lectures, que la formulation binaire empêchait.
 
-La conséquence pour le reste de l'article est celle qui a motivé la
-section~\ref{sec:channels} : si le plafond gaussien n'est pas conservé de manière
-fiable et qu'il monte de toute façon avec la volatilité, le contenu
-informationnel d'une crise doit être cherché ailleurs que dans $\det\Sigma$.
+\emph{Le signe.} Hors régime de stress, $\beta$ n'est distinguable de zéro sur
+aucun des deux panels : les intervalles de confiance contiennent $0$, et sur le
+S\&P~500 le point estimé est même légèrement négatif, c'est-à-dire une
+amplification plutôt qu'une compensation. \textbf{En régime de stress, en
+revanche, $\beta$ est significativement positif sur les deux jeux de données},
+$+0{,}19$ et $+0{,}36$, avec des intervalles nettement séparés de zéro. H2 est
+donc soutenue en tant qu'hypothèse conditionnelle au régime, et rejetée en tant
+qu'hypothèse inconditionnelle. C'est précisément ce que
+$\beta_{\text{stress}}>\beta_{\text{calme}}$ prédisait.
+
+\emph{La magnitude.} Elle est modeste. Un $\beta$ de $0{,}2$ à $0{,}35$ signifie
+qu'entre un cinquième et un tiers seulement d'un mouvement d'entropie d'échelle
+est absorbé par la dépendance ; le reste passe dans le plafond. On est loin du
+$\beta=1$ qu'exigerait une véritable \og conservation du volume de covariance
+\fg. L'ancienne formulation, en parlant de stabilité du plafond, suggérait
+implicitement $\beta$ proche de $1$ : c'était trop fort même là où le phénomène
+existe.
+
+\emph{La qualité de l'ajustement.} Le $R^2$ de \eqref{eq:h2} passe de $0{,}01$ à
+$0{,}16$ sur le S\&P~500 et de $0{,}05$ à $0{,}45$ sur les indices européens
+lorsqu'on restreint au stress. La relation linéaire postulée n'est pas seulement
+de bon signe sous stress, elle y est aussi nettement mieux définie.
+
+\paragraph{Deux réserves.} D'abord, les écarts types HAC restent optimistes sur
+des fenêtres glissantes qui partagent 251 de leurs 252 jours ; les intervalles
+du tableau~\ref{tab:h2} sont à lire comme indicatifs. Ensuite et surtout,
+$\beta$ n'a pas encore été confronté aux témoins calibrés de la
+section~\ref{sec:verdicts} : le tableau~\ref{tab:placebo} teste la corrélation,
+pas la pente. Rien n'exclut qu'un rééchantillonnage produise lui aussi un
+$\beta$ positif en régime de stress, pour la même raison mécanique qui lui fait
+reproduire H6 --- les fenêtres turbulentes contiennent de grosses journées
+communes. \textbf{Tant que ce test n'est pas fait, H2 sous sa forme
+\eqref{eq:h2} est une régularité mesurée, pas un résultat établi.} L'ajout de
+$\beta$ aux statistiques de \texttt{scripts/placebo\_null.py} est la prochaine
+étape.
+
+\paragraph{Ce que cela ne change pas.} La conséquence qui a motivé la
+section~\ref{sec:channels} demeure : avec $\beta$ de l'ordre de $0{,}2$ hors
+crise et un plafond gaussien qui monte avec la volatilité, le contenu
+informationnel d'une crise ne se lit pas dans $\det\Sigma$. C'est bien ailleurs
+qu'il faut le chercher.
 
 \subsection{H3 : la composante de saut est unilatérale}
 
@@ -1258,30 +1446,59 @@ la dépendance et $60\%$ pour la forme sur titres individuels, et à $58\%/42\%$
 en sens inverse sur le panel à quatre indices --- un rappel que l'équilibre entre
 canaux dépend de la coupe transversale mesurée.
 
-\subsection{H7 : aucune valeur prédictive incrémentale}
+\subsection{H7 : l'entropie décrit, elle ne prévoit pas}
+\label{sec:h7}
 
-H7 est rejetée. Sous estimation en validation glissante à fenêtre croissante avec
-réajustement annuel, évaluation sur dates non chevauchantes et tests de
-Diebold--Mariano, aucun canal d'entropie --- $\JJ$, le déficit $\DD$, le terme de
-dépendance, l'indicateur de crise ou l'indicateur de part non résorbée ---
-n'améliore significativement hors échantillon la prévision à 21~jours de la
-volatilité réalisée, du drawdown ou de la pire perte quotidienne par rapport à un
-modèle utilisant le seul canal d'échelle. La plus forte amélioration observée est
-de $3{,}9\%$ d'erreur quadratique moyenne, avec $p=0{,}52$ ; plusieurs
-spécifications sont significativement \emph{pires}. Les coefficients dans
-l'échantillon sont hautement significatifs ($p<10^{-4}$ pour $\JJ$ dans toutes
-les spécifications), ce qui est exactement le motif qu'on attend de fenêtres
-chevauchantes et la raison pour laquelle les chiffres dans l'échantillon ne sont
-pas présentés comme des preuves.
+\paragraph{La question, en une phrase.} Si je connais aujourd'hui l'entropie du
+marché, est-ce que je sais quelque chose sur le risque des trois prochaines
+semaines que la volatilité d'aujourd'hui ne me disait pas déjà ?
 
-Cela réplique, sur un autre jeu de données et un protocole d'évaluation bien plus
-exigeant, le résultat prédictif négatif obtenu par la version antérieure de ce
-projet. Deux conclusions en découlent. L'honnête est que les canaux d'entropie
-sont diagnostiques et non prédictifs : ils décrivent bien l'état informationnel
-du marché et ne prévoient pas son prochain mouvement sous une spécification
-linéaire. La constructive est que la valeur du cadre doit être cherchée là où la
-section~\ref{sec:stress} la cherche --- dans la cohérence interne et la
-calibration des scénarios, non dans des prévisions ponctuelles.
+\paragraph{Le protocole, en quatre pas.} On compare deux modèles qui prévoient
+la même chose --- la volatilité réalisée des 21~jours à venir, puis le drawdown,
+puis la pire perte quotidienne. Le \emph{modèle de référence} n'utilise que le
+canal d'échelle. Le \emph{modèle enrichi} y ajoute un canal d'entropie. Puis :
+
+\begin{enumerate}
+\item on estime les deux modèles sur le passé seulement, jamais sur l'avenir
+qu'on cherche à prévoir ;
+\item on prévoit, et on note l'erreur commise ;
+\item on réestime chaque année en ajoutant l'année écoulée, et on recommence ;
+\item on ne compare les erreurs que sur des dates espacées de 21~jours, pour que
+deux prévisions successives ne portent pas sur les mêmes journées.
+\end{enumerate}
+
+\paragraph{Ce que \og confirmé \fg{} voudrait dire ici.} Uniquement ceci : que
+le modèle enrichi commette, \emph{sur des dates qu'il n'avait pas vues au moment
+d'être estimé}, des erreurs plus petites que le modèle de référence, et que
+l'écart soit trop grand pour être du hasard --- ce que tranche le test de
+\citet{dm1995}. Le point mérite d'être appuyé, car c'est là que la plupart des
+indicateurs de ce genre se trompent eux-mêmes : \textbf{ajouter n'importe quelle
+variable améliore mécaniquement l'ajustement sur les données ayant servi à
+estimer le modèle}. Un bon ajustement dans l'échantillon ne prouve rien du tout.
+
+\paragraph{Le verdict.} H7 est rejetée. Aucun canal --- ni $\JJ$, ni le déficit
+$\DD$, ni le terme de dépendance, ni l'indicateur de crise, ni la part non
+résorbée --- n'améliore significativement la prévision hors échantillon. La
+meilleure amélioration observée, tous canaux et toutes cibles confondus, est de
+$3{,}9\%$ d'erreur quadratique moyenne avec $p=0{,}52$ : indiscernable du
+hasard. Plusieurs spécifications sont significativement \emph{moins bonnes} que
+la référence.
+
+Et l'illustration exacte du piège décrit plus haut : \emph{dans} l'échantillon,
+les coefficients sont hautement significatifs, $p<10^{-4}$ pour $\JJ$ dans
+toutes les spécifications. C'est le motif qu'on attend de fenêtres
+chevauchantes, et c'est pourquoi ces chiffres ne sont pas présentés comme des
+preuves.
+
+\paragraph{Ce qu'il faut en conclure.} Que les canaux d'entropie sont
+\emph{diagnostiques} et non \emph{prédictifs} : ils décrivent bien l'état
+informationnel présent du marché, ils n'anticipent pas son prochain mouvement
+sous une spécification linéaire. Ce résultat réplique, sur un autre jeu de
+données et un protocole nettement plus exigeant, le résultat prédictif négatif
+obtenu par la version antérieure de ce projet. La valeur du cadre est donc à
+chercher là où la section~\ref{sec:stress} la cherche --- dans la cohérence
+interne et la calibration des scénarios --- et non dans des prévisions
+ponctuelles.
 
 \subsection{Tout ceci n'est-il que de la volatilité ?}
 
@@ -1936,6 +2153,16 @@ mouvement directionnel qu'un scénario de même rayon produirait.
 \bibitem[Barndorff-Nielsen \& Shephard(2001)]{bns2001} Barndorff-Nielsen, O. E., \& Shephard, N. (2001). Non-Gaussian Ornstein--Uhlenbeck-based Models and Some of Their Uses in Financial Economics. \textit{Journal of the Royal Statistical Society B}, 63(2), 167--241.
 
 \bibitem[Barndorff-Nielsen \& Shephard(2004)]{bns2004} Barndorff-Nielsen, O. E., \& Shephard, N. (2004). Power and Bipower Variation with Stochastic Volatility and Jumps. \textit{Journal of Financial Econometrics}, 2(1), 1--37.
+
+\bibitem[Black(1976)]{black1976} Black, F. (1976). Studies of Stock Price Volatility Changes. \textit{Proceedings of the Business and Economic Statistics Section, American Statistical Association}, 177--181.
+
+\bibitem[Christie(1982)]{christie1982} Christie, A. A. (1982). The Stochastic Behavior of Common Stock Variances: Value, Leverage and Interest Rate Effects. \textit{Journal of Financial Economics}, 10(4), 407--432.
+
+\bibitem[Doob(1942)]{doob1942} Doob, J. L. (1942). The Brownian Movement and Stochastic Equations. \textit{Annals of Mathematics}, 43(2), 351--369.
+
+\bibitem[Engle \& Ng(1993)]{engle1993} Engle, R. F., \& Ng, V. K. (1993). Measuring and Testing the Impact of News on Volatility. \textit{Journal of Finance}, 48(5), 1749--1778.
+
+\bibitem[Nelson(1991)]{nelson1991} Nelson, D. B. (1991). Conditional Heteroskedasticity in Asset Returns: A New Approach. \textit{Econometrica}, 59(2), 347--370.
 
 \bibitem[Bollerslev \& Ghysels(1996)]{bollerslev1996} Bollerslev, T., \& Ghysels, E. (1996). Periodic Autoregressive Conditional Heteroscedasticity. \textit{Journal of Business \& Economic Statistics}, 14(2), 139--151.
 

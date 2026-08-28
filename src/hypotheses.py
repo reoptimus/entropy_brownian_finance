@@ -1,15 +1,18 @@
 """The paper's hypotheses, each as a function returning a tidy result frame.
 
 H1  Regime signature       stress raises h_vol, lowers h_dep, raises D, raises J
-H2  Ceiling compensation   d h_vol and d h_dep offset, so h_cov is conserved
-                           relative to its parts -- and therefore the
-                           informational content of stress sits in the shape
-                           channel, not in det Sigma
+H2  Partial compensation   d h_dep = -beta * d h_vol + u with beta > 0: the two
+                           channels move in opposite directions and in
+                           proportion. beta is the compensation rate (0 = none,
+                           1 = det Sigma conserved), reported rather than
+                           asserted; see compensation_slope()
 H3  Jump asymmetry         changes in J are one-sided: jumps up, diffusion down
 H4  Relaxation             J mean-reverts at an estimable rate after a jump
 H5  Skewness signature     entropy jumps carry negative market skewness (P2)
 H6  Tail-dependence coupling  correlation and tail weight surge together
-H7  Incremental value      J adds to h_vol in forecasting forward tail risk
+H7  Predictive power       knowing today's entropy says something about the
+                           next 21 days that today's volatility does not --
+                           judged only on dates unseen at estimation time
 
 Every test that compares regimes or averages an overlapping series uses a
 stationary block bootstrap, because a 252-day rolling window makes consecutive
@@ -34,6 +37,7 @@ __all__ = [
     'block_bootstrap_diff',
     'h1_regime_signature',
     'h2_ceiling_compensation',
+    'compensation_slope',
     'h3_jump_asymmetry',
     'h4_relaxation',
     'h5_skewness_signature',
@@ -140,6 +144,43 @@ def h2_ceiling_compensation(ent: pd.DataFrame, stress: pd.Series) -> pd.DataFram
                      'var_reduction_pct': np.nan, 'n': int(len(sub))})
     out = pd.DataFrame(rows)
     return out[['regime', 'pair', 'corr', 'sd_sum', 'sd_benchmark', 'var_reduction_pct', 'n']]
+
+
+def compensation_slope(ent: pd.DataFrame, stress: pd.Series, hac_lags: int = 21) -> pd.DataFrame:
+    """Estimate the compensation rate beta of H2: d h_dep = -beta * d h_vol + u.
+
+    The earlier formulation of H2 bundled a sign claim and a magnitude claim into
+    one binary verdict ("the Gaussian ceiling is more stable than its parts").
+    Separating them is what makes the hypothesis reportable: beta is the fraction
+    of a scale-entropy move absorbed by dependence, so beta = 0 is no
+    compensation, beta = 1 is conservation of det Sigma, and beta < 0 is
+    amplification. The hypothesis is then simply beta > 0, with the magnitude
+    reported rather than asserted.
+    """
+    rows = []
+    regimes = {'all': pd.Series(True, index=ent.index),
+               'calm': ~stress.astype(bool),
+               'stress': stress.astype(bool)}
+    for name, m in regimes.items():
+        sub = ent.loc[m.reindex(ent.index).fillna(False)].dropna(
+            subset=['dh_vol', 'dh_dep'])
+        if len(sub) < 30:
+            continue
+        model = sm.OLS(sub['dh_dep'], sm.add_constant(sub['dh_vol'])).fit(
+            cov_type='HAC', cov_kwds={'maxlags': hac_lags})
+        beta = -float(model.params['dh_vol'])
+        se = float(model.bse['dh_vol'])
+        rows.append({
+            'regime': name,
+            'beta': beta,
+            'beta_se': se,
+            'beta_lo95': beta - 1.96 * se,
+            'beta_hi95': beta + 1.96 * se,
+            'r2': float(model.rsquared),
+            'significantly_positive': bool(beta - 1.96 * se > 0),
+            'n': int(len(sub)),
+        })
+    return pd.DataFrame(rows)
 
 
 def h3_jump_asymmetry(ent: pd.DataFrame, threshold: float = 4.0,
@@ -337,6 +378,7 @@ def run_all(ent: pd.DataFrame, stress: pd.Series, cfg: dict) -> dict:
     return {
         'h1_regime_signature': h1_regime_signature(ent, stress),
         'h2_ceiling_compensation': h2_ceiling_compensation(ent, stress),
+        'h2_compensation_slope': compensation_slope(ent, stress),
         'h3_jump_asymmetry': h3,
         'h4_relaxation': h4,
         'h4_event_study': ev,
