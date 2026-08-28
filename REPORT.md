@@ -1,3 +1,208 @@
+# Research execution report
+
+## 26 August 2026 — French edition becomes authoritative; exposition corrected
+
+`paper/main_fr.tex` is now the reference version of the paper (33 pages). Four
+corrections were applied there, three of which fix statements that were wrong
+rather than merely terse.
+
+1. **The conditioning proposition was two propositions pretending to be one.**
+   The old text joined them with "equivalently", which is false. Split into
+   Proposition 2 (`E_Y[h(X|Y)] = h(X) − I(X;Y)`: quantified, but only *on
+   average*) and Proposition 3 (constraint monotonicity: holds for every
+   realisation, but bounds the *ceiling* and quantifies nothing). The abstract,
+   introduction and conclusion claimed the *ceiling* falls by *exactly* the
+   mutual information — a conflation of the two. Corrected throughout.
+2. **Three notation collisions removed.** `J` denoted both the scalar marginal
+   negentropy of eq. (7) and the multivariate structural index — renamed to
+   `D_1`, which also makes explicit that it is the one-dimensional case of the
+   deficit `D`. `eta` denoted both the diffusion coefficient of the OU process
+   and the stress-scenario radius — the former is now `sigma_J`. `N` denoted
+   both the asset count and the Poisson random measure — the latter is now `P`.
+3. **A notation table** was added before the introduction, with an explicit
+   warning that differential entropy is unit-dependent while divergences are
+   not, and that the `K` of kurtosis has nothing to do with the `KL` of
+   Kullback–Leibler.
+4. **Five appendices** carry the derivations: units and what is computable (A),
+   the full three-step proof of eq. (5) plus Hadamard and the note that tables
+   omit the `(N/2)log(2πe)` constant (B), why `D = h(q) − h(p)` requires moment
+   matching (C), the exact identity `J = KL(p || prod q_i)` (D), and both
+   propositions with a discrete counterexample and a numerical Gaussian signal
+   example (E).
+
+No result changed. The English edition is now behind and needs a resync pass.
+
+## 25 August 2026 — structural rework: entropy jumps, relaxation, stress testing
+
+The paper was rebuilt around a different logical spine, on request. What changed,
+in order of importance.
+
+### 1. The volume bridge is now argued, not asserted
+
+The previous draft moved from "maximum entropy under fixed first two moments
+gives a Gaussian" to "log-prices are Brownian" by adding temporal assumptions,
+but never said where the variance came from. Section 2 now defines the price as
+accumulated signed order flow (Kyle-style linear impact), makes the variance
+budget proportional to traded volume, and applies maximum entropy *in volume
+time*. The result is the mixture-of-distributions hypothesis (Clark 1973; Ané &
+Geman 2000) derived rather than posited, and a subordinated Brownian motion
+rather than a calendar-time one. Monroe's theorem is cited for what it implies:
+subordination alone has no content — maximum entropy is what selects Brownian
+motion from the class it allows. Section 2.5 lists where the bridge is weak
+(square-root impact, autocorrelated order flow) and notes that no empirical
+result depends on it.
+
+### 2. A third entropy channel, and a scale-free state variable
+
+The old decomposition had two channels, `H_vol` and `H_dep`. It is now three:
+scale, dependence, and **shape** — the entropy deficit `D = KL(p‖q) ≥ 0`, which
+by Proposition 1 is exactly the non-Gaussianity of the conditional distribution.
+The Edgeworth identity `J ≈ S²/12 + K²/48` makes explicit that the shape channel
+*is* skewness and fat tails, which is what the rework asked to be shown.
+
+Combining the two scale-free channels gives the **structural index**
+
+    J = D − ½ log det R = KL( p ‖ ∏ᵢ qᵢ ) ≥ 0
+
+via an exact chain rule. This replaces `H_cov` as the paper's object of study,
+for a reason the data supplied: `H_cov` *rises* in a crisis, because the scale
+channel dominates it. Any indicator built on the level of Gaussian entropy has
+the sign backwards.
+
+### 3. Jump/diffusion: one theorem and two postulates, clearly separated
+
+The requested postulate — information suddenly lowers entropy, which then
+relaxes back — is now split into the part that is a theorem and the part that is
+not. Conditioning cannot raise expected entropy (`E[h(X|Y)] = h(X) − I(X;Y)`), so
+the downward jump follows, and *its size in nats is the mutual information of the
+news*. What is postulated is P1 (diffusive relaxation) and P2 (the constraint is
+one-sided, hence negative skewness). The answer to "does the link between fat
+tails, correlation and entropy jumps need an extra postulate?" is: no for the
+coupling, which follows from the news being common to the cross-section; yes for
+the sign, because negentropy is even in skewness and cannot supply a direction.
+
+### 4. The placebo null, and what it did to the results
+
+This is the substantive finding of the rework and it is not the one that was
+expected.
+
+`J` is a non-negative convex functional of estimated second, third and fourth
+moments. A fat-tailed observation entering the estimator pushes it up sharply;
+the estimator's memory lets it decay smoothly. **Sawtooth dynamics are what the
+measurement device produces on leptokurtic data, whether or not information
+arrives in parcels.** Two nulls were built to measure this:
+
+- `scripts/estimator_memory.py` — i.i.d. Gaussian data, constant covariance, one
+  injected shock. Mechanical decay half-life **35 days**; on clean data with no
+  event, the 4σ detector still finds **37 up-jumps and 0 down-jumps** and
+  skew(ΔJ) = +2.9.
+- `scripts/placebo_null.py` — twenty resamplings of the *observed* returns,
+  preserving the fat marginal tails and the cross-sectional dependence. Two
+  versions: **i.i.d.** rows (destroys all temporal structure) and **21-day
+  blocks** (keeps short-run volatility clustering, destroys longer-horizon
+  regime dynamics). Full pipeline on each, including the same volatility filter
+  that defines the stress regime.
+
+Verdicts against both nulls:
+
+| | data | i.i.d. | block-21 | verdict |
+|---|---|---|---|---|
+| H1 `h_dep` regime gap | −1.72 | −0.29 | −0.64 | **clears both** |
+| H1 `J` regime gap | +2.89 | +2.32 | +2.21 | i.i.d. only |
+| H1 `D` regime gap | +0.48 | +1.35 | +0.74 | fails both |
+| H2 corr(ΔH_vol, ΔH_dep) | +0.10 | +0.14 | +0.16 | fails both |
+| H3 up-jumps | 158 | 147.7 | 129.5 | block only |
+| H3 skew(ΔJ) | +12.3 | +14.6 | +13.8 | fails both |
+| H4 half-life | 120 d | 92 d | 162 d | **not identified** |
+| H4 range(J) | 18.95 | 10.49 | 14.23 | **clears both** |
+| H5 corr(ΔJ, Δskew) | −0.24 | −0.07 | −0.01 | edge, *p* ≈ 0.05–0.10 |
+| H6 coupling gap | 0.62 | 0.75 | 0.67 | fails both |
+| H7 out-of-sample | — | — | — | rejected outright |
+
+**Exactly two statistics clear both nulls.** The dependence channel's regime
+signal — what distinguishes a crisis from a run of large returns is that the
+cross-section couples, not that the marginals fatten — and the range of `J`,
+which travels further in real markets than in any resampling of the same
+returns.
+
+The half-life is the instructive failure: at 120 days it sits *above* the i.i.d.
+null (92) and *below* the block null (162). Block resampling occasionally
+concatenates high-volatility blocks and manufactures long excursions; i.i.d.
+resampling breaks up the runs real markets contain and manufactures short ones.
+The level is an artefact of whichever null one chooses to believe, so P1 is
+supported by the amplitude result rather than by a relaxation rate.
+
+Neither null is nested in the other in a way that makes one uniformly
+conservative — several null statistics come out *larger* than the observed ones,
+because scrambling makes extreme days arrive out of calm baselines.
+
+### 5. H2 does not replicate on individual firms
+
+The FF49 result from the previous draft (corr(ΔH_vol, ΔH_dep) = −0.63, 57%
+variance reduction) does not reproduce on twenty individual stocks: +0.10 over
+the full sample, +0.28 in calm markets, −0.40 only in stress. Either industry
+aggregation manufactures the compensation, or cross-sectional size drives it; the
+data here cannot separate the two. Reported as a negative result, since the
+earlier draft's own Limitations section asked for exactly this test.
+
+### 6. Stress testing calibrated in nats
+
+A scenario of severity η is the worst conditional distribution within a KL ball
+of radius η around today's (Glasserman & Xu 2014; Breuer & Csiszár 2013). The
+contribution is the calibration: η is read off the market's own realised
+information flow `KL(pₜ‖pₜ₋ₕ)`, measured in the same unit, so a severity carries
+a return period. Closed-form for a linear portfolio; **one nat buys √2 sigma**.
+
+Pricing textbook bundles on the same scale gave the applied result:
+
+| bundle | price | ES₉₉ | entropy scenario at the same ES₉₉ | overpayment |
+|---|---|---|---|---|
+| vol×1.5, ρ→0.70, −2σ | 6.80 nats | 9.1% | 1.85 nats (2.3 y) | 73% |
+| vol×2.0, ρ→0.90, −3σ | 9.97 nats | 13.7% | 5.47 nats (10.6 y) | 45% |
+| vol×3.0, ρ→0.95, −4σ | 20.19 nats | 20.3% | 13.74 nats (~32 y) | 32% |
+
+A committee running the standard bundle believes it has specified a ~30-year
+event; measured by the loss it actually produces, it has specified a 10-year
+event and paid 30-year implausibility for it. The expensive leg is the uniform
+volatility multiplier (16.1 nats alone), not the correlation shock (8.1) or the
+directional shock (4.5 = σ²/2 exactly). The legs are strongly non-additive:
+forcing correlations up collapses the covariance onto a near-rank-one subspace
+the reference already grants variance to, which makes the volatility scaling
+cheap.
+
+### 7. Data
+
+The Kenneth French site is unreachable from this sandbox (only
+`raw.githubusercontent.com` and PyPI are allowlisted), so the FF49 reader and
+config are kept intact but the primary panel is now **twenty S&P 500
+constituents, daily, 1990–2022** — individual firms, which is the robustness test
+the previous draft listed as its most-wanted future work. `EuStockMarkets`
+remains as replication. Every FF49 number quoted is attributed to the earlier
+draft rather than recomputed.
+
+### 8. Code
+
+New modules: `src/shape.py` (negentropy, channels, structural index),
+`src/jumps.py` (bipower scale, detection, OU relaxation, event study,
+indicators), `src/stress.py` (KL-ball scenarios, ladder, scenario pricing,
+reverse stress), `src/hypotheses.py` (H1–H7 as tidy tables). `src/entropy.py`
+gained EWMA covariance and spectral diagnostics; `src/empirical.py` now computes
+surprisal and information flow alongside the channels; `src/run_empirical.py`
+runs everything and draws eight figures. Four scripts under `scripts/`.
+
+Two estimator decisions worth recording. The shape channel uses **Hyvärinen's
+bounded-contrast negentropy**, not the Edgeworth form: benchmarked against a
+Vasicek reference, Edgeworth overstates a Student-t(4) by a factor of 69 while
+Hyvärinen is within 3%. And the jump analysis uses an **EWMA** covariance rather
+than the 252-day box-car window, because with a box-car an extreme observation
+*leaving* the window creates a discontinuity on a date when nothing happened —
+which is exactly the artefact the previous draft flagged in its own Limitations.
+
+Tests: 54, all passing, no network required.
+
+---
+
+
 # Research execution report — 22 August 2026 (updated twice)
 
 ## Second update: the real FF49 result

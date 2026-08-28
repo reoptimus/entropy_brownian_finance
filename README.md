@@ -1,103 +1,181 @@
-# Maximum Entropy, Brownian Motion and Volatility–Dependence Compensation
+# Entropy jumps and information relaxation in financial markets
 
-Research repository for the paper:
+Research code for the paper in `paper/main.tex`: maximum entropy in volume time,
+a three-channel decomposition of return entropy, a jump/diffusion account of how
+information moves it, and a stress-testing construction calibrated in nats.
 
-**From Maximum Entropy to Geometric Brownian Motion: Covariance Entropy and Volatility–Dependence Compensation in Financial Markets**
+## The argument in one page
 
-## Research question
+**Maximum entropy gives a Gaussian.** Fix a mean and a covariance and the
+least-committal distribution is Gaussian (`src/entropy.py`). Applied in *volume
+time* — with the price defined as accumulated order flow and traded volume
+supplying the variance budget — this delivers Gaussian returns conditional on
+volume, i.e. the mixture-of-distributions hypothesis derived rather than
+assumed. Temporal consistency turns that into a subordinated Brownian motion and
+Itô turns it into a geometric Brownian price.
 
-The project separates three claims:
+**So non-Gaussian prices measure information.** The entropy deficit
+`D = KL(p‖q) ≥ 0` between the true conditional distribution and the Gaussian
+with the same first two moments is exactly the departure from maximal ignorance
+(`src/shape.py`).
 
-1. **Exact mathematical result:** among absolutely continuous distributions with fixed mean and covariance, the Gaussian maximizes differential entropy.
-2. **Process construction:** Gaussian increments with independent increments, variance proportional to elapsed time, and continuity lead to Brownian motion; exponentiating log-prices gives geometric Brownian motion after Itô's formula.
-3. **Empirical hypothesis:** financial stress may involve a compensation between marginal volatility entropy and dependence-induced covariance-volume contraction. The testable object is
-   \[
-   \Delta H^{cov}_t = \frac12\Delta\log\det\Sigma_t,
-   \]
-   with
-   \[
-   H^{vol}_t=\sum_i\log\sigma_{i,t},\qquad H^{dep}_t=\frac12\log\det R_t.
-   \]
+**Three channels.** Entropy splits into scale (`Σ log σᵢ`), dependence
+(`½ log det R ≤ 0`) and shape (`−D`). The last two are scale-free; their sum is
+the **structural index**
 
-The repository **does not assume that the compensation hypothesis is true**.
+```
+J = D − ½ log det R = KL( p ‖ ∏ᵢ qᵢ ) ≥ 0
+```
 
-## Data
+— the divergence from a product of Gaussian marginals with the same scales.
+Zero iff returns are independent and Gaussian; invariant to the level of
+volatility.
 
-The primary dataset is the **Kenneth R. French 49 Industry Portfolios, daily value-weighted returns**. The daily file is available from July 1, 1969 through June 30, 2026 (the monthly series goes back further, to 1926, but the daily series does not). The portfolios are built from NYSE, AMEX and NASDAQ firms using SIC-based industry assignments.
+**Dynamics: one theorem, two postulates.** Conditioning cannot raise expected
+entropy, so an information event lowers the entropy ceiling by exactly the
+mutual information of the news — *downward jumps are a theorem*. What is
+postulated is that entropy relaxes back diffusively (P1) and that the constraint
+is one-sided in the loss direction (P2). Together: a non-Gaussian
+Ornstein–Uhlenbeck process for `J`, up in jumps and down by diffusion
+(`src/jumps.py`).
 
-Source: https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/Data_Library/det_49_ind_port.html
+**Stress testing in nats.** A scenario of severity `η` is the worst conditional
+distribution within a KL ball of radius `η` around today's, with the radius
+calibrated on the market's own realised information flow `KL(pₜ‖pₜ₋ₕ)`
+(`src/stress.py`). One nat buys √2 sigma. The same metric prices scenarios you
+already run.
 
-Download endpoint used by the code:
-`https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/ftp/49_Industry_Portfolios_daily_CSV.zip`
+## What the data say
 
-A second robustness source should ideally be run later using individual-stock data (CRSP/Compustat through WRDS, if available) because industry portfolios mechanically reduce idiosyncratic noise and are not independent firms.
+Primary panel: twenty S&P 500 constituents, daily, 1990–2022 (individual firms,
+not industry portfolios). Replication: `EuStockMarkets`, four indices,
+1991–1998.
 
-## Reproducibility
+Every result below is reported against **two** calibrated nulls
+(`scripts/placebo_null.py`), both resampling the observed returns and running
+the identical pipeline twenty times:
+
+- **i.i.d. null** — rows resampled independently. Keeps the fat marginal tails
+  and the cross-sectional dependence, destroys *all* temporal structure.
+- **block-21 null** — circular blocks of 21 days. Additionally keeps short-run
+  volatility clustering; destroys only the longer-horizon regime dynamics.
+
+A statistic that clears both is evidence. One that clears one and fails the
+other is not identified.
+
+| | in the data | vs i.i.d. null | vs block null | verdict |
+|---|---|---|---|---|
+| **H1** `h_dep` regime gap | −1.72 | −0.29 | −0.64 | ✅ **clears both** |
+| **H1** `J` regime gap | +2.89 | +2.32 | +2.21 | i.i.d. only |
+| **H1** `D` regime gap | +0.48 | +1.35 | +0.74 | ❌ null is larger |
+| **H2** compensation rate β (stress) | **+0.19** (CI +0.07,+0.32) | not yet tested | not yet tested | ⚠️ positive in stress on both panels; null test pending |
+| **H3** up-jumps | 158 | 147.7 | 129.5 | block only |
+| **H3** skew(ΔJ) | +12.3 | +14.6 | +13.8 | ❌ null is larger |
+| **H4** half-life | 120 d | 92 d | 162 d | ⚠️ **not identified** (data between the nulls) |
+| **H4** range(`J`) | 18.95 | 10.49 | 14.23 | ✅ **clears both** |
+| **H5** corr(ΔJ, Δskew) | −0.24 | −0.07 | −0.01 | ⚠️ edge, *p* ≈ 0.05–0.10 |
+| **H6** coupling gap | 0.62 | 0.75 | 0.67 | ❌ nulls couple *more* |
+| **H7** out-of-sample forecast | in-sample *p* < 1e-4 | — | — | ❌ no gain over volatility |
+
+**Exactly two statistics clear both nulls.** The dependence channel's regime
+signal: what separates a crisis from a run of large returns is that the
+cross-section couples — the effective number of independent risk modes falls
+from 13.2 to 10.5 out of 20 — not that the marginals fatten. And the range of
+`J`: the index travels further in real markets than in any resampling of the
+same returns.
+
+The reason the nulls matter: `J` is a non-negative convex functional of estimated
+second, third and fourth moments. A single fat-tailed observation entering the
+estimator pushes it up sharply and the estimator's memory lets it decay
+smoothly. Sawtooth dynamics, one-sided jumps, a skewness signature and
+regime-dependent channel coupling are what that measurement device produces on
+leptokurtic data, whether or not information arrives in parcels. **Anyone
+building a crisis indicator from a convex functional of estimated moments should
+run this null before believing their own figure.** A separate controlled
+simulation (`scripts/estimator_memory.py`) puts the purely mechanical floor at a
+35-day decay half-life and 37 up-jumps / 0 down-jumps on i.i.d. Gaussian data
+with no events at all.
+
+The stress-testing construction in `src/stress.py` does not depend on any of
+H1–H7: it is a measurement convention plus a convex optimisation.
+
+## Layout
+
+```
+src/entropy.py      Gaussian entropy, covariance estimators (Ledoit–Wolf, EWMA), spectral diagnostics
+src/shape.py        entropy deficit: Hyvärinen negentropy, asymmetry/tail channels, structural index
+src/jumps.py        bipower local scale, jump detection, OU relaxation, event study, indicators
+src/stress.py       KL-ball scenarios, severity ladder, scenario pricing, reverse stress
+src/empirical.py    rolling estimation of every channel plus surprisal and information flow
+src/hypotheses.py   H1–H7 as functions returning tidy tables
+src/run_empirical.py  end-to-end run: tables, hypothesis tests, stress ladder, figures
+src/data.py         readers for FF49, EuStockMarkets and the S&P 500 panel
+
+scripts/negentropy_benchmark.py  accuracy of the negentropy estimators against a Vasicek reference
+scripts/estimator_memory.py      how much relaxation a memoryless world already produces
+scripts/placebo_null.py          calibrated nulls (i.i.d. and block bootstrap) for every hypothesis
+scripts/build_paper_figures.py   sync run outputs into paper/figures
+```
+
+## Running it
 
 ```bash
-python -m venv .venv
-source .venv/bin/activate
 pip install -r requirements.txt
-python -m src.download_data --config config/default.yaml
-python -m src.run_empirical --config config/default.yaml
-pytest -q
+pip install skfolio            # only needed for the S&P 500 panel
+
+python -m src.download_data  --config config/sp500.yaml
+python -m src.run_empirical  --config config/sp500.yaml --label "S&P 500 (20 stocks)"
+
+python -m src.download_data  --config config/pilot_eu_stock_markets.yaml
+python -m src.run_empirical  --config config/pilot_eu_stock_markets.yaml --label "EuStockMarkets"
+
+python -m scripts.negentropy_benchmark
+python -m scripts.estimator_memory
+python -m scripts.placebo_null --config config/sp500.yaml --n-rep 20             # i.i.d. null, ~1 h
+python -m scripts.placebo_null --config config/sp500.yaml --n-rep 20 --block 21 # block null, ~1 h
+
+python -m scripts.build_paper_figures
+cd paper && latexmk -pdf main.tex        # English
+cd paper && latexmk -pdf main_fr.tex     # French (needs texlive-lang-french)
 ```
 
-Note on the development environment: the sandbox this repository was developed in sits behind an outbound network allowlist that does not include `mba.tuck.dartmouth.edu`, so `download_data.py` cannot reach it from there — a network-policy restriction of that sandbox, not a code defect, and it does not affect a normal machine. This is why the results below were produced from a manually supplied copy of the official zip rather than a live download in that session.
+**`paper/main_fr.tex` (French) is the authoritative version.** `paper/main.tex`
+(English) is behind it: the French edition carries a notation table, five
+mathematical appendices, a split of the conditioning proposition into two
+distinct statements, and the resolution of three notation collisions
+(`D_1` vs `J`, `sigma_J` vs `eta`, `P(dt,dz)` vs `N`). Numerical results are
+identical and come from the same run; both share `paper/figures/`. Edits to
+results must be made in both, and the English edition needs a resync pass.
 
-### Real FF49 result (included, reproducible)
+`config/default.yaml` targets the Kenneth French 49-industry daily file. The
+reader and config are kept intact so the whole analysis can be reproduced on it,
+but the file is fetched from Dartmouth and was not reachable from the
+environment these results were produced in; download it manually to
+`data/raw/` and run the same commands.
 
-The paper's intended empirical test has been run on the official FF49 daily file: **48 industries** (the residual *Other* portfolio excluded), **1990-01-01 to 2026-06-30**, 8,939 rolling 252-day windows. Findings — see `paper/main.tex`, Section "Empirical results: the FF49 industry cross-section", for the full statement and caveats:
+Tests: `python -m pytest tests/ -q` (54 tests, no network access needed).
 
-- **H1 (stress contraction): confirmed.** Stress dates show higher `H_vol` and lower `H_dep` than calm dates.
-- **H2 (compensation): confirmed.** `corr(ΔH_vol, ΔH_dep) = −0.63` over the full sample; `sd(ΔH_cov)` is well below the value implied by treating the two components as uncorrelated, in both calm and stress regimes.
-- **H3 (predictive value): significant in sample, not confirmed out of sample.** Adding `H_dep` to `H_vol` is highly significant under HAC standard errors (p ≈ 9.5×10⁻⁵) and raises train R² from 0.28 to 0.31, but does not reduce test MSE on a chronological 70/30 split — most likely because the 252-day rolling window induces heavy autocorrelation that a simple HAC correction does not fully absorb (see Limitations in the paper for a proposed walk-forward fix).
+## Reading the outputs
 
-The stress-regime dates independently line up with known market history (1997–98, 2000–02, 2008–11, 2015–16, 2018, 2020, 2022), which is itself a sanity check on the pipeline unrelated to the paper's hypotheses.
+Each run writes to `outputs/<dataset>/`:
 
-### Second real dataset (robustness / pilot)
+- `tables/rolling_measures.csv` — every channel, every date
+- `tables/h1_…csv` … `h7_…csv` — one file per hypothesis
+- `tables/severity_ladder.csv`, `stress_scenarios.csv` — the stress ladder
+- `tables/classical_comparison.csv` — textbook bundles priced in nats
+- `tables/reverse_stress.csv` — what a given loss costs
+- `tables/placebo_null.csv`, `placebo_null_block21.csv` — observed statistics against each null
+- `figures/*.png` — the paper's figures
 
-The identical pipeline was also run, unmodified, on a second, independent real dataset: the classic `EuStockMarkets` panel (DAX, SMI, CAC, FTSE daily closes, 1991–1998, Bollerslev & Ghysels), mirrored as CSV by the Rdatasets project:
+## Caveats worth knowing before using any of this
 
-`https://raw.githubusercontent.com/vincentarelbundock/Rdatasets/master/csv/datasets/EuStockMarkets.csv`
-
-```bash
-python -m src.download_data --config config/pilot_eu_stock_markets.yaml
-python -m src.run_empirical --config config/pilot_eu_stock_markets.yaml
-```
-
-This is a smaller (4-asset, single 8-year window) but genuinely independent real-data check, kept as a robustness diagnostic — see `paper/main.tex`, Section "Robustness check on a second, independent real dataset". It replicates the sign and shape of H1–H2 on an unrelated market and period.
-
-## Main outputs
-
-Written under `outputs/tables` and `outputs/figures` (FF49 run) or `outputs/pilot_eu/{tables,figures}` (pilot run):
-
-- `summary.csv`
-- `regime_summary.csv`
-- `predictive_regressions.csv`
-- `entropy_components.png`
-- `compensation_scatter.png`
-- `logdet_covariance.png`
-
-## Main hypothesis tests
-
-### H1: stress contraction
-Stress is associated with higher volatility and lower `det(R)`.
-
-### H2: compensation
-Changes in `H_vol` and `H_dep` are negatively related and their sum is more stable than the individual components in selected regimes.
-
-### H3: predictive value
-`H_dep` adds information for forecasting future realized volatility and tail risk beyond marginal volatility.
-
-## Important caveats
-
-- `log(det R)` is a measure of dependence-induced volume contraction, not a generic measure of correlation and not sensitive to the sign of pairwise correlation in the bivariate case.
-- Differential entropy depends on units. The empirical paper therefore emphasizes changes and normalized covariance entropy rather than an absolute physical interpretation.
-- A sample covariance determinant can be badly biased/unstable in high dimensions. The pipeline uses Ledoit–Wolf shrinkage by default.
-- The MaxEnt result is exact for fixed first and second moments; it does not imply that actual financial returns are Gaussian.
-- The pilot dataset's dates are reconstructed as a plain business-day sequence (the upstream file has no calendar column), so individual dates can drift by a few days from the true exchange calendar; only chronological order and spacing are used by the pipeline.
-
-## Development
-
-`pip install -e .` (via `pyproject.toml`) installs the package for local development. `pytest -q` runs the full test suite, including a fixture-based test of the real FF49 CSV parser (`tests/test_data.py`) so a change to the parsing logic — or a change in the upstream file format — is caught without needing network access. CI (`.github/workflows/tests.yml`) runs the same suite on push/PR.
+- The shape channel is estimated **marginally**; non-linear tail dependence is
+  measured separately (co-exceedance) rather than folded into `J`, so `J`
+  understates the true divergence, most under stress.
+- A KL radius grows with the dimension of the return vector. Severity ladders
+  are **not comparable across universes** and must be recalibrated per portfolio.
+- Rolling windows make consecutive observations share 251 of 252 return days.
+  Every regime test here uses a block bootstrap; in-sample *t*-statistics on
+  these series are not meaningful and are not reported as evidence.
+- Jump arrivals cluster (see the event study). The Poisson arrivals in the
+  stated model are an idealisation; a Hawkes process is the natural next step.

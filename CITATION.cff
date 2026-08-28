@@ -1,8 +1,18 @@
 cff-version: 1.2.0
-title: "Maximum Entropy, Brownian Motion and Volatility–Dependence Compensation"
+title: "Entropy Jumps and Information Relaxation in Financial Markets"
+abstract: >-
+  Maximum entropy in volume time, a three-channel decomposition of return
+  entropy (scale, dependence, shape), a jump/diffusion account of how
+  information moves it, and a stress-testing construction calibrated in nats.
 authors:
   - family-names: Researcher
     given-names: Draft
-version: 0.1.0
-date-released: 2026-08-22
+version: 0.2.0
+date-released: 2026-08-25
+keywords:
+  - maximum entropy
+  - information theory
+  - stress testing
+  - Kullback-Leibler divergence
+  - market microstructure
 message: "Please cite the repository and the associated paper draft."

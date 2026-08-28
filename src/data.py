@@ -82,3 +82,29 @@ def read_eu_stock_markets_daily(csv_path: str | Path) -> pd.DataFrame:
     prices.index = dates
     logret = np.log(prices).diff().dropna(how='any')
     return logret
+
+
+def read_sp500_daily(csv_path: str | Path) -> pd.DataFrame:
+    """Read the daily closing-price panel of 20 S&P 500 constituents.
+
+    Source: the ``sp500_dataset`` bundled with ``skfolio`` (BSD-3), 8,313
+    contemporaneous trading days from 1990-01-02 to 2022-12-28 for twenty
+    large-cap US stocks (AAPL, AMD, BAC, BBY, CVX, GE, HD, JNJ, JPM, KO, LLY,
+    MRK, MSFT, PEP, PFE, PG, RRC, UNH, WMT, XOM). ``scripts``/
+    ``download_data`` materialises it to CSV so the pipeline itself has no
+    runtime dependency on skfolio.
+
+    Unlike the FF49 industry portfolios, these are *individual* firms, which
+    removes the mechanical common-factor dependence that industry aggregation
+    imposes -- the robustness test the earlier draft listed as future work. The
+    span covers the dot-com crash, the global financial crisis, the euro-area
+    debt crisis, the 2018 selloff and COVID-19.
+    """
+    csv_path = Path(csv_path)
+    df = pd.read_csv(csv_path, index_col=0, parse_dates=True).sort_index()
+    prices = df.apply(pd.to_numeric, errors='coerce')
+    if prices.isna().any().any():
+        raise ValueError('Non-numeric or missing price observed in the S&P 500 CSV.')
+    if (prices <= 0).any().any():
+        raise ValueError('Non-positive price observed in the S&P 500 CSV.')
+    return np.log(prices).diff().dropna(how='any')
