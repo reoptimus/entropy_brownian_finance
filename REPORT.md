@@ -1,5 +1,99 @@
 # Research execution report
 
+## 28 August 2026 (continued) — per-episode channel typology, tested against the null
+
+Follow-up to the same-day re-verification below, on request: identify whether
+distinct "crisis types" show up as distinct entropy-channel signatures, and
+connect the reasoning back to the paper's volume-time bridge (Section 2).
+
+### What was built
+
+`src/jumps.py` gained `group_jump_episodes` (merges individually detected
+jumps closer than `gap` trading days into episodes -- the event study already
+shows jumps cluster into runs, not isolated arrivals) and
+`episode_channel_budget` (decomposes each episode's move in `J` into its three
+*exactly additive* entropy-destroying channels: dependence `-h_dep_ew`,
+asymmetry `d_odd`, tail weight `d_even`; `J = dependence + odd + even` is an
+identity, so the three shares are an exact per-crisis budget, not an
+approximation of one). Two tests cover the grouping logic and the identity on
+a synthetic series with a known answer. Pushed on `claude/episode-channel-budget`.
+
+### The reading proposed, from the volume-time bridge
+
+Section 2.4 of `paper/main_fr.tex` (the contrapositive of the volume bridge)
+already distinguishes two sources of a positive entropy deficit: a random
+*volume clock* produces a symmetric scale mixture (fatter tails, no
+directional skew -- the **even** channel), while a directional, constraining
+piece of news produces asymmetry (the **odd** channel, postulate P2's
+mechanism). The **dependence** channel is a third, separate source: news
+common to the cross-section, whatever its own symmetry. So a dependence-
+dominated episode reads as systemic/common-factor, an odd-dominated one as
+directional/informational, and an even-dominated one as consistent with
+elevated, undirected trading intensity -- a volume-clock signature. (Caveat
+stated in the code and repeated here: none of the three panels carries actual
+traded volume, so this is a model-consistent interpretation of the channel
+split, not a direct measurement of volume.)
+
+### What the raw split showed (S&P 500, FF49, EuStockMarkets)
+
+Applied to all three panels' detected-jump episodes: the **odd** (asymmetry)
+channel is essentially never the dominant one (1 dominant episode out of 139
+across all three panels combined) -- an additional data point against P2 as
+the dominant mechanism, on top of H5's already-marginal result. The
+**dependence**/**even** split, by contrast, looked like a real typology at
+first glance: S&P 500 (20 stocks) came out near 50/50 across 65 episodes, FF49
+(48 industry portfolios) leaned heavily dependence (48/61, 79%), and each
+panel's single largest episode (COVID on S&P 500 and FF49, the Sept 1992 ERM
+crisis on EuStockMarkets) was even-dominant every time.
+
+### Tested against the null (`scripts/episode_null.py`) -- not identified
+
+Built the same way as every other statistic in the paper: reuse the i.i.d.
+and block-21 resampling of `scripts/placebo_null.py`, run the full pipeline
+and the episode decomposition on 20 replications of each, and compare. On the
+S&P 500 panel:
+
+- **`share_dependence_dominant`** (fraction of episodes where dependence is
+  the largest of the three contributions): observed 0.46, i.i.d. null mean
+  0.26 (range across all 20 replications: 0.18--0.35) -- observed sits above
+  every single replication. **Clears the i.i.d. null cleanly.** But under the
+  block-21 null, mean 0.43 (range 0.30--0.58) -- observed falls squarely
+  inside, three replications exceed it outright. **Fails the block null.**
+  Per the paper's own standard (a statistic that clears one null and fails
+  the other is not identified), the dependence/even typology is **not
+  established**: ordinary volatility clustering, which the block bootstrap
+  preserves and the i.i.d. one destroys, is plausibly sufficient to produce
+  it, with no need for genuinely distinct economic crisis types.
+- **"The largest episode is always even-dominant"** does not survive the null
+  at all: under the i.i.d. resampling, the largest episode was even-dominant
+  in **20 out of 20** replications too. This is mechanical, not a finding --
+  the single most extreme day in any resampling, real dynamics or none, tends
+  to look like a broad-based tail event by construction. The earlier framing
+  of this specific pattern (in the prior chat turn, before this null check)
+  overstated it; it is withdrawn here.
+- A secondary pair of statistics, `mean_share_dependence`/`sd_share_dependence`
+  (averaging the per-episode dependence *share* rather than counting dominant
+  episodes), turned out to be numerically unstable -- a handful of episodes
+  where the three channels nearly cancel (small total move) produce a near-
+  zero denominator and an exploding ratio (null replications with
+  `sd_share_dependence` as high as 18). These two statistics are unreliable
+  either way and should not be used as evidence; the categorical
+  dominant-channel counts do not have this problem and are the ones to trust.
+
+### Bottom line
+
+Same fate as H2, H3 and H6: a pattern that looks compelling in the raw data
+and has a clean theoretical story (the volume-time bridge) does not survive
+the more conservative, volatility-clustering-preserving null. The honest
+conclusion is that channel-based crisis typing is an open question, not a
+result -- worth pursuing further (a literal volume series would let the
+even-channel interpretation be tested directly instead of by analogy; a
+larger episode count, e.g. from CRSP or a longer individual-stock history,
+would sharpen the block-null comparison), but not yet something to write into
+the paper as a finding.
+
+---
+
 ## 28 August 2026 — full independent re-verification; H2's β resolved against the null
 
 A complete re-check of the reworked project (math, code, reproducibility), following
