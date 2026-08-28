@@ -47,6 +47,7 @@ TABLES = [
     'classical_comparison.csv',
     'reverse_stress.csv',
     'placebo_null.csv',
+    'placebo_null_block21.csv',
     'negentropy_benchmark.csv',
     'run_summary.json',
 ]
