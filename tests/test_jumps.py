@@ -5,8 +5,10 @@ import pytest
 from src.jumps import (
     crisis_diffusion_indicators,
     detect_jumps,
+    episode_channel_budget,
     estimate_relaxation,
     event_study,
+    group_jump_episodes,
     jump_asymmetry,
     local_scale,
 )
@@ -109,3 +111,51 @@ def test_crisis_diffusion_indicators_bounds():
     assert (ind['unhealed'].dropna() <= 1.0).all()
     assert (ind['crisis'] >= 0).all()
     assert ind['crisis'].iloc[1000] > 0
+
+
+def _flags(n, positions):
+    idx = pd.bdate_range('2000-01-03', periods=n)
+    up = pd.Series(False, index=idx)
+    up.iloc[list(positions)] = True
+    return pd.DataFrame({'jump_up': up})
+
+
+def test_group_jump_episodes_merges_nearby_and_splits_distant():
+    jumps = _flags(400, [10, 15, 20, 200, 205, 210])
+    episodes = group_jump_episodes(jumps, gap=40)
+    assert len(episodes) == 2
+    (s0, e0, m0), (s1, e1, m1) = episodes
+    assert (s0, e0) == (jumps.index[10], jumps.index[20])
+    assert len(m0) == 3
+    assert (s1, e1) == (jumps.index[200], jumps.index[210])
+    assert len(m1) == 3
+
+
+def test_group_jump_episodes_empty_when_no_jumps():
+    jumps = _flags(50, [])
+    assert group_jump_episodes(jumps) == []
+
+
+def test_episode_channel_budget_matches_exact_identity_and_dominant_channel():
+    n = 100
+    idx = pd.bdate_range('2000-01-03', periods=n)
+    h_dep = pd.Series(-0.2, index=idx)
+    d_odd = pd.Series(0.1, index=idx)
+    d_even = pd.Series(0.2, index=idx)
+    # A dependence-dominated move: correlation spikes (h_dep becomes more
+    # negative, i.e. -h_dep, the dependence contribution to J, rises) between
+    # day 20 and 30, while the shape channels stay flat.
+    h_dep.iloc[20:31] = np.linspace(-0.2, -1.5, 11)
+    J = -h_dep + d_odd + d_even
+    ent = pd.DataFrame({'h_dep_ew': h_dep, 'd_odd': d_odd, 'd_even': d_even, 'J': J})
+
+    jumps = _flags(n, [25])
+    episodes = group_jump_episodes(jumps, gap=40)
+    budget = episode_channel_budget(ent, episodes, pre=5, post_search=5)
+
+    assert len(budget) == 1
+    row = budget.iloc[0]
+    assert row['dJ'] == pytest.approx(row['d_dependence'] + row['d_odd'] + row['d_even'])
+    assert row['share_dependence'] + row['share_odd'] + row['share_even'] == pytest.approx(1.0)
+    assert row['dominant_channel'] == 'dependence'
+    assert row['share_dependence'] > 0.9
