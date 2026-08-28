@@ -1,5 +1,85 @@
 # Research execution report
 
+## 28 August 2026 — full independent re-verification; H2's β resolved against the null
+
+A complete re-check of the reworked project (math, code, reproducibility), following
+the same three-part brief as the earlier reviews below: is the math correct, is the
+package usable and tested, and does it hold up on real data run from scratch.
+
+**Math.** Read the full French edition end to end, including all five appendices.
+Independently re-derived the key identities rather than trusting the LaTeX: the
+Gaussian entropy ceiling decomposition (Appendix B), the deficit identity
+`D = h(q) - h(p)` (Appendix C), and the structural-index identity
+`J = D - h_dep = KL(p || prod q_i)` (Appendix D) — the last one by direct
+computation from the definitions, independent of the paper's own proof, both agree.
+The discrete counterexample distinguishing the two conditioning propositions checks
+out arithmetically (`H(X)=0.056` nat, `I(X;Y)=0.042` nat). No error found in any
+proof; the "one theorem, two postulates" framing is honest about what is proved
+versus assumed, and the placebo-null discipline is genuinely rigorous science —
+most of the paper's own headline-looking numbers are correctly reported as *not*
+surviving the null, which is unusual honesty for applied work in this area.
+
+**Code and tests.** All 54 tests pass. Beyond that, every real-data pipeline was
+actually executed from scratch in this session, not just inspected:
+
+- `python -m src.run_empirical --config config/sp500.yaml` (primary panel, real
+  20-stock S&P 500 data via `skfolio`) and the `EuStockMarkets` replication both
+  ran end to end and reproduced the paper's committed result tables **exactly**
+  (`h1`–`h6`, `run_summary.json` byte-identical; `negentropy_benchmark.csv`
+  identical to 14 decimal places, the residual being cross-platform floating-point
+  noise).
+- `scripts.negentropy_benchmark` and `scripts.estimator_memory` reproduced their
+  quoted table/figures exactly (35-day mechanical half-life, 37 up/0 down false
+  jumps, skew +2.925, etc.)
+- **The full placebo-null table (Table `tab:placebo`, the paper's central result)
+  was recomputed from scratch — both the i.i.d.\ and the block-21 null, 20
+  replications each, same seed — and every one of the ~24 statistics matches the
+  committed table to 2–4 decimal places.** This is as strong a reproducibility
+  check as this kind of work gets.
+
+**Two bugs found and fixed.**
+
+1. `data/49_Industry_Portfolios_daily_CSV.zip` was committed to the repository
+   (outside `data/raw/`, which is gitignored, presumably why) but
+   `config/default.yaml` pointed `raw_file` at `data/raw/...` — a fresh clone
+   would not find the file the pipeline needs even though it ships in the repo.
+   Fixed by pointing the config at the tracked path.
+2. `scripts/build_paper_figures.py`'s table sync list was missing
+   `placebo_null_block21.csv`, so the block-21 null — half of the evidence bar the
+   paper insists on ("a statistic that clears both is evidence") — had no
+   committed, traceable source file the way the i.i.d. null did. Added.
+
+**One genuine finding, not just a check.** The paper's own H2 section flags an
+open item: "whether β survives the placebo null... adding β to
+`scripts/placebo_null.py` is the next step." The *code* already computes
+`H2_beta_all`/`H2_beta_stress` in `scripts/placebo_null.py` (`_slope`), but the
+committed `paper/tables/sp500_placebo_null.csv` predates that addition and was
+missing both rows. Running the 20-replication null (both i.i.d. and block-21)
+resolves the open question: **β does not survive either null.** Observed
+`β_stress = 0.19` sits almost exactly on the i.i.d.\ null's mean (0.10, range
+−0.19 to 0.30) and the block null's mean (0.16, range −0.23 to 0.32) — the same
+mechanical reason that makes H6 reproduce under resampling (turbulent windows
+containing shared big days) is sufficient to produce a positive β under stress
+with no real compensation dynamics at all. Updated `paper/main_fr.tex` (Table
+`tab:placebo` gained a row, the H2 "two caveats" paragraph rewritten as one
+resolved caveat), `README.md`'s summary table, and committed
+`paper/tables/sp500_placebo_null.csv` (now includes the β rows) and the new
+`paper/tables/sp500_placebo_null_block21.csv`. This does not change the paper's
+"exactly two statistics clear both nulls" headline — β joins the correlation-based
+H2 test in the "fails both" column, consistent with, not contradicting, the
+paper's existing verdict on H2.
+
+**What was not re-run.** The FF49 industry-portfolio panel was run once, for the
+first time, through the *new* pipeline (J, jumps, placebo-ready statistics) — the
+paper explicitly attributes all FF49 numbers to the pre-rework draft. Headline
+un-null-tested numbers: H1 J gap +10.56 nats (vs S&P500's +2.89), H2
+corr(ΔH_vol,ΔH_dep) = −0.63 (matches the pre-rework draft's own number exactly,
+confirming the Ledoit–Wolf baseline is unchanged), H3 182 up-jumps vs 3 down. These
+are reported here as an exploratory data point only — they have not been run
+against a placebo null and should not be treated as evidence until they are.
+
+---
+
 ## 26 August 2026 — French edition becomes authoritative; exposition corrected
 
 `paper/main_fr.tex` is now the reference version of the paper (33 pages). Four

@@ -68,7 +68,7 @@ other is not identified.
 | **H1** `h_dep` regime gap | −1.72 | −0.29 | −0.64 | ✅ **clears both** |
 | **H1** `J` regime gap | +2.89 | +2.32 | +2.21 | i.i.d. only |
 | **H1** `D` regime gap | +0.48 | +1.35 | +0.74 | ❌ null is larger |
-| **H2** compensation rate β (stress) | **+0.19** (CI +0.07,+0.32) | not yet tested | not yet tested | ⚠️ positive in stress on both panels; null test pending |
+| **H2** compensation rate β (stress) | +0.19 | 0.10 | 0.16 | ❌ null is comparable |
 | **H3** up-jumps | 158 | 147.7 | 129.5 | block only |
 | **H3** skew(ΔJ) | +12.3 | +14.6 | +13.8 | ❌ null is larger |
 | **H4** half-life | 120 d | 92 d | 162 d | ⚠️ **not identified** (data between the nulls) |

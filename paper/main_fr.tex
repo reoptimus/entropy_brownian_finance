@@ -1017,6 +1017,7 @@ H1 & écart $\JJ$          & $2{,}89$  & $2{,}32$  & $1{,}76$--$2{,}74$   & $2{,
 H1 & écart $\DD$          & $0{,}48$  & $1{,}35$  & $0{,}98$--$1{,}64$   & $0{,}74$  & $0{,}30$--$1{,}13$   & échoue aux deux \\
 \midrule
 H2 & $\mathrm{corr}(\Delta H^{vol}\!,\Delta H^{dep})$ & $0{,}10$ & $0{,}14$ & $-0{,}29$--$0{,}47$ & $0{,}16$ & $-0{,}23$--$0{,}57$ & échoue aux deux \\
+H2 & $\beta$ (stress) & $0{,}19$ & $0{,}10$ & $-0{,}19$--$0{,}30$ & $0{,}16$ & $-0{,}23$--$0{,}32$ & échoue aux deux \\
 \midrule
 H3 & sauts positifs       & $158$   & $147{,}7$ & $139$--$157$     & $129{,}5$ & $117$--$148$     & blocs seulement \\
 H3 & sauts négatifs       & $9$     & $3{,}2$   & $2$--$5$         & $4{,}2$   & $0$--$7$         & \emph{plus} que les deux \\
@@ -1218,18 +1219,24 @@ $0{,}16$ sur le S\&P~500 et de $0{,}05$ à $0{,}45$ sur les indices européens
 lorsqu'on restreint au stress. La relation linéaire postulée n'est pas seulement
 de bon signe sous stress, elle y est aussi nettement mieux définie.
 
-\paragraph{Deux réserves.} D'abord, les écarts types HAC restent optimistes sur
-des fenêtres glissantes qui partagent 251 de leurs 252 jours ; les intervalles
-du tableau~\ref{tab:h2} sont à lire comme indicatifs. Ensuite et surtout,
-$\beta$ n'a pas encore été confronté aux témoins calibrés de la
-section~\ref{sec:verdicts} : le tableau~\ref{tab:placebo} teste la corrélation,
-pas la pente. Rien n'exclut qu'un rééchantillonnage produise lui aussi un
-$\beta$ positif en régime de stress, pour la même raison mécanique qui lui fait
-reproduire H6 --- les fenêtres turbulentes contiennent de grosses journées
-communes. \textbf{Tant que ce test n'est pas fait, H2 sous sa forme
-\eqref{eq:h2} est une régularité mesurée, pas un résultat établi.} L'ajout de
-$\beta$ aux statistiques de \texttt{scripts/placebo\_null.py} est la prochaine
-étape.
+\paragraph{Une réserve, et une question tranchée.} Les écarts types HAC restent
+optimistes sur des fenêtres glissantes qui partagent 251 de leurs 252 jours ; les
+intervalles du tableau~\ref{tab:h2} sont à lire comme indicatifs. Quant à savoir
+si $\beta_{\text{stress}}$ survit au témoin calibré de la
+section~\ref{sec:verdicts}, la question est maintenant tranchée, et dans le sens
+que ce paragraphe redoutait : \textbf{non}. Le tableau~\ref{tab:placebo} inclut
+désormais ce test. Sous le témoin i.i.d., $\beta_{\text{stress}}$ observé de
+$0{,}19$ tombe presque exactement sur la moyenne du témoin ($0{,}10$, intervalle
+$-0{,}19$--$0{,}30$) ; sous le témoin par blocs, même verdict ($0{,}16$,
+intervalle $-0{,}23$--$0{,}32$). La même raison mécanique qui fait reproduire H6
+par un rééchantillonnage --- des fenêtres turbulentes contenant de grosses
+journées communes --- suffit à produire une pente $\beta$ positive sous stress,
+sans qu'aucune compensation économique n'existe dans les données rééchantillonnées.
+\textbf{H2 sous sa forme \eqref{eq:h2} est donc une régularité mesurée et non un
+résultat établi} : le signe et l'ordre de grandeur rapportés plus haut sont
+réels, mais un rééchantillonnage sans aucune dynamique de compensation produit
+un $\beta_{\text{stress}}$ tout aussi positif, pour la même raison mécanique que
+H6. Le verdict rejoint donc celui déjà porté par la corrélation.
 
 \paragraph{Ce que cela ne change pas.} La conséquence qui a motivé la
 section~\ref{sec:channels} demeure : avec $\beta$ de l'ordre de $0{,}2$ hors
