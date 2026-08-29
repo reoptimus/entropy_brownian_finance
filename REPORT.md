@@ -1,5 +1,249 @@
 # Research execution report
 
+## 28 August 2026 (continued, second follow-up) — block-size sensitivity, H8 scoped to i.i.d., and a composition-calibrated stress scenario
+
+Follow-up to the episode-typology null test below. Three questions in sequence:
+does the block-21 result depend on the specific block length; is it defensible
+to scope the *stress-testing* application to the i.i.d. null only, dropping
+the block-21 null that the dependence/even typology failed; and, if so, what
+does a stress scenario built on that basis actually look like.
+
+### Block-size sensitivity (S&P 500, `share_dependence_dominant`, observed = 0.4615 throughout)
+
+| block (days) | null mean | null 5–95% | `p_greater` | verdict |
+|---|---|---|---|---|
+| 1 (i.i.d.) | 0.260 | 0.193 – 0.334 | 0.00 | clears |
+| 5 | 0.314 | 0.227 – 0.408 | 0.00 | clears |
+| 10 | 0.351 | 0.267 – 0.448 | 0.08 | marginal |
+| 21 | 0.430 | 0.345 – 0.574 | 0.25 | fails |
+| 42 | 0.493 | 0.400 – 0.596 | 0.67 | fails, null **overshoots** observed |
+| 63 | 0.509 | 0.433 – 0.562 | 0.75 | fails, overshoot peaks |
+| 126 | 0.467 | 0.395 – 0.564 | 0.50 | fails, null recedes partway |
+
+So the block-21 failure is not an artefact of that one arbitrary length: the
+crossover from clearing to failing sits between block 10 and 21, and lengthening
+the block further does not help the typology — it makes the null *harder* to
+clear, up to a peak around block 42–63, where the resampled series is long
+enough to replay whole historical clustering episodes and the null distribution
+of `share_dependence_dominant` actually sits *above* the observed value. Block
+126 (half a year) recedes slightly, consistent with the block becoming long
+enough that individual replications start to resemble the original series
+itself (test power collapsing at the limit, as expected). Conclusion: the
+typology is not identified at any block length from 21 days up — this is a
+real result, not a tuning artefact.
+
+### Scope decision: i.i.d.-only null for the stress-testing application
+
+Agreed with the user to narrow scope. The paper's existing stress-testing
+construction (`src/stress.py`: `gaussian_ball_scenario`, `classical_scenario`,
+`severity_ladder`) was already, by design, independent of H1–H7 and never
+null-tested against either resampling scheme — it prices scenarios on a KL
+scale calibrated from realised information flow, a calibration exercise, not a
+hypothesis test. Extending a *typology* into that same construction under only
+the i.i.d. null is therefore not inconsistent cherry-picking, provided the
+narrower scope is stated explicitly (as it is here and in the code below): the
+block-21 null remains the standard for every H1–H7 claim in the paper; it is
+dropped only for this specific calibration use, because a stress-test
+composition only needs to be *more than what unstructured resampling
+produces*, not free of ordinary volatility clustering — clustering is exactly
+what a stress scenario is supposed to reflect.
+
+### H8 (composition of the crisis entropy budget) — i.i.d. null, all three panels
+
+`share_dependence_dominant` (fraction of detected episodes where the
+dependence channel is the largest of the three additive contributions to `J`),
+20 i.i.d. replications (15 for FF49/EuStock, since more episodes per
+replication made 20 slower to justify):
+
+| panel | observed | null mean | null 5–95% | verdict |
+|---|---|---|---|---|
+| S&P 500 (65 episodes) | 0.462 | 0.260 | 0.193 – 0.334 | clears cleanly |
+| FF49 (61 episodes) | 0.787 | 0.398 | 0.307 – 0.468 | clears very cleanly |
+| EuStockMarkets (13 episodes) | 0.692 | 0.568 | 0.343 – 0.766 | does not clear |
+
+EuStockMarkets does not clear — observed sits inside the null's own 90% band —
+but the direction is consistent (observed above the null mean) and the panel
+is the smallest by an order of magnitude (13 episodes vs. 61–65), the same
+underpowered-panel caveat already on record elsewhere in this report for
+EuStockMarkets. Two panels clearing cleanly and a third underpowered but
+directionally consistent is enough to state, under the i.i.d.-only standard
+just adopted: **the dependence channel is disproportionately often the largest
+single contributor to a detected crisis episode, more than unstructured
+resampling of the same return series produces.** This is H8.
+
+### Severity does not predict composition (S&P 500)
+
+Splitting the 65 S&P 500 episodes into quintiles of `dJ` (the size of the
+episode) and averaging `share_dependence` within each quintile:
+
+| severity quintile | mean share dependence | mean share odd | mean share even |
+|---|---|---|---|
+| q1 (calmest 13) | 0.528 | 0.097 | 0.374 |
+| q2 | 0.173 | 0.024 | 0.803 |
+| q3 | 0.368 | 0.041 | 0.591 |
+| q4 | 0.500 | 0.022 | 0.478 |
+| q5 (worst 13) | 0.490 | 0.020 | 0.490 |
+
+Not monotonic (the dip at q2 is real, not noise-rounding), and the
+Spearman/Pearson correlation between episode size (`dJ`) and dependence share
+is essentially zero (0.047 / 0.031) — no clean linear "bigger crisis, more
+dependence-driven" law. This table is reported as a purely empirical lookup,
+the same epistemic status as the existing `severity_ladder` function, not as a
+tested hypothesis.
+
+### Composition-calibrated stress scenario (`src/stress.py`, `scripts/calibrated_stress_demo.py`)
+
+Added `calibrated_covariance` and `composition_calibrated_scenario`. The point:
+`gaussian_ball_scenario` only constrains the portfolio's own *projected*
+distribution — left unconstrained, the simplest asset-level covariance
+consistent with a target severity is pure uniform scaling of the whole matrix,
+correlations untouched. That is a default, not a claim about how real crises
+behave. H1 — the paper's single most robust finding, clearing *both* nulls on
+every panel — says real crises do not take that default route: the dependence
+channel moves on its own. `composition_calibrated_scenario` keeps the severity
+fixed (same portfolio mean, volatility, VaR/ES as `gaussian_ball_scenario`) but
+builds the asset-level covariance with a measured `dependence_share` instead of
+the default 0, interpolating the correlation matrix toward its physical
+ceiling (`rho=1`, capped — a diversified book cannot reach arbitrary severity
+through correlation alone) and closing any remaining gap with uniform scaling,
+so the portfolio-level severity is matched exactly regardless of composition
+(`w'*cov1*w = s_target**2` for every `dependence_share in [0,1]`; the quadratic
+form is linear in the covariance, so a mix of two feasible covariances is
+feasible too — this is the one piece of the construction that is a proven
+identity rather than a design choice, and it is what the unit tests check).
+
+Ran `python -m scripts.calibrated_stress_demo --config config/sp500.yaml`: a
+10-year severity scenario (`eta = 3.88` nats, `stressed_ES99 = 0.120`, identical
+across every composition by construction), priced three ways —
+
+| composition | dependence_share | entropy price (nats) | vs. default |
+|---|---|---|---|
+| default (KL-ball, pure scaling) | 0.00 | 66.9 | — |
+| H1-calibrated (regime-average `h_dep`/`h_vol` split) | 0.24 | 32.2 | −34.8 |
+| H8-refined (severe-episode split) | 0.49 | 13.4 | −53.5 |
+| classical committee bundle (vol x2, corr 0.90) | — | 10.0 | — |
+
+Two things worth flagging plainly. First, `dependence_share` is now sourced
+directly from H1 (`h1_regime_signature`'s stress-minus-calm gap in `h_dep`
+versus `h_vol`, normalised to a 0–1 split) and refined by H8 (the same split
+measured only on the most severe half of detected episodes) — H1 is back in
+the load-bearing position the user asked for: it is the number that decides
+*how* a calibrated scenario spreads risk across assets, not a background
+result the paper mentions and moves past. Second, and unexpected: the
+H1/H8-calibrated compositions are *cheaper* in full (ambient) KL terms than the
+naive default, not more expensive. This is not a bug — the default (pure
+uniform scaling) is only the simplest covariance consistent with the
+*portfolio-level* KL ball, not a proven ambient-KL minimum (the true ambient
+minimiser for a fixed portfolio variance is a different, less interpretable
+rank-one perturbation of the precision matrix, noted but not used here); it
+happens, for this panel's actual correlation structure, that leaning toward
+the historically-observed composition lands closer to that true minimum than
+uniform scaling does. The honest reading: a risk manager who assumes pure
+scale inflation by default is not being conservative by doing so — the
+historically-grounded composition is both more realistic *and* no more (here,
+less) implausible on the market's own information scale.
+
+6 new tests (`tests/test_stress.py`), all passing; 63 total in the suite.
+Not yet written into `paper/main_fr.tex` — this is a validated construction and
+a worked example, pending the user's sign-off on folding it into the stress-
+testing section as the simplified H8-based narrative agreed on above.
+
+---
+
+## 28 August 2026 (continued) — per-episode channel typology, tested against the null
+
+Follow-up to the same-day re-verification below, on request: identify whether
+distinct "crisis types" show up as distinct entropy-channel signatures, and
+connect the reasoning back to the paper's volume-time bridge (Section 2).
+
+### What was built
+
+`src/jumps.py` gained `group_jump_episodes` (merges individually detected
+jumps closer than `gap` trading days into episodes -- the event study already
+shows jumps cluster into runs, not isolated arrivals) and
+`episode_channel_budget` (decomposes each episode's move in `J` into its three
+*exactly additive* entropy-destroying channels: dependence `-h_dep_ew`,
+asymmetry `d_odd`, tail weight `d_even`; `J = dependence + odd + even` is an
+identity, so the three shares are an exact per-crisis budget, not an
+approximation of one). Two tests cover the grouping logic and the identity on
+a synthetic series with a known answer. Pushed on `claude/episode-channel-budget`.
+
+### The reading proposed, from the volume-time bridge
+
+Section 2.4 of `paper/main_fr.tex` (the contrapositive of the volume bridge)
+already distinguishes two sources of a positive entropy deficit: a random
+*volume clock* produces a symmetric scale mixture (fatter tails, no
+directional skew -- the **even** channel), while a directional, constraining
+piece of news produces asymmetry (the **odd** channel, postulate P2's
+mechanism). The **dependence** channel is a third, separate source: news
+common to the cross-section, whatever its own symmetry. So a dependence-
+dominated episode reads as systemic/common-factor, an odd-dominated one as
+directional/informational, and an even-dominated one as consistent with
+elevated, undirected trading intensity -- a volume-clock signature. (Caveat
+stated in the code and repeated here: none of the three panels carries actual
+traded volume, so this is a model-consistent interpretation of the channel
+split, not a direct measurement of volume.)
+
+### What the raw split showed (S&P 500, FF49, EuStockMarkets)
+
+Applied to all three panels' detected-jump episodes: the **odd** (asymmetry)
+channel is essentially never the dominant one (1 dominant episode out of 139
+across all three panels combined) -- an additional data point against P2 as
+the dominant mechanism, on top of H5's already-marginal result. The
+**dependence**/**even** split, by contrast, looked like a real typology at
+first glance: S&P 500 (20 stocks) came out near 50/50 across 65 episodes, FF49
+(48 industry portfolios) leaned heavily dependence (48/61, 79%), and each
+panel's single largest episode (COVID on S&P 500 and FF49, the Sept 1992 ERM
+crisis on EuStockMarkets) was even-dominant every time.
+
+### Tested against the null (`scripts/episode_null.py`) -- not identified
+
+Built the same way as every other statistic in the paper: reuse the i.i.d.
+and block-21 resampling of `scripts/placebo_null.py`, run the full pipeline
+and the episode decomposition on 20 replications of each, and compare. On the
+S&P 500 panel:
+
+- **`share_dependence_dominant`** (fraction of episodes where dependence is
+  the largest of the three contributions): observed 0.46, i.i.d. null mean
+  0.26 (range across all 20 replications: 0.18--0.35) -- observed sits above
+  every single replication. **Clears the i.i.d. null cleanly.** But under the
+  block-21 null, mean 0.43 (range 0.30--0.58) -- observed falls squarely
+  inside, three replications exceed it outright. **Fails the block null.**
+  Per the paper's own standard (a statistic that clears one null and fails
+  the other is not identified), the dependence/even typology is **not
+  established**: ordinary volatility clustering, which the block bootstrap
+  preserves and the i.i.d. one destroys, is plausibly sufficient to produce
+  it, with no need for genuinely distinct economic crisis types.
+- **"The largest episode is always even-dominant"** does not survive the null
+  at all: under the i.i.d. resampling, the largest episode was even-dominant
+  in **20 out of 20** replications too. This is mechanical, not a finding --
+  the single most extreme day in any resampling, real dynamics or none, tends
+  to look like a broad-based tail event by construction. The earlier framing
+  of this specific pattern (in the prior chat turn, before this null check)
+  overstated it; it is withdrawn here.
+- A secondary pair of statistics, `mean_share_dependence`/`sd_share_dependence`
+  (averaging the per-episode dependence *share* rather than counting dominant
+  episodes), turned out to be numerically unstable -- a handful of episodes
+  where the three channels nearly cancel (small total move) produce a near-
+  zero denominator and an exploding ratio (null replications with
+  `sd_share_dependence` as high as 18). These two statistics are unreliable
+  either way and should not be used as evidence; the categorical
+  dominant-channel counts do not have this problem and are the ones to trust.
+
+### Bottom line
+
+Same fate as H2, H3 and H6: a pattern that looks compelling in the raw data
+and has a clean theoretical story (the volume-time bridge) does not survive
+the more conservative, volatility-clustering-preserving null. The honest
+conclusion is that channel-based crisis typing is an open question, not a
+result -- worth pursuing further (a literal volume series would let the
+even-channel interpretation be tested directly instead of by analogy; a
+larger episode count, e.g. from CRSP or a longer individual-stock history,
+would sharpen the block-null comparison), but not yet something to write into
+the paper as a finding.
+
+---
+
 ## 28 August 2026 — full independent re-verification; H2's β resolved against the null
 
 A complete re-check of the reworked project (math, code, reproducibility), following

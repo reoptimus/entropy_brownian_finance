@@ -4,7 +4,9 @@ import pytest
 
 from src.stress import (
     build_scenario_table,
+    calibrated_covariance,
     classical_scenario,
+    composition_calibrated_scenario,
     es_coefficient,
     gaussian_ball_scenario,
     kl_of_tilt,
@@ -98,6 +100,81 @@ def test_classical_legs_are_non_negative_and_bundle_is_dearer(market):
     for leg in ['price_mean_leg_nats', 'price_vol_leg_nats', 'price_correlation_leg_nats']:
         assert c[leg] >= 0
     assert c['entropy_price_nats'] > c['price_mean_leg_nats']
+
+
+def test_calibrated_covariance_preserves_portfolio_variance_at_any_share(market):
+    mu, cov, w = market
+    s_target = 1.6 * float(np.sqrt(w @ cov @ w))
+    for share in [0.0, 0.25, 0.5, 0.75, 1.0]:
+        cov1, _ = calibrated_covariance(cov, w, s_target, share)
+        assert float(np.sqrt(w @ cov1 @ w)) == pytest.approx(s_target, rel=1e-8)
+
+
+def test_calibrated_covariance_endpoints_match_pure_scale_and_feasible_corr(market):
+    mu, cov, w = market
+    s0 = float(np.sqrt(w @ cov @ w))
+    s_target = 1.6 * s0  # below the rho=1 ceiling for this fixture (~2.54x s0)
+    cov_share0, feasible = calibrated_covariance(cov, w, s_target, 0.0)
+    k = s_target / s0
+    assert np.allclose(cov_share0, (k ** 2) * cov)
+    assert feasible
+
+    # Feasible severities: pure correlation reaches the target with marginal
+    # volatilities left exactly at their base values.
+    cov_share1, _ = calibrated_covariance(cov, w, s_target, 1.0)
+    sd0 = np.sqrt(np.diag(cov))
+    assert np.allclose(np.sqrt(np.diag(cov_share1)), sd0)
+
+
+def test_calibrated_covariance_caps_correlation_at_its_ceiling(market):
+    mu, cov, w = market
+    s0 = float(np.sqrt(w @ cov @ w))
+    # Beyond the rho=1 ceiling (~2.54x s0): no correlation matrix reaches this
+    # on its own, so even share=1 must lean on some uniform scaling too --
+    # but the portfolio severity is still matched exactly.
+    s_target = 3.5 * s0
+    cov1, feasible = calibrated_covariance(cov, w, s_target, dependence_share=1.0)
+    assert not feasible
+    assert float(np.sqrt(w @ cov1 @ w)) == pytest.approx(s_target, rel=1e-8)
+    sd1 = np.sqrt(np.diag(cov1))
+    sd0 = np.sqrt(np.diag(cov))
+    assert np.all(sd1 > sd0)  # the residual gap still had to be closed by scaling
+
+
+def test_calibrated_covariance_severity_invariant_holds_beyond_the_ceiling(market):
+    mu, cov, w = market
+    s0 = float(np.sqrt(w @ cov @ w))
+    s_target = 3.5 * s0  # above the rho=1 ceiling
+    for share in [0.0, 0.25, 0.5, 0.75, 1.0]:
+        cov1, _ = calibrated_covariance(cov, w, s_target, share)
+        assert float(np.sqrt(w @ cov1 @ w)) == pytest.approx(s_target, rel=1e-8)
+
+
+def test_composition_calibrated_scenario_matches_ball_at_zero_excess_cost(market):
+    mu, cov, w = market
+    sc = composition_calibrated_scenario(mu, cov, w, eta=2.0, dependence_share=0.0)
+    assert sc['excess_cost_over_default_nats'] == pytest.approx(0.0, abs=1e-8)
+    assert sc['entropy_price_nats'] == pytest.approx(sc['default_composition_cost_nats'])
+
+
+def test_composition_calibrated_scenario_severity_is_share_invariant(market):
+    """The portfolio-level severity (mean, vol, ES/VaR) never depends on the
+    composition -- only the ambient price and the asset-level covariance do."""
+    mu, cov, w = market
+    # eta chosen so the target stays within the rho=1 ceiling (~2.5x s0 for
+    # this fixture): at share=1.0 exactly beyond that ceiling, cov_cap is a
+    # rank-one (perfectly-correlated) matrix and its KL price is undefined --
+    # a real degeneracy, not something to paper over in this invariance test.
+    scs = [composition_calibrated_scenario(mu, cov, w, eta=0.5, dependence_share=s)
+           for s in [0.0, 0.3, 0.6, 0.9, 1.0]]
+    for key in ['stressed_mean', 'stressed_vol_daily', 'stressed_ES99']:
+        vals = [sc[key] for sc in scs]
+        assert all(v == pytest.approx(vals[0]) for v in vals)
+    # Composition is not a free lunch: every non-default share changes the
+    # ambient price (up or down -- the default is not an ambient-KL minimum,
+    # only the ball's own simplest choice; see _vol_only_covariance).
+    prices = [sc['entropy_price_nats'] for sc in scs]
+    assert len(set(np.round(prices, 6))) > 1
 
 
 def test_severity_ladder_is_monotone_and_flags_extrapolation():

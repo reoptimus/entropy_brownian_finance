@@ -36,6 +36,8 @@ __all__ = [
     'estimate_relaxation',
     'event_study',
     'crisis_diffusion_indicators',
+    'group_jump_episodes',
+    'episode_channel_budget',
 ]
 
 _BP_SCALE = np.sqrt(2.0 / np.pi)  # E|Z| for a standard normal
@@ -183,6 +185,113 @@ def event_study(
         'q75': np.percentile(P, 75, axis=0),
         'n_events': P.shape[0],
     }, index=pd.Index(range(-pre, post + 1), name='event_day'))
+
+
+def group_jump_episodes(jumps: pd.DataFrame, gap: int = 40,
+                        direction: str = 'up') -> list[tuple]:
+    """Merge individually detected jumps into episodes.
+
+    A single flagged jump is rarely an isolated arrival: the event study
+    (:func:`event_study`) shows the index typically keeps rising for another
+    dozen-odd days after the date a jump is *signalled*, i.e. detected jumps
+    cluster into runs belonging to the same information episode (a crisis
+    unfolds over weeks, not one trading day). Two jump dates less than ``gap``
+    trading days apart (by position in ``jumps.index``, not calendar days) are
+    merged into the same episode.
+
+    Returns a list of ``(start, end, member_dates)`` tuples in chronological
+    order, ``start``/``end`` being the first/last *detected* jump date in the
+    episode -- callers that need the episode's full extent (e.g. to find where
+    the index actually peaks) should look some days past ``end``, since the
+    detector's threshold crossing is not the same as the index's local
+    maximum.
+    """
+    col = 'jump_up' if direction == 'up' else 'jump_down'
+    flagged = jumps.index[jumps[col].to_numpy()]
+    if len(flagged) == 0:
+        return []
+    pos = {d: i for i, d in enumerate(jumps.index)}
+
+    episodes = []
+    start = prev = flagged[0]
+    members = [flagged[0]]
+    for d in flagged[1:]:
+        if pos[d] - pos[prev] > gap:
+            episodes.append((start, prev, members))
+            start, members = d, []
+        members.append(d)
+        prev = d
+    episodes.append((start, prev, members))
+    return episodes
+
+
+def episode_channel_budget(ent: pd.DataFrame, episodes: list[tuple],
+                           pre: int = 10, post_search: int = 20) -> pd.DataFrame:
+    """Decompose each episode's move in J into its three additive channels.
+
+    ``J = (-h_dep_ew) + d_odd + d_even`` is an exact identity (structural
+    index = dependence contribution + asymmetry channel + tail-weight
+    channel), so for any two dates the change in each term sums exactly to the
+    change in J. This computes that split from just before an episode starts
+    to wherever J actually peaks within (and slightly past) the episode, which
+    gives a per-crisis budget instead of the single number pooled over an
+    entire stress regime that :func:`~src.hypotheses.h6_tail_dependence_coupling`
+    reports.
+
+    Reading the three shares against the paper's volume-time bridge
+    (``paper/main_fr.tex``, Section 2 and its contrapositive, Section 2.4):
+    a random, information-free volume clock produces a *symmetric* scale
+    mixture -- fatter tails without directional skew, i.e. the **even**
+    (tail-weight) channel -- while a genuinely constraining, directional piece
+    of news produces **asymmetry**, i.e. the **odd** channel (this is also
+    postulate P2's mechanism). The **dependence** channel is a third,
+    logically separate source: news common to the whole cross-section, which
+    couples assets together regardless of whether it is itself symmetric or
+    not. So a dependence-dominated episode reads as systemic/common-factor, an
+    odd-dominated one as directional/informational, and an even-dominated one
+    as consistent with elevated, undirected trading intensity -- a volume-
+    clock signature -- though none of the three panels used here carries
+    actual traded volume, so this reading is a model-consistent interpretation
+    of the channel split, not a direct measurement of volume.
+
+    Note this uses the *level* channels (``h_dep_ew``/``d_odd``/``d_even``),
+    not their date-to-date differences, so a single noisy day cannot flip the
+    attribution; only the well-defined start/peak comparison matters.
+    """
+    n = len(ent)
+    pos = {d: i for i, d in enumerate(ent.index)}
+    rows = []
+    for start, end, members in episodes:
+        i_start = max(0, pos[start] - pre)
+        i_end = min(n - 1, pos[end] + post_search)
+        base = ent.iloc[i_start]
+        window = ent.iloc[pos[start]:i_end + 1]
+        if window['J'].isna().all():
+            continue
+        peak_date = window['J'].idxmax()
+        peak = ent.loc[peak_date]
+
+        d_dep = float(-peak['h_dep_ew'] - (-base['h_dep_ew']))
+        d_odd = float(peak['d_odd'] - base['d_odd'])
+        d_even = float(peak['d_even'] - base['d_even'])
+        total = d_dep + d_odd + d_even
+        dj = float(peak['J'] - base['J'])
+
+        dominant = max(
+            [('dependence', d_dep), ('odd', d_odd), ('even', d_even)],
+            key=lambda kv: kv[1],
+        )[0]
+        rows.append({
+            'start': start, 'end': end, 'peak': peak_date,
+            'n_jumps': len(members), 'days_to_peak': pos[peak_date] - pos[start],
+            'base_date': base.name, 'dJ': dj,
+            'd_dependence': d_dep, 'd_odd': d_odd, 'd_even': d_even,
+            'share_dependence': d_dep / total if total else np.nan,
+            'share_odd': d_odd / total if total else np.nan,
+            'share_even': d_even / total if total else np.nan,
+            'dominant_channel': dominant,
+        })
+    return pd.DataFrame(rows)
 
 
 def crisis_diffusion_indicators(
