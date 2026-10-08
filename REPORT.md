@@ -1,5 +1,38 @@
 # Research execution report
 
+## 8 October 2026 — 200-replication nulls, run locally, both panels
+
+`calcul_local/lancer_calcul.py` (PR #6) was run by the user on a Windows machine
+(4 cores, 3 processes, 6,345 s wall, 35,859 CPU-s). Result files:
+`paper/tables/placebo_null_200rep_replications_long.csv` and
+`placebo_null_200rep_run_info.json`; per-panel summaries in
+`paper/tables/{sp500,ff49}_placebo_null{,_block21}.csv`.
+
+Integrity checks: 200 replications × {i.i.d., block-21} × {FF49, S&P 500}, none
+missing, no NaN; code at `acd3711`; FF49 zip SHA-256 identical to the repository;
+the S&P 500 CSV hash differs only by Windows CRLF line endings (hash matches the
+repository file after CRLF conversion); observed statistics match the paper
+exactly (−1.72, 18.95, 158/9, 120.1 d).
+
+What changed against the 20-replication table (S&P 500):
+- `h_dep` regime gap still clears both nulls (null means −0.23 / −0.58).
+- range(`J`) clears the i.i.d. null and the block null only narrowly
+  (*p* = 0.035; block 95% quantile 17.88 vs observed 18.95).
+- H5 does not pass 5% on either null (*p* = 0.10 and 0.08).
+- The block null couples the channels less than before (0.73 vs observed 0.66,
+  *p* = 0.25): H6 now fails only against the i.i.d. null, in the opposite direction.
+- Half-life: observed 120 d is above the i.i.d. null (92) and below 93% of the
+  block null (mean 165): still not identified.
+
+FF49, first time against the nulls: `h_dep` gap −8.51 vs −0.61 / −2.63 clears
+both; `J` gap +10.56 vs +8.17 / +7.90 clears both (*p* = 0.015 / 0.02); range(`J`)
+clears only i.i.d. (block *p* = 0.13); H2 correlation −0.63 is nearly reproduced
+by the block null (−0.54, *p* = 0.09); H8 clears i.i.d. only.
+
+Not done: the Phase 0 fixes of the 29 August protocol (look-ahead in the stress
+threshold, ADF p-value, KL radius on the portfolio projection). The English
+edition (`paper/main.tex`) was not updated.
+
 ## 28 August 2026 (continued, second follow-up) — block-size sensitivity, H8 scoped to i.i.d., and a composition-calibrated stress scenario
 
 Follow-up to the episode-typology null test below. Three questions in sequence:

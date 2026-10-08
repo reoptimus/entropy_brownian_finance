@@ -1,0 +1,31 @@
+{
+  "code_commit": "acd371135c7f31dc2f2e048d90919aeda4a895a8",
+  "seed": 11,
+  "n_rep": 200,
+  "panels": [
+    "ff49",
+    "sp500"
+  ],
+  "nulls": {
+    "iid": 1,
+    "block21": 21
+  },
+  "jobs": 3,
+  "test_mode": false,
+  "wall_seconds_this_session": 6345.4,
+  "cpu_seconds_total": 35858.6,
+  "data_sha256": {
+    "ff49": "9b368230566fbf636b64b7a766a74b9a94a15dda5bb9101ff141670526dc1a34",
+    "sp500": "5f769c6d7be57f62a4dfd1f553995855462a17c92b21a4af4245439c6115617f"
+  },
+  "versions": {
+    "python": "3.14.8",
+    "numpy": "2.5.3",
+    "pandas": "3.0.6",
+    "scipy": "1.18.1",
+    "scikit-learn": "1.9.1",
+    "statsmodels": "0.15.0"
+  },
+  "platform": "Windows-11-10.0.26200-SP0",
+  "cpu_count": 4
+}
