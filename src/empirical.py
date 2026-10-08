@@ -88,6 +88,7 @@ def rolling_measures(
     T, N = X.shape
     w_ewma = ewma_weights(window, halflife)
     uniform = np.full(window, 1.0 / window)
+    w_eq = np.full(N, 1.0 / N)
 
     from collections import deque
 
@@ -129,8 +130,15 @@ def rolling_measures(
         if len(history) == flow_horizon:
             mu_h, cov_h = history[0]
             rec['info_flow_h'] = gaussian_kl(mu, cov_jump, mu_h, cov_h)
+            # Same flow on the equal-weight portfolio's 1-D projection (A3): the
+            # stress ball only constrains the portfolio, so its radius must be
+            # calibrated on the portfolio's own information flow.
+            rec['info_flow_port_h'] = gaussian_kl(
+                np.array([w_eq @ mu]), np.array([[w_eq @ cov_jump @ w_eq]]),
+                np.array([w_eq @ mu_h]), np.array([[w_eq @ cov_h @ w_eq]]))
         else:
             rec['info_flow_h'] = np.nan
+            rec['info_flow_port_h'] = np.nan
         history.append((mu, cov_jump))
         prev_mu, prev_cov = mu, cov_jump
         rows.append(rec)

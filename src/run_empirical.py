@@ -14,6 +14,8 @@ import yaml
 
 from .empirical import conditional_state, main
 from .hypotheses import run_all
+from .audit import audit_trail
+from .regimes import past_only_stress
 from .stress import (
     build_scenario_table,
     classical_scenario,
@@ -177,10 +179,11 @@ def run() -> None:
     ent.to_csv(out_t / 'rolling_measures.csv')
     ent.describe().T.to_csv(out_t / 'summary.csv')
 
-    q = ent['stress_signal'].quantile(cfg['regimes']['stress_quantile'])
-    ent['stress'] = ent['stress_signal'] >= q
+    # Past-only threshold (phase 0, A5): no look-ahead in the regime labels.
+    ent['stress'], ent['regime_valid'] = past_only_stress(
+        ent['stress_signal'], cfg['regimes']['stress_quantile'])
 
-    res = run_all(ent, ent['stress'], cfg)
+    res = run_all(ent, ent['stress'], cfg, valid=ent['regime_valid'])
     for name, table in res.items():
         if isinstance(table, pd.DataFrame) and not table.empty:
             table.to_csv(out_t / f'{name}.csv')
@@ -192,7 +195,9 @@ def run() -> None:
     scfg = cfg.get('stress_test', {})
     horizon = int(scfg.get('horizon', 21))
     var_level = float(scfg.get('var_level', 0.99))
-    flow = ent['info_flow_h'].dropna()
+    # A3: ball radius calibrated on the portfolio projection ('full' = old N-dim).
+    flow_col = 'info_flow_h' if scfg.get('flow', 'portfolio') == 'full' else 'info_flow_port_h'
+    flow = ent[flow_col].dropna()
 
     ladder = severity_ladder(
         flow,
@@ -251,6 +256,8 @@ def run() -> None:
         'n_jump_up': int(res['h3_jump_asymmetry']['n_jump_up'].iloc[0]),
         'n_jump_down': int(res['h3_jump_asymmetry']['n_jump_down'].iloc[0]),
         'skew_of_dJ': float(res['h3_jump_asymmetry']['skew_of_changes'].iloc[0]),
+        'n_regime_dates': int(ent['regime_valid'].sum()),
+        'audit': audit_trail(cfg),
     }
     (out_t / 'run_summary.json').write_text(json.dumps(summary, indent=2))
 

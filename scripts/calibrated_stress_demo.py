@@ -35,6 +35,7 @@ import yaml
 from src.empirical import conditional_state, main
 from src.hypotheses import h1_regime_signature
 from src.jumps import detect_jumps, episode_channel_budget, group_jump_episodes
+from src.regimes import past_only_stress
 from src.stress import (
     classical_scenario,
     composition_calibrated_scenario,
@@ -74,14 +75,13 @@ def run(config: str) -> None:
     cfg = yaml.safe_load(Path(config).read_text())
     logret, ent = main(cfg)
 
-    q = ent['stress_signal'].quantile(cfg['regimes']['stress_quantile'])
-    stress = ent['stress_signal'] >= q
+    stress, valid = past_only_stress(ent['stress_signal'], cfg['regimes']['stress_quantile'])
 
     jcfg = cfg.get('jumps', {})
     threshold = float(jcfg.get('threshold', 4.0))
     scale_window = int(jcfg.get('scale_window', 250))
 
-    share_h1 = h1_dependence_share(ent, stress)
+    share_h1 = h1_dependence_share(ent.loc[valid], stress.loc[valid])
     share_h8, n_severe = h8_severe_episode_share(ent, threshold, scale_window)
 
     est = cfg['estimation']
@@ -96,7 +96,7 @@ def run(config: str) -> None:
     scfg = cfg.get('stress_test', {})
     horizon = int(scfg.get('horizon', 21))
     var_level = float(scfg.get('var_level', 0.99))
-    flow = ent['info_flow_h'].dropna()
+    flow = ent['info_flow_port_h'].dropna()  # A3: portfolio projection
     rp = 10
     ladder = severity_ladder(flow, return_periods=(rp,), horizon=horizon)
     eta = float(ladder.iloc[0]['eta_nats'])

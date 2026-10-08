@@ -26,6 +26,7 @@ import pandas as pd
 import statsmodels.api as sm
 
 from .jumps import (
+    nw_lags,
     crisis_diffusion_indicators,
     detect_jumps,
     estimate_relaxation,
@@ -89,7 +90,7 @@ def block_bootstrap_diff(x: pd.Series, mask: pd.Series, block: int = 252,
 def h1_regime_signature(ent: pd.DataFrame, stress: pd.Series,
                         block: int = 252, n_boot: int = 2000) -> pd.DataFrame:
     """Regime means of every channel, with block-bootstrap significance."""
-    cols = ['h_vol', 'h_dep', 'h_cov', 'd_total', 'd_odd', 'd_even', 'h_tot', 'J',
+    cols = ['h_vol', 'h_dep', 'h_dep_ew', 'h_cov', 'd_total', 'd_odd', 'd_even', 'h_tot', 'J',
             'skew_market', 'exkurt_market', 'mean_corr', 'n_eff_modes', 'tail_dep']
     rows = []
     for c in cols:
@@ -146,7 +147,7 @@ def h2_ceiling_compensation(ent: pd.DataFrame, stress: pd.Series) -> pd.DataFram
     return out[['regime', 'pair', 'corr', 'sd_sum', 'sd_benchmark', 'var_reduction_pct', 'n']]
 
 
-def compensation_slope(ent: pd.DataFrame, stress: pd.Series, hac_lags: int = 21) -> pd.DataFrame:
+def compensation_slope(ent: pd.DataFrame, stress: pd.Series, hac_lags: int | None = None) -> pd.DataFrame:
     """Estimate the compensation rate beta of H2: d h_dep = -beta * d h_vol + u.
 
     The earlier formulation of H2 bundled a sign claim and a magnitude claim into
@@ -167,7 +168,8 @@ def compensation_slope(ent: pd.DataFrame, stress: pd.Series, hac_lags: int = 21)
         if len(sub) < 30:
             continue
         model = sm.OLS(sub['dh_dep'], sm.add_constant(sub['dh_vol'])).fit(
-            cov_type='HAC', cov_kwds={'maxlags': hac_lags})
+            cov_type='HAC',
+            cov_kwds={'maxlags': nw_lags(len(sub)) if hac_lags is None else hac_lags})
         beta = -float(model.params['dh_vol'])
         se = float(model.bse['dh_vol'])
         rows.append({
@@ -296,7 +298,7 @@ def _diebold_mariano(e1: np.ndarray, e2: np.ndarray, lags: int) -> tuple:
 def h7_incremental_value(ent: pd.DataFrame,
                          targets=('future_rv', 'future_drawdown', 'future_worst_loss'),
                          extras=('J', 'd_total', 'h_dep', 'crisis', 'unhealed'),
-                         hac_lags: int = 21, min_train: int | None = None,
+                         hac_lags: int | None = None, min_train: int | None = None,
                          refit: int = 252, thin: int = 21) -> pd.DataFrame:
     """Does an entropy channel add to volatility in forecasting forward risk?
 
@@ -331,8 +333,11 @@ def h7_incremental_value(ent: pd.DataFrame,
                                           min(refit, max(63, len(d) // 8)))
             err = (d[target] - preds).dropna()
             err = err[err.index.isin(eval_dates)]
+            # Forward-looking targets overlap by construction: keep the lag at
+            # least the target horizon (21 days) on top of the NW rule.
+            lags_full = max(21, nw_lags(len(d))) if hac_lags is None else hac_lags
             full = sm.OLS(d[target], sm.add_constant(d[cols])).fit(
-                cov_type='HAC', cov_kwds={'maxlags': hac_lags})
+                cov_type='HAC', cov_kwds={'maxlags': lags_full})
             row = {
                 'target': target,
                 'extra_regressor': extra,
@@ -351,7 +356,8 @@ def h7_incremental_value(ent: pd.DataFrame,
             elif base_errors is not None:
                 common = err.index.intersection(base_errors.index)
                 t, p = _diebold_mariano(base_errors.loc[common].to_numpy(),
-                                        err.loc[common].to_numpy(), hac_lags)
+                                        err.loc[common].to_numpy(),
+                                        21 if hac_lags is None else hac_lags)
                 row['dm_tstat'] = t
                 row['dm_pvalue'] = p
                 row['oos_mse_vs_vol_only_pct'] = float(
@@ -360,7 +366,8 @@ def h7_incremental_value(ent: pd.DataFrame,
     return pd.DataFrame(rows)
 
 
-def run_all(ent: pd.DataFrame, stress: pd.Series, cfg: dict) -> dict:
+def run_all(ent: pd.DataFrame, stress: pd.Series, cfg: dict,
+            valid: pd.Series | None = None) -> dict:
     """Run every hypothesis test and return the tables as a dict."""
     jcfg = cfg.get('jumps', {})
     threshold = float(jcfg.get('threshold', 4.0))
@@ -375,15 +382,22 @@ def run_all(ent: pd.DataFrame, stress: pd.Series, cfg: dict) -> dict:
     ind = crisis_diffusion_indicators(ent['J'], jumps, float(h4['kappa'].iloc[0]))
     ent = ent.join(ind[['crisis', 'unhealed']])
 
+    # Regime tests only use dates where the (past-only) stress label exists.
+    if valid is None:
+        ent_r, stress_r = ent, stress
+    else:
+        v = valid.reindex(ent.index).fillna(False).astype(bool)
+        ent_r, stress_r = ent.loc[v], stress.reindex(ent.index).loc[v]
+
     return {
-        'h1_regime_signature': h1_regime_signature(ent, stress),
-        'h2_ceiling_compensation': h2_ceiling_compensation(ent, stress),
-        'h2_compensation_slope': compensation_slope(ent, stress),
+        'h1_regime_signature': h1_regime_signature(ent_r, stress_r),
+        'h2_ceiling_compensation': h2_ceiling_compensation(ent_r, stress_r),
+        'h2_compensation_slope': compensation_slope(ent_r, stress_r),
         'h3_jump_asymmetry': h3,
         'h4_relaxation': h4,
         'h4_event_study': ev,
         'h5_skewness_signature': h5_skewness_signature(ent, jumps),
-        'h6_tail_dependence_coupling': h6_tail_dependence_coupling(ent, stress),
+        'h6_tail_dependence_coupling': h6_tail_dependence_coupling(ent_r, stress_r),
         'h7_incremental_value': h7_incremental_value(ent),
         'indicators': ind,
         'jumps': jumps,

@@ -93,7 +93,8 @@ def jump_asymmetry(jumps: pd.DataFrame, periods_per_year: float = 252.0) -> dict
     years = n_obs / periods_per_year if n_obs else np.nan
 
     n_up, n_down = len(up), len(down)
-    # Binomial test of equal up/down jump counts under the symmetric null.
+    # Naive binomial test (B1): indicative only. The decision uses the
+    # comparison with the placebo nulls, since J jumps are not symmetric by design.
     if n_up + n_down > 0:
         from scipy import stats as _st
         p_binom = float(_st.binomtest(n_up, n_up + n_down, 0.5).pvalue)
@@ -105,7 +106,7 @@ def jump_asymmetry(jumps: pd.DataFrame, periods_per_year: float = 252.0) -> dict
         'n_jump_up': n_up,
         'n_jump_down': n_down,
         'jump_ratio_up_down': float(n_up / n_down) if n_down else np.inf,
-        'p_binomial_symmetry': p_binom,
+        'p_binomial_naive': p_binom,
         'intensity_up_per_year': float(n_up / years) if years else np.nan,
         'intensity_down_per_year': float(n_down / years) if years else np.nan,
         'mean_size_up': float(up.mean()) if n_up else np.nan,
@@ -120,16 +121,26 @@ def jump_asymmetry(jumps: pd.DataFrame, periods_per_year: float = 252.0) -> dict
     }
 
 
+def nw_lags(n: int) -> int:
+    """Newey-West (1994) plug-in bandwidth floor(4 (n/100)^(2/9)), at least 1."""
+    return max(1, int(np.floor(4.0 * (max(n, 1) / 100.0) ** (2.0 / 9.0))))
+
+
 def estimate_relaxation(
     series: pd.Series,
     jumps: pd.DataFrame | None = None,
-    hac_lags: int = 21,
+    hac_lags: int | None = None,
+    exclude_day_after: bool = False,
 ) -> dict:
     """Estimate the OU relaxation rate of ``series`` on non-jump dates.
 
     Regresses ``dJ_t`` on ``J_{t-1}`` with an intercept, excluding dates flagged
-    as jumps (and the date immediately after a jump, whose difference still
-    contains the jump). The slope is ``-kappa`` per period; the half-life is
+    as jumps. The day after a jump is kept by default (phase 0, B2): its
+    difference does not contain the jump, and dropping it selects on the
+    dependent variable and biases the half-life. ``hac_lags=None`` uses the
+    Newey-West rule (B3). ``slope_pvalue`` is the Dickey-Fuller (MacKinnon)
+    p-value of the slope t-statistic (A4), since under a unit root the normal
+    law is badly sized; ``slope_pvalue_normal`` keeps the naive value. The slope is ``-kappa`` per period; the half-life is
     ``ln 2 / kappa``. A negative slope with a positive long-run level is exactly
     the relaxation postulate; an insignificant or positive slope would refute
     it.
@@ -137,10 +148,14 @@ def estimate_relaxation(
     df = pd.DataFrame({'level': series.shift(1), 'd': series.diff()}).dropna()
     if jumps is not None:
         mask = jumps['is_jump'].reindex(df.index).fillna(False)
-        mask = mask | jumps['is_jump'].shift(1).reindex(df.index).fillna(False)
+        if exclude_day_after:
+            mask = mask | jumps['is_jump'].shift(1).reindex(df.index).fillna(False)
         df = df.loc[~mask.astype(bool)]
     X = sm.add_constant(df[['level']])
-    model = sm.OLS(df['d'], X).fit(cov_type='HAC', cov_kwds={'maxlags': hac_lags})
+    lags = nw_lags(len(df)) if hac_lags is None else int(hac_lags)
+    model = sm.OLS(df['d'], X).fit(cov_type='HAC', cov_kwds={'maxlags': lags})
+    from statsmodels.tsa.adfvalues import mackinnonp
+    p_df = float(mackinnonp(float(model.tvalues['level']), regression='c', N=1))
     slope = float(model.params['level'])
     kappa = -slope
     return {
@@ -148,7 +163,9 @@ def estimate_relaxation(
         'slope': slope,
         'slope_se': float(model.bse['level']),
         'slope_tstat': float(model.tvalues['level']),
-        'slope_pvalue': float(model.pvalues['level']),
+        'slope_pvalue': p_df,
+        'slope_pvalue_normal': float(model.pvalues['level']),
+        'hac_lags': lags,
         'kappa': kappa,
         'half_life_days': float(np.log(2.0) / kappa) if kappa > 0 else np.nan,
         'long_run_level': float(-model.params['const'] / slope) if slope != 0 else np.nan,

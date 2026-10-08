@@ -59,7 +59,7 @@ def test_jump_asymmetry_detects_one_sidedness():
     stats = jump_asymmetry(detect_jumps(s, 4.0, 250))
     assert stats['n_jump_up'] > stats['n_jump_down']
     assert stats['skew_of_changes'] > 0
-    assert stats['p_binomial_symmetry'] < 0.01
+    assert stats['p_binomial_naive'] < 0.01
 
 
 def test_jump_asymmetry_is_symmetric_on_symmetric_noise():
@@ -69,7 +69,7 @@ def test_jump_asymmetry_is_symmetric_on_symmetric_noise():
     stats = jump_asymmetry(detect_jumps(s, 4.0, 250))
     total = stats['n_jump_up'] + stats['n_jump_down']
     if total >= 10:
-        assert stats['p_binomial_symmetry'] > 0.01
+        assert stats['p_binomial_naive'] > 0.01
 
 
 def test_estimate_relaxation_recovers_kappa():
@@ -159,3 +159,29 @@ def test_episode_channel_budget_matches_exact_identity_and_dominant_channel():
     assert row['share_dependence'] + row['share_odd'] + row['share_even'] == pytest.approx(1.0)
     assert row['dominant_channel'] == 'dependence'
     assert row['share_dependence'] > 0.9
+
+
+def test_relaxation_dickey_fuller_pvalue_and_day_after():
+    from src.jumps import nw_lags
+    rng = np.random.default_rng(1)
+    walk = pd.Series(np.cumsum(rng.normal(size=1500)))  # unit root: no relaxation
+    rel = estimate_relaxation(walk)
+    assert rel['slope_pvalue'] > 0.01  # normal-law p would often be far smaller
+    assert rel['slope_pvalue'] >= rel['slope_pvalue_normal'] - 1e-12
+    assert rel['hac_lags'] == nw_lags(rel['n_used'])
+    ou = pd.Series(np.zeros(2000))
+    for t in range(1, 2000):
+        ou.iloc[t] = 0.9 * ou.iloc[t - 1] + rng.normal()
+    jumps = detect_jumps(ou, 4.0, 250)
+    a = estimate_relaxation(ou, jumps)
+    b = estimate_relaxation(ou, jumps, exclude_day_after=True)
+    assert a['n_used'] >= b['n_used']
+
+
+def test_ladder_reports_phase_range_and_extrapolation_flag():
+    from src.stress import severity_ladder
+    flow = pd.Series(np.random.default_rng(2).exponential(size=400))
+    lad = severity_ladder(flow, return_periods=(1, 500), horizon=21)
+    assert (lad['eta_phase_min'] <= lad['eta_nats']).all()
+    assert (lad['eta_nats'] <= lad['eta_phase_max']).all()
+    assert lad['extrapolated'].tolist() == [False, True]
