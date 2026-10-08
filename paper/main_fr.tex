@@ -75,16 +75,21 @@ s'évapore. L'asymétrie des sauts, la signature d'asymétrie et le couplage des
 canaux sont tous reproduits --- plusieurs sont même \emph{dépassés} --- par des
 données rééchantillonnées, parce qu'une fonctionnelle convexe positive de
 moments estimés monte brutalement et redescend en douceur dès qu'une observation
-à queue épaisse entre dans l'estimateur. Exactement deux statistiques franchissent
-les deux témoins, et ce sont celles qu'il faut retenir : l'écart de régime du
-canal de \emph{dépendance} ($-1{,}72$~nats contre $-0{,}29$ et $-0{,}64$) et
-l'étendue de $\JJ$ sur l'échantillon ($18{,}95$ contre $10{,}49$ et $14{,}23$).
+à queue épaisse entre dans l'estimateur. Avec deux cents réplications de chaque témoin, exactement deux statistiques
+franchissent les deux témoins sur le panel principal, et ce sont celles qu'il
+faut retenir : l'écart de régime du canal de \emph{dépendance} ($-1{,}72$~nats
+contre $-0{,}23$ et $-0{,}58$) et l'étendue de $\JJ$ sur l'échantillon ($18{,}95$
+contre $10{,}05$ et $13{,}77$, la seconde de justesse face au témoin par blocs).
+Le premier résultat se reproduit sur les $48$ portefeuilles industriels de
+Kenneth French, avec un écart de $-8{,}51$~nats contre $-0{,}61$ et $-2{,}63$ :
+c'est le seul résultat commun aux deux panels, et il tient donc aussi bien sur
+titres individuels que sur portefeuilles sectoriels.
 Ce qui distingue une crise d'une simple série de gros rendements, c'est que la
 coupe transversale se couple --- le nombre effectif de modes de risque
 indépendants tombe de $13{,}2$ à $10{,}5$ sur $20$ --- et non que les
 marginales s'épaississent. La demi-vie de relaxation n'est pas identifiée : à
 $120$~jours, elle se situe au-dessus du témoin i.i.d.\ ($92$) et en dessous du
-témoin par blocs ($162$). Deux autres résultats vont à l'encontre de l'intérêt de
+témoin par blocs ($165$). Deux autres résultats vont à l'encontre de l'intérêt de
 l'article : la compensation volatilité--dépendance observée sur des portefeuilles
 sectoriels ne se réplique pas sur des titres individuels, et aucun canal
 d'entropie n'améliore hors échantillon la prévision du risque futur par rapport à
@@ -1021,7 +1026,7 @@ La version i.i.d.\ détruit tout ce dont traitent les postulats --- regroupement
 volatilité, dépendance variable dans le temps, dynamique d'arrivée de
 l'information. La version par blocs rééchantillonne des blocs de 21~jours, de
 sorte que le regroupement de court terme survit et que seules les dynamiques de
-régime à plus long horizon sont détruites. Vingt réplications de chacune donnent
+régime à plus long horizon sont détruites. Deux cents réplications de chacune donnent
 les lois nulles rapportées au tableau~\ref{tab:placebo}. Toutes deux appliquent
 le filtre de volatilité identique pour définir les régimes de stress, de sorte
 que les comparaisons de régime de H1, H2 et H6 sont testées sur le même pied
@@ -1037,7 +1042,7 @@ Le tableau~\ref{tab:placebo} est le résultat empirique central de l'article et
 il est inconfortable. Deux témoins sont construits, tous deux en
 rééchantillonnant la matrice de rendements observée et en faisant tourner la
 chaîne identique --- filtre de volatilité définissant le régime de stress
-compris --- vingt fois chacun.
+compris --- deux cents fois chacun, sur chacun des deux panels.
 
 \begin{description}
 \item[Le témoin i.i.d.] rééchantillonne les lignes indépendamment. Il conserve
@@ -1066,74 +1071,147 @@ identifiée.
 \cmidrule(lr){4-5}\cmidrule(lr){6-7}
 & Statistique & Obs. & moy. & 5--95\,\% & moy. & 5--95\,\% & Verdict \\
 \midrule
-H1 & écart $H^{dep}$      & $-1{,}72$ & $-0{,}29$ & $-0{,}46$--$-0{,}14$ & $-0{,}64$ & $-1{,}14$--$-0{,}37$ & \textbf{franchit les deux} \\
-H1 & écart $\JJ$          & $2{,}89$  & $2{,}32$  & $1{,}76$--$2{,}74$   & $2{,}21$  & $1{,}51$--$3{,}02$   & i.i.d.\ seulement \\
-H1 & écart $\DD$          & $0{,}48$  & $1{,}35$  & $0{,}98$--$1{,}64$   & $0{,}74$  & $0{,}30$--$1{,}13$   & échoue aux deux \\
+H1 & écart $H^{dep}$ & $-1{,}72$ & $-0{,}23$ & $-0{,}41$--$-0{,}04$ & $-0{,}58$ & $-1{,}01$--$-0{,}23$ & \textbf{franchit les deux} \\
+H1 & écart $\JJ$ & $2{,}89$ & $2{,}18$ & $1{,}71$--$2{,}72$ & $2{,}07$ & $1{,}34$--$2{,}96$ & i.i.d.\ seulement \\
+H1 & écart $\DD$ & $0{,}48$ & $1{,}27$ & $0{,}92$--$1{,}67$ & $0{,}69$ & $0{,}27$--$1{,}13$ & à contre-sens (i.i.d.) \\
 \midrule
-H2 & $\mathrm{corr}(\Delta H^{vol}\!,\Delta H^{dep})$ & $0{,}10$ & $0{,}14$ & $-0{,}29$--$0{,}47$ & $0{,}16$ & $-0{,}23$--$0{,}57$ & échoue aux deux \\
-H2 & $\beta$ (stress) & $0{,}19$ & $0{,}10$ & $-0{,}19$--$0{,}30$ & $0{,}16$ & $-0{,}23$--$0{,}32$ & échoue aux deux \\
+H2 & $\mathrm{corr}(\Delta H^{vol}\!,\Delta H^{dep})$ & $0{,}10$ & $0{,}23$ & $-0{,}26$--$0{,}60$ & $0{,}27$ & $-0{,}21$--$0{,}63$ & échoue aux deux \\
+H2 & $\beta$ (stress) & $0{,}19$ & $0{,}04$ & $-0{,}31$--$0{,}31$ & $0{,}12$ & $-0{,}31$--$0{,}33$ & échoue aux deux \\
 \midrule
-H3 & sauts positifs       & $158$   & $147{,}7$ & $139$--$157$     & $129{,}5$ & $117$--$148$     & blocs seulement \\
-H3 & sauts négatifs       & $9$     & $3{,}2$   & $2$--$5$         & $4{,}2$   & $0$--$7$         & \emph{plus} que les deux \\
-H3 & saut positif moyen (nats) & $0{,}62$ & $1{,}17$ & $0{,}97$--$1{,}32$ & $0{,}91$ & $0{,}73$--$1{,}06$ & inférieur aux deux \\
-H3 & asymétrie de $\Delta\JJ$ & $12{,}26$ & $14{,}55$ & $12{,}0$--$16{,}9$ & $13{,}80$ & $10{,}6$--$18{,}8$ & échoue aux deux \\
-H3 & part de var.\ sauts pos.\ & $0{,}838$ & $0{,}904$ & $0{,}87$--$0{,}92$ & $0{,}828$ & $0{,}77$--$0{,}87$ & échoue aux deux \\
+H3 & sauts positifs & $158{,}0$ & $148{,}5$ & $136{,}9$--$161{,}0$ & $133{,}2$ & $121{,}0$--$146{,}0$ & blocs seulement \\
+H3 & sauts négatifs & $9{,}0$ & $3{,}0$ & $1{,}0$--$6{,}0$ & $3{,}7$ & $1{,}0$--$7{,}0$ & à contre-sens (les deux) \\
+H3 & saut positif moyen (nats) & $0{,}62$ & $1{,}12$ & $0{,}95$--$1{,}29$ & $0{,}84$ & $0{,}69$--$1{,}03$ & à contre-sens (les deux) \\
+H3 & asymétrie de $\Delta\JJ$ & $12{,}26$ & $14{,}80$ & $12{,}27$--$17{,}60$ & $12{,}97$ & $9{,}71$--$17{,}65$ & à contre-sens (i.i.d.) \\
+H3 & part de var.\ sauts pos. & $0{,}838$ & $0{,}899$ & $0{,}869$--$0{,}922$ & $0{,}817$ & $0{,}764$--$0{,}860$ & à contre-sens (i.i.d.) \\
 \midrule
-H4 & demi-vie (jours)     & $120{,}1$ & $91{,}7$  & $82$--$111$      & $161{,}6$ & $122$--$200$     & \emph{signes opposés} \\
-H4 & $\mathrm{sd}(\JJ)$   & $2{,}03$  & $1{,}61$  & $1{,}38$--$1{,}92$ & $2{,}17$ & $1{,}45$--$2{,}78$ & i.i.d.\ seulement \\
-H4 & $\mathrm{étendue}(\JJ)$ & $18{,}95$ & $10{,}49$ & $8{,}4$--$12{,}3$ & $14{,}23$ & $10{,}0$--$17{,}9$ & \textbf{franchit les deux} \\
+H4 & demi-vie (jours) & $120{,}1$ & $91{,}8$ & $82{,}3$--$102{,}6$ & $165{,}1$ & $117{,}4$--$228{,}0$ & entre les deux témoins \\
+H4 & $\mathrm{sd}(\JJ)$ & $2{,}03$ & $1{,}55$ & $1{,}31$--$1{,}81$ & $2{,}06$ & $1{,}40$--$2{,}75$ & i.i.d.\ seulement \\
+H4 & étendue$(\JJ)$ & $18{,}95$ & $10{,}05$ & $8{,}05$--$12{,}88$ & $13{,}77$ & $9{,}04$--$17{,}88$ & \textbf{franchit les deux} \\
 \midrule
-H5 & écart $\Delta S_{mkt}$ & $-0{,}053$ & $-0{,}025$ & $-0{,}100$--$0{,}040$ & $-0{,}001$ & $-0{,}051$--$0{,}081$ & limite (blocs) \\
-H5 & $\mathrm{corr}(\Delta\JJ,\Delta S_{mkt})$ & $-0{,}243$ & $-0{,}067$ & $-0{,}247$--$0{,}160$ & $-0{,}013$ & $-0{,}239$--$0{,}293$ & limite (les deux) \\
+H5 & écart $\Delta S_{mkt}$ & $-0{,}053$ & $-0{,}011$ & $-0{,}088$--$0{,}070$ & $-0{,}027$ & $-0{,}082$--$0{,}039$ & échoue aux deux \\
+H5 & $\mathrm{corr}(\Delta\JJ,\Delta S_{mkt})$ & $-0{,}243$ & $-0{,}035$ & $-0{,}298$--$0{,}230$ & $-0{,}069$ & $-0{,}268$--$0{,}209$ & échoue aux deux \\
 \midrule
-H6 & couplage, stress     & $0{,}66$  & $0{,}90$  & $0{,}86$--$0{,}93$ & $0{,}76$ & $0{,}63$--$0{,}83$ & échoue aux deux \\
-H6 & écart de couplage    & $0{,}617$ & $0{,}746$ & $0{,}64$--$0{,}88$ & $0{,}667$ & $0{,}54$--$0{,}75$ & échoue aux deux \\
+H6 & couplage, stress & $0{,}66$ & $0{,}90$ & $0{,}85$--$0{,}93$ & $0{,}73$ & $0{,}57$--$0{,}82$ & à contre-sens (i.i.d.) \\
+H6 & écart de couplage & $0{,}617$ & $0{,}768$ & $0{,}676$--$0{,}861$ & $0{,}669$ & $0{,}484$--$0{,}799$ & à contre-sens (i.i.d.) \\
 \midrule
--- & $\mathrm{corr}(\JJ,\log\mathrm{vol})$ & $0{,}461$ & $0{,}414$ & $0{,}36$--$0{,}46$ & $0{,}265$ & $0{,}18$--$0{,}33$ & --- \\
+-- & $\mathrm{corr}(\JJ,\log\mathrm{vol})$ & $0{,}461$ & $0{,}414$ & $0{,}359$--$0{,}466$ & $0{,}264$ & $0{,}164$--$0{,}362$ & --- \\
 \bottomrule
 \end{tabular}
-\caption{Statistiques observées face à deux témoins calibrés, vingt réplications
-chacun. \og Franchit les deux \fg{} signifie que la valeur observée se situe
-hors des quarante réplications du côté prédit par l'hypothèse. Les écarts sont
-stress moins calme. Noter que plusieurs statistiques sont \emph{plus grandes}
-dans un témoin que dans les données.}
+\caption{S\&P~500 : statistiques observées face à deux témoins calibrés, deux
+cents réplications chacun. \og Franchit \fg{} signifie que la proportion de
+réplications au moins aussi extrêmes que la valeur observée, du côté prédit par
+l'hypothèse, est au plus de $5\%$ ; \og à contre-sens \fg{} signifie que ce
+seuil est atteint du côté opposé, c'est-à-dire que le témoin dépasse les données.
+Les écarts sont stress moins calme. Les $p$-valeurs exactes sont dans
+\texttt{paper/tables/sp500\_placebo\_null*.csv}.}
 \label{tab:placebo}
 \end{table}
 
 \paragraph{Ce qui franchit les deux témoins.} Deux choses, et deux seulement.
-L'écart de régime du canal de \emph{dépendance} : $-1{,}72$~nats contre $-0{,}29$
-et $-0{,}64$, hors de chacune des quarante réplications. Et l'\emph{étendue} de
-l'indice structurel : $18{,}95$~nats contre $10{,}49$ et $14{,}23$. Autrement
-dit : ce qui sépare une crise d'une simple série de gros rendements, c'est que
+L'écart de régime du canal de \emph{dépendance} : $-1{,}72$~nats contre $-0{,}23$
+et $-0{,}58$, hors de chacune des quatre cents réplications. Et l'\emph{étendue}
+de l'indice structurel : $18{,}95$~nats contre $10{,}05$ (i.i.d., aucune
+réplication ne l'atteint) et $13{,}77$ (blocs, $p=0{,}035$ : le résultat est plus
+fragile face à ce second témoin, dont le quantile à $95\%$ est à $17{,}88$).
+Autrement dit : ce qui sépare une crise d'une simple série de gros rendements, c'est que
 la coupe transversale se couple, et l'indice structurel voyage plus loin en
 marché réel que dans tout rééchantillonnage des mêmes rendements.
 
 \paragraph{Ce qui ne franchit pas.} L'asymétrie des sauts échoue franchement au
 témoin i.i.d.\ (H3). Le couplage des canaux échoue aux deux, et échoue dans la
-direction qui compte : les témoins couplent \emph{plus} fortement que les données
-(H6). Le signal de régime du canal de forme est plus petit que celui des deux
-témoins. L'hypothèse de compensation se perd dans le bruit propre des témoins
+direction qui compte : le témoin i.i.d.\ couple \emph{plus} fortement que les
+données ($p=0{,}01$), le témoin par blocs aussi en moyenne sans que la différence
+soit nette (H6). Le signal de régime du canal de forme est plus petit que celui du témoin
+i.i.d.\ et, sans que la différence soit nette, que celui du témoin par blocs. L'hypothèse de compensation se perd dans le bruit propre des témoins
 (H2).
 
 \paragraph{Ce qui n'est pas identifié.} La demi-vie de relaxation est de
-$120$~jours contre $92$ sous le témoin i.i.d.\ et $162$ sous le témoin par blocs
+$120$~jours contre $92$ sous le témoin i.i.d.\ et $165$ sous le témoin par blocs
 --- les données se situent \emph{entre} les deux, et le signe de la comparaison
-s'inverse. Le rééchantillonnage par blocs concatène parfois des blocs de forte
+s'inverse (seules $7\%$ des réplications par blocs tombent en dessous de
+$120$~jours, contre aucune réplication i.i.d.\ au-dessus). Le rééchantillonnage par blocs concatène parfois des blocs de forte
 volatilité et fabrique de longues excursions ; le rééchantillonnage i.i.d.\ en
 fabrique de courtes. La conclusion honnête est que le niveau de la demi-vie est
 un artefact du témoin qu'on choisit de croire, et que P\ref{p:relax} est soutenu
 par le résultat d'amplitude plutôt que par la demi-vie. La signature d'asymétrie
-(H5) se situe au cinquième centile des deux témoins avec le bon signe, ce qui est
-suggestif et pas davantage.
+(H5) a le bon signe face aux deux témoins mais ne passe pas le seuil de $5\%$
+($p=0{,}10$ et $0{,}08$ pour la corrélation entre $\Delta\JJ$ et $\Delta S_{mkt}$),
+ce qui est suggestif et pas davantage.
 
 \paragraph{Une remarque sur $\JJ$ et la volatilité.} Sous le témoin par blocs, la
-corrélation entre $\JJ$ et la log-volatilité est de $0{,}27$ ; dans les données
-elle est de $0{,}46$. L'indice structurel suit la volatilité \emph{de plus près}
+corrélation entre $\JJ$ et la log-volatilité est de $0{,}26$ ; dans les données
+elle est de $0{,}46$ ($p<0{,}005$). L'indice structurel suit la volatilité \emph{de plus près}
 qu'un processus à seul regroupement, et non de moins près. Le
 tableau~\ref{tab:vol} montre que le canal de forme reste pourtant orthogonal à la
 volatilité : le suivi supplémentaire passe donc par le canal de dépendance ---
 corrélation et volatilité bougent véritablement ensemble d'une manière que le
 seul regroupement ne reproduit pas.
+
+\paragraph{Le même test sur les portefeuilles sectoriels.} Le tableau~\ref{tab:placebo-ff49}
+reproduit exactement la chaîne et les deux témoins (deux cents réplications chacun)
+sur les $48$ portefeuilles industriels quotidiens de Kenneth French, 1990--2026.
+C'est la première fois que ce panel est confronté aux témoins ; ses chiffres
+antérieurs ne l'étaient pas. L'écart de régime du canal de \emph{dépendance}
+franchit les deux : $-8{,}51$~nats contre $-0{,}61$ (i.i.d.) et $-2{,}63$ (blocs),
+soit quatorze fois et trois fois le témoin, hors des quatre cents réplications. C'est
+le même ordre de grandeur relatif que sur titres individuels ($8$ et $3$ fois), ce
+qui va contre l'idée d'un artefact d'agrégation sectorielle. L'écart
+sur $\JJ$ franchit aussi les deux ($10{,}56$ contre $8{,}17$ et $7{,}90$,
+$p=0{,}015$ et $0{,}02$), ce que le panel principal ne fait qu'en partie. En
+revanche l'\emph{étendue} de $\JJ$ ne franchit que le témoin i.i.d.\ ($54{,}5$ contre
+$36{,}9$) et pas celui par blocs ($45{,}9$, $p=0{,}13$) : le second résultat du panel
+principal ne se réplique pas ici. La demi-vie ($184$~jours) est de nouveau entre
+les deux témoins ($101$ et $205$), le décompte de sauts positifs ($182$) est celui
+des deux témoins ($182$ et $176$), et le couplage des canaux sous stress reste
+inférieur à celui du témoin i.i.d. Une remarque pour H2 : la corrélation entre
+$\Delta H^{vol}$ et $\Delta H^{dep}$ de $-0{,}63$, que la version antérieure du
+papier présentait comme la compensation sectorielle, est produite à peu de chose
+près par le témoin par blocs ($-0{,}54$, $p=0{,}09$) ; elle ne franchit que le
+témoin i.i.d.\ ($-0{,}36$). Ces comparaisons utilisent le seuil de stress du pipeline actuel
+(quantile de tout l'échantillon, correctif de look-ahead non encore appliqué),
+identique dans les données et dans les témoins.
+
+\begin{table}[htbp]
+\centering
+\footnotesize
+\begin{tabular}{@{}llrrrrrl@{}}
+\toprule
+& & & \multicolumn{2}{c}{témoin i.i.d.} & \multicolumn{2}{c}{témoin blocs-21} & \\
+\cmidrule(lr){4-5}\cmidrule(lr){6-7}
+& Statistique & Obs. & moy. & 5--95\,\% & moy. & 5--95\,\% & Verdict \\
+\midrule
+H1 & écart $H^{dep}$ & $-8{,}51$ & $-0{,}61$ & $-1{,}06$--$-0{,}25$ & $-2{,}63$ & $-3{,}72$--$-1{,}59$ & \textbf{franchit les deux} \\
+H1 & écart $\JJ$ & $10{,}56$ & $8{,}17$ & $6{,}46$--$9{,}95$ & $7{,}90$ & $5{,}73$--$10{,}02$ & \textbf{franchit les deux} \\
+H1 & écart $\DD$ & $1{,}71$ & $4{,}95$ & $3{,}66$--$6{,}21$ & $2{,}61$ & $1{,}28$--$3{,}91$ & à contre-sens (i.i.d.) \\
+\midrule
+H2 & $\mathrm{corr}(\Delta H^{vol}\!,\Delta H^{dep})$ & $-0{,}63$ & $-0{,}36$ & $-0{,}54$--$-0{,}19$ & $-0{,}54$ & $-0{,}65$--$-0{,}41$ & i.i.d.\ seulement \\
+H2 & $\beta$ (stress) & $0{,}20$ & $0{,}09$ & $-0{,}05$--$0{,}21$ & $0{,}28$ & $0{,}16$--$0{,}41$ & échoue aux deux \\
+\midrule
+H3 & sauts positifs & $182{,}0$ & $181{,}8$ & $165{,}0$--$201{,}1$ & $176{,}5$ & $159{,}0$--$194{,}1$ & échoue aux deux \\
+H3 & sauts négatifs & $3{,}0$ & $7{,}8$ & $4{,}0$--$13{,}0$ & $5{,}2$ & $2{,}0$--$10{,}0$ & i.i.d.\ seulement \\
+H3 & saut positif moyen (nats) & $1{,}70$ & $3{,}47$ & $2{,}74$--$4{,}18$ & $2{,}30$ & $1{,}82$--$2{,}90$ & à contre-sens (les deux) \\
+H3 & asymétrie de $\Delta\JJ$ & $17{,}04$ & $18{,}31$ & $14{,}84$--$21{,}83$ & $16{,}46$ & $11{,}76$--$26{,}04$ & échoue aux deux \\
+H3 & part de var.\ sauts pos. & $0{,}889$ & $0{,}943$ & $0{,}918$--$0{,}958$ & $0{,}877$ & $0{,}840$--$0{,}910$ & à contre-sens (i.i.d.) \\
+\midrule
+H4 & demi-vie (jours) & $183{,}8$ & $100{,}6$ & $89{,}4$--$111{,}1$ & $205{,}2$ & $140{,}4$--$283{,}7$ & entre les deux témoins \\
+H4 & $\mathrm{sd}(\JJ)$ & $6{,}37$ & $5{,}46$ & $4{,}43$--$6{,}48$ & $7{,}05$ & $5{,}05$--$9{,}18$ & échoue aux deux \\
+H4 & étendue$(\JJ)$ & $54{,}47$ & $36{,}86$ & $28{,}53$--$43{,}95$ & $45{,}86$ & $32{,}98$--$59{,}10$ & i.i.d.\ seulement \\
+\midrule
+H5 & écart $\Delta S_{mkt}$ & $-0{,}112$ & $-0{,}057$ & $-0{,}140$--$0{,}017$ & $-0{,}068$ & $-0{,}123$--$-0{,}010$ & échoue aux deux \\
+H5 & $\mathrm{corr}(\Delta\JJ,\Delta S_{mkt})$ & $-0{,}440$ & $-0{,}197$ & $-0{,}472$--$0{,}075$ & $-0{,}177$ & $-0{,}441$--$0{,}149$ & échoue aux deux \\
+\midrule
+H6 & couplage, stress & $0{,}80$ & $0{,}94$ & $0{,}92$--$0{,}96$ & $0{,}82$ & $0{,}75$--$0{,}87$ & à contre-sens (i.i.d.) \\
+H6 & écart de couplage & $0{,}404$ & $0{,}630$ & $0{,}537$--$0{,}736$ & $0{,}545$ & $0{,}396$--$0{,}694$ & à contre-sens (i.i.d.) \\
+\midrule
+-- & $\mathrm{corr}(\JJ,\log\mathrm{vol})$ & $0{,}677$ & $0{,}443$ & $0{,}388$--$0{,}490$ & $0{,}327$ & $0{,}240$--$0{,}409$ & --- \\
+\bottomrule
+\end{tabular}
+\caption{FF49, $48$ portefeuilles industriels, 1990--2026 : statistiques observées
+face aux deux témoins calibrés, deux cents réplications chacun. Mêmes conventions
+que le tableau~\ref{tab:placebo}. Les $p$-valeurs exactes sont dans
+\texttt{paper/tables/ff49\_placebo\_null*.csv}.}
+\label{tab:placebo-ff49}
+\end{table}
 
 \paragraph{Et une chose que rien de tout ceci n'atteint.} La construction de test
 de résistance de la section~\ref{sec:stress} est une convention de mesure plus
@@ -1182,11 +1260,13 @@ tableau. Le panel de réplication concorde sur chaque signe, $\JJ$ passant de 0,
 
 Face au témoin calibré, l'hypothèse se scinde en deux. Le canal de
 \emph{dépendance} porte un signal réel : l'écart de régime observé de
-$-1{,}72$~nats vaut environ six fois le $-0{,}29$ du témoin et se situe hors des
-vingt réplications. C'est également le cas de l'écart sur $\JJ$ lui-même, mais
-d'une marge bien plus étroite ($2{,}89$ contre une moyenne de $2{,}32$ sous le
-témoin). Le canal de \emph{forme}, lui, non : son écart de régime observé de
-$+0{,}48$~nat est inférieur au $+1{,}35$ du témoin. Des données mélangées, où une
+$-1{,}72$~nats vaut environ huit fois le $-0{,}23$ du témoin i.i.d.\ et trois fois
+le $-0{,}58$ du témoin par blocs, et se situe hors des deux cents réplications de
+chacun. L'écart sur $\JJ$ lui-même franchit le témoin i.i.d.\ ($p=0{,}02$) mais
+d'une marge bien plus étroite ($2{,}89$ contre une moyenne de $2{,}18$), et pas
+nettement le témoin par blocs ($2{,}07$, $p=0{,}07$). Le canal de \emph{forme}, lui, non : son écart de régime observé de
+$+0{,}48$~nat est inférieur au $+1{,}27$ du témoin i.i.d.\ (et au $+0{,}69$ du
+témoin par blocs). Des données mélangées, où une
 fenêtre de \og stress \fg{} est par construction une fenêtre contenant des
 rendements extrêmes isolés, épaississent les marginales mesurées davantage que ne
 le font les vrais épisodes de stress. La hausse de $\DD$ sous stress n'est donc
@@ -1280,9 +1360,9 @@ si $\beta_{\text{stress}}$ survit au témoin calibré de la
 section~\ref{sec:verdicts}, la question est maintenant tranchée, et dans le sens
 que ce paragraphe redoutait : \textbf{non}. Le tableau~\ref{tab:placebo} inclut
 désormais ce test. Sous le témoin i.i.d., $\beta_{\text{stress}}$ observé de
-$0{,}19$ tombe presque exactement sur la moyenne du témoin ($0{,}10$, intervalle
-$-0{,}19$--$0{,}30$) ; sous le témoin par blocs, même verdict ($0{,}16$,
-intervalle $-0{,}23$--$0{,}32$). La même raison mécanique qui fait reproduire H6
+$0{,}19$ tombe à l'intérieur de la loi du témoin ($0{,}04$, intervalle
+$-0{,}31$--$0{,}31$, $p=0{,}39$) ; sous le témoin par blocs, même verdict ($0{,}12$,
+intervalle $-0{,}31$--$0{,}33$, $p=0{,}55$). La même raison mécanique qui fait reproduire H6
 par un rééchantillonnage --- des fenêtres turbulentes contenant de grosses
 journées communes --- suffit à produire une pente $\beta$ positive sous stress,
 sans qu'aucune compensation économique n'existe dans les données rééchantillonnées.
@@ -1312,16 +1392,16 @@ prédit \eqref{eq:ou}.
 
 \textbf{L'asymétrie ne survit pas au témoin i.i.d.} Sous ce témoin, le détecteur
 trouve \emph{en moyenne 148 sauts positifs et 3 sauts négatifs}, avec une
-asymétrie de $\Delta\JJ$ de $+14{,}6$ --- supérieure au $+12{,}3$ observé --- et
+asymétrie de $\Delta\JJ$ de $+14{,}8$ --- supérieure au $+12{,}3$ observé --- et
 une part de variance des sauts positifs de $90\%$, là encore supérieure à
 l'observé. Chaque statistique d'unilatéralité des données se situe au bord ou à
 l'intérieur de ce témoin.
 
 Le témoin par blocs est plus clément sur un point et pas sur les autres.
 Préserver le regroupement de volatilité abaisse le nombre de sauts positifs du
-témoin à $129{,}5$, de sorte que le $158$ observé se situe bien au-delà ; mais
-l'asymétrie de $\Delta\JJ$ ($13{,}8$) et la part de variance des sauts positifs
-($0{,}83$) encadrent toujours les valeurs observées, et le saut positif moyen
+témoin à $133{,}2$, de sorte que le $158$ observé se situe bien au-delà
+($p=0{,}01$) ; mais l'asymétrie de $\Delta\JJ$ ($13{,}0$) et la part de variance
+des sauts positifs ($0{,}82$) encadrent toujours les valeurs observées, et le saut positif moyen
 reste plus grand dans le témoin que dans les données. Un décompte qui franchit un
 témoin tandis que toutes les mesures de la \emph{forme} de l'asymétrie échouent
 aux deux n'est pas un résultat. H3 n'est \textbf{pas soutenue}.
@@ -1346,8 +1426,8 @@ qu'implique déjà la loi marginale}. Elle n'en porte pas.
 
 Ensuite, une comparaison du tableau~\ref{tab:placebo} va dans l'autre sens et est
 instructive. Le plus grand saut positif observé vaut $3{,}21$~nats contre une
-moyenne de $7{,}19$ sous le témoin, et le saut positif moyen $0{,}62$ contre
-$1{,}17$ : les vrais sauts d'entropie font environ \emph{la moitié} de la taille
+moyenne de $6{,}86$ sous le témoin i.i.d., et le saut positif moyen $0{,}62$ contre
+$1{,}12$ (i.i.d.) et $0{,}84$ (blocs) : les vrais sauts d'entropie font environ \emph{la moitié} de la taille
 que produit le monde mélangé. La raison en est que les vraies journées extrêmes
 arrivent quand le marché est déjà agité, de sorte que l'échelle locale à laquelle
 on les mesure est déjà élevée ; dans le monde mélangé elles surgissent d'une
@@ -1384,10 +1464,10 @@ $\kappa=0{,}0050$, une demi-vie de 139~jours, $p=0{,}023$.
 
 La demi-vie est l'endroit où les deux témoins divergent le plus nettement, et
 cette divergence est instructive. Sous rééchantillonnage i.i.d., le même
-estimateur renvoie $91{,}7$~jours en moyenne, de sorte que le $120{,}1$ observé
-dépasse chaque réplication. Sous rééchantillonnage par blocs, il renvoie
-$161{,}6$~jours, de sorte que la valeur observée tombe \emph{en dessous} de
-chaque réplication. Les données se situent entre les deux témoins, et le signe de
+estimateur renvoie $91{,}8$~jours en moyenne, de sorte que le $120{,}1$ observé
+dépasse chacune des deux cents réplications. Sous rééchantillonnage par blocs, il
+renvoie $165{,}1$~jours en moyenne (intervalle à $90\%$ : $117$--$228$), de sorte
+que la valeur observée tombe \emph{en dessous} de $93\%$ des réplications. Les données se situent entre les deux témoins, et le signe de
 la comparaison dépend entièrement de celui qu'on interroge. Le rééchantillonnage
 par blocs concatène parfois des blocs de forte volatilité et fabrique de longues
 excursions ; le rééchantillonnage i.i.d.\ brise les séries que contiennent les
@@ -1398,9 +1478,10 @@ section~\ref{sec:placebo}, où un choc unique décroît en $35$~jours sans aucun
 économie, fixe le plancher de ce qui relève de la mémoire de l'estimateur.
 
 Ce qui survit, c'est l'\emph{amplitude}. L'étendue de $\JJ$ sur l'échantillon
-vaut $18{,}95$~nats contre $10{,}49$ sous le témoin i.i.d.\ et $14{,}23$ sous le
-témoin par blocs, hors des quarante réplications. Son écart type franchit le
-témoin i.i.d.\ ($2{,}03$ contre $1{,}61$) mais pas celui par blocs. Les marchés
+vaut $18{,}95$~nats contre $10{,}05$ sous le témoin i.i.d.\ (aucune des deux
+cents réplications ne l'atteint) et $13{,}77$ sous le témoin par blocs
+($p=0{,}035$ ; quantile à $95\%$ du témoin : $17{,}88$). Son écart type franchit
+le témoin i.i.d.\ mais pas celui par blocs. Les marchés
 réels déplacent l'indice structurel plus loin que ne le fait aucun
 rééchantillonnage des mêmes rendements, ce qui est la part de P\ref{p:relax} que
 les données soutiennent : non pas un taux de relaxation particulier, mais une
@@ -1448,14 +1529,14 @@ Face aux témoins, H5 est suggestive et rien de plus. Tous deux produisent l'eff
 dans la même direction sans aucune économie, car le lien mécanique est évident
 une fois énoncé : un gros rendement négatif élève simultanément $\JJ$ et abaisse
 l'asymétrie mesurée de la fenêtre dans laquelle il entre. La corrélation observée
-de $-0{,}243$ se situe à peu près au cinquième centile des deux témoins
-($-0{,}067$ i.i.d., $-0{,}013$ blocs), et la variation moyenne d'asymétrie aux
-dates de saut fait de même sous le témoin par blocs tout en restant bien à
-l'intérieur du témoin i.i.d. Nous rapportons H5 comme \emph{non établie} : la
+de $-0{,}243$ se situe entre le huitième et le dixième centile des deux témoins
+($-0{,}035$ i.i.d., $-0{,}069$ blocs ; $p=0{,}10$ et $0{,}08$), et la variation
+moyenne d'asymétrie aux dates de saut ($-0{,}053$) reste à l'intérieur des deux
+($-0{,}011$ et $-0{,}027$ ; $p=0{,}18$ et $0{,}22$). Nous rapportons H5 comme \emph{non établie} : la
 direction est la bonne, elle est cohérente sur deux témoins et deux jeux de
-données (le panel de réplication donne $-0{,}38$), mais une $p$-valeur de $0{,}05$
-à $0{,}10$ sur vingt réplications est une raison de chercher davantage, non un
-résultat. Le postulat P\ref{p:sign} reste un postulat.
+données (le panel de réplication donne $-0{,}38$), mais une $p$-valeur de $0{,}08$
+à $0{,}10$ sur deux cents réplications, donc au-dessus du seuil de $5\%$, est une
+raison de chercher davantage, non un résultat. Le postulat P\ref{p:sign} reste un postulat.
 
 \subsection{H6 : les canaux se verrouillent sous stress}
 
@@ -1482,10 +1563,12 @@ corrélation vaut $0{,}68$. Le panel de réplication le reproduit à $0{,}05$ co
 $0{,}54$, et le couplage est porté entièrement par le canal de \emph{queue}, le
 canal d'asymétrie n'y participant pas.
 
-Les deux témoins le reproduisent aussi, et tous deux le reproduisent \emph{plus
-fortement} que les données : un couplage sous stress de $0{,}90$ (i.i.d.) et
-$0{,}76$ (blocs) contre le $0{,}66$ observé, et un écart stress-moins-calme de
-$0{,}75$ et $0{,}67$ contre le $0{,}62$ observé. Le mécanisme est mécanique
+Les deux témoins le reproduisent aussi, et le témoin i.i.d.\ le reproduit
+\emph{plus fortement} que les données : un couplage sous stress de $0{,}90$
+(i.i.d.) et $0{,}73$ (blocs) contre le $0{,}66$ observé, et un écart
+stress-moins-calme de $0{,}77$ et $0{,}67$ contre le $0{,}62$ observé. Seul le
+témoin i.i.d.\ dépasse nettement les données ($p=0{,}01$ pour l'écart) ; face au
+témoin par blocs, l'observé est à l'intérieur de la loi ($p=0{,}25$). Le mécanisme est mécanique
 plutôt qu'économique. Une fenêtre contenant un gros rendement commun présente à
 la fois une corrélation mesurée plus élevée et des marginales mesurées plus
 épaisses, de sorte que les deux canaux bougent ensemble dans toutes données où
@@ -1495,10 +1578,10 @@ comme preuve d'une contrainte commune contraignante.
 L'ajout du témoin par blocs change toutefois l'interprétation de l'écart entre
 témoin et données. Sous rééchantillonnage i.i.d., le couplage du témoin est
 quasi déterministe ($0{,}90$, écart type $0{,}03$) ; préserver le regroupement
-l'abaisse à $0{,}76$ avec un écart type de $0{,}07$, plus proche mais toujours
-au-dessus du $0{,}66$ observé. Les vrais épisodes de stress couplent les deux
-canaux \emph{moins} étroitement que l'un ou l'autre témoin. Si ce n'est pas du
-bruit, cela pointe à l'opposé de la section~\ref{sec:dynamics} : dépendance et
+l'abaisse à $0{,}73$ avec un écart type de $0{,}08$, plus proche et désormais
+compatible avec le $0{,}66$ observé. Les vrais épisodes de stress couplent les deux
+canaux \emph{moins} étroitement que le témoin i.i.d.\ et pas plus que le témoin
+par blocs. Si l'écart avec le témoin i.i.d.\ n'est pas du bruit, il pointe à l'opposé de la section~\ref{sec:dynamics} : dépendance et
 poids de queue auraient des moteurs partiellement indépendants dans les vraies
 crises, ce qu'un récit de contrainte commune ne prédit pas.
 
@@ -1658,14 +1741,14 @@ le panel des 49~secteurs de Kenneth French, $79\%$ des 61~épisodes ; sur
 \toprule
 Panel (épisodes) & Observé & moy.\ témoin i.i.d. & 5--95\,\% & Verdict \\
 \midrule
-S\&P~500 (65)         & $0{,}46$ & $0{,}26$ & $0{,}19$--$0{,}33$ & franchit \\
-FF49 (61)              & $0{,}79$ & $0{,}40$ & $0{,}31$--$0{,}47$ & franchit \\
+S\&P~500 (65)         & $0{,}46$ & $0{,}26$ & $0{,}18$--$0{,}33$ & franchit \\
+FF49 (61)              & $0{,}79$ & $0{,}43$ & $0{,}33$--$0{,}53$ & franchit \\
 \texttt{EuStock} (13)  & $0{,}69$ & $0{,}57$ & $0{,}34$--$0{,}77$ & ne franchit pas \\
 \bottomrule
 \end{tabular}
 \caption{H8, témoin i.i.d.\ : part des épisodes détectés dont le canal de
-dépendance est le contributeur dominant. Vingt réplications (S\&P~500), quinze
-(FF49, \texttt{EuStock}). \texttt{scripts/episode\_null.py}.}
+dépendance est le contributeur dominant. Deux cents réplications (S\&P~500, FF49), quinze
+(\texttt{EuStock}). \texttt{scripts/episode\_null.py}.}
 \label{tab:h8}
 \end{table}
 
@@ -1703,10 +1786,10 @@ rendu pour H3 et H6.
 \toprule
 Longueur de bloc (jours) & moy.\ témoin & 5--95\,\% & $p$(obs.\,$\ge$\,témoin) & Verdict \\
 \midrule
-1 (i.i.d.)  & $0{,}26$ & $0{,}19$--$0{,}33$ & $0{,}00$ & franchit \\
+1 (i.i.d.)  & $0{,}26$ & $0{,}18$--$0{,}33$ & $0{,}00$ & franchit \\
 5           & $0{,}31$ & $0{,}23$--$0{,}41$ & $0{,}00$ & franchit \\
 10          & $0{,}35$ & $0{,}27$--$0{,}45$ & $0{,}08$ & marginal \\
-21          & $0{,}43$ & $0{,}35$--$0{,}57$ & $0{,}25$ & échoue \\
+21          & $0{,}43$ & $0{,}33$--$0{,}54$ & $0{,}33$ & échoue \\
 42          & $0{,}49$ & $0{,}40$--$0{,}60$ & $0{,}67$ & échoue, témoin au-dessus \\
 63          & $0{,}51$ & $0{,}43$--$0{,}56$ & $0{,}75$ & échoue, témoin au-dessus \\
 126         & $0{,}47$ & $0{,}40$--$0{,}56$ & $0{,}50$ & échoue \\
@@ -1714,10 +1797,9 @@ Longueur de bloc (jours) & moy.\ témoin & 5--95\,\% & $p$(obs.\,$\ge$\,témoin)
 \end{tabular}
 \caption{Sensibilité à la longueur de bloc, S\&P~500 : part observée
 d'épisodes dominés par la dépendance ($0{,}46$, constante sur la ligne) face au
-témoin par blocs pour sept longueurs. Vingt réplications pour les blocs~1
-et~21, partagés avec le tableau~\ref{tab:h8} et le reste de l'article, douze
-pour les cinq longueurs intermédiaires et longues balayées spécifiquement
-ici.}
+témoin par blocs pour sept longueurs. Deux cents réplications pour les blocs~1
+et~21, partagés avec le tableau~\ref{tab:h8}, douze pour les cinq longueurs
+intermédiaires et longues balayées spécifiquement ici.}
 \label{tab:blocksens}
 \end{table}
 
@@ -2131,10 +2213,10 @@ sauts est intégralement reproduite par des données i.i.d.\ de même loi margin
 et environ les deux tiers de la relaxation mesurée relèvent de la mémoire de
 l'estimateur. Les résultats de persistance et d'amplitude survivent ; le résultat
 d'asymétrie, non, et aucun lecteur ne devrait citer le chiffre de 158~contre~9
-sans le témoin à côté. Vingt réplications, c'est aussi peu : les quantiles du
-témoin au tableau~\ref{tab:placebo} sont eux-mêmes estimés avec une erreur
-visible, et une centaine de réplications affinerait les $p$-valeurs qui se
-situent actuellement à $0{,}05$.
+sans le témoin à côté. Les deux cents réplications du
+tableau~\ref{tab:placebo} ont resserré les $p$-valeurs, et elles ont déplacé deux
+verdicts : l'étendue de $\JJ$ ne franchit plus le témoin par blocs que de justesse
+($p=0{,}035$) et la signature d'asymétrie (H5) ne passe plus le seuil de $5\%$.
 
 \paragraph{Les arrivées poissoniennes sont le mauvais modèle.} La
 figure~\ref{fig:event} montre un regroupement que \eqref{eq:ou} n'accommode pas.
@@ -2210,8 +2292,10 @@ que l'information arrive ou non par paquets. Cette mise en garde vaut pour tout
 indicateur de crise fondé sur l'entropie, et pas seulement pour celui-ci, et nous
 ne l'avons pas trouvée énoncée dans la littérature appliquée.
 
-Exactement deux statistiques franchissent les deux témoins, et ce sont les deux
-qu'il faut retenir. Ce qui sépare une crise d'une série de gros rendements, c'est
+Exactement deux statistiques franchissent les deux témoins sur le panel principal,
+et ce sont les deux qu'il faut retenir ; sur les portefeuilles sectoriels FF49
+seul l'écart de régime du canal de dépendance les franchit tous deux (avec celui
+de $\JJ$), si bien que c'est lui, et lui seul, qui tient sur les deux panels. Ce qui sépare une crise d'une série de gros rendements, c'est
 que la coupe transversale se couple : le signal de régime du canal de dépendance
 vaut entre trois et six fois celui des témoins, tandis que celui du canal de
 forme est inférieur aux deux. Et l'indice structurel voyage plus loin sur

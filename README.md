@@ -53,7 +53,7 @@ not industry portfolios). Replication: `EuStockMarkets`, four indices,
 
 Every result below is reported against **two** calibrated nulls
 (`scripts/placebo_null.py`), both resampling the observed returns and running
-the identical pipeline twenty times:
+the identical pipeline 200 times (20 in earlier drafts):
 
 - **i.i.d. null** — rows resampled independently. Keeps the fat marginal tails
   and the cross-sectional dependence, destroys *all* temporal structure.
@@ -63,26 +63,34 @@ the identical pipeline twenty times:
 A statistic that clears both is evidence. One that clears one and fails the
 other is not identified.
 
-| | in the data | vs i.i.d. null | vs block null | verdict |
-|---|---|---|---|---|
-| **H1** `h_dep` regime gap | −1.72 | −0.29 | −0.64 | ✅ **clears both** |
-| **H1** `J` regime gap | +2.89 | +2.32 | +2.21 | i.i.d. only |
-| **H1** `D` regime gap | +0.48 | +1.35 | +0.74 | ❌ null is larger |
-| **H2** compensation rate β (stress) | +0.19 | 0.10 | 0.16 | ❌ null is comparable |
-| **H3** up-jumps | 158 | 147.7 | 129.5 | block only |
-| **H3** skew(ΔJ) | +12.3 | +14.6 | +13.8 | ❌ null is larger |
-| **H4** half-life | 120 d | 92 d | 162 d | ⚠️ **not identified** (data between the nulls) |
-| **H4** range(`J`) | 18.95 | 10.49 | 14.23 | ✅ **clears both** |
-| **H5** corr(ΔJ, Δskew) | −0.24 | −0.07 | −0.01 | ⚠️ edge, *p* ≈ 0.05–0.10 |
-| **H6** coupling gap | 0.62 | 0.75 | 0.67 | ❌ nulls couple *more* |
-| **H7** out-of-sample forecast | in-sample *p* < 1e-4 | — | — | ❌ no gain over volatility |
+Two hundred replications of each null, on each panel (`calcul_local/`). Columns
+for the S&P 500 panel first, then the 48 FF49 industry portfolios.
 
-**Exactly two statistics clear both nulls.** The dependence channel's regime
-signal: what separates a crisis from a run of large returns is that the
-cross-section couples — the effective number of independent risk modes falls
-from 13.2 to 10.5 out of 20 — not that the marginals fatten. And the range of
-`J`: the index travels further in real markets than in any resampling of the
-same returns.
+| | S&P 500 data | vs i.i.d. | vs block | verdict | FF49 data | vs i.i.d. | vs block | verdict |
+|---|---|---|---|---|---|---|---|---|
+| **H1** `h_dep` regime gap | −1.72 | −0.23 | −0.58 | ✅ **both** | −8.51 | −0.61 | −2.63 | ✅ **both** |
+| **H1** `J` regime gap | +2.89 | +2.18 | +2.07 | i.i.d. only (*p* = 0.07 vs block) | +10.56 | +8.17 | +7.90 | ✅ **both** |
+| **H1** `D` regime gap | +0.48 | +1.27 | +0.69 | ❌ null is larger | +1.71 | +4.95 | +2.61 | ❌ null is larger |
+| **H2** β (stress) | +0.19 | 0.04 | 0.12 | ❌ | +0.20 | 0.09 | 0.28 | ❌ |
+| **H3** up-jumps | 158 | 148.5 | 133.2 | block only | 182 | 181.8 | 176.5 | ❌ |
+| **H4** half-life | 120 d | 92 d | 165 d | ⚠️ between the nulls | 184 d | 101 d | 205 d | ⚠️ between the nulls |
+| **H4** range(`J`) | 18.95 | 10.05 | 13.77 | ✅ both (block *p* = 0.035) | 54.5 | 36.9 | 45.9 | i.i.d. only (block *p* = 0.13) |
+| **H5** corr(ΔJ, Δskew) | −0.24 | −0.04 | −0.07 | ⚠️ *p* = 0.10 / 0.08 | −0.44 | −0.20 | −0.18 | ⚠️ *p* = 0.10 / 0.06 |
+| **H6** coupling gap | 0.62 | 0.77 | 0.67 | ❌ i.i.d. null couples *more* | 0.40 | 0.63 | 0.55 | ❌ nulls couple *more* |
+| **H7** out-of-sample forecast | in-sample *p* < 1e-4 | — | — | ❌ no gain over volatility | | | | |
+
+"Clears" means at most 5 % of replications are at least as extreme, in the
+direction the hypothesis predicts. Full tables: `paper/tables/*_placebo_null*.csv`.
+
+**One statistic clears both nulls on both panels: the dependence channel's regime
+gap.** What separates a crisis from a run of large returns is that the
+cross-section couples — on the S&P 500 the effective number of independent risk
+modes falls from 13.2 to 10.5 out of 20 — not that the marginals fatten. The
+signal is about 3× the block null and 8–14× the i.i.d. null on both individual
+stocks and industry portfolios, so it is not an artefact of sector aggregation.
+On the S&P 500 the range of `J` also clears both nulls, narrowly against the
+block null; on FF49 it clears only the i.i.d. null, and the `J` regime gap clears
+both instead.
 
 The reason the nulls matter: `J` is a non-negative convex functional of estimated
 second, third and fourth moments. A single fat-tailed observation entering the
