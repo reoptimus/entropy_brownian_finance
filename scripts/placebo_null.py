@@ -31,6 +31,7 @@ import pandas as pd
 import yaml
 
 from src.empirical import DATA_READERS, rolling_measures
+from src.regimes import past_only_stress
 from src.jumps import detect_jumps, estimate_relaxation, jump_asymmetry
 
 
@@ -51,13 +52,14 @@ def statistics_of(ent: pd.DataFrame, logret: pd.DataFrame, threshold: float,
     rel = estimate_relaxation(ent['J'], jumps)
 
     signal = logret.mean(axis=1).rolling(21).std().reindex(ent.index)
-    stress = signal >= signal.quantile(stress_quantile)
-    calm = ~stress
+    # Past-only threshold (phase 0, A5); burn-in dates belong to neither regime.
+    stress, valid = past_only_stress(signal, stress_quantile)
+    calm = ~stress & valid
 
     up = jumps['jump_up'].reindex(ent.index).fillna(False)
     d = ent.dropna(subset=['dh_dep_ew', 'dD', 'dJ', 'dskew_market'])
     dep = -d['dh_dep_ew']
-    s_d, c_d = stress.reindex(d.index).fillna(False), calm.reindex(d.index).fillna(True)
+    s_d, c_d = stress.reindex(d.index).fillna(False), calm.reindex(d.index).fillna(False)
 
     out = {
         # --- H3: jump asymmetry -------------------------------------------

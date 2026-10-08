@@ -119,3 +119,16 @@ def test_conditional_state_matches_the_last_window(panel):
     assert mu.shape == (panel.shape[1],)
     assert cov.shape == (panel.shape[1], panel.shape[1])
     assert np.all(np.linalg.eigvalsh(cov) > 0)
+
+
+def test_past_only_stress_has_no_lookahead():
+    from src.regimes import past_only_stress
+    rng = np.random.default_rng(0)
+    sig = pd.Series(rng.normal(size=1500).cumsum() ** 2 + 1)
+    stress, valid = past_only_stress(sig, 0.9, min_history=300)
+    assert not valid.iloc[:300].any() and valid.iloc[300:].all()
+    # Changing the future must not change any earlier label.
+    sig2 = sig.copy()
+    sig2.iloc[1000:] *= 50.0
+    stress2, _ = past_only_stress(sig2, 0.9, min_history=300)
+    assert stress.iloc[:1000].equals(stress2.iloc[:1000])

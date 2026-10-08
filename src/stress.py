@@ -373,9 +373,13 @@ def severity_ladder(
     the quantiles are taken, so the tail quantiles are not inflated by counting
     the same episode ``h`` times.
     """
-    s = information_flow.dropna()
-    if non_overlapping:
-        s = s.iloc[::horizon]
+    s_all = information_flow.dropna()
+    # A1: thinning to one point per ``horizon`` depends on the starting phase.
+    # The quantile is computed on every phase (0..horizon-1); the reported eta is
+    # the median over phases, and the phase range is kept for the sensitivity.
+    phases = ([s_all.iloc[k::horizon] for k in range(horizon)]
+              if non_overlapping else [s_all])
+    s = phases[0]
     blocks_per_year = periods_per_year / horizon
     rows = []
     # A KL divergence grows roughly with the dimension of the return vector, so
@@ -386,10 +390,13 @@ def severity_ladder(
         p_exceed = 1.0 / (rp * blocks_per_year)
         if not 0.0 < p_exceed < 1.0:
             continue
+        etas = np.array([ph.quantile(1.0 - p_exceed) for ph in phases])
         rows.append({
             'return_period_years': rp,
             'exceedance_prob_per_block': p_exceed,
-            'eta_nats': float(s.quantile(1.0 - p_exceed)),
+            'eta_nats': float(np.median(etas)),
+            'eta_phase_min': float(etas.min()),
+            'eta_phase_max': float(etas.max()),
             'n_blocks': int(len(s)),
             # A quantile beyond 1/n cannot be read off the sample; it is an
             # interpolation of the empirical tail and is flagged as such.
@@ -402,12 +409,14 @@ def return_period_of(eta: float, information_flow: pd.Series, horizon: int = 21,
                      periods_per_year: float = 252.0,
                      non_overlapping: bool = True) -> float:
     """Return period, in years, implied by a scenario radius of ``eta`` nats."""
-    s = information_flow.dropna()
-    if non_overlapping:
-        s = s.iloc[::horizon]
-    if len(s) == 0:
+    s_all = information_flow.dropna()
+    if len(s_all) == 0:
         return np.nan
-    p = float((s >= eta).mean())
+    # Median over thinning phases (A1), as in :func:`severity_ladder`.
+    phases = ([s_all.iloc[k::horizon] for k in range(horizon)]
+              if non_overlapping else [s_all])
+    s = phases[0]
+    p = float(np.median([(ph >= eta).mean() for ph in phases]))
     blocks_per_year = periods_per_year / horizon
     if p <= 0:
         return float(len(s) / blocks_per_year)  # censored: beyond the sample
@@ -426,11 +435,15 @@ def build_scenario_table(
     rows = []
     base = gaussian_ball_scenario(mu, cov, weights, 0.0, risk_level, objective)
     base['return_period_years'] = 0
+    base['extrapolated'] = False
     rows.append(base)
     for _, r in ladder.iterrows():
         sc = gaussian_ball_scenario(mu, cov, weights, float(r['eta_nats']),
                                     risk_level, objective)
         sc['return_period_years'] = r['return_period_years']
+        # A2: a rung beyond the sample maximum is an extrapolation; the flag
+        # travels with the row into every published table.
+        sc['extrapolated'] = bool(r.get('extrapolated', False))
         rows.append(sc)
     out = pd.DataFrame(rows).rename(columns={'eta': 'eta_nats'})
     front = ['return_period_years', 'eta_nats', 'sigma_move', 'vol_multiplier']
