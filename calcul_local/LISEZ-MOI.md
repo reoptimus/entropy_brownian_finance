@@ -62,7 +62,7 @@ Mémoire : ~300 Mo par processus. 8 Go de RAM suffisent pour 8 processus.
    ```
 
    Il doit finir par `Terminé.` et afficher, pour le S&P 500, une valeur
-   observée `H1_hdep_stress_minus_calm` de **−1,72** et `range_J` de **18,95**
+   observée `H1_hdep_stress_minus_calm` de **−0,99 (phase 0 ; −1,72 avant)** et `range_J` de **18,95**
    (les chiffres du papier). Si c'est le cas, l'installation est bonne.
 
 5. **Calcul complet** :
