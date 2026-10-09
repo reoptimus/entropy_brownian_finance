@@ -1,14 +1,30 @@
 {
-  "label": "S&P 500 (20 stocks)",
+  "label": "sp500",
   "n_dates": 8061,
   "n_assets": 20,
   "sample": [
     "1990-12-31",
     "2022-12-28"
   ],
-  "kappa": 0.005770488192770397,
-  "half_life_days": 120.11933087886054,
+  "kappa": 0.005740148272900781,
+  "half_life_days": 120.75422926482416,
   "n_jump_up": 158,
   "n_jump_down": 9,
-  "skew_of_dJ": 12.259691221942399
+  "skew_of_dJ": 12.259691221942399,
+  "n_regime_dates": 7557,
+  "audit": {
+    "code_commit": "fc0a24a829f9c719ab155b943b5ca50fefdd103d",
+    "code_dirty": true,
+    "data_file": "data/raw/sp500_prices.csv",
+    "data_sha256": "7952031298be02abafa1c284ca20f0b3bef98095e02ff05f179d4bd3747e705b",
+    "versions": {
+      "python": "3.13.16",
+      "numpy": "2.5.3",
+      "pandas": "3.0.5",
+      "scipy": "1.18.1",
+      "sklearn": "1.9.1",
+      "statsmodels": "0.15.0",
+      "skfolio": "1.4.12"
+    }
+  }
 }

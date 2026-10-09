@@ -66,30 +66,33 @@ témoins calibrés construits en rééchantillonnant les rendements observés : 
 i.i.d., qui conserve les queues marginales épaisses et détruit toute structure
 temporelle, l'autre par blocs de 21~jours, qui conserve en outre le
 regroupement de volatilité. Pris au pied de la lettre, les résultats paraissent
-solides : le stress élève $\JJ$ de 2,89~nats, les variations de $\JJ$ sont
+solides : le stress élève $\JJ$ de 1,94~nat, les variations de $\JJ$ sont
 massivement unilatérales (158 sauts positifs contre 9 négatifs, asymétrie
 $+12{,}3$), les sauts positifs s'accompagnent d'une asymétrie de marché
 négative, et les canaux de dépendance et de queue se verrouillent sous stress
-($0{,}04$ en marché calme contre $0{,}66$). Face aux témoins, l'essentiel
+($0{,}04$ en marché calme contre $0{,}63$). Face aux témoins, l'essentiel
 s'évapore. L'asymétrie des sauts, la signature d'asymétrie et le couplage des
 canaux sont tous reproduits --- plusieurs sont même \emph{dépassés} --- par des
 données rééchantillonnées, parce qu'une fonctionnelle convexe positive de
 moments estimés monte brutalement et redescend en douceur dès qu'une observation
 à queue épaisse entre dans l'estimateur. Avec deux cents réplications de chaque témoin, exactement deux statistiques
 franchissent les deux témoins sur le panel principal, et ce sont celles qu'il
-faut retenir : l'écart de régime du canal de \emph{dépendance} ($-1{,}72$~nats
-contre $-0{,}23$ et $-0{,}58$) et l'étendue de $\JJ$ sur l'échantillon ($18{,}95$
+faut retenir : l'écart de régime du canal de \emph{dépendance} ($-0{,}99$~nat
+contre $-0{,}21$ et $-0{,}51$) et l'étendue de $\JJ$ sur l'échantillon ($18{,}95$
 contre $10{,}05$ et $13{,}77$, la seconde de justesse face au témoin par blocs).
 Le premier résultat se reproduit sur les $48$ portefeuilles industriels de
-Kenneth French, avec un écart de $-8{,}51$~nats contre $-0{,}61$ et $-2{,}63$ :
+Kenneth French, avec un écart de $-3{,}65$~nats contre $-0{,}56$ et $-2{,}46$ :
 c'est le seul résultat commun aux deux panels, et il tient donc aussi bien sur
-titres individuels que sur portefeuilles sectoriels.
-Ce qui distingue une crise d'une simple série de gros rendements, c'est que la
-coupe transversale se couple --- le nombre effectif de modes de risque
-indépendants tombe de $13{,}2$ à $10{,}5$ sur $20$ --- et non que les
-marginales s'épaississent. La demi-vie de relaxation n'est pas identifiée : à
-$120$~jours, elle se situe au-dessus du témoin i.i.d.\ ($92$) et en dessous du
-témoin par blocs ($165$). Deux autres résultats vont à l'encontre de l'intérêt de
+titres individuels que sur portefeuilles sectoriels. Il est plus faible que dans
+une version antérieure ($-1{,}72$ et $-8{,}51$), parce que le seuil de stress
+y était le quantile de \emph{tout} l'échantillon, donc informé par le futur ; il
+est désormais calculé sur le passé seulement, à l'identique dans les données et
+dans les témoins. Ce qui distingue une crise d'une simple série de gros
+rendements, c'est que la coupe transversale se couple --- le nombre effectif de
+modes de risque indépendants tombe de $13{,}1$ à $11{,}4$ sur $20$ --- et non que
+les marginales s'épaississent. La demi-vie de relaxation n'est pas identifiée : à
+$121$~jours, elle se situe au-dessus du témoin i.i.d.\ ($92$) et en dessous du
+témoin par blocs ($163$). Deux autres résultats vont à l'encontre de l'intérêt de
 l'article : la compensation volatilité--dépendance observée sur des portefeuilles
 sectoriels ne se réplique pas sur des titres individuels, et aucun canal
 d'entropie n'améliore hors échantillon la prévision du risque futur par rapport à
@@ -105,11 +108,15 @@ déplacement de la moyenne et l'inflation de la variance sont prélevés sur un
 même budget au lieu d'être choqués séparément. Un nat achète $\sqrt2$~sigma. La
 même métrique tarife les scénarios existants : un bundle classique --- volatilités
 doublées, toutes les corrélations forcées à $0{,}9$, un choc de trois sigmas ---
-se tarife à $9{,}97$~nats, entre les échelons vicennal et cinquantennal, mais
-délivre une perte de queue qu'un scénario entropique atteint pour $5{,}47$ ; le
-comité a acheté une perte décennale au prix d'une invraisemblance trentennale.
+se tarife à $7{,}24$~nats vu du portefeuille, alors qu'un scénario entropique
+délivre la même perte de queue pour $5{,}47$ : le comité surpaye de $24\,\%$.
 Nous décomposons ce prix pour montrer où il passe, et la composante chère n'est
-pas celle que l'intuition désigne.
+pas celle que l'intuition désigne. Une réserve pèse pourtant sur les périodes de
+retour : l'échelle de sévérité calibrée sur le flux d'information du seul
+portefeuille est nettement plus douce que l'histoire (un scénario décennal
+multiplie la volatilité par $1{,}6$, quand le quantile décennal de la hausse de
+volatilité réalisée est de $3{,}2$), de sorte que l'efficience de la construction
+est établie et que les périodes de retour ne le sont pas.
 
 Reste une question que la construction ci-dessus laisse ouverte : elle fixe la
 sévérité du portefeuille sans jamais dire comment la covariance sous-jacente
@@ -131,9 +138,9 @@ l'utilisons pour construire une covariance de scénario dont la part de
 dépendance est ancrée sur le fait le plus robuste de tout l'article (le canal
 de dépendance de H1, seul à franchir les deux témoins) et raffinée par cette
 huitième hypothèse : à sévérité de portefeuille strictement identique, un
-scénario décennal composé ainsi coûte 32{,}2~nats de la façon la plus simple à
-calibrer et 13{,}4~nats une fois raffiné par la sévérité de l'épisode --- moins,
-non plus, que la dilatation uniforme par défaut ($66{,}9$), parce que celle-ci
+scénario décennal composé ainsi coûte $2{,}9$~nats de la façon la plus simple à
+calibrer et $0{,}7$~nat une fois raffiné par la sévérité de l'épisode --- moins,
+non plus, que la dilatation uniforme par défaut ($6{,}8$), parce que celle-ci
 n'est jamais qu'un choix simple compatible avec la contrainte de portefeuille,
 non un minimum prouvé de la divergence ambiante. Un gestionnaire qui suppose par
 défaut une dilatation uniforme n'est donc pas prudent en le faisant : la
@@ -918,10 +925,11 @@ bourse contemporains de 1991 à 1998, $N=4$. C'est un autre marché, une autre
 décennie et une autre taille de coupe transversale, ce qui en fait l'utilité ;
 il est bien trop petit pour porter seul un résultat.
 
-Un lecteur ayant accès au fichier quotidien des 49~secteurs de Kenneth French
-peut reproduire chaque tableau dessus via \texttt{config/default.yaml} ; les
-résultats sectoriels cités ci-dessous à titre de comparaison proviennent de la
-version antérieure de ce projet.
+Le second panel de comparaison est le fichier quotidien des $49$ secteurs de
+Kenneth French (\texttt{config/default.yaml} ; la catégorie résiduelle est
+exclue, d'où $48$ portefeuilles), 1990--2026, soit $9\,000$ dates environ. La
+chaîne complète y a été exécutée, y compris les deux témoins à deux cents
+réplications ; les tables sont dans \texttt{paper/tables/ff49\_*}.
 
 \subsection{Estimateurs}
 \label{sec:estimators}
@@ -989,6 +997,19 @@ la variation bipuissance \citep{bns2004}, laquelle est convergente pour l'échel
 diffusive même en présence de sauts et est décalée d'un jour afin que le seuil
 jugeant une date ne la contienne jamais.
 
+\paragraph{Régimes sans regard vers l'avenir.} Le régime de stress est le décile
+supérieur de la volatilité de marché glissante à 21~jours. Le seuil à la date $t$
+est le quantile à $90\,\%$ de cette volatilité sur les dates strictement
+\emph{antérieures} à $t$ (quantile expansif), et les $504$ premières dates, faute
+d'historique, n'appartiennent à aucun régime. Une version antérieure de ce
+projet employait le quantile de tout l'échantillon, qui utilise la volatilité
+future pour étiqueter le passé et gonfle les écarts de régime (section~\ref{sec:verdicts}).
+Le seuil expansif classe plus de dates en stress ($1\,076$ sur $7\,557$ au lieu de
+$807$) parce que la volatilité du marché tend à monter au fil de l'échantillon :
+\og stress \fg{} veut dire \og plus agité que tout ce qu'on avait vu jusque-là
+dans 90\,\% des cas \fg{}, ce qui est plus honnête et change la définition. La
+même règle s'applique aux données et aux témoins.
+
 \paragraph{Inférence.} Une fenêtre glissante de 252~jours fait que deux
 observations consécutives partagent 251 des 252 jours de rendement sous-jacents.
 Toute comparaison de régime emploie donc un bootstrap par blocs circulaires de
@@ -997,7 +1018,15 @@ préservant la persistance de la série et le regroupement de l'indicateur de
 régime. Les comparaisons prédictives utilisent une estimation en validation
 glissante à fenêtre croissante réajustée annuellement, une évaluation sur dates
 non chevauchantes, et un test de Diebold--Mariano \citep{dm1995} sur le
-différentiel d'erreur quadratique.
+différentiel d'erreur quadratique. Trois conventions de ce protocole ont été
+corrigées par rapport à la version antérieure : la $p$-valeur de la pente de
+relaxation est celle de la loi de Dickey--Fuller (MacKinnon), car sous une racine
+unitaire la loi normale rejette trop souvent ; les retards HAC suivent la règle
+de Newey--West ($\lfloor 4(n/100)^{2/9}\rfloor$, soit $10$ ici) sauf pour les
+cibles de prévision qui se recouvrent sur 21~jours (H7), où ils valent au moins
+$21$ ; et le lendemain d'un saut n'est plus exclu de l'estimation de la
+relaxation, car l'exclure sélectionnait sur la variable dépendante ; l'effet mesuré ici est
+négligeable ($120{,}1$ puis $120{,}8$~jours sur le panel principal).
 
 \subsection{Le témoin placebo}
 \label{sec:placebo}
@@ -1071,31 +1100,7 @@ identifiée.
 \cmidrule(lr){4-5}\cmidrule(lr){6-7}
 & Statistique & Obs. & moy. & 5--95\,\% & moy. & 5--95\,\% & Verdict \\
 \midrule
-H1 & écart $H^{dep}$ & $-1{,}72$ & $-0{,}23$ & $-0{,}41$--$-0{,}04$ & $-0{,}58$ & $-1{,}01$--$-0{,}23$ & \textbf{franchit les deux} \\
-H1 & écart $\JJ$ & $2{,}89$ & $2{,}18$ & $1{,}71$--$2{,}72$ & $2{,}07$ & $1{,}34$--$2{,}96$ & i.i.d.\ seulement \\
-H1 & écart $\DD$ & $0{,}48$ & $1{,}27$ & $0{,}92$--$1{,}67$ & $0{,}69$ & $0{,}27$--$1{,}13$ & à contre-sens (i.i.d.) \\
-\midrule
-H2 & $\mathrm{corr}(\Delta H^{vol}\!,\Delta H^{dep})$ & $0{,}10$ & $0{,}23$ & $-0{,}26$--$0{,}60$ & $0{,}27$ & $-0{,}21$--$0{,}63$ & échoue aux deux \\
-H2 & $\beta$ (stress) & $0{,}19$ & $0{,}04$ & $-0{,}31$--$0{,}31$ & $0{,}12$ & $-0{,}31$--$0{,}33$ & échoue aux deux \\
-\midrule
-H3 & sauts positifs & $158{,}0$ & $148{,}5$ & $136{,}9$--$161{,}0$ & $133{,}2$ & $121{,}0$--$146{,}0$ & blocs seulement \\
-H3 & sauts négatifs & $9{,}0$ & $3{,}0$ & $1{,}0$--$6{,}0$ & $3{,}7$ & $1{,}0$--$7{,}0$ & à contre-sens (les deux) \\
-H3 & saut positif moyen (nats) & $0{,}62$ & $1{,}12$ & $0{,}95$--$1{,}29$ & $0{,}84$ & $0{,}69$--$1{,}03$ & à contre-sens (les deux) \\
-H3 & asymétrie de $\Delta\JJ$ & $12{,}26$ & $14{,}80$ & $12{,}27$--$17{,}60$ & $12{,}97$ & $9{,}71$--$17{,}65$ & à contre-sens (i.i.d.) \\
-H3 & part de var.\ sauts pos. & $0{,}838$ & $0{,}899$ & $0{,}869$--$0{,}922$ & $0{,}817$ & $0{,}764$--$0{,}860$ & à contre-sens (i.i.d.) \\
-\midrule
-H4 & demi-vie (jours) & $120{,}1$ & $91{,}8$ & $82{,}3$--$102{,}6$ & $165{,}1$ & $117{,}4$--$228{,}0$ & entre les deux témoins \\
-H4 & $\mathrm{sd}(\JJ)$ & $2{,}03$ & $1{,}55$ & $1{,}31$--$1{,}81$ & $2{,}06$ & $1{,}40$--$2{,}75$ & i.i.d.\ seulement \\
-H4 & étendue$(\JJ)$ & $18{,}95$ & $10{,}05$ & $8{,}05$--$12{,}88$ & $13{,}77$ & $9{,}04$--$17{,}88$ & \textbf{franchit les deux} \\
-\midrule
-H5 & écart $\Delta S_{mkt}$ & $-0{,}053$ & $-0{,}011$ & $-0{,}088$--$0{,}070$ & $-0{,}027$ & $-0{,}082$--$0{,}039$ & échoue aux deux \\
-H5 & $\mathrm{corr}(\Delta\JJ,\Delta S_{mkt})$ & $-0{,}243$ & $-0{,}035$ & $-0{,}298$--$0{,}230$ & $-0{,}069$ & $-0{,}268$--$0{,}209$ & échoue aux deux \\
-\midrule
-H6 & couplage, stress & $0{,}66$ & $0{,}90$ & $0{,}85$--$0{,}93$ & $0{,}73$ & $0{,}57$--$0{,}82$ & à contre-sens (i.i.d.) \\
-H6 & écart de couplage & $0{,}617$ & $0{,}768$ & $0{,}676$--$0{,}861$ & $0{,}669$ & $0{,}484$--$0{,}799$ & à contre-sens (i.i.d.) \\
-\midrule
--- & $\mathrm{corr}(\JJ,\log\mathrm{vol})$ & $0{,}461$ & $0{,}414$ & $0{,}359$--$0{,}466$ & $0{,}264$ & $0{,}164$--$0{,}362$ & --- \\
-\bottomrule
+\input{tables/tab_placebo_sp500.tex}
 \end{tabular}
 \caption{S\&P~500 : statistiques observées face à deux témoins calibrés, deux
 cents réplications chacun. \og Franchit \fg{} signifie que la proportion de
@@ -1108,8 +1113,10 @@ Les écarts sont stress moins calme. Les $p$-valeurs exactes sont dans
 \end{table}
 
 \paragraph{Ce qui franchit les deux témoins.} Deux choses, et deux seulement.
-L'écart de régime du canal de \emph{dépendance} : $-1{,}72$~nats contre $-0{,}23$
-et $-0{,}58$, hors de chacune des quatre cents réplications. Et l'\emph{étendue}
+L'écart de régime du canal de \emph{dépendance} : $-0{,}99$~nat contre $-0{,}21$
+(i.i.d., aucune des deux cents réplications ne l'atteint) et $-0{,}51$ (blocs,
+$p=0{,}030$ : six réplications sur deux cents sont au moins aussi extrêmes, le
+résultat est donc plus fragile face à ce second témoin). Et l'\emph{étendue}
 de l'indice structurel : $18{,}95$~nats contre $10{,}05$ (i.i.d., aucune
 réplication ne l'atteint) et $13{,}77$ (blocs, $p=0{,}035$ : le résultat est plus
 fragile face à ce second témoin, dont le quantile à $95\%$ est à $17{,}88$).
@@ -1117,19 +1124,29 @@ Autrement dit : ce qui sépare une crise d'une simple série de gros rendements,
 la coupe transversale se couple, et l'indice structurel voyage plus loin en
 marché réel que dans tout rééchantillonnage des mêmes rendements.
 
+\paragraph{Ce que la correction du seuil de stress a retiré.} Dans une version
+antérieure de ce projet, l'écart sur $\JJ$ franchissait le témoin i.i.d.\
+($2{,}89$ contre $2{,}18$, $p=0{,}02$). Avec un seuil de stress calculé sur le
+passé seulement, l'écart tombe à $+1{,}93$~nat, soit moins que la moyenne des deux
+témoins ($2{,}14$ et $1{,}97$, $p=0{,}67$ et $0{,}50$) : il ne franchit plus
+aucun des deux. L'écart du canal de dépendance a lui aussi diminué ($-1{,}72$
+avant, $-0{,}99$ maintenant), mais de façon cohérente dans les données et dans
+les témoins, et il franchit toujours les deux.
+
 \paragraph{Ce qui ne franchit pas.} L'asymétrie des sauts échoue franchement au
 témoin i.i.d.\ (H3). Le couplage des canaux échoue aux deux, et échoue dans la
 direction qui compte : le témoin i.i.d.\ couple \emph{plus} fortement que les
 données ($p=0{,}01$), le témoin par blocs aussi en moyenne sans que la différence
-soit nette (H6). Le signal de régime du canal de forme est plus petit que celui du témoin
-i.i.d.\ et, sans que la différence soit nette, que celui du témoin par blocs. L'hypothèse de compensation se perd dans le bruit propre des témoins
+soit nette (H6). Le signal de régime du canal de forme ($+0{,}27$~nat) est plus petit que celui du
+témoin i.i.d.\ ($+1{,}25$) et, sans que la différence soit nette, que celui du
+témoin par blocs ($+0{,}65$, $p=0{,}08$). L'hypothèse de compensation se perd dans le bruit propre des témoins
 (H2).
 
 \paragraph{Ce qui n'est pas identifié.} La demi-vie de relaxation est de
-$120$~jours contre $92$ sous le témoin i.i.d.\ et $165$ sous le témoin par blocs
+$121$~jours contre $92$ sous le témoin i.i.d.\ et $163$ sous le témoin par blocs
 --- les données se situent \emph{entre} les deux, et le signe de la comparaison
-s'inverse (seules $7\%$ des réplications par blocs tombent en dessous de
-$120$~jours, contre aucune réplication i.i.d.\ au-dessus). Le rééchantillonnage par blocs concatène parfois des blocs de forte
+s'inverse (seules $8{,}5\%$ des réplications par blocs tombent en dessous de
+$121$~jours, contre aucune réplication i.i.d.\ au-dessus). Le rééchantillonnage par blocs concatène parfois des blocs de forte
 volatilité et fabrique de longues excursions ; le rééchantillonnage i.i.d.\ en
 fabrique de courtes. La conclusion honnête est que le niveau de la demi-vie est
 un artefact du témoin qu'on choisit de croire, et que P\ref{p:relax} est soutenu
@@ -1149,27 +1166,27 @@ seul regroupement ne reproduit pas.
 
 \paragraph{Le même test sur les portefeuilles sectoriels.} Le tableau~\ref{tab:placebo-ff49}
 reproduit exactement la chaîne et les deux témoins (deux cents réplications chacun)
-sur les $48$ portefeuilles industriels quotidiens de Kenneth French, 1990--2026.
-C'est la première fois que ce panel est confronté aux témoins ; ses chiffres
-antérieurs ne l'étaient pas. L'écart de régime du canal de \emph{dépendance}
-franchit les deux : $-8{,}51$~nats contre $-0{,}61$ (i.i.d.) et $-2{,}63$ (blocs),
-soit quatorze fois et trois fois le témoin, hors des quatre cents réplications. C'est
-le même ordre de grandeur relatif que sur titres individuels ($8$ et $3$ fois), ce
-qui va contre l'idée d'un artefact d'agrégation sectorielle. L'écart
-sur $\JJ$ franchit aussi les deux ($10{,}56$ contre $8{,}17$ et $7{,}90$,
-$p=0{,}015$ et $0{,}02$), ce que le panel principal ne fait qu'en partie. En
-revanche l'\emph{étendue} de $\JJ$ ne franchit que le témoin i.i.d.\ ($54{,}5$ contre
-$36{,}9$) et pas celui par blocs ($45{,}9$, $p=0{,}13$) : le second résultat du panel
-principal ne se réplique pas ici. La demi-vie ($184$~jours) est de nouveau entre
-les deux témoins ($101$ et $205$), le décompte de sauts positifs ($182$) est celui
-des deux témoins ($182$ et $176$), et le couplage des canaux sous stress reste
-inférieur à celui du témoin i.i.d. Une remarque pour H2 : la corrélation entre
+sur les $48$ portefeuilles industriels quotidiens de Kenneth French, 1990--2026,
+avec le même seuil de stress sans regard vers l'avenir. C'est la première fois
+que ce panel est confronté aux témoins. L'écart de régime du canal de
+\emph{dépendance} franchit les deux : $-3{,}65$~nats contre $-0{,}56$ (i.i.d.,
+aucune réplication) et $-2{,}46$ (blocs, $p=0{,}025$), soit environ six fois et une
+fois et demie le témoin. L'amplitude est la même sur titres individuels et sur
+secteurs ($4{,}7$ et $1{,}9$ fois le témoin), ce qui va contre l'idée d'un artefact
+d'agrégation sectorielle. L'écart sur $\JJ$, en revanche, ne franchit plus rien
+($+5{,}93$ contre $7{,}95$ et $7{,}79$ ; il franchissait les deux avant la
+correction du seuil) et la hausse du déficit $\DD$ sous stress est inférieure à
+celle des deux témoins ($0{,}98$ contre $4{,}81$ et $2{,}60$). L'\emph{étendue} de
+$\JJ$ ne franchit que le témoin i.i.d.\ ($54{,}5$ contre $36{,}9$) et pas celui
+par blocs ($45{,}9$, $p=0{,}13$) : le second résultat du panel principal ne se
+réplique pas ici. La demi-vie ($190$~jours) est de nouveau entre les deux témoins
+($101$ et $199$), le décompte de sauts positifs ($182$) est celui des deux
+témoins ($182$ et $176$), et le couplage des canaux sous stress reste inférieur à
+celui du témoin i.i.d. Une remarque pour H2 : la corrélation entre
 $\Delta H^{vol}$ et $\Delta H^{dep}$ de $-0{,}63$, que la version antérieure du
-papier présentait comme la compensation sectorielle, est produite à peu de chose
-près par le témoin par blocs ($-0{,}54$, $p=0{,}09$) ; elle ne franchit que le
-témoin i.i.d.\ ($-0{,}36$). Ces comparaisons utilisent le seuil de stress du pipeline actuel
-(quantile de tout l'échantillon, correctif de look-ahead non encore appliqué),
-identique dans les données et dans les témoins.
+papier présentait comme la compensation sectorielle, est approchée par le témoin
+par blocs ($-0{,}54$, $p=0{,}09$) ; elle ne franchit que le témoin i.i.d.\
+($-0{,}36$).
 
 \begin{table}[htbp]
 \centering
@@ -1180,31 +1197,7 @@ identique dans les données et dans les témoins.
 \cmidrule(lr){4-5}\cmidrule(lr){6-7}
 & Statistique & Obs. & moy. & 5--95\,\% & moy. & 5--95\,\% & Verdict \\
 \midrule
-H1 & écart $H^{dep}$ & $-8{,}51$ & $-0{,}61$ & $-1{,}06$--$-0{,}25$ & $-2{,}63$ & $-3{,}72$--$-1{,}59$ & \textbf{franchit les deux} \\
-H1 & écart $\JJ$ & $10{,}56$ & $8{,}17$ & $6{,}46$--$9{,}95$ & $7{,}90$ & $5{,}73$--$10{,}02$ & \textbf{franchit les deux} \\
-H1 & écart $\DD$ & $1{,}71$ & $4{,}95$ & $3{,}66$--$6{,}21$ & $2{,}61$ & $1{,}28$--$3{,}91$ & à contre-sens (i.i.d.) \\
-\midrule
-H2 & $\mathrm{corr}(\Delta H^{vol}\!,\Delta H^{dep})$ & $-0{,}63$ & $-0{,}36$ & $-0{,}54$--$-0{,}19$ & $-0{,}54$ & $-0{,}65$--$-0{,}41$ & i.i.d.\ seulement \\
-H2 & $\beta$ (stress) & $0{,}20$ & $0{,}09$ & $-0{,}05$--$0{,}21$ & $0{,}28$ & $0{,}16$--$0{,}41$ & échoue aux deux \\
-\midrule
-H3 & sauts positifs & $182{,}0$ & $181{,}8$ & $165{,}0$--$201{,}1$ & $176{,}5$ & $159{,}0$--$194{,}1$ & échoue aux deux \\
-H3 & sauts négatifs & $3{,}0$ & $7{,}8$ & $4{,}0$--$13{,}0$ & $5{,}2$ & $2{,}0$--$10{,}0$ & i.i.d.\ seulement \\
-H3 & saut positif moyen (nats) & $1{,}70$ & $3{,}47$ & $2{,}74$--$4{,}18$ & $2{,}30$ & $1{,}82$--$2{,}90$ & à contre-sens (les deux) \\
-H3 & asymétrie de $\Delta\JJ$ & $17{,}04$ & $18{,}31$ & $14{,}84$--$21{,}83$ & $16{,}46$ & $11{,}76$--$26{,}04$ & échoue aux deux \\
-H3 & part de var.\ sauts pos. & $0{,}889$ & $0{,}943$ & $0{,}918$--$0{,}958$ & $0{,}877$ & $0{,}840$--$0{,}910$ & à contre-sens (i.i.d.) \\
-\midrule
-H4 & demi-vie (jours) & $183{,}8$ & $100{,}6$ & $89{,}4$--$111{,}1$ & $205{,}2$ & $140{,}4$--$283{,}7$ & entre les deux témoins \\
-H4 & $\mathrm{sd}(\JJ)$ & $6{,}37$ & $5{,}46$ & $4{,}43$--$6{,}48$ & $7{,}05$ & $5{,}05$--$9{,}18$ & échoue aux deux \\
-H4 & étendue$(\JJ)$ & $54{,}47$ & $36{,}86$ & $28{,}53$--$43{,}95$ & $45{,}86$ & $32{,}98$--$59{,}10$ & i.i.d.\ seulement \\
-\midrule
-H5 & écart $\Delta S_{mkt}$ & $-0{,}112$ & $-0{,}057$ & $-0{,}140$--$0{,}017$ & $-0{,}068$ & $-0{,}123$--$-0{,}010$ & échoue aux deux \\
-H5 & $\mathrm{corr}(\Delta\JJ,\Delta S_{mkt})$ & $-0{,}440$ & $-0{,}197$ & $-0{,}472$--$0{,}075$ & $-0{,}177$ & $-0{,}441$--$0{,}149$ & échoue aux deux \\
-\midrule
-H6 & couplage, stress & $0{,}80$ & $0{,}94$ & $0{,}92$--$0{,}96$ & $0{,}82$ & $0{,}75$--$0{,}87$ & à contre-sens (i.i.d.) \\
-H6 & écart de couplage & $0{,}404$ & $0{,}630$ & $0{,}537$--$0{,}736$ & $0{,}545$ & $0{,}396$--$0{,}694$ & à contre-sens (i.i.d.) \\
-\midrule
--- & $\mathrm{corr}(\JJ,\log\mathrm{vol})$ & $0{,}677$ & $0{,}443$ & $0{,}388$--$0{,}490$ & $0{,}327$ & $0{,}240$--$0{,}409$ & --- \\
-\bottomrule
+\input{tables/tab_placebo_ff49.tex}
 \end{tabular}
 \caption{FF49, $48$ portefeuilles industriels, 1990--2026 : statistiques observées
 face aux deux témoins calibrés, deux cents réplications chacun. Mêmes conventions
@@ -1219,10 +1212,12 @@ une optimisation convexe. Elle ne repose sur la véracité d'aucune de H1--H7.
 
 \subsection{H1 : la signature de régime}
 
-Le tableau~\ref{tab:h1} compare le décile supérieur de la volatilité de marché
-glissante à 21~jours (807 dates) au reste (7~254). Les $p$-valeurs de bootstrap
-par blocs résument en une ligne une hypothèse nulle dans laquelle l'étiquette de
-régime ne porte aucune information sur le niveau.
+Le tableau~\ref{tab:h1} compare les dates où la volatilité de marché glissante à
+21~jours dépasse son décile historique, calculé sur le passé seulement ($1\,076$
+dates), au reste ($6\,481$) ; les $504$ premières dates, sans historique, sont
+exclues. Les $p$-valeurs de bootstrap par blocs résument en une ligne une
+hypothèse nulle dans laquelle l'étiquette de régime ne porte aucune information
+sur le niveau.
 
 \begin{table}[htbp]
 \centering
@@ -1231,42 +1226,49 @@ régime ne porte aucune information sur le niveau.
 \toprule
 Canal & Stress & Calme & Différence & $p$ \\
 \midrule
-$H^{vol}$ (échelle)              & $-75{,}51$ & $-80{,}98$ & $+5{,}47$ & $<0{,}001$ \\
-$H^{dep}$ (dépendance)           & $-5{,}12$  & $-3{,}40$  & $-1{,}72$ & $0{,}001$ \\
-$H^{cov}$ (plafond gaussien)     & $-80{,}63$ & $-84{,}37$ & $+3{,}75$ & $0{,}013$ \\
-$\DD$ (forme)                    & $1{,}96$   & $1{,}48$   & $+0{,}48$ & $0{,}033$ \\
-\quad canal d'asymétrie          & $0{,}121$  & $0{,}112$  & $+0{,}009$& $0{,}449$ \\
-\quad canal de queue             & $1{,}837$  & $1{,}364$  & $+0{,}473$& $0{,}036$ \\
-$\JJ$ (indice structurel)        & $8{,}02$   & $5{,}13$   & $+2{,}89$ & $<0{,}001$ \\
+$H^{vol}$ (échelle)              & $-75{,}56$ & $-81{,}53$ & $+5{,}97$ & $<0{,}001$ \\
+$H^{dep}$ (dépendance)           & $-4{,}50$  & $-3{,}50$  & $-0{,}99$ & $0{,}020$ \\
+$H^{dep}$ (version EWMA, celle de $\JJ$) & $-5{,}36$ & $-3{,}70$ & $-1{,}66$ & $<0{,}001$ \\
+$H^{cov}$ (plafond gaussien)     & $-80{,}06$ & $-85{,}03$ & $+4{,}97$ & $<0{,}001$ \\
+$\DD$ (forme)                    & $1{,}72$   & $1{,}45$   & $+0{,}27$ & $0{,}156$ \\
+\quad canal d'asymétrie          & $0{,}120$  & $0{,}110$  & $+0{,}009$& $0{,}345$ \\
+\quad canal de queue             & $1{,}604$  & $1{,}342$  & $+0{,}262$& $0{,}160$ \\
+$\JJ$ (indice structurel)        & $7{,}09$   & $5{,}15$   & $+1{,}94$ & $<0{,}001$ \\
 \midrule
-corrélation moyenne par paires   & $0{,}357$  & $0{,}251$  & $+0{,}106$& $0{,}001$ \\
-nombre effectif de modes         & $10{,}50$  & $13{,}20$  & $-2{,}70$ & $0{,}001$ \\
-taux de co-dépassement de queue  & $0{,}305$  & $0{,}219$  & $+0{,}086$& $0{,}002$ \\
-asymétrie de marché              & $-0{,}188$ & $-0{,}221$ & $+0{,}033$& $0{,}671$ \\
-kurtosis excédentaire de marché  & $2{,}39$   & $1{,}67$   & $+0{,}72$ & $0{,}141$ \\
+corrélation moyenne par paires   & $0{,}320$  & $0{,}256$  & $+0{,}065$& $0{,}021$ \\
+nombre effectif de modes         & $11{,}42$  & $13{,}07$  & $-1{,}65$ & $0{,}020$ \\
+taux de co-dépassement de queue  & $0{,}274$  & $0{,}221$  & $+0{,}053$& $0{,}020$ \\
+asymétrie de marché              & $-0{,}216$ & $-0{,}233$ & $+0{,}017$& $0{,}808$ \\
+kurtosis excédentaire de marché  & $2{,}20$   & $1{,}73$   & $+0{,}47$ & $0{,}306$ \\
 \bottomrule
 \end{tabular}
-\caption{H1 : moyennes des canaux par régime, actions individuelles du
-S\&P~500, 1990--2022. Entropies en nats.}
+\caption{H1 : moyennes des canaux par régime, seuil de stress sans regard vers
+l'avenir, actions individuelles du S\&P~500, 1990--2022. Entropies en nats. Le
+canal de dépendance est rapporté pour les deux estimateurs de covariance ; les
+témoins du tableau~\ref{tab:placebo} portent sur le premier.}
 \label{tab:h1}
 \end{table}
 
 Tous les signes sont ceux que prédit H1. L'entropie de dépendance chute de
-1,72~nats, le nombre effectif de modes de risque indépendants passe de 13,2 à
-10,5 sur 20, le déficit de forme monte de 0,48~nat, et l'indice structurel monte
-de 2,89~nats --- une hausse de $56\%$, la différence la plus significative du
-tableau. Le panel de réplication concorde sur chaque signe, $\JJ$ passant de 0,89
-à 1,23~nat ($p<0{,}001$).
+0,99~nat ($1{,}66$ avec l'estimateur EWMA), le nombre effectif de modes de risque
+indépendants passe de 13,1 à 11,4 sur 20, le déficit de forme monte de 0,27~nat
+(différence non significative, $p=0{,}16$), et l'indice structurel monte de
+1,94~nat --- une hausse de $38\%$, la différence la plus significative du
+tableau. Le panel de réplication concorde sur les signes de la dépendance et de
+$\JJ$ (de 0,92 à 1,15~nat, $p=0{,}034$) mais son échantillon, réduit par la
+période de rodage à $1\,104$ dates dont $160$ en stress, ne porte plus de
+différence de dépendance significative ($-0{,}19$, $p=0{,}17$).
 
 Face au témoin calibré, l'hypothèse se scinde en deux. Le canal de
 \emph{dépendance} porte un signal réel : l'écart de régime observé de
-$-1{,}72$~nats vaut environ huit fois le $-0{,}23$ du témoin i.i.d.\ et trois fois
-le $-0{,}58$ du témoin par blocs, et se situe hors des deux cents réplications de
-chacun. L'écart sur $\JJ$ lui-même franchit le témoin i.i.d.\ ($p=0{,}02$) mais
-d'une marge bien plus étroite ($2{,}89$ contre une moyenne de $2{,}18$), et pas
-nettement le témoin par blocs ($2{,}07$, $p=0{,}07$). Le canal de \emph{forme}, lui, non : son écart de régime observé de
-$+0{,}48$~nat est inférieur au $+1{,}27$ du témoin i.i.d.\ (et au $+0{,}69$ du
-témoin par blocs). Des données mélangées, où une
+$-0{,}99$~nat vaut environ cinq fois le $-0{,}21$ du témoin i.i.d.\ et deux fois
+le $-0{,}51$ du témoin par blocs ; il se situe hors des deux cents réplications du
+premier et de toutes sauf six du second. L'écart sur $\JJ$ lui-même, qui
+franchissait le témoin i.i.d.\ avant la correction du seuil, ne franchit plus
+aucun témoin ($1{,}93$ contre $2{,}14$ et $1{,}97$) : c'est la composante
+dépendance qui porte H1, non l'indice agrégé. Le canal de \emph{forme}, lui, non :
+son écart de régime observé de $+0{,}27$~nat est inférieur au $+1{,}25$ du témoin
+i.i.d.\ (et au $+0{,}65$ du témoin par blocs). Des données mélangées, où une
 fenêtre de \og stress \fg{} est par construction une fenêtre contenant des
 rendements extrêmes isolés, épaississent les marginales mesurées davantage que ne
 le font les vrais épisodes de stress. La hausse de $\DD$ sous stress n'est donc
@@ -1309,21 +1311,21 @@ quelque chose de plus précis.
 Taux de compensation $\widehat\beta$ (IC 95\,\%) & Tout & Calme & Stress \\
 \midrule
 S\&P~500, 20 titres individuels
-& $-0{,}06$ & $-0{,}19$ & $\mathbf{+0{,}19}$ \\
-& \footnotesize$(-0{,}32;+0{,}19)$ & \footnotesize$(-0{,}49;+0{,}11)$ & \footnotesize$\mathbf{(+0{,}07;+0{,}32)}$ \\
+& $+0{,}09$ & $-0{,}00$ & $\mathbf{+0{,}20}$ \\
+& \footnotesize$(-0{,}02;+0{,}19)$ & \footnotesize$(-0{,}14;+0{,}14)$ & \footnotesize$\mathbf{(+0{,}08;+0{,}32)}$ \\
 \texttt{EuStockMarkets}, 4 indices
-& $+0{,}11$ & $+0{,}06$ & $\mathbf{+0{,}36}$ \\
-& \footnotesize$(-0{,}14;+0{,}36)$ & \footnotesize$(-0{,}19;+0{,}31)$ & \footnotesize$\mathbf{(+0{,}29;+0{,}42)}$ \\
+& $\mathbf{+0{,}33}$ & $\mathbf{+0{,}30}$ & $\mathbf{+0{,}39}$ \\
+& \footnotesize$\mathbf{(+0{,}23;+0{,}42)}$ & \footnotesize$\mathbf{(+0{,}16;+0{,}44)}$ & \footnotesize$\mathbf{(+0{,}31;+0{,}47)}$ \\
 \midrule
-$R^2$ de \eqref{eq:h2}, S\&P~500 & $0{,}01$ & $0{,}08$ & $0{,}16$ \\
-$R^2$ de \eqref{eq:h2}, \texttt{EuStock} & $0{,}05$ & $0{,}02$ & $0{,}45$ \\
+$R^2$ de \eqref{eq:h2}, S\&P~500 & $0{,}02$ & $0{,}00$ & $0{,}16$ \\
+$R^2$ de \eqref{eq:h2}, \texttt{EuStock} & $0{,}24$ & $0{,}17$ & $0{,}44$ \\
 \midrule
-\multicolumn{4}{@{}l}{\footnotesize Rappel, portefeuilles sectoriels FF49 (version antérieure) :
-$\mathrm{corr}=-0{,}63$ toutes dates ; $\beta$ non disponible.} \\
+\multicolumn{4}{@{}l}{\footnotesize Portefeuilles sectoriels FF49 (recalculé) :
+$+0{,}38$ toutes dates, $+0{,}51$ en calme, $+0{,}23$ en stress, tous significatifs.} \\
 \bottomrule
 \end{tabular}
 \caption{H2 : taux de compensation $\beta$ estimé par \eqref{eq:h2}, écarts
-types HAC à 21~retards. $\beta>0$ signifie que les deux canaux varient en sens
+types HAC à retards de Newey--West. $\beta>0$ signifie que les deux canaux varient en sens
 opposé. Les valeurs en gras sont significativement positives.}
 \label{tab:h2}
 \end{table}
@@ -1331,38 +1333,51 @@ opposé. Les valeurs en gras sont significativement positives.}
 Trois lectures, que la formulation binaire empêchait.
 
 \emph{Le signe.} Hors régime de stress, $\beta$ n'est distinguable de zéro sur
-aucun des deux panels : les intervalles de confiance contiennent $0$, et sur le
-S\&P~500 le point estimé est même légèrement négatif, c'est-à-dire une
-amplification plutôt qu'une compensation. \textbf{En régime de stress, en
-revanche, $\beta$ est significativement positif sur les deux jeux de données},
-$+0{,}19$ et $+0{,}36$, avec des intervalles nettement séparés de zéro. H2 est
-donc soutenue en tant qu'hypothèse conditionnelle au régime, et rejetée en tant
-qu'hypothèse inconditionnelle. C'est précisément ce que
+le S\&P~500 : l'intervalle de confiance contient $0$ et le point estimé est nul
+en marché calme. \textbf{En régime de stress, en revanche, $\beta$ est
+significativement positif sur le S\&P~500} ($+0{,}20$, intervalle $+0{,}08$ à
+$+0{,}32$). Sur \texttt{EuStockMarkets}, après exclusion des deux premières
+années faute d'historique pour le seuil de stress, $\beta$ est positif dans les
+trois régimes ($+0{,}30$ en calme, $+0{,}39$ en stress) : le contraste
+calme/stress y est donc moins net qu'on ne le lisait, et ce petit panel
+(quatre indices, $1\,104$ dates) ne peut pas trancher. Sur le panel principal,
+H2 est soutenue en tant qu'hypothèse conditionnelle au régime et rejetée en
+tant qu'hypothèse inconditionnelle, ce que
 $\beta_{\text{stress}}>\beta_{\text{calme}}$ prédisait.
 
-\emph{La magnitude.} Elle est modeste. Un $\beta$ de $0{,}2$ à $0{,}35$ signifie
-qu'entre un cinquième et un tiers seulement d'un mouvement d'entropie d'échelle
+\emph{La magnitude.} Elle est modeste. Un $\beta$ de $0{,}2$ à $0{,}4$ signifie
+qu'entre un cinquième et deux cinquièmes seulement d'un mouvement d'entropie d'échelle
 est absorbé par la dépendance ; le reste passe dans le plafond. On est loin du
 $\beta=1$ qu'exigerait une véritable \og conservation du volume de covariance
 \fg. L'ancienne formulation, en parlant de stabilité du plafond, suggérait
 implicitement $\beta$ proche de $1$ : c'était trop fort même là où le phénomène
 existe.
 
-\emph{La qualité de l'ajustement.} Le $R^2$ de \eqref{eq:h2} passe de $0{,}01$ à
-$0{,}16$ sur le S\&P~500 et de $0{,}05$ à $0{,}45$ sur les indices européens
+\emph{La qualité de l'ajustement.} Le $R^2$ de \eqref{eq:h2} passe de $0{,}02$ à
+$0{,}16$ sur le S\&P~500 et de $0{,}24$ à $0{,}44$ sur les indices européens
 lorsqu'on restreint au stress. La relation linéaire postulée n'est pas seulement
 de bon signe sous stress, elle y est aussi nettement mieux définie.
 
+\emph{Les portefeuilles sectoriels.} Sur les $48$ secteurs de French, $\beta$ est
+significativement positif dans les trois régimes, et \emph{plus grand en marché
+calme} ($+0{,}51$) qu'en stress ($+0{,}23$) : la compensation y est une propriété
+permanente de l'agrégation sectorielle et non un phénomène de crise, ce qui est
+cohérent avec l'idée qu'agréger des firmes en secteurs impose une dépendance de
+facteur commun. Elle ne franchit que le témoin i.i.d.\ ($\beta$ de stress
+$+0{,}23$ contre $0{,}08$) et pas celui par blocs ($0{,}28$).
+
 \paragraph{Une réserve, et une question tranchée.} Les écarts types HAC restent
-optimistes sur des fenêtres glissantes qui partagent 251 de leurs 252 jours ; les
-intervalles du tableau~\ref{tab:h2} sont à lire comme indicatifs. Quant à savoir
+optimistes sur des fenêtres glissantes qui partagent 251 de leurs 252 jours, et la
+règle de Newey--West (10 retards ici) l'est plus encore que les 21 retards fixes
+de la version antérieure ; les intervalles du tableau~\ref{tab:h2} sont à lire
+comme indicatifs. Quant à savoir
 si $\beta_{\text{stress}}$ survit au témoin calibré de la
 section~\ref{sec:verdicts}, la question est maintenant tranchée, et dans le sens
 que ce paragraphe redoutait : \textbf{non}. Le tableau~\ref{tab:placebo} inclut
 désormais ce test. Sous le témoin i.i.d., $\beta_{\text{stress}}$ observé de
-$0{,}19$ tombe à l'intérieur de la loi du témoin ($0{,}04$, intervalle
-$-0{,}31$--$0{,}31$, $p=0{,}39$) ; sous le témoin par blocs, même verdict ($0{,}12$,
-intervalle $-0{,}31$--$0{,}33$, $p=0{,}55$). La même raison mécanique qui fait reproduire H6
+$0{,}20$ tombe à l'intérieur de la loi du témoin ($0{,}05$, intervalle
+$-0{,}33$--$0{,}31$, $p=0{,}40$) ; sous le témoin par blocs, même verdict ($0{,}11$,
+intervalle $-0{,}28$--$0{,}32$, $p=0{,}47$). La même raison mécanique qui fait reproduire H6
 par un rééchantillonnage --- des fenêtres turbulentes contenant de grosses
 journées communes --- suffit à produire une pente $\beta$ positive sous stress,
 sans qu'aucune compensation économique n'existe dans les données rééchantillonnées.
@@ -1457,22 +1472,24 @@ logarithmique). La queue droite s'étend bien au-delà de la gauche.}
 \subsection{H4 : la relaxation, face à la mémoire propre de l'estimateur}
 
 L'estimation de \eqref{eq:ou} sur les seules dates hors saut --- afin que le
-canal diffusif soit identifié sans contamination --- donne $\kappa = 0{,}0058$
-par jour ($t=-3{,}75$, HAC, $p=0{,}0002$), une demi-vie de \textbf{120~jours de
-bourse} et un niveau de long terme de 3,34~nats. Le panel de réplication donne
-$\kappa=0{,}0050$, une demi-vie de 139~jours, $p=0{,}023$.
+canal diffusif soit identifié sans contamination --- donne $\kappa = 0{,}0057$
+par jour ($t=-4{,}70$, HAC à 10~retards, $p=0{,}0001$ selon la loi de
+Dickey--Fuller), une demi-vie de \textbf{121~jours de bourse} et un niveau de
+long terme de 3,30~nats. Le panel de réplication donne $\kappa=0{,}0056$, une
+demi-vie de 124~jours, $p=0{,}047$ selon Dickey--Fuller (0,004 sous la loi normale,
+qui était la valeur rapportée jusque-là et qui sur-rejette).
 
 La demi-vie est l'endroit où les deux témoins divergent le plus nettement, et
 cette divergence est instructive. Sous rééchantillonnage i.i.d., le même
-estimateur renvoie $91{,}8$~jours en moyenne, de sorte que le $120{,}1$ observé
+estimateur renvoie $92{,}1$~jours en moyenne, de sorte que le $120{,}8$ observé
 dépasse chacune des deux cents réplications. Sous rééchantillonnage par blocs, il
-renvoie $165{,}1$~jours en moyenne (intervalle à $90\%$ : $117$--$228$), de sorte
-que la valeur observée tombe \emph{en dessous} de $93\%$ des réplications. Les données se situent entre les deux témoins, et le signe de
+renvoie $162{,}8$~jours en moyenne (intervalle à $90\%$ : $116$--$228$), de sorte
+que la valeur observée tombe \emph{en dessous} de $91\%$ des réplications. Les données se situent entre les deux témoins, et le signe de
 la comparaison dépend entièrement de celui qu'on interroge. Le rééchantillonnage
 par blocs concatène parfois des blocs de forte volatilité et fabrique de longues
 excursions ; le rééchantillonnage i.i.d.\ brise les séries que contiennent les
 marchés réels et en fabrique de courtes. Le niveau de la demi-vie n'est donc
-\textbf{pas identifié}, et le chiffre de $120$~jours ne doit pas se lire comme un
+\textbf{pas identifié}, et le chiffre de $121$~jours ne doit pas se lire comme un
 temps d'absorption --- la simulation gaussienne contrôlée de la
 section~\ref{sec:placebo}, où un choc unique décroît en $35$~jours sans aucune
 économie, fixe le plancher de ce qui relève de la mémoire de l'estimateur.
@@ -1547,10 +1564,10 @@ raison de chercher davantage, non un résultat. Le postulat P\ref{p:sign} reste 
 \toprule
 $\mathrm{corr}\left(-\Delta H^{dep},\,\cdot\,\right)$ & Tout & Calme & Stress \\
 \midrule
-S\&P~500 : avec $\Delta\DD$ (forme)      & $0{,}34$ & $0{,}04$ & $0{,}66$ \\
-S\&P~500 : avec le canal de queue        & $0{,}34$ & $0{,}03$ & $0{,}68$ \\
-S\&P~500 : avec le canal d'asymétrie     & $0{,}06$ & $0{,}15$ & $-0{,}01$ \\
-\texttt{EuStock} : avec $\Delta\DD$      & $0{,}23$ & $0{,}05$ & $0{,}54$ \\
+S\&P~500 : avec $\Delta\DD$ (forme)      & $0{,}35$ & $0{,}04$ & $0{,}63$ \\
+S\&P~500 : avec le canal de queue        & $0{,}35$ & $0{,}02$ & $0{,}64$ \\
+S\&P~500 : avec le canal d'asymétrie     & $0{,}06$ & $0{,}17$ & $0{,}01$ \\
+\texttt{EuStock} : avec $\Delta\DD$      & $0{,}06$ & $-0{,}05$ & $0{,}36$ \\
 \bottomrule
 \end{tabular}
 \caption{H6 : couplage entre les deux canaux destructeurs d'entropie, par régime.}
@@ -1558,17 +1575,17 @@ S\&P~500 : avec le canal d'asymétrie     & $0{,}06$ & $0{,}15$ & $-0{,}01$ \\
 \end{table}
 
 Dans les données, le motif est frappant. En marché calme, le canal de dépendance
-et le canal de queue sont effectivement sans lien ($0{,}03$) ; sous stress leur
-corrélation vaut $0{,}68$. Le panel de réplication le reproduit à $0{,}05$ contre
-$0{,}54$, et le couplage est porté entièrement par le canal de \emph{queue}, le
+et le canal de queue sont effectivement sans lien ($0{,}02$) ; sous stress leur
+corrélation vaut $0{,}64$. Le panel de réplication le reproduit à $-0{,}05$ contre
+$0{,}36$, et le couplage est porté entièrement par le canal de \emph{queue}, le
 canal d'asymétrie n'y participant pas.
 
 Les deux témoins le reproduisent aussi, et le témoin i.i.d.\ le reproduit
 \emph{plus fortement} que les données : un couplage sous stress de $0{,}90$
-(i.i.d.) et $0{,}73$ (blocs) contre le $0{,}66$ observé, et un écart
-stress-moins-calme de $0{,}77$ et $0{,}67$ contre le $0{,}62$ observé. Seul le
+(i.i.d.) et $0{,}72$ (blocs) contre le $0{,}63$ observé, et un écart
+stress-moins-calme de $0{,}77$ et $0{,}67$ contre le $0{,}59$ observé. Seul le
 témoin i.i.d.\ dépasse nettement les données ($p=0{,}01$ pour l'écart) ; face au
-témoin par blocs, l'observé est à l'intérieur de la loi ($p=0{,}25$). Le mécanisme est mécanique
+témoin par blocs, l'observé est à l'intérieur de la loi ($p=0{,}20$). Le mécanisme est mécanique
 plutôt qu'économique. Une fenêtre contenant un gros rendement commun présente à
 la fois une corrélation mesurée plus élevée et des marginales mesurées plus
 épaisses, de sorte que les deux canaux bougent ensemble dans toutes données où
@@ -1578,15 +1595,15 @@ comme preuve d'une contrainte commune contraignante.
 L'ajout du témoin par blocs change toutefois l'interprétation de l'écart entre
 témoin et données. Sous rééchantillonnage i.i.d., le couplage du témoin est
 quasi déterministe ($0{,}90$, écart type $0{,}03$) ; préserver le regroupement
-l'abaisse à $0{,}73$ avec un écart type de $0{,}08$, plus proche et désormais
-compatible avec le $0{,}66$ observé. Les vrais épisodes de stress couplent les deux
+l'abaisse à $0{,}72$ avec un écart type de $0{,}08$, plus proche et désormais
+compatible avec le $0{,}63$ observé. Les vrais épisodes de stress couplent les deux
 canaux \emph{moins} étroitement que le témoin i.i.d.\ et pas plus que le témoin
 par blocs. Si l'écart avec le témoin i.i.d.\ n'est pas du bruit, il pointe à l'opposé de la section~\ref{sec:dynamics} : dépendance et
 poids de queue auraient des moteurs partiellement indépendants dans les vraies
 crises, ce qu'un récit de contrainte commune ne prédit pas.
 
 Sur l'échantillon complet, la variance de $\Delta\JJ$ se répartit à $40\%$ pour
-la dépendance et $60\%$ pour la forme sur titres individuels, et à $58\%/42\%$
+la dépendance et $60\%$ pour la forme sur titres individuels, et à $69\%/31\%$
 en sens inverse sur le panel à quatre indices --- un rappel que l'équilibre entre
 canaux dépend de la coupe transversale mesurée.
 
@@ -1624,7 +1641,7 @@ estimer le modèle}. Un bon ajustement dans l'échantillon ne prouve rien du tou
 $\DD$, ni le terme de dépendance, ni l'indicateur de crise, ni la part non
 résorbée --- n'améliore significativement la prévision hors échantillon. La
 meilleure amélioration observée, tous canaux et toutes cibles confondus, est de
-$3{,}9\%$ d'erreur quadratique moyenne avec $p=0{,}52$ : indiscernable du
+$3{,}3\%$ d'erreur quadratique moyenne avec $p=0{,}23$ : indiscernable du
 hasard. Plusieurs spécifications sont significativement \emph{moins bonnes} que
 la référence.
 
@@ -1655,7 +1672,7 @@ Corrélation avec la log-volatilité glissante & S\&P~500 & \texttt{EuStock} \\
 \midrule
 $H^{vol}$ (canal d'échelle)          & $+0{,}56$ & $+0{,}45$ \\
 $-H^{dep}$ (canal de dépendance)     & $+0{,}56$ & $+0{,}66$ \\
-$\DD$ (canal de forme)               & $+0{,}09$ & $-0{,}06$ \\
+$\DD$ (canal de forme)               & $+0{,}08$ & $-0{,}06$ \\
 $\JJ$ (indice structurel)            & $+0{,}46$ & $+0{,}60$ \\
 co-dépassement de queue              & $+0{,}32$ & $+0{,}49$ \\
 \bottomrule
@@ -1676,7 +1693,7 @@ Le tableau~\ref{tab:vol} et la figure~\ref{fig:vol} répondent à l'objection
 évidente. L'indice structurel partage environ un cinquième de sa variance avec la
 volatilité sur titres individuels ($r=0{,}46$) : il lui est donc lié mais loin
 d'être redondant. Le canal de forme est \emph{orthogonal} à la volatilité
-($r=0{,}09$ et $-0{,}06$) : l'épaisseur de queue de la distribution
+($r=0{,}08$ et $-0{,}06$) : l'épaisseur de queue de la distribution
 conditionnelle est une dimension de l'état du marché qu'une mesure de volatilité
 ne voit pas du tout. Puisque le canal de forme porte $60\%$ de la variance de
 $\Delta\JJ$ sur le panel principal, l'essentiel de ce qui fait bouger l'indice
@@ -1688,9 +1705,9 @@ La figure~\ref{fig:eu} applique la chaîne identique aux quatre indices europée
 1991--1998. Le panel est bien trop petit pour porter seul un résultat --- quatre
 actifs donnent six corrélations par paires contre 190 pour le panel principal, et
 un seul cycle de stress --- mais chaque signe rapporté plus haut se reproduit :
-$\JJ$ monte sous stress ($1{,}23$ contre $0{,}89$, $p<0{,}001$), les canaux se
-couplent sous stress et non en marché calme ($0{,}54$ contre $0{,}05$), l'indice
-relaxe avec une demi-vie de 139~jours, et les sauts positifs portent une
+$\JJ$ monte sous stress ($1{,}15$ contre $0{,}92$, $p=0{,}034$), les canaux se
+couplent sous stress et non en marché calme ($0{,}36$ contre $-0{,}05$), l'indice
+relaxe avec une demi-vie de 124~jours, et les sauts positifs portent une
 variation moyenne d'asymétrie de marché de $-0{,}129$ contre $+0{,}003$ ailleurs.
 
 \begin{figure}[htbp]
@@ -1888,11 +1905,21 @@ d'information à $h$ pas
 I^{(h)}_t \;=\; \KL{p_t}{p_{t-h}},
 \end{equation}
 la divergence entre la distribution conditionnelle du marché aujourd'hui et celle
-d'il y a $h$ jours --- de combien le marché a révisé sa propre vue. C'est une
-divergence en bonne et due forme entre deux lois conditionnelles de rendements,
-mesurée dans la même unité que le rayon du scénario, ce qui rend la calibration
-cohérente. Les quantiles de $I^{(21)}$, amincis en blocs non chevauchants,
-convertissent une période de retour en rayon.
+d'il y a $h$ jours --- de combien le marché a révisé sa propre vue. Il faut
+toutefois que la divergence soit mesurée sur le même objet que la contrainte. La
+boule~\eqref{eq:ball} de la section précédente ne contraint que la
+\emph{projection du portefeuille} : la loi de $w^\top r$, à une dimension. Le rayon
+doit donc être lu sur le flux d'information de cette même projection,
+$I^{(h)}_t=\KL{p_t^{\,w}}{p_{t-h}^{\,w}}$, et non sur celui du vecteur de rendements
+entier, qui croît avec le nombre d'actifs et surestime la projection. Une
+version antérieure de ce projet calibrait la boule à une dimension sur le flux à
+$N$ dimensions : ses rayons étaient environ dix fois trop grands à l'échelon décennal
+($3{,}88$~nats au lieu de $0{,}41$), ce qui produisait un multiplicateur de
+volatilité décennal de $3{,}2$ au lieu de $1{,}6$. Les quantiles de $I^{(21)}$,
+amincis en blocs non chevauchants, convertissent une période de retour en rayon.
+L'amincissement dépend de sa phase de départ (on garde une date sur 21) : le rayon
+rapporté est la médiane des quantiles sur les $21$ phases possibles, et leur
+étendue est donnée au tableau~\ref{tab:ladder}.
 
 \begin{table}[htbp]
 \centering
@@ -1901,31 +1928,53 @@ convertissent une période de retour en rayon.
 \toprule
 Période de retour & 1~an & 2~ans & 5~ans & 10~ans & 20~ans & 50~ans$^\dagger$ \\
 \midrule
-rayon $\eta$ (nats)             & 1,04 & 1,63 & 2,34 & 3,88 & 7,54 & 13,16 \\
-choc directionnel ($\sigma$)    & $-0{,}58$ & $-0{,}72$ & $-0{,}84$ & $-1{,}06$ & $-1{,}45$ & $-1{,}88$ \\
-multiplicateur de volatilité    & 2,04 & 2,33 & 2,63 & 3,15 & 4,10 & 5,20 \\
-volatilité annualisée du portef.\ & $41\%$ & $47\%$ & $53\%$ & $63\%$ & $82\%$ & $105\%$ \\
-ES$_{99}$ à un jour             & $7{,}6\%$ & $8{,}8\%$ & $9{,}9\%$ & $12{,}0\%$ & $15{,}6\%$ & $19{,}9\%$ \\
+rayon $\eta$ (nats)             & 0,017 & 0,045 & 0,149 & 0,408 & 0,634 & 1,369 \\
+\quad plage selon la phase$^\S$ & 0,015--0,019 & 0,034--0,063 & 0,111--0,187 & 0,291--0,604 & 0,472--0,745 & 0,683--2,082 \\
+choc directionnel ($\sigma$)    & $-0{,}08$ & $-0{,}13$ & $-0{,}24$ & $-0{,}38$ & $-0{,}47$ & $-0{,}66$ \\
+multiplicateur de volatilité    & 1,12 & 1,20 & 1,37 & 1,63 & 1,80 & 2,21 \\
+volatilité annualisée du portef.\ & $22\%$ & $24\%$ & $27\%$ & $33\%$ & $36\%$ & $44\%$ \\
+ES$_{99}$ à un jour             & $3{,}9\%$ & $4{,}2\%$ & $4{,}9\%$ & $5{,}9\%$ & $6{,}6\%$ & $8{,}3\%$ \\
+\midrule
+\emph{réalisé :} quotient de volatilité$^\ddagger$ & 1,54 & 1,77 & 2,28 & 3,25 & 3,57 & 4,43 \\
 \bottomrule
 \end{tabular}
 \caption{Échelle de sévérité pour un portefeuille équipondéré des vingt titres,
-calibrée sur 383 observations non chevauchantes de flux d'information à
-21~jours. La référence d'aujourd'hui est une volatilité annualisée de $20\%$ et
-une ES$_{99}$ à un jour de $3{,}4\%$. $^\dagger$ au-delà de l'échantillon :
-l'échelon cinquantennal exige un quantile que 33~ans d'historique ne peuvent pas
-résoudre et constitue une extrapolation de la queue empirique.}
+calibrée sur le flux d'information à 21~jours de la projection du portefeuille
+(383 observations non chevauchantes). La référence d'aujourd'hui est une
+volatilité annualisée de $20\%$ et une ES$_{99}$ à un jour de $3{,}4\%$.
+$^\dagger$ au-delà de l'échantillon : l'échelon cinquantennal exige un quantile
+que 33~ans d'historique ne peuvent pas résoudre et constitue une extrapolation de
+la queue empirique (\texttt{extrapolated} dans \texttt{stress\_scenarios.csv}).
+$^\S$ Minimum et maximum sur les 21 phases d'amincissement. $^\ddagger$ Rapport de la volatilité réalisée du portefeuille sur les 21~jours
+suivants à sa volatilité des 252~jours précédents, quantile de même période de
+retour (\texttt{scripts/ladder\_plausibility.py}).}
 \label{tab:ladder}
 \end{table}
 
-Deux traits du tableau~\ref{tab:ladder} méritent une lecture attentive. Le
+Trois traits du tableau~\ref{tab:ladder} méritent une lecture attentive. Le
 scénario dépense son budget surtout en \emph{variance} plutôt qu'en direction ---
-à l'échelon annuel, un doublement de la volatilité et seulement un choc de
-dérive de $0{,}58\sigma$ --- parce que l'expected shortfall est plus sensible à
-l'échelle qu'à la position. Et le rayon n'est pas comparable d'un univers à
-l'autre : une divergence KL croît avec la dimension du vecteur de rendements, de
-sorte que l'échelle du panel à quatre indices va de $0{,}09$ à $0{,}21$~nat là où
-celle des vingt titres va de $1{,}04$ à $13{,}2$. Une échelle doit être calibrée
-pour le portefeuille auquel elle s'appliquera.
+à l'échelon décennal, $63\%$ de volatilité en plus et un choc de dérive de
+$0{,}38\sigma$ --- parce que l'expected shortfall est plus sensible à l'échelle
+qu'à la position. Le rayon n'est pas comparable d'un portefeuille à l'autre : le
+panel à quatre indices va de $0{,}02$ à $0{,}07$~nat là où celui des vingt titres
+va de $0{,}02$ à $1{,}4$. Une échelle doit être calibrée pour le portefeuille
+auquel elle s'appliquera.
+
+\paragraph{Le troisième trait est une limite, et elle est sérieuse.} La dernière
+ligne du tableau confronte l'échelle à l'histoire. Un événement décennal du
+tableau multiplie la volatilité du portefeuille par $1{,}6$ ; or le quantile
+décennal de la hausse de volatilité réalisée sur 21~jours vaut $3{,}2$ (et $3{,}0$
+sur les secteurs de French). Aux échelons de un à vingt ans, le multiplicateur
+du scénario ne représente qu'entre la moitié et les trois quarts du quotient
+réalisé. Deux lectures sont
+possibles, et nous ne les départageons pas : le flux d'information est mesuré sur
+des lois conditionnelles à covariance pondérée exponentiellement, qui réagissent
+lentement et sous-estiment la révision effective de la loi sur un mois ; ou bien
+la boule gaussienne de rayon $\eta$ n'est tout simplement pas la bonne
+géométrie pour des chocs de volatilité aussi brutaux. Dans les deux cas, les
+périodes de retour attachées aux scénarios ne doivent pas être citées comme
+telles : l'échelle est une règle de calibration cohérente et reproductible, pas
+une mesure validée de la fréquence des crises.
 
 \begin{figure}[htbp]
 \centering
@@ -1957,37 +2006,44 @@ toutes corrélations forcées à      & $0{,}70$ & $0{,}90$ & $0{,}95$ \\
 choc directionnel                  & $-2\sigma$ & $-3\sigma$ & $-4\sigma$ \\
 \midrule
 ES$_{99}$ à un jour impliquée      & $9{,}1\%$ & $13{,}7\%$ & $20{,}3\%$ \\
-prix informationnel (nats)         & $6{,}80$ & $9{,}97$ & $20{,}19$ \\
+prix ambiant (nats)                & $6{,}80$ & $9{,}97$ & $20{,}19$ \\
 \quad dont : composante directionnelle & $2{,}00$ & $4{,}50$ & $8{,}00$ \\
 \quad \phantom{dont :} composante volatilité & $4{,}39$ & $16{,}14$ & $58{,}03$ \\
 \quad \phantom{dont :} composante corrélation & $2{,}43$ & $8{,}10$ & $13{,}50$ \\
-période de retour impliquée        & $\sim11$~ans & $>30$~ans & hors échantillon \\
+période de retour du prix ambiant  & $\sim11$~ans & $>30$~ans & hors échantillon \\
 \midrule
+prix vu du portefeuille (nats)     & $2{,}75$ & $7{,}24$ & $16{,}22$ \\
 \textbf{scénario entropique à même ES$_{99}$} & $\mathbf{1{,}85}$ & $\mathbf{5{,}47}$ & $\mathbf{13{,}74}$ \\
-\quad sa période de retour         & $2{,}3$~ans & $10{,}6$~ans & $\sim32$~ans \\
-\quad surcoût informationnel       & $73\%$ & $45\%$ & $32\%$ \\
+\quad surcoût informationnel du bundle & $33\%$ & $24\%$ & $15\%$ \\
+\quad position sur l'échelle du portefeuille & hors échantillon & hors échantillon & hors échantillon \\
 \bottomrule
 \end{tabular}
-\caption{Tarification des bundles de stress des manuels face au flux
-d'information propre au marché, et comparaison de chacun avec le scénario
-entropique délivrant la même expected shortfall. Échelons de référence du
-tableau~\ref{tab:ladder} : le scénario vicennal vaut $7{,}54$~nats, le
-cinquantennal $13{,}16$ ; la pire journée unique en 33~ans se tarife à $9{,}03$.}
+\caption{Tarification des bundles de stress des manuels, et comparaison de
+chacun avec le scénario entropique délivrant la même expected shortfall. Le
+\emph{prix ambiant} est la divergence $\KL{p_{\text{classique}}}{p_0}$ sur les
+vingt titres, lue sur le flux à vingt dimensions ; le \emph{prix vu du
+portefeuille} est la même divergence sur la loi de $w^\top r$, seule quantité
+comparable au rayon d'une boule de projection et à l'échelle du
+tableau~\ref{tab:ladder}, dont le maximum en échantillon est d'environ
+$2$~nats (échelon cinquantennal : $1{,}37$). La pire journée unique en 33~ans se
+tarife à $9{,}03$~nats (test de résistance inversé, horizon d'un jour).}
 \label{tab:classical}
 \end{table}
 
-Le tableau~\ref{tab:classical} est le point appliqué de l'article, et il dit
-quelque chose de plus tranchant que \og les scénarios classiques sont trop
-sévères \fg{}. Le bundle standard coûte $9{,}97$~nats, ce qui le situe entre les
-échelons vicennal et cinquantennal --- une sévérité défendable pour un test de
-résistance réglementaire, et que personne autour de la table n'avait le moyen de
-savoir avoir choisie. Ce qui n'est pas défendable, c'est l'efficience. Un
-scénario entropique délivre la même expected shortfall de $13{,}7\%$ pour
-$5{,}47$~nats. Le comité croit avoir spécifié quelque chose de l'ordre d'un
-événement trentennal ; mesuré par la perte qu'il produit réellement, il a
-spécifié un événement décennal et payé une invraisemblance trentennale. Le bundle
-modéré est pire : il se tarife comme un événement de onze ans et délivre une
-perte \emph{biennale}, un surcoût de $73\%$.
+Le tableau~\ref{tab:classical} est le point appliqué de l'article, et ce qu'il
+établit est plus étroit qu'on ne l'avait écrit. Ce qui tient : à perte de queue
+égale, le bundle des manuels coûte plus qu'il ne faut. Le bundle standard
+délivre une expected shortfall de $13{,}7\%$ ; un scénario entropique la délivre
+pour $5{,}47$~nats, quand le portefeuille paie le bundle $7{,}24$~nats, un
+surcoût de $24\%$ ($33\%$ pour le bundle modéré, $15\%$ pour le sévère ; $15$,
+$11$ et $6\%$ sur les secteurs de French). La raison est structurelle :
+le bundle déforme aussi des directions que le portefeuille ne voit pas. Ce qui ne
+tient plus : la lecture \og le comité croit avoir spécifié un événement
+trentennal et a acheté un événement décennal \fg{}, qui comparait un prix à
+vingt dimensions à un rayon de projection. Sur l'échelle cohérente du
+portefeuille, les trois bundles se situent au-delà du plus grand rayon observé en
+33~ans, et la limite du paragraphe précédent interdit d'en faire une période de
+retour : on peut dire qu'ils sont surpayés, pas qu'ils sont trentennaux.
 
 Où passe l'argent ? La composante directionnelle est bon marché et exactement
 tarifée : déplacer la moyenne du portefeuille de $k$ écarts types coûte
@@ -2013,7 +2069,7 @@ indépendamment ; elles chargent la coupe transversale sur un ou deux modes
 collectifs et épaississent conjointement les queues des marginales. Un cadre qui
 choque volatilité, corrélation et forme comme trois scalaires séparés n'a aucun
 moyen de représenter cela, ni aucun moyen de s'apercevoir que son bundle achète
-la sévérité avec une marge de $30$ à $70\%$.
+la sévérité avec une marge de $15$ à $33\%$.
 
 Quatre avantages concrets sur l'approche volatilité/moyenne/asymétrie en
 découlent.
@@ -2036,9 +2092,9 @@ tableau~\ref{tab:classical}.
 que fait un scénario, on demande quel est le scénario le moins cher produisant
 une perte donnée. Sur le panel principal, la perte quotidienne empirique à
 $99\%$ ($3{,}2\%$) coûte $1{,}5$~nat ; celle à $99{,}9\%$ ($7{,}7\%$) coûte
-$4{,}8$ ; la pire journée en 33~ans ($11{,}5\%$) coûte $9{,}0$. Lire ces chiffres
-au regard du tableau~\ref{tab:ladder} convertit en fréquence une perte qui
-préoccupe le conseil.
+$4{,}8$ ; la pire journée en 33~ans ($11{,}5\%$) coûte $9{,}0$. Ces prix portent
+sur un horizon d'un jour et sur la loi empirique de la perte ; ils ne se lisent
+pas directement sur l'échelle à 21~jours du tableau~\ref{tab:ladder}.
 \end{enumerate}
 
 Une mise en garde sur le quatrième point. Les tests de résistance inversés
@@ -2097,8 +2153,10 @@ $\left(\sum_i w_i\sigma_i\right)^2$. Sur le panel principal, ce plafond ne vaut
 qu'environ $1{,}5$~fois la volatilité d'aujourd'hui : un portefeuille
 diversifié de vingt titres ne peut simplement pas atteindre une sévérité
 élevée par la seule corrélation, aussi \og dépendante \fg{} la crise
-sous-jacente soit-elle --- déjà le cas à l'échelon annuel du
-tableau~\ref{tab:ladder} sur ce panel. La construction retenue en tient
+sous-jacente soit-elle --- ce que le tableau~\ref{tab:ladder} montre sur ce
+panel : le multiplicateur $1{,}37$ de l'échelon quinquennal reste atteignable par
+la seule corrélation, le $1{,}63$ de l'échelon décennal ne l'est plus
+(corrélation moyenne implicite de $1{,}1$). La construction retenue en tient
 compte : la corrélation est poussée vers son plafond ($\rho=1$, borné) à
 hauteur de la part de dépendance demandée, et l'écart restant, inévitable
 au-delà de ce plafond, est comblé par une dilatation uniforme finale, de sorte
@@ -2108,11 +2166,11 @@ demandée (\texttt{calibrated\_covariance}, \texttt{src/stress.py}).
 \paragraph{D'où vient la part de dépendance.} Deux sources, aucune arbitraire.
 \begin{itemize}
 \item \textbf{Ancrage H1.} La part de régime du tableau~\ref{tab:h1} :
-$|{-1{,}72}|/(|{-1{,}72}|+|5{,}47|)=0{,}24$. C'est le fait le plus robuste de
+$|{-0{,}99}|/(|{-0{,}99}|+|5{,}97|)=0{,}14$. C'est le fait le plus robuste de
 tout l'article --- il franchit les deux témoins --- converti en un paramètre de
 calibration au lieu de rester un résultat qu'on cite et qu'on abandonne.
 \item \textbf{Raffinement H8.} La même part, mesurée uniquement sur la moitié
-la plus sévère des épisodes détectés : $0{,}49$, presque le double de la
+la plus sévère des épisodes détectés : $0{,}49$, plus de trois fois la
 moyenne de régime --- cohérent avec le tableau~\ref{tab:severityq}, où les
 quintiles~4 et~5 dominent nettement le quintile~2, sans qu'on prétende à une
 loi monotone.
@@ -2123,20 +2181,19 @@ loi monotone.
 \small
 \begin{tabular}{@{}lrr@{}}
 \toprule
-Composition (scénario décennal, $\eta=3{,}88$) & part dépendance & prix ambiant (nats) \\
+Composition (scénario décennal, $\eta=0{,}41$) & part dépendance & prix ambiant (nats) \\
 \midrule
-défaut (boule KL, dilatation pure)             & $0{,}00$ & $66{,}9$ \\
-calibrée H1 (moyenne de régime)                & $0{,}24$ & $32{,}2$ \\
-raffinée H8 (épisodes sévères)                 & $0{,}49$ & $13{,}4$ \\
-bundle classique standard (tableau~\ref{tab:classical}) & ---      & $9{,}97$ \\
+défaut (boule KL, dilatation pure)             & $0{,}00$ & $6{,}80$ \\
+calibrée H1 (moyenne de régime)                & $0{,}14$ & $2{,}88$ \\
+raffinée H8 (épisodes sévères)                 & $0{,}49$ & $0{,}71$ \\
 \bottomrule
 \end{tabular}
 \caption{Prix ambiant, en nats, de quatre compositions délivrant la même
-sévérité de portefeuille (moyenne, volatilité, ES$_{99}=12{,}0\%$, identiques
-aux trois premières lignes par construction ; le bundle classique reprend la
-ligne \og standard \fg{} du tableau~\ref{tab:classical}, calculé indépendamment
-de cette construction). \texttt{scripts/calibrated\_stress\_demo.py}, panel
-S\&P~500.}
+sévérité de portefeuille (moyenne, volatilité, ES$_{99}=5{,}9\%$, identiques
+aux trois lignes par construction).
+\texttt{scripts/calibrated\_stress\_demo.py}, panel S\&P~500. Sur les secteurs de
+French ($\eta=0{,}37$) : $14{,}7$, $8{,}3$ et $5{,}8$~nats pour des parts de
+$0{,}00$, $0{,}20$ et $0{,}75$.}
 \label{tab:composition}
 \end{table}
 
@@ -2179,12 +2236,12 @@ volatilité (H7) ; tous deux décrivent un état que la volatilité ne décrit p
 Trois points relient ceci au volet assurance du projet d'ensemble. D'abord, un
 scénario en boule d'entropie est un objet naturel pour l'ORSA : il produit une
 distribution stressée complète, non un vecteur de chocs, de sorte qu'il alimente
-directement un calcul de capital et porte un énoncé de plausibilité défendable.
+directement un calcul de capital et porte un énoncé de plausibilité qui reste à valider (voir les limites).
 Ensuite, la décomposition en composantes du tableau~\ref{tab:classical} concerne
 la formule standard de Solvabilité~II, dont le crédit de diversification est bâti
 sur une matrice de corrélation fixe : choquer volatilités et corrélations comme
 des scalaires séparés, ce qui est l'ajustement conservateur usuel, achète une
-perte de queue donnée avec une marge de $30$ à $70\%$ en termes de plausibilité,
+perte de queue donnée avec un surcoût de $15$ à $33\%$ en termes informationnels,
 parce que cela ne représente pas la façon dont les crises observées
 redistribuent la dépendance --- sur quelques modes collectifs plutôt
 qu'uniformément. Enfin, les propriétés de cohérence des mesures de risque
@@ -2230,10 +2287,26 @@ le rayon KL n'est pas comparable d'un univers à l'autre. Les résultats devraie
 Kenneth French, ou CRSP --- avant qu'aucun chiffre présenté ici ne soit traité
 comme une constante de la nature.
 
-\paragraph{L'échelle de sévérité extrapole en queue.} Avec 383 observations non
-chevauchantes de flux d'information, les échelons au-delà d'une vingtaine
-d'années sont des interpolations de la queue empirique, non des mesures. Ajuster
-une queue de Pareto généralisée à $I^{(h)}$ serait la correction disciplinée.
+\paragraph{L'échelle de sévérité extrapole en queue, et paraît trop douce.} Avec 383
+observations non chevauchantes de flux d'information, les échelons au-delà d'une
+vingtaine d'années sont des interpolations de la queue empirique, non des
+mesures. Ajuster une queue de Pareto généralisée à $I^{(h)}$ serait la correction
+disciplinée. Plus grave : une fois le rayon calibré sur la projection du
+portefeuille, comme l'exige la boule, l'échelle donne un multiplicateur de
+volatilité décennal de $1{,}6$ contre un quantile décennal de hausse de volatilité
+réalisée de $3{,}2$ (tableau~\ref{tab:ladder}). Les périodes de retour attachées
+aux scénarios ne sont donc pas validées, et nous ne les citons pas comme des
+fréquences ; seule l'efficience relative (le surcoût des bundles) et la
+composition calibrée résistent à ce défaut.
+
+\paragraph{Un seuil de stress sans regard vers l'avenir, mais pas sans choix.} Le
+seuil expansif exclut les deux premières années de chaque panel, classe plus de
+dates en stress que le quantile de tout l'échantillon, et retire à l'écart sur
+$\JJ$ le statut de résultat. Il fait aussi passer le panel européen
+(quatre indices, huit ans) à $1\,104$ dates dont $160$ en stress, où plus aucune
+différence de régime du canal de dépendance n'est significative. Les retards
+HAC de Newey--West sont plus courts que les $21$ retards fixes d'avant, donc plus
+optimistes sur des fenêtres glissantes.
 
 \paragraph{Rien ici ne prévoit.} H7 est rejetée sur deux jeux de données sous un
 protocole exigeant. Tout usage de ces mesures devrait être diagnostique.
@@ -2280,7 +2353,7 @@ sont les deux postulats que l'article ajoute et teste.
 
 Le tableau empirique est surtout un avertissement, et nous pensons que c'est là
 le résultat utile. Chaque affirmation descriptive du cadre est visible dans les
-données : le stress élève l'indice structurel, l'indice est en dents de scie, les
+données : le stress élève l'indice structurel (de $1{,}9$~nat), l'indice est en dents de scie, les
 sauts sont unilatéraux, ils portent une asymétrie négative, et les canaux de
 dépendance et de queue se couplent sous stress. Passé par un témoin qui conserve
 la loi marginale et brouille la chronologie, l'essentiel disparaît --- et
@@ -2294,10 +2367,10 @@ ne l'avons pas trouvée énoncée dans la littérature appliquée.
 
 Exactement deux statistiques franchissent les deux témoins sur le panel principal,
 et ce sont les deux qu'il faut retenir ; sur les portefeuilles sectoriels FF49
-seul l'écart de régime du canal de dépendance les franchit tous deux (avec celui
-de $\JJ$), si bien que c'est lui, et lui seul, qui tient sur les deux panels. Ce qui sépare une crise d'une série de gros rendements, c'est
+seul l'écart de régime du canal de dépendance les franchit tous deux, si bien
+que c'est lui, et lui seul, qui tient sur les deux panels. Ce qui sépare une crise d'une série de gros rendements, c'est
 que la coupe transversale se couple : le signal de régime du canal de dépendance
-vaut entre trois et six fois celui des témoins, tandis que celui du canal de
+vaut entre une fois et demie et six fois celui des témoins, tandis que celui du canal de
 forme est inférieur aux deux. Et l'indice structurel voyage plus loin sur
 l'échantillon que dans tout rééchantillonnage des mêmes rendements. Le taux de
 relaxation lui-même n'est pas identifié --- il se situe entre les deux témoins ---
@@ -2313,9 +2386,8 @@ résistance une unité ; calibrer cette unité sur le flux d'information réalis
 marché lui donne une fréquence ; et résoudre pour la pire distribution dans la
 boule qui en résulte donne un scénario qui ne peut pas être incohérent en
 interne. Appliqué à l'envers, il tarife les scénarios que les institutions font
-déjà tourner : sur cet échantillon, un bundle standard des manuels se situe entre
-les échelons vicennal et cinquantennal mais achète sa perte de queue avec une
-marge de $45\%$, parce qu'il dépense l'essentiel de son budget à gonfler
+déjà tourner : sur cet échantillon, un bundle standard des manuels achète sa perte de
+queue avec un surcoût de $24\%$ (de $15$ à $33\%$ selon la sévérité), parce qu'il dépense l'essentiel de son budget à gonfler
 uniformément chaque volatilité marginale --- ce qui n'est pas la voie que
 prennent les crises observées.
 

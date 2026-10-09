@@ -158,6 +158,34 @@ def gaussian_ball_scenario(
     }
 
 
+def portfolio_price(mu1, cov1, mu0, cov0, weights) -> float:
+    """Price, in nats, of a scenario *as seen by the portfolio*.
+
+    ``KL`` between the one-dimensional laws of ``w'r`` under the scenario and
+    under the base. This is the quantity a KL ball on the portfolio projection
+    bounds (A3), and the one comparable with a ladder calibrated on the
+    portfolio's own information flow. :func:`price_scenario` is the ambient
+    (N-dimensional) price, always at least as large.
+    """
+    w = np.asarray(weights, dtype=float)
+    return gaussian_kl(np.array([w @ np.asarray(mu1)]), np.array([[w @ np.asarray(cov1) @ w]]),
+                       np.array([w @ np.asarray(mu0)]), np.array([[w @ np.asarray(cov0) @ w]]))
+
+
+def radius_for_es(mu, cov, weights, es_target: float, risk_level: float = 0.99) -> float:
+    """Smallest KL-ball radius whose worst-case scenario reaches ``es_target``."""
+    f = lambda eta: gaussian_ball_scenario(mu, cov, weights, eta, risk_level, 'es')[
+        f'stressed_ES{int(risk_level * 100)}'] - es_target
+    if f(0.0) >= 0:
+        return 0.0
+    hi = 1.0
+    while f(hi) < 0:
+        hi *= 2.0
+        if hi > 1e4:
+            raise RuntimeError('Target expected shortfall not reachable.')
+    return float(optimize.brentq(f, 0.0, hi, xtol=1e-12))
+
+
 def price_scenario(mu1, cov1, mu0, cov0) -> float:
     """Informational price, in nats, of an arbitrary scenario.
 

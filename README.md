@@ -53,7 +53,7 @@ not industry portfolios). Replication: `EuStockMarkets`, four indices,
 
 Every result below is reported against **two** calibrated nulls
 (`scripts/placebo_null.py`), both resampling the observed returns and running
-the identical pipeline 200 times (20 in earlier drafts):
+the identical pipeline 200 times, with the phase-0 code (past-only stress quantile, 504-day burn-in):
 
 - **i.i.d. null** — rows resampled independently. Keeps the fat marginal tails
   and the cross-sectional dependence, destroys *all* temporal structure.
@@ -68,15 +68,15 @@ for the S&P 500 panel first, then the 48 FF49 industry portfolios.
 
 | | S&P 500 data | vs i.i.d. | vs block | verdict | FF49 data | vs i.i.d. | vs block | verdict |
 |---|---|---|---|---|---|---|---|---|
-| **H1** `h_dep` regime gap | −1.72 | −0.23 | −0.58 | ✅ **both** | −8.51 | −0.61 | −2.63 | ✅ **both** |
-| **H1** `J` regime gap | +2.89 | +2.18 | +2.07 | i.i.d. only (*p* = 0.07 vs block) | +10.56 | +8.17 | +7.90 | ✅ **both** |
-| **H1** `D` regime gap | +0.48 | +1.27 | +0.69 | ❌ null is larger | +1.71 | +4.95 | +2.61 | ❌ null is larger |
-| **H2** β (stress) | +0.19 | 0.04 | 0.12 | ❌ | +0.20 | 0.09 | 0.28 | ❌ |
+| **H1** `h_dep` regime gap | −0.99 | −0.21 | −0.51 | ✅ **both** | −3.65 | −0.56 | −2.46 | ✅ **both** |
+| **H1** `J` regime gap | +1.93 | +2.14 | +1.97 | ❌ fails both | +5.93 | +7.95 | +7.79 | ❌ null is larger |
+| **H1** `D` regime gap | +0.27 | +1.25 | +0.65 | ❌ null is larger | +0.98 | +4.81 | +2.60 | ❌ null is larger |
+| **H2** β (stress) | +0.20 | 0.05 | 0.11 | ❌ | +0.23 | 0.08 | 0.28 | i.i.d. only |
 | **H3** up-jumps | 158 | 148.5 | 133.2 | block only | 182 | 181.8 | 176.5 | ❌ |
-| **H4** half-life | 120 d | 92 d | 165 d | ⚠️ between the nulls | 184 d | 101 d | 205 d | ⚠️ between the nulls |
-| **H4** range(`J`) | 18.95 | 10.05 | 13.77 | ✅ both (block *p* = 0.035) | 54.5 | 36.9 | 45.9 | i.i.d. only (block *p* = 0.13) |
-| **H5** corr(ΔJ, Δskew) | −0.24 | −0.04 | −0.07 | ⚠️ *p* = 0.10 / 0.08 | −0.44 | −0.20 | −0.18 | ⚠️ *p* = 0.10 / 0.06 |
-| **H6** coupling gap | 0.62 | 0.77 | 0.67 | ❌ i.i.d. null couples *more* | 0.40 | 0.63 | 0.55 | ❌ nulls couple *more* |
+| **H4** half-life | 121 d | 92 d | 163 d | ⚠️ between the nulls | 190 d | 101 d | 199 d | ⚠️ between the nulls |
+| **H4** range(`J`) | 18.95 | 10.05 | 13.77 | ✅ **both** | 54.5 | 36.9 | 45.9 | i.i.d. only |
+| **H5** corr(ΔJ, Δskew) | −0.24 | −0.04 | −0.07 | ❌ fails both | −0.44 | −0.20 | −0.18 | ❌ fails both |
+| **H6** coupling gap | 0.59 | 0.77 | 0.67 | ❌ nulls couple *more* | 0.41 | 0.64 | 0.56 | ❌ nulls couple *more* |
 | **H7** out-of-sample forecast | in-sample *p* < 1e-4 | — | — | ❌ no gain over volatility | | | | |
 
 "Clears" means at most 5 % of replications are at least as extreme, in the

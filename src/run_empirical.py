@@ -17,6 +17,8 @@ from .hypotheses import run_all
 from .audit import audit_trail
 from .regimes import past_only_stress
 from .stress import (
+    portfolio_price,
+    radius_for_es,
     build_scenario_table,
     classical_scenario,
     return_period_of,
@@ -198,6 +200,9 @@ def run() -> None:
     # A3: ball radius calibrated on the portfolio projection ('full' = old N-dim).
     flow_col = 'info_flow_h' if scfg.get('flow', 'portfolio') == 'full' else 'info_flow_port_h'
     flow = ent[flow_col].dropna()
+    # A scenario's *price* is an N-dimensional divergence (it moves every asset),
+    # so its return period is read on the N-dimensional flow, not the portfolio's.
+    flow_full = ent['info_flow_h'].dropna()
 
     ladder = severity_ladder(
         flow,
@@ -227,7 +232,22 @@ def run() -> None:
     for vm, tc, sm_ in [(1.5, 0.70, -2.0), (2.0, 0.90, -3.0), (3.0, 0.95, -4.0)]:
         c = classical_scenario(mu0, cov0, w_port, vm, tc, sm_, var_level)
         c['implied_return_period_years'] = return_period_of(
-            c['entropy_price_nats'], flow, horizon)
+            c['entropy_price_nats'], flow_full, horizon)
+        # Portfolio view (A3): what the bundle costs as seen by the portfolio, and
+        # the cheapest KL-ball scenario delivering the same expected shortfall.
+        es_key = f'stressed_ES{int(var_level * 100)}'
+        mu1 = mu0 + c['sigma_move'] * (cov0 @ w_port) / np.sqrt(w_port @ cov0 @ w_port)
+        sd0 = np.sqrt(np.diag(cov0))
+        R1 = np.full((n_assets, n_assets), c['target_correlation'])
+        np.fill_diagonal(R1, 1.0)
+        sd1 = sd0 * c['vol_multiplier']
+        c['portfolio_price_nats'] = portfolio_price(mu1, np.outer(sd1, sd1) * R1, mu0, cov0, w_port)
+        c['portfolio_return_period_years'] = return_period_of(
+            c['portfolio_price_nats'], flow, horizon)
+        c['entropic_eta_same_es'] = radius_for_es(mu0, cov0, w_port, c[es_key], var_level)
+        c['entropic_return_period_years'] = return_period_of(
+            c['entropic_eta_same_es'], flow, horizon)
+        c['overpayment_pct'] = 100.0 * (1.0 - c['entropic_eta_same_es'] / c['portfolio_price_nats'])
         classical_rows.append(c)
     classical = pd.DataFrame(classical_rows)
     classical.to_csv(out_t / 'classical_comparison.csv', index=False)
