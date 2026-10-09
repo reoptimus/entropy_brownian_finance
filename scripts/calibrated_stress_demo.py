@@ -96,7 +96,8 @@ def run(config: str) -> None:
     scfg = cfg.get('stress_test', {})
     horizon = int(scfg.get('horizon', 21))
     var_level = float(scfg.get('var_level', 0.99))
-    flow = ent['info_flow_port_h'].dropna()  # A3: portfolio projection
+    flow = ent['info_flow_port_h'].dropna()  # A3: portfolio projection (radius)
+    flow_full = ent['info_flow_h'].dropna()  # N-dim flow: return period of a price
     rp = 10
     ladder = severity_ladder(flow, return_periods=(rp,), horizon=horizon)
     eta = float(ladder.iloc[0]['eta_nats'])
@@ -121,7 +122,7 @@ def run(config: str) -> None:
             'entropy_price_nats': sc['entropy_price_nats'],
             'excess_cost_over_default_nats': sc['excess_cost_over_default_nats'],
             'implied_return_period_years': return_period_of(
-                sc['entropy_price_nats'], flow, horizon),
+                sc['entropy_price_nats'], flow_full, horizon),
             'feasible_at_this_share': sc['feasible_at_this_share'],
         })
 
@@ -137,7 +138,7 @@ def run(config: str) -> None:
         'entropy_price_nats': classical['entropy_price_nats'],
         'excess_cost_over_default_nats': np.nan,
         'implied_return_period_years': return_period_of(
-            classical['entropy_price_nats'], flow, horizon),
+            classical['entropy_price_nats'], flow_full, horizon),
         'feasible_at_this_share': np.nan,
     })
 

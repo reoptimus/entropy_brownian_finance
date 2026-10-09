@@ -1,14 +1,30 @@
 {
-  "label": "EuStockMarkets",
+  "label": "eu_stock_markets",
   "n_dates": 1608,
   "n_assets": 4,
   "sample": [
     "1991-12-20",
     "1998-02-17"
   ],
-  "kappa": 0.004997499170511171,
-  "half_life_days": 138.69880852607454,
+  "kappa": 0.00558907573467338,
+  "half_life_days": 124.01821221706027,
   "n_jump_up": 27,
   "n_jump_down": 5,
-  "skew_of_dJ": 6.700561534663348
+  "skew_of_dJ": 6.700561534663348,
+  "n_regime_dates": 1104,
+  "audit": {
+    "code_commit": "fc0a24a829f9c719ab155b943b5ca50fefdd103d",
+    "code_dirty": false,
+    "data_file": "data/raw/EuStockMarkets.csv",
+    "data_sha256": "aa5513f3ca55daf51294accae9a3f946e957ba53f405dc4fafb4e125e5c03818",
+    "versions": {
+      "python": "3.13.16",
+      "numpy": "2.5.3",
+      "pandas": "3.0.5",
+      "scipy": "1.18.1",
+      "sklearn": "1.9.1",
+      "statsmodels": "0.15.0",
+      "skfolio": "1.4.12"
+    }
+  }
 }

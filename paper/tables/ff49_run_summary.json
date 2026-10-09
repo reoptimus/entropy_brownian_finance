@@ -1,0 +1,30 @@
+{
+  "label": "ff49",
+  "n_dates": 8939,
+  "n_assets": 48,
+  "sample": [
+    "1990-12-28",
+    "2026-06-30"
+  ],
+  "kappa": 0.003652321001858952,
+  "half_life_days": 189.78265607189195,
+  "n_jump_up": 182,
+  "n_jump_down": 3,
+  "skew_of_dJ": 17.04320211507137,
+  "n_regime_dates": 8435,
+  "audit": {
+    "code_commit": "acd371135c7f31dc2f2e048d90919aeda4a895a8",
+    "code_dirty": true,
+    "data_file": "data/49_Industry_Portfolios_daily_CSV.zip",
+    "data_sha256": "9b368230566fbf636b64b7a766a74b9a94a15dda5bb9101ff141670526dc1a34",
+    "versions": {
+      "python": "3.13.16",
+      "numpy": "2.5.3",
+      "pandas": "3.0.5",
+      "scipy": "1.18.1",
+      "sklearn": "1.9.1",
+      "statsmodels": "0.15.0",
+      "skfolio": "1.4.12"
+    }
+  }
+}

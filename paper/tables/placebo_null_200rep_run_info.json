@@ -1,5 +1,5 @@
 {
-  "code_commit": "acd371135c7f31dc2f2e048d90919aeda4a895a8",
+  "code_commit": "fc0a24a829f9c719ab155b943b5ca50fefdd103d",
   "seed": 11,
   "n_rep": 200,
   "panels": [
@@ -12,8 +12,8 @@
   },
   "jobs": 3,
   "test_mode": false,
-  "wall_seconds_this_session": 6345.4,
-  "cpu_seconds_total": 35858.6,
+  "wall_seconds_this_session": 7711.6,
+  "cpu_seconds_total": 23103.0,
   "data_sha256": {
     "ff49": "9b368230566fbf636b64b7a766a74b9a94a15dda5bb9101ff141670526dc1a34",
     "sp500": "5f769c6d7be57f62a4dfd1f553995855462a17c92b21a4af4245439c6115617f"

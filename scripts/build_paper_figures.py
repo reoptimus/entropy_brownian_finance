@@ -37,6 +37,7 @@ WANTED = [
 TABLES = [
     'h1_regime_signature.csv',
     'h2_ceiling_compensation.csv',
+    'h2_compensation_slope.csv',
     'h3_jump_asymmetry.csv',
     'h4_relaxation.csv',
     'h5_skewness_signature.csv',
@@ -49,6 +50,8 @@ TABLES = [
     'placebo_null.csv',
     'placebo_null_block21.csv',
     'negentropy_benchmark.csv',
+    'ladder_plausibility.csv',
+    'calibrated_stress_demo.csv',
     'run_summary.json',
 ]
 

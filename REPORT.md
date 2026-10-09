@@ -1,5 +1,26 @@
 # Research execution report
 
+## 9 October 2026 — 200-replication nulls recomputed with the phase-0 code
+
+User-run recompute (`calcul_local/`, commit `fc0a24a`, 3 jobs, 23,103 CPU-s,
+Python 3.14.8, Windows). 200 replications × {i.i.d., block-21} × {FF49, S&P 500}:
+complete, no NaN; observed statistics match the phase-0 pipeline. Paper tables
+(`paper/tables/*placebo*`, `tab_placebo_*.tex`) and `paper/main_fr.tex/pdf`
+(45 pages) regenerated from them.
+
+- H1 dependence-channel regime gap clears both nulls on both panels
+  (S&P −0.99 vs −0.21/−0.51; FF49 −3.65 vs −0.56/−2.46).
+- The `J` regime gap clears neither null on either panel (S&P 1.93 vs 2.14/1.97).
+- range(`J`) clears both nulls on S&P 500 only; on FF49 only the i.i.d. null.
+- Half-life (121 d / 190 d) lies between the two nulls: still not identified.
+- H5, H6 fail on both panels; H6 in the opposite direction.
+- Calibrated stress ladder is too mild versus history (10-year vol multiplier
+  1.63 vs realised 21d/252d vol-ratio quantile 3.25; FF49 1.59 vs 2.97), so
+  return periods are not cited. Surviving: relative overpayment of the classical
+  scenario (33/24/15 % S&P; 15/11/6 % FF49) and the composition calibration.
+- EU replication: H1 weakens after the burn-in; H2 β significant in all regimes.
+- The English edition `paper/main.tex` is not updated (French is authoritative).
+
 ## 8 October 2026 — 200-replication nulls, run locally, both panels
 
 `calcul_local/lancer_calcul.py` (PR #6) was run by the user on a Windows machine
