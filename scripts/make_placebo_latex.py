@@ -1,7 +1,9 @@
-"""Write the body rows of the two placebo tables of the French paper.
+"""Write the body rows of the two placebo tables of the paper.
 
 Reads paper/tables/{panel}_placebo_null{,_block21}.csv and writes
-paper/tables/tab_placebo_{panel}.tex, included by paper/main_fr.tex.
+paper/tables/tab_placebo_{panel}.tex (French, included by paper/main_fr.tex)
+and paper/tables/tab_placebo_{panel}_en.tex (English, included by
+paper/main.tex).
 
 A statistic "clears" a null when at most 5% of replications are at least as
 extreme as the observed value in the direction predicted by its hypothesis; it
@@ -40,6 +42,21 @@ ROWS = [
     None,
     ('--', r'$\mathrm{corr}(\JJ,\log\mathrm{vol})$', 'corr_J_logvol', 'none', 3),
 ]
+
+
+# English labels and verdict words, keyed by the French ones.
+EN = {
+    r'écart $H^{dep}$': r'$H^{dep}$ gap', r'écart $\JJ$': r'$\JJ$ gap', r'écart $\DD$': r'$\DD$ gap',
+    'sauts positifs': 'upward jumps', 'sauts négatifs': 'downward jumps',
+    'saut positif moyen (nats)': 'mean upward jump (nats)', r'asymétrie de $\Delta\JJ$': r'skewness of $\Delta\JJ$',
+    r'part de var.\ sauts pos.': r'var.\ share of up-jumps', 'demi-vie (jours)': 'half-life (days)',
+    r'étendue$(\JJ)$': r'range$(\JJ)$', r'écart $\Delta S_{mkt}$': r'$\Delta S_{mkt}$ gap',
+    'couplage, stress': 'coupling, stress', 'écart de couplage': 'coupling gap',
+    r'\textbf{franchit les deux}': r'\textbf{clears both}', 'entre les deux témoins': 'between the two nulls',
+    "hors de l'intervalle des témoins": 'outside the two nulls', 'à contre-sens (les deux)': 'against (both)',
+    'à contre-sens (i.i.d.)': 'against (i.i.d.)', 'à contre-sens (blocs)': 'against (block)',
+    'échoue aux deux': 'fails both', r'i.i.d.\ seulement': r'i.i.d.\ only', 'blocs seulement': 'block only',
+}
 
 
 def fr(x: float, d: int) -> str:
@@ -81,7 +98,7 @@ def verdict(r_iid, r_blk, direction: str) -> str:
     return 'échoue aux deux'
 
 
-def build(panel: str) -> str:
+def build(panel: str, lang: str = 'fr') -> str:
     iid = pd.read_csv(f'paper/tables/{panel}_placebo_null.csv').set_index('statistic')
     blk = pd.read_csv(f'paper/tables/{panel}_placebo_null_block21.csv').set_index('statistic')
     out = []
@@ -91,15 +108,21 @@ def build(panel: str) -> str:
             continue
         grp, label, st, direction, d = row
         a, b = iid.loc[st], blk.loc[st]
-        out.append(' & '.join([
-            grp, label, num(a['observed'], d),
-            num(a['null_mean'], d), rng(a['null_q05'], a['null_q95'], d),
-            num(b['null_mean'], d), rng(b['null_q05'], b['null_q95'], d),
-            verdict(a, b, direction)]) + r' \\')
+        cells = [grp, label, num(a['observed'], d),
+                 num(a['null_mean'], d), rng(a['null_q05'], a['null_q95'], d),
+                 num(b['null_mean'], d), rng(b['null_q05'], b['null_q95'], d),
+                 verdict(a, b, direction)]
+        if lang == 'en':
+            cells[1] = EN.get(cells[1], cells[1])
+            cells[-1] = EN.get(cells[-1], cells[-1])
+            cells = [c.replace('{,}', '.') for c in cells]
+        out.append(' & '.join(cells) + r' \\')
     return '\n'.join(out) + '\n\\bottomrule\n'
 
 
 if __name__ == '__main__':
     for panel in ('sp500', 'ff49'):
-        Path(f'paper/tables/tab_placebo_{panel}.tex').write_text(build(panel), encoding='utf-8')
-        print(f'paper/tables/tab_placebo_{panel}.tex')
+        for lang, suffix in (('fr', ''), ('en', '_en')):
+            out = Path(f'paper/tables/tab_placebo_{panel}{suffix}.tex')
+            out.write_text(build(panel, lang), encoding='utf-8')
+            print(out)

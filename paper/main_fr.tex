@@ -6,6 +6,7 @@
 \usepackage[round,authoryear]{natbib}
 \usepackage[colorlinks=true,linkcolor=black,citecolor=black,urlcolor=blue!50!black]{hyperref}
 \geometry{margin=1in}
+\emergencystretch=3em
 
 \newtheorem{proposition}{Proposition}
 \newtheorem{assumption}{Hypothèse}
@@ -18,134 +19,46 @@
 \newcommand{\DD}{\mathcal{D}}
 \newcommand{\Dun}{\mathcal{D}_1}
 \newcommand{\KL}[2]{D_{KL}\!\left(#1\,\Vert\,#2\right)}
+% Nom et affiliation de l'auteur : à compléter avant le dépôt sur arXiv.
+\newcommand{\auteur}{[Nom de l'auteur]}
 
-\title{Sauts d'entropie et relaxation de l'information sur les marchés financiers :\\
-du maximum d'entropie en temps-volume aux tests de résistance calibrés en entropie}
-\author{Version de travail}
-\date{Août 2026}
+\title{Signatures entropiques du stress de marché :\\
+ce qui survit à un témoin calibré}
+\author{\auteur}
+\date{Octobre 2026}
 
 \begin{document}
 \maketitle
 
 \begin{abstract}
-\noindent Cet article reconstruit la lecture informationnelle de la formation
-des prix autour d'une seule asymétrie. Nous fermons d'abord le pont qui mène du
-maximum d'entropie aux prix gaussiens, là où il est habituellement laissé
-ouvert, en définissant le prix comme un flux d'ordres accumulé et en appliquant
-le principe de maximum d'entropie en \emph{temps-volume} plutôt qu'en temps
-calendaire : le volume échangé fixant le budget de variance, la distribution
-conditionnelle la moins engageante de l'incrément de log-prix est gaussienne, et
-la cohérence temporelle fait alors du log-prix un mouvement brownien subordonné
-à l'horloge de volume, donc du prix un mouvement brownien géométrique. Lu à
-l'envers, le même argument dit que des prix non gaussiens sont la signature
-d'une distribution conditionnelle qui n'est \emph{pas} d'entropie maximale,
-c'est-à-dire d'une information contraignante.
-
-Nous décomposons ensuite l'entropie d'un vecteur de rendements en trois canaux :
-l'échelle ($\sum_i\log\sigma_i$), la dépendance ($\tfrac12\log\det R \le 0$) et
-la forme (le déficit d'entropie $\DD=\KL{p}{q}$, qui n'est autre que
-l'asymétrie et les queues épaisses). La combinaison des deux derniers donne un
-indice structurel sans échelle
-$\JJ_t = \DD_t - \tfrac12\log\det R_t = \KL{p_t}{\prod_i q_{i,t}} \ge 0$,
-qui mesure la distance du marché à la référence d'entropie maximale à
-volatilité inchangée. Puisque conditionner ne peut pas augmenter l'entropie
-espérée, un événement informationnel abaisse l'entropie conditionnelle
-\emph{moyenne} d'exactement l'information mutuelle de la nouvelle, et abaisse au
-sens large le plafond de maximum d'entropie à chaque réalisation : les sauts
-d'entropie vers le bas sont un théorème, non une hypothèse. Ce que nous postulons, c'est l'autre moitié : que
-l'entropie remonte par diffusion (P1), et que la contrainte imposée par la
-nouvelle est unilatérale, de sorte qu'un saut s'accompagne d'une asymétrie
-négative (P2). Ensemble, ces éléments donnent à $\JJ$ une dynamique de saut et
-diffusion de type Barndorff-Nielsen--Shephard : hausses par sauts, baisses par
-diffusion.
-
-Sept hypothèses sont testées sur 33 ans de rendements quotidiens d'actions
-individuelles (vingt composantes du S\&P~500, 1990--2022), répliquées sur le
-panel \texttt{EuStockMarkets} et --- c'est là l'essentiel --- jugées face à deux
-témoins calibrés construits en rééchantillonnant les rendements observés : l'un
-i.i.d., qui conserve les queues marginales épaisses et détruit toute structure
-temporelle, l'autre par blocs de 21~jours, qui conserve en outre le
-regroupement de volatilité. Pris au pied de la lettre, les résultats paraissent
-solides : le stress élève $\JJ$ de 1,94~nat, les variations de $\JJ$ sont
-massivement unilatérales (158 sauts positifs contre 9 négatifs, asymétrie
-$+12{,}3$), les sauts positifs s'accompagnent d'une asymétrie de marché
-négative, et les canaux de dépendance et de queue se verrouillent sous stress
-($0{,}04$ en marché calme contre $0{,}63$). Face aux témoins, l'essentiel
-s'évapore. L'asymétrie des sauts, la signature d'asymétrie et le couplage des
-canaux sont tous reproduits --- plusieurs sont même \emph{dépassés} --- par des
-données rééchantillonnées, parce qu'une fonctionnelle convexe positive de
-moments estimés monte brutalement et redescend en douceur dès qu'une observation
-à queue épaisse entre dans l'estimateur. Avec deux cents réplications de chaque témoin, exactement deux statistiques
-franchissent les deux témoins sur le panel principal, et ce sont celles qu'il
-faut retenir : l'écart de régime du canal de \emph{dépendance} ($-0{,}99$~nat
-contre $-0{,}21$ et $-0{,}51$) et l'étendue de $\JJ$ sur l'échantillon ($18{,}95$
-contre $10{,}05$ et $13{,}77$, la seconde de justesse face au témoin par blocs).
-Le premier résultat se reproduit sur les $48$ portefeuilles industriels de
-Kenneth French, avec un écart de $-3{,}65$~nats contre $-0{,}56$ et $-2{,}46$ :
-c'est le seul résultat commun aux deux panels, et il tient donc aussi bien sur
-titres individuels que sur portefeuilles sectoriels. Il est plus faible que dans
-une version antérieure ($-1{,}72$ et $-8{,}51$), parce que le seuil de stress
-y était le quantile de \emph{tout} l'échantillon, donc informé par le futur ; il
-est désormais calculé sur le passé seulement, à l'identique dans les données et
-dans les témoins. Ce qui distingue une crise d'une simple série de gros
-rendements, c'est que la coupe transversale se couple --- le nombre effectif de
-modes de risque indépendants tombe de $13{,}1$ à $11{,}4$ sur $20$ --- et non que
-les marginales s'épaississent. La demi-vie de relaxation n'est pas identifiée : à
-$121$~jours, elle se situe au-dessus du témoin i.i.d.\ ($92$) et en dessous du
-témoin par blocs ($163$). Deux autres résultats vont à l'encontre de l'intérêt de
-l'article : la compensation volatilité--dépendance observée sur des portefeuilles
-sectoriels ne se réplique pas sur des titres individuels, et aucun canal
-d'entropie n'améliore hors échantillon la prévision du risque futur par rapport à
-une référence de volatilité.
-
-La contribution appliquée est une construction de test de résistance. Un scénario
-de sévérité $\eta$ est la pire distribution conditionnelle contenue dans une
-boule de Kullback--Leibler de rayon $\eta$~nats autour de la distribution
-conditionnelle courante du marché ; le rayon est calibré sur le flux
-d'information réalisé du marché lui-même, $\KL{p_t}{p_{t-h}}$, de sorte qu'une
-sévérité porte une période de retour plutôt qu'un adjectif, et que le
-déplacement de la moyenne et l'inflation de la variance sont prélevés sur un
-même budget au lieu d'être choqués séparément. Un nat achète $\sqrt2$~sigma. La
-même métrique tarife les scénarios existants : un bundle classique --- volatilités
-doublées, toutes les corrélations forcées à $0{,}9$, un choc de trois sigmas ---
-se tarife à $7{,}24$~nats vu du portefeuille, alors qu'un scénario entropique
-délivre la même perte de queue pour $5{,}47$ : le comité surpaye de $24\,\%$.
-Nous décomposons ce prix pour montrer où il passe, et la composante chère n'est
-pas celle que l'intuition désigne. Une réserve pèse pourtant sur les périodes de
-retour : l'échelle de sévérité calibrée sur le flux d'information du seul
-portefeuille est nettement plus douce que l'histoire (un scénario décennal
-multiplie la volatilité par $1{,}6$, quand le quantile décennal de la hausse de
-volatilité réalisée est de $3{,}2$), de sorte que l'efficience de la construction
-est établie et que les périodes de retour ne le sont pas.
-
-Reste une question que la construction ci-dessus laisse ouverte : elle fixe la
-sévérité du portefeuille sans jamais dire comment la covariance sous-jacente
-doit bouger, actif par actif, pour l'atteindre — et le choix le plus simple,
-une dilatation uniforme des volatilités, n'est qu'un défaut, pas un fait sur les
-crises. Une huitième hypothèse répond à cette question à l'échelle de la crise
-individuelle plutôt que du régime : regroupés en épisodes, les sauts détectés ne
-détruisent pas les trois canaux dans les mêmes proportions, et le canal de
-dépendance en est plus souvent le contributeur dominant que ne le produit un
-rééchantillonnage sans structure temporelle (46\,\% des épisodes contre 19--33\,\%
-sous le témoin i.i.d.\ sur le panel principal, un écart qui se réplique sur le
-panel sectoriel). Face au témoin par blocs, en revanche, cette typologie
-n'est pas identifiée, à toute longueur de bloc testée --- même verdict que pour
-l'asymétrie des sauts et le couplage des canaux --- et nous en tirons la
-conséquence méthodologique qui s'impose : cette huitième hypothèse n'est
-retenue que face au témoin i.i.d., une portée rétrécie et assumée, parce que sa
-seule fin est une calibration et non un énoncé sur la dynamique de $\JJ$. Nous
-l'utilisons pour construire une covariance de scénario dont la part de
-dépendance est ancrée sur le fait le plus robuste de tout l'article (le canal
-de dépendance de H1, seul à franchir les deux témoins) et raffinée par cette
-huitième hypothèse : à sévérité de portefeuille strictement identique, un
-scénario décennal composé ainsi coûte $2{,}9$~nats de la façon la plus simple à
-calibrer et $0{,}7$~nat une fois raffiné par la sévérité de l'épisode --- moins,
-non plus, que la dilatation uniforme par défaut ($6{,}8$), parce que celle-ci
-n'est jamais qu'un choix simple compatible avec la contrainte de portefeuille,
-non un minimum prouvé de la divergence ambiante. Un gestionnaire qui suppose par
-défaut une dilatation uniforme n'est donc pas prudent en le faisant : la
-composition ancrée sur l'historique est à la fois plus réaliste et moins
-implausible sur l'échelle d'information du marché.
+\noindent Les indicateurs de crise fondés sur l'entropie montent brutalement
+dans les crises et redescendent lentement ensuite, et cette dent de scie est
+souvent lue comme la trace d'une information qui arrive par paquets et
+s'absorbe graduellement. Nous montrons que la plus grande partie de cette
+signature est un artefact de mesure. Nous décomposons l'entropie d'un vecteur
+de rendements en trois canaux --- échelle, dépendance
+($\tfrac12\log\det R$) et forme (le déficit d'entropie $\DD=\KL{p}{q}$) --- et
+suivons l'indice structurel sans échelle
+$\JJ=\DD-\tfrac12\log\det R=\KL{p}{\prod_i q_i}\ge0$ sur vingt actions du
+S\&P~500 (1990--2022) et sur les 48 portefeuilles industriels de Kenneth
+French (1990--2026). Chaque statistique est confrontée à deux témoins calibrés,
+deux cents réplications chacun, qui rééchantillonnent les rendements observés :
+l'un i.i.d., l'autre par blocs de 21~jours. L'asymétrie des sauts, la
+signature d'asymétrie, le couplage des canaux, la compensation
+volatilité--dépendance et l'écart de régime de $\JJ$ lui-même sont tous
+reproduits, parfois dépassés, par les données rééchantillonnées : une
+fonctionnelle convexe positive de moments estimés monte brutalement dès qu'une
+observation à queue épaisse entre dans l'estimateur. Un seul résultat franchit
+les deux témoins sur les deux panels : sous stress, la coupe transversale se
+couple. L'écart de régime du canal de dépendance vaut $-0{,}99$~nat contre
+$-0{,}21$ et $-0{,}51$ sous les témoins (actions), et $-3{,}65$ contre $-0{,}56$
+et $-2{,}46$ (secteurs). La demi-vie de relaxation n'est pas identifiée, et
+aucun canal n'améliore hors échantillon la prévision du risque. Nous
+présentons enfin une construction de test de résistance en boule de
+Kullback--Leibler dont le rayon est calibré sur le flux d'information réalisé
+du marché ; elle tarife les scénarios classiques en nats, mais son échelle de
+sévérité est plus douce que l'histoire, de sorte que ses périodes de retour ne
+sont pas validées.
 \end{abstract}
 
 \tableofcontents
@@ -266,23 +179,20 @@ dans une boule KL de rayon $\eta$ autour de celle d'aujourd'hui. La construction
 n'est pas nouvelle \citep{glasserman2014,breuer2013} ; la calibration l'est. Le
 rayon se lit sur le flux d'information réalisé du marché, la révision à $h$ pas
 $\KL{p_t}{p_{t-h}}$, mesurée dans la même unité que le rayon, si bien qu'une
-sévérité acquiert une période de retour. Parce que le déplacement de moyenne et
+sévérité acquiert en principe une période de retour ; la
+section~\ref{sec:calib} montre que, sur nos données, cette période de retour
+n'est pas validée. Parce que le déplacement de moyenne et
 l'inflation de variance sont choisis sur un même budget, le scénario ne peut pas
 être incohérent en interne, et parce que \emph{tout} scénario peut être tarifé
 sur la même échelle, la question \og ce test de résistance est-il assez
 sévère ? \fg{} devient arithmétique.
 
-\paragraph{Composition calibrée (section~\ref{sec:composition}).}
+\paragraph{Une piste exploratoire (annexe~\ref{app:explo}).}
 La boule KL fixe la sévérité du \emph{portefeuille} et reste muette sur la façon
 dont la covariance sous-jacente doit se déformer, actif par actif, pour
-l'atteindre ; son choix par défaut, une dilatation uniforme des volatilités,
-n'est qu'une convention. Une huitième hypothèse, testée à l'échelle de la crise
-individuelle plutôt que du régime (section~\ref{sec:h8}), mesure comment les
-crises observées répartissent réellement la destruction d'entropie entre leurs
-canaux, et le fait, avec la portée volontairement rétrécie qu'impose son propre
-témoin, sert à calibrer cette répartition plutôt qu'à la deviner. La sévérité du
-scénario ne change pas ; sa composition, si, et son prix informationnel avec
-elle.
+l'atteindre. Une huitième hypothèse, qui ne franchit que le témoin i.i.d., sert
+à calibrer cette répartition à titre exploratoire ; nous la reportons en annexe
+pour qu'elle ne pèse pas sur les conclusions principales.
 
 \paragraph{Un avertissement sur la mesure de tout ceci.}
 L'indice structurel est une fonctionnelle convexe positive de moments d'ordre
@@ -293,20 +203,79 @@ prédisent les postulats. Chaque statistique de saut et de relaxation ci-dessous
 est donc rapportée face à un témoin construit en rééchantillonnant les rendements
 observés --- en conservant les queues marginales, en détruisant la chronologie. Le
 résultat est inconfortable et, nous le pensons, la chose la plus utile de
-l'article : l'asymétrie des sauts, qui paraît écrasante, ne survit pas ; la
-persistance et l'amplitude, si. Quiconque construit un indicateur de crise à
+l'article : l'asymétrie des sauts, qui paraît écrasante, ne survit pas, ni la
+demi-vie de relaxation ; le couplage de la coupe transversale sous stress et
+l'amplitude de $\JJ$, si. Quiconque construit un indicateur de crise à
 partir d'une fonctionnelle convexe de moments estimés devrait faire tourner ce
 témoin avant de croire son propre graphique.
 
-La section~\ref{sec:dynamics} énonce le théorème et les deux postulats et en
-dérive la dynamique de saut-diffusion ; la section~\ref{sec:hypotheses} liste les
-hypothèses ; les sections~\ref{sec:data}--\ref{sec:results} donnent les données,
-les estimateurs et les résultats, dont le témoin placebo que les statistiques de
-saut et de relaxation doivent franchir, et sa huitième hypothèse sur la
-composition du budget de crise (section~\ref{sec:h8}) ; la
-section~\ref{sec:stress} construit le test de résistance, dont une composition
-calibrée sur ce fait (section~\ref{sec:composition}) ; la
-section~\ref{sec:limits} est honnête sur ce que rien de tout ceci n'établit.
+\subsection{Position dans la littérature}
+\label{sec:related}
+
+\paragraph{Ce qui n'est pas nouveau.} Aucun des ingrédients mathématiques ne
+l'est, et nous préférons le dire d'emblée. Dériver la dynamique du prix d'un
+principe d'inférence entropique, plutôt que de la supposer, est le programme de
+la \og dynamique entropique \fg{}, appliqué aux actions et aux options
+\citep{abedi2019} puis aux processus de saut-diffusion \citep{abedi2026} ; le
+pont volume de la section~\ref{sec:bridge} y ajoute seulement l'horloge de
+volume de \citet{clark1973} et \citet{ane2000}. La décomposition de la
+section~\ref{sec:channels} est l'identité classique de l'analyse en
+composantes indépendantes \citep{comon1994} : la divergence à un produit de
+marginales gaussiennes se scinde en néguentropies marginales et en
+multi-information, et $-\tfrac12\log\det R$ est la corrélation totale de
+\citet{watanabe1960} d'un vecteur gaussien. \og Conditionner réduit
+l'entropie \fg{} est un fait de manuel \citep{cover2006}. Nous ne revendiquons
+que l'assemblage de ces pièces en un indice sans échelle et la discipline de
+test qui suit.
+
+\paragraph{Indicateurs de crise fondés sur la structure de corrélation.} Le
+seul résultat qui survit à nos témoins --- la coupe transversale se couple sous
+stress --- est le fait stylisé le mieux établi de la littérature sur les
+crises : les corrélations montent quand les marchés baissent
+\citep{longin2001}. Il est mesuré par la part de variance du premier mode
+propre \citep[le \og ratio d'absorption \fg{} de][]{kritzman2011}, par des
+mesures de connectivité en composantes principales et en causalité de Granger
+\citep{billio2012}, par des entropies spectrales ou de centralité de la matrice
+de corrélation \citep{almog2019,chakraborti2019,kukreti2020}, par un écart de
+complexité issu de la théorie des matrices aléatoires \citep{mukhia2026}, par
+des indicateurs entropiques d'alerte précoce \citep{billio2016}, et, en
+pratique banque centrale, par des indices composites de stress
+\citep{hollo2012}. Notre canal de dépendance $\tfrac12\log\det R$ est un membre
+de cette famille, exprimé en nats ; nous ne prétendons pas qu'il domine le ratio
+d'absorption, et la comparaison directe reste à faire. Il hérite aussi d'un
+problème connu : sous hétéroscédasticité, la corrélation mesurée sur un
+sous-échantillon de forte volatilité est mécaniquement plus élevée, même à
+corrélation sous-jacente constante \citep{forbes2002}. La
+section~\ref{sec:forbes} dit dans quelle mesure nos témoins y répondent.
+
+\paragraph{Entropie et crises, sans témoin.} Une littérature abondante rapporte
+que des mesures d'entropie, d'information mutuelle ou de divergence bougent
+pendant les crises \citep{zhou2013,caraiani2018,papla2024,noguer2025}. À notre
+connaissance, ces travaux comparent la mesure à zéro ou à une période calme,
+rarement à un rééchantillonnage des mêmes rendements. Les tests par données de
+substitution sont pourtant la norme en analyse non linéaire des séries
+temporelles \citep{theiler1992,schreiber2000}. L'apport principal de cet article
+est d'appliquer cette discipline à un indicateur entropique de crise et d'en
+publier le résultat, largement négatif.
+
+\paragraph{Tests de résistance entropiques.} Chercher le pire scénario dans une
+boule de Kullback--Leibler est la construction de \citet{breuer2013}, proche de
+la mesure de plausibilité de \citet{breuer2009}, de la mise à jour par entropie
+relative minimale de \citet{meucci2008} et de la mesure de risque robuste de
+\citet{glasserman2014} ; \citet{glasserman2015} sélectionnent les scénarios par
+vraisemblance empirique. Ce que nous ajoutons est la calibration du rayon sur
+le flux d'information réalisé du marché, et la tarification en nats des
+scénarios existants. La section~\ref{sec:calib} montre que cette calibration
+est trop douce face à l'histoire.
+
+\paragraph{Plan.} La section~\ref{sec:dynamics} énonce le théorème et les deux
+postulats et en dérive la dynamique de saut-diffusion ; la
+section~\ref{sec:hypotheses} liste les hypothèses ; les
+sections~\ref{sec:data}--\ref{sec:results} donnent les données, les estimateurs,
+les témoins et les résultats ; la section~\ref{sec:stress} construit le test de
+résistance ; la section~\ref{sec:limits} est honnête sur ce que rien de tout
+ceci n'établit. L'annexe~\ref{app:explo} rassemble la huitième hypothèse et la
+composition calibrée des scénarios, à titre exploratoire.
 
 \section{Du flux d'ordres au prix gaussien : le pont volume}
 \label{sec:bridge}
@@ -682,8 +651,8 @@ spécification de \citet{bns2001} évite cet écueil en supprimant le terme
 brownien et en pilotant le processus par un subordinateur à sauts positifs, ce
 qui garantit une loi stationnaire portée par $\mathbb{R}^+$. Empiriquement la
 question ne se pose pas --- $\JJ$ reste compris entre $2{,}17$ et $21{,}13$~nats
-sur le panel principal et entre $0{,}42$ et $1{,}69$ sur le panel de
-réplication, donc très loin de la frontière --- mais formellement il faudrait
+sur le panel principal et entre $0{,}42$ et $1{,}69$ sur le panel
+auxiliaire européen, donc très loin de la frontière --- mais formellement il faudrait
 soit supprimer $\sigma_\JJ$, soit écrire le processus sur $\log\JJ$.
 
 Le postulat n'est enfin pas anodin sur le plan de la mesure : un estimateur doté
@@ -889,17 +858,12 @@ chose sur le risque des 21~prochains jours que la seule volatilité d'aujourd'hu
 ne dit pas déjà. Le mot \og améliore \fg{} s'entend exclusivement sur des dates
 que le modèle n'a jamais vues au moment de l'estimation ; la
 section~\ref{sec:h7} explicite le protocole.
-\item[H8 (composition du budget de crise).] Regroupés en épisodes --- des
-sauts détectés fusionnés dès qu'ils sont distants de moins de 40~jours de
-bourse --- les épisodes de crise ne détruisent pas les trois canaux de $\JJ$
-dans les mêmes proportions : le canal de \emph{dépendance} est plus souvent le
-contributeur dominant du mouvement de $\JJ$ que ne le produit un
-rééchantillonnage sans structure temporelle des mêmes rendements. À la
-différence de H1--H7, H8 n'est jugée que face au témoin i.i.d. --- la
-section~\ref{sec:h8} explique pourquoi ce rétrécissement de portée est
-délibéré et non un tri des témoins qui arrangent le résultat : sa seule fin
-est une calibration (section~\ref{sec:composition}), non un énoncé sur la
-dynamique de $\JJ$ elle-même.
+\item[H8 (composition du budget de crise, exploratoire).] Regroupés en
+épisodes, les sauts de $\JJ$ ont plus souvent le canal de \emph{dépendance}
+pour contributeur dominant que ne le produit un rééchantillonnage sans
+structure temporelle. H8 n'est jugée que face au témoin i.i.d.\ et sert
+seulement à calibrer la composition d'un scénario ; elle est traitée en
+annexe~\ref{app:explo}.
 \end{description}
 
 \section{Données et estimation}
@@ -919,17 +883,22 @@ comme le test de robustesse dont elle avait le plus besoin. La période couvre l
 crise financière mondiale, la crise de la dette de la zone euro, 2015--16, 2018,
 la COVID-19 et la correction de 2022.
 
-Le panel de réplication est \texttt{EuStockMarkets} \citep{bollerslev1996} :
-niveaux de clôture quotidiens du DAX, du SMI, du CAC et du FTSE, 1~860 jours de
-bourse contemporains de 1991 à 1998, $N=4$. C'est un autre marché, une autre
-décennie et une autre taille de coupe transversale, ce qui en fait l'utilité ;
-il est bien trop petit pour porter seul un résultat.
+Le second panel est le fichier quotidien des $49$ secteurs de Kenneth French
+(\texttt{config/\allowbreak{}default.yaml} ; la catégorie résiduelle est exclue, d'où $48$
+portefeuilles), 1990--2026, soit $9\,000$ dates environ. La chaîne complète y a
+été exécutée, y compris les deux témoins à deux cents réplications ; les tables
+sont dans \texttt{paper/\allowbreak{}tables/\allowbreak{}ff49\_\allowbreak{}*}. Opposer titres individuels et
+portefeuilles sectoriels est le contraste utile : un signal qui tient sur les
+deux n'est pas un simple effet d'agrégation. Seuls ces deux panels portent des
+verdicts face aux témoins.
 
-Le second panel de comparaison est le fichier quotidien des $49$ secteurs de
-Kenneth French (\texttt{config/default.yaml} ; la catégorie résiduelle est
-exclue, d'où $48$ portefeuilles), 1990--2026, soit $9\,000$ dates environ. La
-chaîne complète y a été exécutée, y compris les deux témoins à deux cents
-réplications ; les tables sont dans \texttt{paper/tables/ff49\_*}.
+Un panel auxiliaire, \texttt{EuStockMarkets} \citep{bollerslev1996}, sert
+d'illustration : niveaux de clôture quotidiens du DAX, du SMI, du CAC et du
+FTSE, 1~860 jours de bourse de 1991 à 1998, $N=4$. Il est bien trop petit pour
+porter un résultat, n'a pas été confronté aux témoins à deux cents
+réplications, et après la période de rodage du seuil de stress il ne lui reste
+que $1\,104$ dates dont $160$ en stress. Nous rapportons ses chiffres quand ils
+éclairent un point, jamais comme une réplication.
 
 \subsection{Estimateurs}
 \label{sec:estimators}
@@ -978,7 +947,7 @@ d'Edgeworth $S^2/12+K^2/48$ surestime une Student-$t(4)$ d'un facteur 69 ;
 l'approximation de Hyvärinen y est à $3\%$ de la vérité. Les rendements
 quotidiens d'actions se situent en plein dans la région $t(4)$--$t(5)$, raison
 pour laquelle tous les déficits rapportés ci-dessous emploient la seconde.
-Reproduit par \texttt{scripts/negentropy\_benchmark.py}.}
+Reproduit par \texttt{scripts/\allowbreak{}negentropy\_\allowbreak{}benchmark.py}.}
 \label{tab:negentropy}
 \end{table}
 
@@ -1039,7 +1008,7 @@ sauts ou une demi-vie de relaxation n'est donc une preuve que relativement à ce
 témoin mécanique, jamais relativement à zéro.
 
 Nous mesurons ce témoin de deux manières. D'abord une simulation contrôlée
-(\texttt{scripts/estimator\_memory.py}) : des rendements gaussiens i.i.d.\ à
+(\texttt{scripts/\allowbreak{}estimator\_\allowbreak{}memory.py}) : des rendements gaussiens i.i.d.\ à
 covariance constante --- un monde sans aucune dynamique --- passés dans la chaîne
 de production. Une unique journée de stress injectée produit un pic de
 2,13~nats sur $\JJ$ qui décroît avec une demi-vie de \textbf{35~jours de bourse},
@@ -1048,7 +1017,7 @@ purement par la mémoire de l'estimateur ; sur données propres et sans aucun
 saut négatif} et $\Delta\JJ$ a une asymétrie de $+2{,}9$. L'asymétrie mécanique
 est réelle et elle est grande.
 
-Ensuite, deux témoins calibrés (\texttt{scripts/placebo\_null.py}) qui
+Ensuite, deux témoins calibrés (\texttt{scripts/\allowbreak{}placebo\_\allowbreak{}null.py}) qui
 rééchantillonnent les lignes de la matrice de rendements observée, en préservant
 la dépendance transversale et les queues marginales épaisses des données réelles.
 La version i.i.d.\ détruit tout ce dont traitent les postulats --- regroupement de
@@ -1093,6 +1062,7 @@ identifiée.
 
 \begin{table}[htbp]
 \centering
+\setlength{\tabcolsep}{3pt}
 \footnotesize
 \begin{tabular}{@{}llrrrrrl@{}}
 \toprule
@@ -1108,7 +1078,7 @@ réplications au moins aussi extrêmes que la valeur observée, du côté prédi
 l'hypothèse, est au plus de $5\%$ ; \og à contre-sens \fg{} signifie que ce
 seuil est atteint du côté opposé, c'est-à-dire que le témoin dépasse les données.
 Les écarts sont stress moins calme. Les $p$-valeurs exactes sont dans
-\texttt{paper/tables/sp500\_placebo\_null*.csv}.}
+\texttt{paper/\allowbreak{}tables/\allowbreak{}sp500\_\allowbreak{}placebo\_\allowbreak{}null*.csv}.}
 \label{tab:placebo}
 \end{table}
 
@@ -1190,6 +1160,7 @@ par blocs ($-0{,}54$, $p=0{,}09$) ; elle ne franchit que le témoin i.i.d.\
 
 \begin{table}[htbp]
 \centering
+\setlength{\tabcolsep}{3pt}
 \footnotesize
 \begin{tabular}{@{}llrrrrrl@{}}
 \toprule
@@ -1202,7 +1173,7 @@ par blocs ($-0{,}54$, $p=0{,}09$) ; elle ne franchit que le témoin i.i.d.\
 \caption{FF49, $48$ portefeuilles industriels, 1990--2026 : statistiques observées
 face aux deux témoins calibrés, deux cents réplications chacun. Mêmes conventions
 que le tableau~\ref{tab:placebo}. Les $p$-valeurs exactes sont dans
-\texttt{paper/tables/ff49\_placebo\_null*.csv}.}
+\texttt{paper/\allowbreak{}tables/\allowbreak{}ff49\_\allowbreak{}placebo\_\allowbreak{}null*.csv}.}
 \label{tab:placebo-ff49}
 \end{table}
 
@@ -1254,7 +1225,7 @@ Tous les signes sont ceux que prédit H1. L'entropie de dépendance chute de
 indépendants passe de 13,1 à 11,4 sur 20, le déficit de forme monte de 0,27~nat
 (différence non significative, $p=0{,}16$), et l'indice structurel monte de
 1,94~nat --- une hausse de $38\%$, la différence la plus significative du
-tableau. Le panel de réplication concorde sur les signes de la dépendance et de
+tableau. Le panel auxiliaire concorde sur les signes de la dépendance et de
 $\JJ$ (de 0,92 à 1,15~nat, $p=0{,}034$) mais son échantillon, réduit par la
 période de rodage à $1\,104$ dates dont $160$ en stress, ne porte plus de
 différence de dépendance significative ($-0{,}19$, $p=0{,}17$).
@@ -1280,12 +1251,31 @@ une vraie crise d'une série de gros rendements, c'est que \emph{la coupe
 transversale se couple} --- le nombre effectif de facteurs de risque indépendants
 s'effondre --- et non que les marginales s'épaississent.
 
+\paragraph{Le biais de \citet{forbes2002}.}\label{sec:forbes} Le régime de
+stress est défini par la volatilité de marché, et une corrélation mesurée sur un
+sous-échantillon de forte volatilité est mécaniquement plus élevée, même quand
+la corrélation sous-jacente ne change pas. Une partie de l'écart brut du
+tableau~\ref{tab:h1} relève donc de ce biais de sélection. Les deux témoins le
+contiennent par construction : ils rééchantillonnent des lignes entières de la
+matrice de rendements, donc une loi jointe des rendements du jour qui ne varie
+pas dans le temps, et ils recalculent le régime par le même filtre de
+volatilité. Dans un monde rééchantillonné, l'écart du canal de dépendance entre
+régimes n'est \emph{que} l'effet de sélection, et c'est lui que mesurent les
+$-0{,}21$ et $-0{,}51$ du tableau~\ref{tab:placebo}. L'excès observé est ce qui
+reste au-delà. Les témoins ne couvrent pas tout, et nous le disons : ni l'un ni
+l'autre n'est un processus à volatilité persistante et corrélation
+conditionnelle constante (de type CCC-GARCH), qui serait le témoin le plus
+tranchant pour cette question ; le témoin par blocs n'en est qu'une
+approximation, et c'est face à lui que le résultat est le plus fragile
+($p=0{,}030$). Nous n'avons pas non plus appliqué la correction analytique de
+\citet{forbes2002}, qui suppose un modèle à un facteur.
+
 Deux entrées du tableau sont aussi instructives que les confirmations. Le
-\emph{niveau} d'asymétrie de marché bouge à peine entre régimes ($p=0{,}67$) : le
+\emph{niveau} d'asymétrie de marché bouge à peine entre régimes ($p=0{,}81$) : le
 stress n'est pas un état dans lequel les rendements sont durablement plus
 asymétriques à gauche, point sur lequel nous revenons avec H5, où la signature
 d'asymétrie apparaît au moment du saut plutôt que tout au long du régime. Et le
-plafond gaussien $H^{cov}$ \emph{monte} sous stress, de 3,75~nats --- parce que le
+plafond gaussien $H^{cov}$ \emph{monte} sous stress, de 4,97~nats --- parce que le
 canal d'échelle le domine. L'entropie différentielle calculée à partir d'une
 matrice de covariance \emph{augmente} en crise. Toute tentative d'utiliser le
 niveau d'entropie gaussienne comme indicateur de stress a donc le signe à
@@ -1305,6 +1295,7 @@ quelque chose de plus précis.
 
 \begin{table}[htbp]
 \centering
+\setlength{\tabcolsep}{4pt}
 \small
 \begin{tabular}{@{}lrrr@{}}
 \toprule
@@ -1399,7 +1390,7 @@ Pris au pied de la lettre, les indices semblent écrasants. Sur le panel
 principal, le détecteur à quatre sigmas trouve 158 sauts positifs contre 9 sauts
 négatifs ; les sauts positifs portent $83{,}8\%$ de la variance de $\Delta\JJ$
 contre $0{,}3\%$ pour les sauts négatifs ; l'asymétrie de $\Delta\JJ$ vaut
-$+12{,}3$. Le panel de réplication concorde (27 contre 5, asymétrie $+6{,}7$). La
+$+12{,}3$. Le panel auxiliaire concorde (27 contre 5, asymétrie $+6{,}7$). La
 figure~\ref{fig:index} est visiblement en dents de scie, avec des hausses
 brutales en 1997--98, 2002, septembre 2008, 2011, 2015, 2018 et un pic à 21~nats
 en mars 2020, chacune suivie d'une lente décroissance --- exactement la forme que
@@ -1475,7 +1466,7 @@ L'estimation de \eqref{eq:ou} sur les seules dates hors saut --- afin que le
 canal diffusif soit identifié sans contamination --- donne $\kappa = 0{,}0057$
 par jour ($t=-4{,}70$, HAC à 10~retards, $p=0{,}0001$ selon la loi de
 Dickey--Fuller), une demi-vie de \textbf{121~jours de bourse} et un niveau de
-long terme de 3,30~nats. Le panel de réplication donne $\kappa=0{,}0056$, une
+long terme de 3,30~nats. Le panel auxiliaire donne $\kappa=0{,}0056$, une
 demi-vie de 124~jours, $p=0{,}047$ selon Dickey--Fuller (0,004 sous la loi normale,
 qui était la valeur rapportée jusque-là et qui sur-rejette).
 
@@ -1533,7 +1524,7 @@ d'asymétrie de marché à ces dates est de $-0{,}394$ contre $-0{,}214$ ; et
 $\mathrm{corr}(\Delta \JJ, \Delta S_{mkt}) = -0{,}24$. Le canal d'asymétrie du
 déficit monte aux dates de saut ($+0{,}010$ contre $-0{,}0002$), de même que le
 co-dépassement de queue ($+0{,}008$ contre $-0{,}0002$, corrélation avec
-$\Delta\JJ$ de $+0{,}35$). Le panel de réplication est plus fort sur cette
+$\Delta\JJ$ de $+0{,}35$). Le panel auxiliaire européen est plus fort sur cette
 dimension : $\mathrm{corr}(\Delta\JJ,\Delta S_{mkt}) = -0{,}38$ et une variation
 moyenne d'asymétrie de $-0{,}129$ aux dates de saut positif.
 
@@ -1551,7 +1542,7 @@ de $-0{,}243$ se situe entre le huitième et le dixième centile des deux témoi
 moyenne d'asymétrie aux dates de saut ($-0{,}053$) reste à l'intérieur des deux
 ($-0{,}011$ et $-0{,}027$ ; $p=0{,}18$ et $0{,}22$). Nous rapportons H5 comme \emph{non établie} : la
 direction est la bonne, elle est cohérente sur deux témoins et deux jeux de
-données (le panel de réplication donne $-0{,}38$), mais une $p$-valeur de $0{,}08$
+données (le panel auxiliaire donne $-0{,}38$), mais une $p$-valeur de $0{,}08$
 à $0{,}10$ sur deux cents réplications, donc au-dessus du seuil de $5\%$, est une
 raison de chercher davantage, non un résultat. Le postulat P\ref{p:sign} reste un postulat.
 
@@ -1576,7 +1567,7 @@ S\&P~500 : avec le canal d'asymétrie     & $0{,}06$ & $0{,}17$ & $0{,}01$ \\
 
 Dans les données, le motif est frappant. En marché calme, le canal de dépendance
 et le canal de queue sont effectivement sans lien ($0{,}02$) ; sous stress leur
-corrélation vaut $0{,}64$. Le panel de réplication le reproduit à $-0{,}05$ contre
+corrélation vaut $0{,}64$. Le panel auxiliaire le reproduit à $-0{,}05$ contre
 $0{,}36$, et le couplage est porté entièrement par le canal de \emph{queue}, le
 canal d'asymétrie n'y participant pas.
 
@@ -1699,12 +1690,13 @@ ne voit pas du tout. Puisque le canal de forme porte $60\%$ de la variance de
 $\Delta\JJ$ sur le panel principal, l'essentiel de ce qui fait bouger l'indice
 est une information que la volatilité ne contient pas.
 
-\subsection{Réplication}
+\subsection{Le panel auxiliaire européen}
 
 La figure~\ref{fig:eu} applique la chaîne identique aux quatre indices européens,
 1991--1998. Le panel est bien trop petit pour porter seul un résultat --- quatre
 actifs donnent six corrélations par paires contre 190 pour le panel principal, et
-un seul cycle de stress --- mais chaque signe rapporté plus haut se reproduit :
+un seul cycle de stress, et il n'a pas été confronté aux témoins --- mais les
+signes bruts rapportés plus haut se retrouvent :
 $\JJ$ monte sous stress ($1{,}15$ contre $0{,}92$, $p=0{,}034$), les canaux se
 couplent sous stress et non en marché calme ($0{,}36$ contre $-0{,}05$), l'indice
 relaxe avec une demi-vie de 124~jours, et les sauts positifs portent une
@@ -1713,158 +1705,11 @@ variation moyenne d'asymétrie de marché de $-0{,}129$ contre $+0{,}003$ ailleu
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=\linewidth]{figures/eu_structural_index_jumps.png}
-\caption{Réplication : l'indice structurel sur le DAX, le SMI, le CAC et le
+\caption{Panel auxiliaire : l'indice structurel sur le DAX, le SMI, le CAC et le
 FTSE, 1991--1998. Les hausses visibles coïncident avec les épisodes du SME de
 septembre 1992 et 1993 et avec la crise asiatique d'octobre--novembre 1997.}
 \label{fig:eu}
 \end{figure}
-
-\subsection{H8 : la composition du budget de crise}
-\label{sec:h8}
-
-Les sept hypothèses précédentes traitent chaque canal en moyenne sur un régime
-entier. La question posée ici est différente : \emph{à l'intérieur d'une crise
-donnée}, quel canal fait le travail ? Un saut détecté sur $\JJ$ est rarement un
-événement isolé --- il s'inscrit dans une suite de sauts rapprochés, ce que
-montre déjà la figure~\ref{fig:event} --- aussi commençons-nous par fusionner
-les sauts distants de moins de 40~jours de bourse en \emph{épisodes}, puis
-décomposons-nous le mouvement de chaque épisode, de son amorce à son pic, sur
-les trois canaux :
-\begin{equation}
-\label{eq:episode-budget}
-\Delta\JJ_{\text{épisode}} \;=\; \underbrace{\Delta(-H^{dep})}_{\text{dépendance}}
-\;+\; \underbrace{\Delta d_{\text{impair}}}_{\text{asymétrie}}
-\;+\; \underbrace{\Delta d_{\text{pair}}}_{\text{queue}} ,
-\end{equation}
-une identité exacte issue de la définition~\ref{def:J} et de la décomposition
-impaire/paire de la néguentropie derrière \eqref{eq:edgeworth}
-(\texttt{episode\_channel\_budget}, \texttt{src/jumps.py}) : les trois parts
-somment à un par construction, ce n'est donc pas une approximation d'un budget
-par crise, mais le budget lui-même.
-
-\paragraph{Le fait brut.} Sur les trois panels, le canal d'\emph{asymétrie}
-n'est presque jamais le contributeur dominant (1~épisode sur 139, tous panels
-confondus) --- une donnée de plus contre P\ref{p:sign} comme mécanisme
-dominant, en plus du résultat déjà marginal de H5. Le partage entre
-\emph{dépendance} et \emph{queue}, lui, ressemble à une vraie typologie : sur
-le panel principal, la dépendance domine $46\%$ des 65~épisodes détectés ; sur
-le panel des 49~secteurs de Kenneth French, $79\%$ des 61~épisodes ; sur
-\texttt{EuStockMarkets}, $69\%$ des 13~épisodes.
-
-\begin{table}[htbp]
-\centering
-\small
-\begin{tabular}{@{}lrrrl@{}}
-\toprule
-Panel (épisodes) & Observé & moy.\ témoin i.i.d. & 5--95\,\% & Verdict \\
-\midrule
-S\&P~500 (65)         & $0{,}46$ & $0{,}26$ & $0{,}18$--$0{,}33$ & franchit \\
-FF49 (61)              & $0{,}79$ & $0{,}43$ & $0{,}33$--$0{,}53$ & franchit \\
-\texttt{EuStock} (13)  & $0{,}69$ & $0{,}57$ & $0{,}34$--$0{,}77$ & ne franchit pas \\
-\bottomrule
-\end{tabular}
-\caption{H8, témoin i.i.d.\ : part des épisodes détectés dont le canal de
-dépendance est le contributeur dominant. Deux cents réplications (S\&P~500, FF49), quinze
-(\texttt{EuStock}). \texttt{scripts/episode\_null.py}.}
-\label{tab:h8}
-\end{table}
-
-Le tableau~\ref{tab:h8} confirme le fait sur les trois panels : l'observé
-dépasse la totalité (S\&P~500, FF49) ou l'essentiel (\texttt{EuStock}) des
-réplications i.i.d. \texttt{EuStockMarkets} ne franchit pas formellement le
-témoin --- l'observé se situe à l'intérieur de sa bande à $90\%$ --- mais la
-direction est la bonne, et le panel compte treize épisodes contre soixante et
-un pour les deux autres : la même réserve de sous-puissance déjà faite ailleurs
-dans cet article pour ce panel. Deux panels qui franchissent nettement et un
-troisième cohérent en direction : H8 est retenue, \emph{au sens du témoin
-i.i.d.}
-
-\paragraph{Pourquoi seulement le témoin i.i.d.} Une décomposition
-supplémentaire a été testée sur le panel principal : quelle fraction des
-épisodes le témoin par blocs de 21~jours --- celui qui préserve le
-regroupement de volatilité de court terme --- reproduit-il également la
-dominance de la dépendance ? Elle le fait : l'observé ($0{,}46$) tombe cette
-fois à l'intérieur de la bande du témoin par blocs ($0{,}43$,
-$0{,}35$--$0{,}57$). Le tableau~\ref{tab:blocksens} montre que ce n'est pas un
-artefact du choix arbitraire de 21~jours : le franchissement bascule de net
-(bloc~5) à marginal (bloc~10) à échec net (bloc~21), et le témoin
-\emph{dépasse même} l'observé aux blocs~42 et~63, avant de se relâcher
-légèrement au bloc~126 --- signe que des blocs aussi longs commencent à
-rejouer des épisodes historiques entiers plutôt qu'à en détruire la
-structure. Le regroupement de volatilité ordinaire, à lui seul, suffit donc
-plausiblement à produire la typologie dépendance/queue, quelle que soit la
-longueur de bloc testée à partir de 21~jours --- même verdict que celui déjà
-rendu pour H3 et H6.
-
-\begin{table}[htbp]
-\centering
-\small
-\begin{tabular}{@{}rrrrl@{}}
-\toprule
-Longueur de bloc (jours) & moy.\ témoin & 5--95\,\% & $p$(obs.\,$\ge$\,témoin) & Verdict \\
-\midrule
-1 (i.i.d.)  & $0{,}26$ & $0{,}18$--$0{,}33$ & $0{,}00$ & franchit \\
-5           & $0{,}31$ & $0{,}23$--$0{,}41$ & $0{,}00$ & franchit \\
-10          & $0{,}35$ & $0{,}27$--$0{,}45$ & $0{,}08$ & marginal \\
-21          & $0{,}43$ & $0{,}33$--$0{,}54$ & $0{,}33$ & échoue \\
-42          & $0{,}49$ & $0{,}40$--$0{,}60$ & $0{,}67$ & échoue, témoin au-dessus \\
-63          & $0{,}51$ & $0{,}43$--$0{,}56$ & $0{,}75$ & échoue, témoin au-dessus \\
-126         & $0{,}47$ & $0{,}40$--$0{,}56$ & $0{,}50$ & échoue \\
-\bottomrule
-\end{tabular}
-\caption{Sensibilité à la longueur de bloc, S\&P~500 : part observée
-d'épisodes dominés par la dépendance ($0{,}46$, constante sur la ligne) face au
-témoin par blocs pour sept longueurs. Deux cents réplications pour les blocs~1
-et~21, partagés avec le tableau~\ref{tab:h8}, douze pour les cinq longueurs
-intermédiaires et longues balayées spécifiquement ici.}
-\label{tab:blocksens}
-\end{table}
-
-Ce constat aurait pu clore la piste --- c'est le même verdict que H3 et H6 ---
-mais le test de résistance de la section~\ref{sec:stress} n'a jamais été jugé
-face à un témoin : c'est une convention de mesure plus une optimisation
-convexe (fin de la section~\ref{sec:verdicts}), et personne n'y prétend décrire
-une dynamique. Ce que H8 apporte à cette convention n'est donc pas \og la
-dépendance cause les crises \fg{} --- affirmation que le témoin par blocs
-interdit --- mais une observation plus modeste et suffisante pour calibrer une
-composition : \emph{le budget de destruction d'entropie observé sur cet
-échantillon n'est pas celui que produirait un rééchantillonnage sans aucune
-structure temporelle}. La section~\ref{sec:composition} utilise ce fait, et
-seulement lui, avec la portée explicitement rétrécie au témoin i.i.d. --- une
-décision de portée assumée, non un tri des témoins qui arrangent le résultat.
-
-\paragraph{La sévérité ne prédit pas la composition.} Une dernière question
-naturelle : le partage dépendance/queue dérive-t-il avec la taille de
-l'épisode, de sorte qu'on pourrait calibrer une composition par sévérité
-plutôt qu'une composition moyenne ? Le tableau~\ref{tab:severityq} répartit
-les 65~épisodes du panel principal en quintiles de $\Delta\JJ$ et moyenne la
-part de dépendance dans chacun. Le motif n'est pas monotone --- le creux au
-deuxième quintile est réel, pas un artefact d'arrondi --- et la corrélation
-entre taille d'épisode et part de dépendance est indiscernable de zéro
-(Spearman $0{,}05$, Pearson $0{,}03$). Il n'existe pas, sur cet échantillon, de
-loi \og crise plus grosse, plus dépendante \fg{} à extraire. La composition
-calibrée de la section~\ref{sec:composition} utilise donc le partage moyen de
-régime (H1) comme ancre, et le partage mesuré sur la moitié la plus sévère des
-épisodes (ce tableau) comme seul raffinement défendable.
-
-\begin{table}[htbp]
-\centering
-\small
-\begin{tabular}{@{}lrrr@{}}
-\toprule
-Quintile de $\Delta\JJ$ (S\&P~500) & part dépendance & part asymétrie & part queue \\
-\midrule
-q1 (plus calmes)  & $0{,}53$ & $0{,}10$ & $0{,}37$ \\
-q2                & $0{,}17$ & $0{,}02$ & $0{,}80$ \\
-q3                & $0{,}37$ & $0{,}04$ & $0{,}59$ \\
-q4                & $0{,}50$ & $0{,}02$ & $0{,}48$ \\
-q5 (plus sévères) & $0{,}49$ & $0{,}02$ & $0{,}49$ \\
-\bottomrule
-\end{tabular}
-\caption{Part moyenne de chaque canal par quintile de sévérité d'épisode,
-13~épisodes par quintile, panel principal.}
-\label{tab:severityq}
-\end{table}
 
 \section{Tests de résistance par l'entropie}
 \label{sec:stress}
@@ -1898,6 +1743,7 @@ risque, et c'est toute la raison pour laquelle la construction est utilisable pa
 un comité : le paramètre de sévérité n'est pas une abstraction.
 
 \subsection{Calibrer le rayon}
+\label{sec:calib}
 
 Le rayon n'est pas ici un choix de modélisation. Définissons le flux
 d'information à $h$ pas
@@ -1923,6 +1769,7 @@ rapporté est la médiane des quantiles sur les $21$ phases possibles, et leur
 
 \begin{table}[htbp]
 \centering
+\setlength{\tabcolsep}{2.5pt}
 \small
 \begin{tabular}{@{}lrrrrrr@{}}
 \toprule
@@ -1944,10 +1791,10 @@ calibrée sur le flux d'information à 21~jours de la projection du portefeuille
 volatilité annualisée de $20\%$ et une ES$_{99}$ à un jour de $3{,}4\%$.
 $^\dagger$ au-delà de l'échantillon : l'échelon cinquantennal exige un quantile
 que 33~ans d'historique ne peuvent pas résoudre et constitue une extrapolation de
-la queue empirique (\texttt{extrapolated} dans \texttt{stress\_scenarios.csv}).
+la queue empirique (\texttt{extrapolated} dans \texttt{stress\_\allowbreak{}scenarios.csv}).
 $^\S$ Minimum et maximum sur les 21 phases d'amincissement. $^\ddagger$ Rapport de la volatilité réalisée du portefeuille sur les 21~jours
 suivants à sa volatilité des 252~jours précédents, quantile de même période de
-retour (\texttt{scripts/ladder\_plausibility.py}).}
+retour (\texttt{scripts/\allowbreak{}ladder\_\allowbreak{}plausibility.py}).}
 \label{tab:ladder}
 \end{table}
 
@@ -2063,10 +1910,10 @@ les corrélations sont forcées, avant même que le multiplicateur de volatilit�
 soit appliqué). Le choc de volatilité et le choc de corrélation se paient
 partiellement l'un l'autre.
 
-C'est exactement la structure qu'a identifiée H6 dans les données. Les vraies
-crises n'égalisent pas les corrélations et ne gonflent pas toutes les volatilités
-indépendamment ; elles chargent la coupe transversale sur un ou deux modes
-collectifs et épaississent conjointement les queues des marginales. Un cadre qui
+C'est la structure que décrit le canal de dépendance de H1, seul résultat de
+régime à franchir les deux témoins. Les vraies crises n'égalisent pas les
+corrélations et ne gonflent pas toutes les volatilités indépendamment ; elles
+chargent la coupe transversale sur un ou deux modes collectifs. Un cadre qui
 choque volatilité, corrélation et forme comme trois scalaires séparés n'a aucun
 moyen de représenter cela, ni aucun moyen de s'apercevoir que son bundle achète
 la sévérité avec une marge de $15$ à $33\%$.
@@ -2077,15 +1924,16 @@ découlent.
 \begin{enumerate}
 \item \textbf{Une échelle de sévérité unique, dans une unité qui ne dépend pas de
 l'actif.} Les scénarios deviennent comparables entre desks, portefeuilles et
-classes d'actifs, et la sévérité se cite avec une période de retour plutôt
-qu'avec un adjectif.
+classes d'actifs. La sévérité pourrait se citer avec une période de retour
+plutôt qu'avec un adjectif, une fois l'échelle validée face à l'histoire, ce
+qu'elle n'est pas ici (section~\ref{sec:calib}).
 \item \textbf{Cohérence interne par construction.} Les chocs de position et
 d'échelle proviennent d'un même budget et d'une même optimisation. Un bundle qui
 choque volatilité, corrélation et asymétrie indépendamment peut décrire, et
 décrit souvent, une distribution que le marché ne saurait produire.
 \item \textbf{Les scénarios existants peuvent être audités plutôt que
 remplacés.} Tout gabarit réglementaire ou jugement de comité reçoit un prix en
-nats et une période de retour, de sorte que la question de savoir si un test de
+nats, de sorte que la question de savoir si un test de
 résistance est calibré devient arithmétique. C'est le bénéfice pratique du
 tableau~\ref{tab:classical}.
 \item \textbf{Le test de résistance inversé est offert.} Au lieu de demander ce
@@ -2104,119 +1952,6 @@ taille d'échantillon effective de $1{,}0$, c'est-à-dire qu'elle est la pire
 journée unique déguisée en distribution. L'implémentation rapporte la taille
 d'échantillon effective précisément pour cette raison, et la construction en
 boule gaussienne devrait être employée dès qu'elle tombe sous quelques dizaines.
-
-\subsection{Composition calibrée : quel canal paie la sévérité}
-\label{sec:composition}
-
-La construction~\eqref{eq:ball} ne contraint que la projection du portefeuille
-sur la boule KL --- elle fixe la moyenne et la volatilité stressées du
-portefeuille, $m$ et $s$ --- et reste muette sur la façon dont la covariance
-sous-jacente doit se déformer, actif par actif, pour les atteindre. Le choix le
-plus simple compatible avec cette contrainte, celui qui produit les
-tableaux~\ref{tab:ladder} et~\ref{tab:classical}, est une dilatation uniforme :
-chaque volatilité marginale multipliée par le même facteur $v$, les
-corrélations inchangées. C'est un défaut de construction, pas un énoncé sur la
-façon dont les crises se comportent. H1 dit comment elles se comportent : le
-canal de dépendance bouge pour son propre compte, et c'est le seul canal de
-régime de tout l'article à franchir les deux témoins (tableau~\ref{tab:h1}).
-H8 affine ce fait à l'échelle de l'épisode, avec la portée rétrécie qu'exige
-son propre témoin (section~\ref{sec:h8}). Cette section fait passer ces deux
-faits de la colonne \og résultat \fg{} à la colonne \og calibration \fg{} ---
-et, contrairement au bref rapprochement fait plus haut avec H6 à titre de mise
-en contexte, s'appuie exclusivement sur les deux hypothèses que leurs témoins
-respectifs retiennent.
-
-\paragraph{Le mélange reste exact.}
-\begin{proposition}[Une sévérité, plusieurs compositions]
-\label{prop:composition}
-Soient $\Sigma_a,\Sigma_b\succeq0$ deux covariances et $w$ un vecteur de poids
-de portefeuille tels que $w^\top\Sigma_a w = w^\top\Sigma_b w = s^2$. Alors pour
-tout $\alpha\in[0,1]$, $\Sigma_\alpha \equiv (1-\alpha)\Sigma_a+\alpha\Sigma_b$
-vérifie encore $w^\top\Sigma_\alpha w=s^2$.
-\end{proposition}
-\begin{proof}
-$w^\top\Sigma w$ est linéaire en $\Sigma$, donc
-$w^\top\Sigma_\alpha w = (1-\alpha)\,w^\top\Sigma_a w + \alpha\,w^\top\Sigma_b w
-= (1-\alpha)s^2+\alpha s^2=s^2$.
-\end{proof}
-Conséquence immédiate et exploitable : on peut faire varier \emph{comment} la
-sévérité $s$ se répartit entre les actifs sans jamais changer $s$. Le paramètre
-du mélange, $\alpha\in[0,1]$, est ce que nous appelons la \emph{part de
-dépendance}.
-
-\paragraph{Un plafond physique.} La corrélation seule ne peut pas porter
-n'importe quelle sévérité. À volatilités marginales $\sigma_i$ fixées,
-$w^\top\Sigma w = \sum_i w_i^2\sigma_i^2 + \sum_{i\ne j}w_iw_j\sigma_i\sigma_j\rho_{ij}$
-est maximisée, sur les matrices de corrélation valides, par $\rho_{ij}=1$ pour
-tout $i\ne j$ --- la dépendance parfaite --- où elle vaut
-$\left(\sum_i w_i\sigma_i\right)^2$. Sur le panel principal, ce plafond ne vaut
-qu'environ $1{,}5$~fois la volatilité d'aujourd'hui : un portefeuille
-diversifié de vingt titres ne peut simplement pas atteindre une sévérité
-élevée par la seule corrélation, aussi \og dépendante \fg{} la crise
-sous-jacente soit-elle --- ce que le tableau~\ref{tab:ladder} montre sur ce
-panel : le multiplicateur $1{,}37$ de l'échelon quinquennal reste atteignable par
-la seule corrélation, le $1{,}63$ de l'échelon décennal ne l'est plus
-(corrélation moyenne implicite de $1{,}1$). La construction retenue en tient
-compte : la corrélation est poussée vers son plafond ($\rho=1$, borné) à
-hauteur de la part de dépendance demandée, et l'écart restant, inévitable
-au-delà de ce plafond, est comblé par une dilatation uniforme finale, de sorte
-que la proposition~\ref{prop:composition} s'applique quelle que soit la part
-demandée (\texttt{calibrated\_covariance}, \texttt{src/stress.py}).
-
-\paragraph{D'où vient la part de dépendance.} Deux sources, aucune arbitraire.
-\begin{itemize}
-\item \textbf{Ancrage H1.} La part de régime du tableau~\ref{tab:h1} :
-$|{-0{,}99}|/(|{-0{,}99}|+|5{,}97|)=0{,}14$. C'est le fait le plus robuste de
-tout l'article --- il franchit les deux témoins --- converti en un paramètre de
-calibration au lieu de rester un résultat qu'on cite et qu'on abandonne.
-\item \textbf{Raffinement H8.} La même part, mesurée uniquement sur la moitié
-la plus sévère des épisodes détectés : $0{,}49$, plus de trois fois la
-moyenne de régime --- cohérent avec le tableau~\ref{tab:severityq}, où les
-quintiles~4 et~5 dominent nettement le quintile~2, sans qu'on prétende à une
-loi monotone.
-\end{itemize}
-
-\begin{table}[htbp]
-\centering
-\small
-\begin{tabular}{@{}lrr@{}}
-\toprule
-Composition (scénario décennal, $\eta=0{,}41$) & part dépendance & prix ambiant (nats) \\
-\midrule
-défaut (boule KL, dilatation pure)             & $0{,}00$ & $6{,}80$ \\
-calibrée H1 (moyenne de régime)                & $0{,}14$ & $2{,}88$ \\
-raffinée H8 (épisodes sévères)                 & $0{,}49$ & $0{,}71$ \\
-\bottomrule
-\end{tabular}
-\caption{Prix ambiant, en nats, de quatre compositions délivrant la même
-sévérité de portefeuille (moyenne, volatilité, ES$_{99}=5{,}9\%$, identiques
-aux trois lignes par construction).
-\texttt{scripts/calibrated\_stress\_demo.py}, panel S\&P~500. Sur les secteurs de
-French ($\eta=0{,}37$) : $14{,}7$, $8{,}3$ et $5{,}8$~nats pour des parts de
-$0{,}00$, $0{,}20$ et $0{,}75$.}
-\label{tab:composition}
-\end{table}
-
-\paragraph{Ce que cela change, à sévérité fixée.} Le tableau~\ref{tab:composition}
-tarife le scénario décennal du tableau~\ref{tab:ladder} sous ces compositions.
-Le prix en nats \emph{ambiants} --- la divergence KL complète entre le scénario
-stressé et la distribution d'aujourd'hui, calculable en dimension pleine, à ne
-pas confondre avec le rayon $\eta$ qui ne contraint que la projection ---
-\emph{diminue} à mesure que la part de dépendance augmente, plutôt que
-d'augmenter. Ce n'est pas une anomalie de calcul : la dilatation uniforme n'est
-le choix le moins cher qu'au sens de la contrainte projetée ; ce n'est pas un
-minimum prouvé de la divergence ambiante. Ce minimum-là existe --- les
-conditions du premier ordre du problème \og minimiser
-$\mathrm{tr}(\Sigma_1\Sigma_0^{-1})-\log\det\Sigma_1$ sous
-$w^\top\Sigma_1w=s^2$ \fg{} donnent une perturbation de rang un de la matrice
-de \emph{précision}, $\Sigma_1^{-1}=\Sigma_0^{-1}-\lambda\,ww^\top$ --- mais cet
-objet n'est pas interprétable actif par actif et n'est pas utilisé ici. Le
-constat empirique est donc le suivant : sur ce panel, se rapprocher de la
-composition observée historiquement rapproche aussi, sans que ce soit
-recherché, de ce minimum non utilisé. Un gestionnaire de risque qui suppose par
-défaut une dilatation uniforme ne se protège pas par prudence en le faisant ---
-la composition ancrée sur H1 et raffinée par H8 est à la fois plus réaliste
-\emph{et} moins chère sur l'échelle d'information du marché.
 
 \subsection{Deux indicateurs de suivi}
 
@@ -2268,8 +2003,8 @@ stress.
 \paragraph{Le témoin mécanique avale une hypothèse entière.} L'asymétrie des
 sauts est intégralement reproduite par des données i.i.d.\ de même loi marginale,
 et environ les deux tiers de la relaxation mesurée relèvent de la mémoire de
-l'estimateur. Les résultats de persistance et d'amplitude survivent ; le résultat
-d'asymétrie, non, et aucun lecteur ne devrait citer le chiffre de 158~contre~9
+l'estimateur. Le résultat d'amplitude survit ; la demi-vie n'est pas identifiée ;
+le résultat d'asymétrie ne survit pas, et aucun lecteur ne devrait citer le chiffre de 158~contre~9
 sans le témoin à côté. Les deux cents réplications du
 tableau~\ref{tab:placebo} ont resserré les $p$-valeurs, et elles ont déplacé deux
 verdicts : l'étendue de $\JJ$ ne franchit plus le témoin par blocs que de justesse
@@ -2280,12 +2015,20 @@ figure~\ref{fig:event} montre un regroupement que \eqref{eq:ou} n'accommode pas.
 Un processus d'arrivée auto-excitant de Hawkes est la spécification suivante
 évidente.
 
-\paragraph{Vingt titres, c'est une petite coupe transversale.} Le canal de
-dépendance est sensible à $N$, l'équilibre entre canaux se déplace avec lui, et
-le rayon KL n'est pas comparable d'un univers à l'autre. Les résultats devraient
-être reproduits sur une large coupe transversale --- le fichier sectoriel de
-Kenneth French, ou CRSP --- avant qu'aucun chiffre présenté ici ne soit traité
-comme une constante de la nature.
+\paragraph{Deux panels, de taille modeste.} Le canal de dépendance est sensible à
+$N$, l'équilibre entre canaux se déplace avec lui, et le rayon KL n'est pas
+comparable d'un univers à l'autre. Le passage de vingt titres à quarante-huit
+portefeuilles sectoriels conserve le résultat du canal de dépendance mais pas
+celui sur l'étendue de $\JJ$. Les deux panels ne couvrent pas non plus la même
+période (1990--2022 et 1990--2026). Une large coupe transversale de titres
+individuels, de type CRSP, reste à faire avant qu'aucun chiffre présenté ici ne
+soit traité comme une constante de la nature.
+
+\paragraph{Pas de comparaison directe avec le ratio d'absorption.} Le canal de
+dépendance appartient à la famille des mesures de concentration de la matrice
+de corrélation (section~\ref{sec:related}). Nous ne l'avons pas confronté, sur
+les mêmes données et face aux mêmes témoins, au ratio d'absorption de
+\citet{kritzman2011} ; rien ici ne dit qu'il fait mieux.
 
 \paragraph{L'échelle de sévérité extrapole en queue, et paraît trop douce.} Avec 383
 observations non chevauchantes de flux d'information, les échelons au-delà d'une
@@ -2311,29 +2054,14 @@ optimistes sur des fenêtres glissantes.
 \paragraph{Rien ici ne prévoit.} H7 est rejetée sur deux jeux de données sous un
 protocole exigeant. Tout usage de ces mesures devrait être diagnostique.
 
-\paragraph{H8 n'est retenue que face à un seul témoin, par choix assumé.} Face
-au témoin par blocs, la typologie dépendance/queue n'est pas identifiée, à
-aucune des sept longueurs de bloc testées entre 5 et 126~jours
-(tableau~\ref{tab:blocksens}) --- même verdict que pour l'asymétrie des sauts
-(H3) et le couplage des canaux (H6). Nous en tirons la conséquence
-méthodologique plutôt que de la dissimuler : H8 sert exclusivement à calibrer
-la composition d'un scénario de test de résistance
-(section~\ref{sec:composition}), un usage qui n'exige que d'être \og plus
-structuré qu'un rééchantillonnage sans mémoire \fg{}, pas d'être une dynamique
-identifiée au sens le plus strict de l'article. Un lecteur qui voudrait
-utiliser H8 pour un autre usage --- distinguer des \og types \fg{} de crise
-causalement distincts, par exemple --- devrait la tenir pour non établie.
-
-\paragraph{La composition par défaut n'est pas un minimum informationnel.} La
-dilatation uniforme qui sert de référence à la section~\ref{sec:composition}
-n'est que le choix le plus simple compatible avec la contrainte de portefeuille
-de la boule KL ; ce n'est pas la covariance qui minimise la divergence KL
-ambiante à sévérité de portefeuille fixée --- ce minimum-là est une
-perturbation de rang un de la matrice de précision, non interprétable actif
-par actif, et n'est utilisé nulle part ici. Le résultat empirique selon lequel
-la composition calibrée sur H1/H8 coûte \emph{moins} de nats ambiants que le
-défaut (tableau~\ref{tab:composition}) est propre à la structure de
-corrélation de ce panel et ne doit pas être lu comme une loi générale.
+\paragraph{La partie exploratoire n'est retenue que face à un seul témoin.}
+H8 n'est pas identifiée face au témoin par blocs, à aucune des longueurs de bloc
+testées entre 5 et 126~jours (tableau~\ref{tab:blocksens}). La composition
+calibrée qui s'en sert (annexe~\ref{app:explo}) part d'une dilatation uniforme
+par défaut qui n'est pas un minimum de la divergence ambiante, et son résultat
+est propre à la structure de corrélation de ce panel. Un lecteur qui voudrait
+utiliser H8 pour distinguer des \og types \fg{} de crise causalement distincts
+devrait la tenir pour non établie.
 
 \section{Conclusion}
 
@@ -2362,8 +2090,8 @@ que dans les données réelles. Une fonctionnelle convexe positive de moments
 estimés d'ordre deux, trois et quatre monte brutalement et redescend en douceur
 dès qu'une observation à queue épaisse entre dans l'estimateur, et elle le fait
 que l'information arrive ou non par paquets. Cette mise en garde vaut pour tout
-indicateur de crise fondé sur l'entropie, et pas seulement pour celui-ci, et nous
-ne l'avons pas trouvée énoncée dans la littérature appliquée.
+indicateur de crise fondé sur l'entropie, et pas seulement pour celui-ci ; à
+notre connaissance, la littérature appliquée ne l'énonce pas sous cette forme.
 
 Exactement deux statistiques franchissent les deux témoins sur le panel principal,
 et ce sont les deux qu'il faut retenir ; sur les portefeuilles sectoriels FF49
@@ -2383,7 +2111,8 @@ soit hors échantillon.
 La contribution appliquée est ce que le cadre apporte une fois qu'on cesse de lui
 demander de prévoir. Mesurer la sévérité d'un scénario en nats donne au test de
 résistance une unité ; calibrer cette unité sur le flux d'information réalisé du
-marché lui donne une fréquence ; et résoudre pour la pire distribution dans la
+marché lui donnerait une fréquence, si l'échelle obtenue n'était pas plus douce
+que l'histoire (section~\ref{sec:calib}) ; et résoudre pour la pire distribution dans la
 boule qui en résulte donne un scénario qui ne peut pas être incohérent en
 interne. Appliqué à l'envers, il tarife les scénarios que les institutions font
 déjà tourner : sur cet échantillon, un bundle standard des manuels achète sa perte de
@@ -2391,33 +2120,14 @@ queue avec un surcoût de $24\%$ (de $15$ à $33\%$ selon la sévérité), parce
 uniformément chaque volatilité marginale --- ce qui n'est pas la voie que
 prennent les crises observées.
 
-Cette dernière phrase appelait une question que la première version de cette
-contribution laissait sans réponse : si la dilatation uniforme n'est pas la
-voie que prennent les crises observées, quelle l'est, et peut-on s'en servir
-pour composer un scénario plutôt que pour seulement critiquer celui d'un
-comité ? H8, une huitième hypothèse construite pour cette seule fin, répond à
-l'échelle de la crise individuelle : regroupés en épisodes, les sauts détectés
-ne détruisent pas les trois canaux dans les mêmes proportions, et la
-dépendance en est plus souvent le contributeur dominant que ne le produit un
-rééchantillonnage sans mémoire, sur les trois panels. Face au témoin par
-blocs, en revanche, ce fait n'est pas identifié, quelle que soit la longueur
-de bloc testée --- le même sort que H3 et H6 --- et la conséquence
-méthodologique en est tirée explicitement plutôt que dissimulée : H8 n'est
-retenue que face au témoin i.i.d., une portée rétrécie et assumée, parce que sa
-seule fin est de calibrer, non de décrire une dynamique. Ancrée sur le canal de
-dépendance de H1 (le seul résultat de régime de tout l'article à franchir les
-deux témoins) et raffinée par H8, cette calibration transforme la part de
-dépendance d'un scénario en un paramètre mesuré plutôt que supposé, sans jamais
-changer la sévérité du portefeuille visée : la proposition~\ref{prop:composition}
-garantit que tout mélange entre la dilatation par défaut et la composition
-poussée vers son plafond de corrélation atteint exactement la même sévérité.
-Le résultat, sur ce panel, va à l'encontre de l'intuition qui a motivé la
-question : la composition ancrée sur l'historique coûte \emph{moins} de nats
-que la dilatation uniforme par défaut, et non davantage --- parce que ce défaut
-n'a jamais été qu'un choix simple compatible avec la contrainte de portefeuille
-de la boule KL, jamais un minimum prouvé de la divergence ambiante. Un
-gestionnaire de risque qui suppose par défaut une dilatation uniforme ne se
-protège donc pas par prudence en le faisant.
+L'annexe~\ref{app:explo} pousse cette observation plus loin, à titre
+exploratoire : elle compose un scénario dont la part de dépendance est ancrée
+sur H1 et raffinée par une huitième hypothèse qui ne franchit que le témoin
+i.i.d. Ce qui reste établi tient en deux phrases. Les indicateurs entropiques
+de crise doivent être jugés face à un rééchantillonnage des mêmes rendements,
+faute de quoi la plupart de leurs signatures sont des artefacts de mesure. Et
+ce qui résiste à ce test, sur titres individuels comme sur secteurs, est le
+couplage de la coupe transversale sous stress.
 
 
 \appendix
@@ -2579,11 +2289,11 @@ Avec $q_i=\mathcal N(\mu_i,\sigma_i^2)$ les marginales gaussiennes de mêmes
 
 \begin{proof}
 Par définition,
-\[
-\KL{p}{\textstyle\prod_i q_i} = -h(p) - \mathbb{E}_p\!\left[\textstyle\sum_i\log q_i(X_i)\right]
-= -h(p) + \sum_i\left[\tfrac12\log(2\pi\sigma_i^2)+\tfrac12\right]
-= -h(p) + \sum_i\log\sigma_i + \tfrac N2\log(2\pi e),
-\]
+\begin{align*}
+\KL{p}{\textstyle\prod_i q_i} &= -h(p) - \mathbb{E}_p\!\left[\textstyle\sum_i\log q_i(X_i)\right]
+= -h(p) + \sum_i\left[\tfrac12\log(2\pi\sigma_i^2)+\tfrac12\right]\\
+&= -h(p) + \sum_i\log\sigma_i + \tfrac N2\log(2\pi e),
+\end{align*}
 où l'on a utilisé $\mathbb{E}_p[(X_i-\mu_i)^2]=\sigma_i^2$, vrai par
 construction. En y injectant l'équation~\eqref{eq:three}, soit
 $h(p)=\tfrac N2\log(2\pi e)+\sum_i\log\sigma_i+H^{dep}-\DD$, les termes
@@ -2668,8 +2378,282 @@ saut dans l'échelle de sévérité de la section~\ref{sec:stress} : c'est le
 mouvement directionnel qu'un scénario de même rayon produirait.
 
 \renewcommand{\refname}{Références}
+\section{Exploratoire : composition des crises et des scénarios}
+\label{app:explo}
+
+Cette annexe rassemble un résultat qui ne franchit qu'un des deux témoins et
+l'usage qui en est fait pour composer un scénario de stress. Nous la séparons du
+corps de l'article parce que rien de ce qui précède n'en dépend, et parce
+qu'elle ne satisfait pas le critère que l'article s'impose partout ailleurs.
+Elle est à lire comme une piste, non comme un résultat.
+
+\subsection{H8 : la composition du budget de crise}
+\label{sec:h8}
+
+Les sept hypothèses précédentes traitent chaque canal en moyenne sur un régime
+entier. La question posée ici est différente : \emph{à l'intérieur d'une crise
+donnée}, quel canal fait le travail ? Un saut détecté sur $\JJ$ est rarement un
+événement isolé --- il s'inscrit dans une suite de sauts rapprochés, ce que
+montre déjà la figure~\ref{fig:event} --- aussi commençons-nous par fusionner
+les sauts distants de moins de 40~jours de bourse en \emph{épisodes}, puis
+décomposons-nous le mouvement de chaque épisode, de son amorce à son pic, sur
+les trois canaux :
+\begin{equation}
+\label{eq:episode-budget}
+\Delta\JJ_{\text{épisode}} \;=\; \underbrace{\Delta(-H^{dep})}_{\text{dépendance}}
+\;+\; \underbrace{\Delta d_{\text{impair}}}_{\text{asymétrie}}
+\;+\; \underbrace{\Delta d_{\text{pair}}}_{\text{queue}} ,
+\end{equation}
+une identité exacte issue de la définition~\ref{def:J} et de la décomposition
+impaire/paire de la néguentropie derrière \eqref{eq:edgeworth}
+(\texttt{episode\_\allowbreak{}channel\_\allowbreak{}budget}, \texttt{src/\allowbreak{}jumps.py}) : les trois parts
+somment à un par construction, ce n'est donc pas une approximation d'un budget
+par crise, mais le budget lui-même.
+
+\paragraph{Le fait brut.} Sur les trois panels, le canal d'\emph{asymétrie}
+n'est presque jamais le contributeur dominant (1~épisode sur 139, tous panels
+confondus) --- une donnée de plus contre P\ref{p:sign} comme mécanisme
+dominant, en plus du résultat déjà marginal de H5. Le partage entre
+\emph{dépendance} et \emph{queue}, lui, ressemble à une vraie typologie : sur
+le panel principal, la dépendance domine $46\%$ des 65~épisodes détectés ; sur
+le panel des 49~secteurs de Kenneth French, $79\%$ des 61~épisodes ; sur
+\texttt{EuStockMarkets}, $69\%$ des 13~épisodes.
+
+\begin{table}[htbp]
+\centering
+\small
+\begin{tabular}{@{}lrrrl@{}}
+\toprule
+Panel (épisodes) & Observé & moy.\ témoin i.i.d. & 5--95\,\% & Verdict \\
+\midrule
+S\&P~500 (65)         & $0{,}46$ & $0{,}26$ & $0{,}18$--$0{,}33$ & franchit \\
+FF49 (61)              & $0{,}79$ & $0{,}43$ & $0{,}33$--$0{,}53$ & franchit \\
+\texttt{EuStock} (13)  & $0{,}69$ & $0{,}57$ & $0{,}34$--$0{,}77$ & ne franchit pas \\
+\bottomrule
+\end{tabular}
+\caption{H8, témoin i.i.d.\ : part des épisodes détectés dont le canal de
+dépendance est le contributeur dominant. Deux cents réplications (S\&P~500, FF49), quinze
+(\texttt{EuStock}). \texttt{scripts/\allowbreak{}episode\_\allowbreak{}null.py}.}
+\label{tab:h8}
+\end{table}
+
+Le tableau~\ref{tab:h8} confirme le fait sur les trois panels : l'observé
+dépasse la totalité (S\&P~500, FF49) ou l'essentiel (\texttt{EuStock}) des
+réplications i.i.d. \texttt{EuStockMarkets} ne franchit pas formellement le
+témoin --- l'observé se situe à l'intérieur de sa bande à $90\%$ --- mais la
+direction est la bonne, et le panel compte treize épisodes contre soixante et
+un pour les deux autres : la même réserve de sous-puissance déjà faite ailleurs
+dans cet article pour ce panel. Deux panels qui franchissent nettement et un
+troisième cohérent en direction : H8 est retenue, \emph{au sens du témoin
+i.i.d.}
+
+\paragraph{Pourquoi seulement le témoin i.i.d.} Une décomposition
+supplémentaire a été testée sur le panel principal : quelle fraction des
+épisodes le témoin par blocs de 21~jours --- celui qui préserve le
+regroupement de volatilité de court terme --- reproduit-il également la
+dominance de la dépendance ? Elle le fait : l'observé ($0{,}46$) tombe cette
+fois à l'intérieur de la bande du témoin par blocs ($0{,}43$,
+$0{,}35$--$0{,}57$). Le tableau~\ref{tab:blocksens} montre que ce n'est pas un
+artefact du choix arbitraire de 21~jours : le franchissement bascule de net
+(bloc~5) à marginal (bloc~10) à échec net (bloc~21), et le témoin
+\emph{dépasse même} l'observé aux blocs~42 et~63, avant de se relâcher
+légèrement au bloc~126 --- signe que des blocs aussi longs commencent à
+rejouer des épisodes historiques entiers plutôt qu'à en détruire la
+structure. Le regroupement de volatilité ordinaire, à lui seul, suffit donc
+plausiblement à produire la typologie dépendance/queue, quelle que soit la
+longueur de bloc testée à partir de 21~jours --- même verdict que celui déjà
+rendu pour H3 et H6.
+
+\begin{table}[htbp]
+\centering
+\small
+\begin{tabular}{@{}rrrrl@{}}
+\toprule
+Longueur de bloc (jours) & moy.\ témoin & 5--95\,\% & $p$(obs.\,$\ge$\,témoin) & Verdict \\
+\midrule
+1 (i.i.d.)  & $0{,}26$ & $0{,}18$--$0{,}33$ & $0{,}00$ & franchit \\
+5           & $0{,}31$ & $0{,}23$--$0{,}41$ & $0{,}00$ & franchit \\
+10          & $0{,}35$ & $0{,}27$--$0{,}45$ & $0{,}08$ & marginal \\
+21          & $0{,}43$ & $0{,}33$--$0{,}54$ & $0{,}33$ & échoue \\
+42          & $0{,}49$ & $0{,}40$--$0{,}60$ & $0{,}67$ & échoue, témoin au-dessus \\
+63          & $0{,}51$ & $0{,}43$--$0{,}56$ & $0{,}75$ & échoue, témoin au-dessus \\
+126         & $0{,}47$ & $0{,}40$--$0{,}56$ & $0{,}50$ & échoue \\
+\bottomrule
+\end{tabular}
+\caption{Sensibilité à la longueur de bloc, S\&P~500 : part observée
+d'épisodes dominés par la dépendance ($0{,}46$, constante sur la ligne) face au
+témoin par blocs pour sept longueurs. Deux cents réplications pour les blocs~1
+et~21, partagés avec le tableau~\ref{tab:h8}, douze pour les cinq longueurs
+intermédiaires et longues balayées spécifiquement ici.}
+\label{tab:blocksens}
+\end{table}
+
+Ce constat aurait pu clore la piste --- c'est le même verdict que H3 et H6 ---
+mais le test de résistance de la section~\ref{sec:stress} n'a jamais été jugé
+face à un témoin : c'est une convention de mesure plus une optimisation
+convexe (fin de la section~\ref{sec:verdicts}), et personne n'y prétend décrire
+une dynamique. Ce que H8 apporte à cette convention n'est donc pas \og la
+dépendance cause les crises \fg{} --- affirmation que le témoin par blocs
+interdit --- mais une observation plus modeste et suffisante pour calibrer une
+composition : \emph{le budget de destruction d'entropie observé sur cet
+échantillon n'est pas celui que produirait un rééchantillonnage sans aucune
+structure temporelle}. La section~\ref{sec:composition} utilise ce fait, et
+seulement lui, avec la portée explicitement rétrécie au témoin i.i.d. --- une
+décision de portée assumée, non un tri des témoins qui arrangent le résultat.
+
+\paragraph{La sévérité ne prédit pas la composition.} Une dernière question
+naturelle : le partage dépendance/queue dérive-t-il avec la taille de
+l'épisode, de sorte qu'on pourrait calibrer une composition par sévérité
+plutôt qu'une composition moyenne ? Le tableau~\ref{tab:severityq} répartit
+les 65~épisodes du panel principal en quintiles de $\Delta\JJ$ et moyenne la
+part de dépendance dans chacun. Le motif n'est pas monotone --- le creux au
+deuxième quintile est réel, pas un artefact d'arrondi --- et la corrélation
+entre taille d'épisode et part de dépendance est indiscernable de zéro
+(Spearman $0{,}05$, Pearson $0{,}03$). Il n'existe pas, sur cet échantillon, de
+loi \og crise plus grosse, plus dépendante \fg{} à extraire. La composition
+calibrée de la section~\ref{sec:composition} utilise donc le partage moyen de
+régime (H1) comme ancre, et le partage mesuré sur la moitié la plus sévère des
+épisodes (ce tableau) comme seul raffinement défendable.
+
+\begin{table}[htbp]
+\centering
+\small
+\begin{tabular}{@{}lrrr@{}}
+\toprule
+Quintile de $\Delta\JJ$ (S\&P~500) & part dépendance & part asymétrie & part queue \\
+\midrule
+q1 (plus calmes)  & $0{,}53$ & $0{,}10$ & $0{,}37$ \\
+q2                & $0{,}17$ & $0{,}02$ & $0{,}80$ \\
+q3                & $0{,}37$ & $0{,}04$ & $0{,}59$ \\
+q4                & $0{,}50$ & $0{,}02$ & $0{,}48$ \\
+q5 (plus sévères) & $0{,}49$ & $0{,}02$ & $0{,}49$ \\
+\bottomrule
+\end{tabular}
+\caption{Part moyenne de chaque canal par quintile de sévérité d'épisode,
+13~épisodes par quintile, panel principal.}
+\label{tab:severityq}
+\end{table}
+
+\subsection{Composition calibrée : quel canal paie la sévérité}
+\label{sec:composition}
+
+La construction~\eqref{eq:ball} ne contraint que la projection du portefeuille
+sur la boule KL --- elle fixe la moyenne et la volatilité stressées du
+portefeuille, $m$ et $s$ --- et reste muette sur la façon dont la covariance
+sous-jacente doit se déformer, actif par actif, pour les atteindre. Le choix le
+plus simple compatible avec cette contrainte, celui qui produit les
+tableaux~\ref{tab:ladder} et~\ref{tab:classical}, est une dilatation uniforme :
+chaque volatilité marginale multipliée par le même facteur $v$, les
+corrélations inchangées. C'est un défaut de construction, pas un énoncé sur la
+façon dont les crises se comportent. H1 dit comment elles se comportent : le
+canal de dépendance bouge pour son propre compte, et c'est le seul canal de
+régime de tout l'article à franchir les deux témoins (tableau~\ref{tab:h1}).
+H8 affine ce fait à l'échelle de l'épisode, avec la portée rétrécie qu'exige
+son propre témoin (section~\ref{sec:h8}). Cette section fait passer ces deux
+faits de la colonne \og résultat \fg{} à la colonne \og calibration \fg{} ---
+et, contrairement au bref rapprochement fait plus haut avec H6 à titre de mise
+en contexte, s'appuie exclusivement sur les deux hypothèses que leurs témoins
+respectifs retiennent.
+
+\paragraph{Le mélange reste exact.}
+\begin{proposition}[Une sévérité, plusieurs compositions]
+\label{prop:composition}
+Soient $\Sigma_a,\Sigma_b\succeq0$ deux covariances et $w$ un vecteur de poids
+de portefeuille tels que $w^\top\Sigma_a w = w^\top\Sigma_b w = s^2$. Alors pour
+tout $\alpha\in[0,1]$, $\Sigma_\alpha \equiv (1-\alpha)\Sigma_a+\alpha\Sigma_b$
+vérifie encore $w^\top\Sigma_\alpha w=s^2$.
+\end{proposition}
+\begin{proof}
+$w^\top\Sigma w$ est linéaire en $\Sigma$, donc
+$w^\top\Sigma_\alpha w = (1-\alpha)\,w^\top\Sigma_a w + \alpha\,w^\top\Sigma_b w
+= (1-\alpha)s^2+\alpha s^2=s^2$.
+\end{proof}
+Conséquence immédiate et exploitable : on peut faire varier \emph{comment} la
+sévérité $s$ se répartit entre les actifs sans jamais changer $s$. Le paramètre
+du mélange, $\alpha\in[0,1]$, est ce que nous appelons la \emph{part de
+dépendance}.
+
+\paragraph{Un plafond physique.} La corrélation seule ne peut pas porter
+n'importe quelle sévérité. À volatilités marginales $\sigma_i$ fixées,
+$w^\top\Sigma w = \sum_i w_i^2\sigma_i^2 + \sum_{i\ne j}w_iw_j\sigma_i\sigma_j\rho_{ij}$
+est maximisée, sur les matrices de corrélation valides, par $\rho_{ij}=1$ pour
+tout $i\ne j$ --- la dépendance parfaite --- où elle vaut
+$\left(\sum_i w_i\sigma_i\right)^2$. Sur le panel principal, ce plafond ne vaut
+qu'environ $1{,}5$~fois la volatilité d'aujourd'hui : un portefeuille
+diversifié de vingt titres ne peut simplement pas atteindre une sévérité
+élevée par la seule corrélation, aussi \og dépendante \fg{} la crise
+sous-jacente soit-elle --- ce que le tableau~\ref{tab:ladder} montre sur ce
+panel : le multiplicateur $1{,}37$ de l'échelon quinquennal reste atteignable par
+la seule corrélation, le $1{,}63$ de l'échelon décennal ne l'est plus
+(corrélation moyenne implicite de $1{,}1$). La construction retenue en tient
+compte : la corrélation est poussée vers son plafond ($\rho=1$, borné) à
+hauteur de la part de dépendance demandée, et l'écart restant, inévitable
+au-delà de ce plafond, est comblé par une dilatation uniforme finale, de sorte
+que la proposition~\ref{prop:composition} s'applique quelle que soit la part
+demandée (\texttt{calibrated\_\allowbreak{}covariance}, \texttt{src/\allowbreak{}stress.py}).
+
+\paragraph{D'où vient la part de dépendance.} Deux sources, aucune arbitraire.
+\begin{itemize}
+\item \textbf{Ancrage H1.} La part de régime du tableau~\ref{tab:h1} :
+$|{-0{,}99}|/(|{-0{,}99}|+|5{,}97|)=0{,}14$. C'est le fait le plus robuste de
+tout l'article --- il franchit les deux témoins --- converti en un paramètre de
+calibration au lieu de rester un résultat qu'on cite et qu'on abandonne.
+\item \textbf{Raffinement H8.} La même part, mesurée uniquement sur la moitié
+la plus sévère des épisodes détectés : $0{,}49$, plus de trois fois la
+moyenne de régime --- cohérent avec le tableau~\ref{tab:severityq}, où les
+quintiles~4 et~5 dominent nettement le quintile~2, sans qu'on prétende à une
+loi monotone.
+\end{itemize}
+
+\begin{table}[htbp]
+\centering
+\small
+\begin{tabular}{@{}lrr@{}}
+\toprule
+Composition (scénario décennal, $\eta=0{,}41$) & part dépendance & prix ambiant (nats) \\
+\midrule
+défaut (boule KL, dilatation pure)             & $0{,}00$ & $6{,}80$ \\
+calibrée H1 (moyenne de régime)                & $0{,}14$ & $2{,}88$ \\
+raffinée H8 (épisodes sévères)                 & $0{,}49$ & $0{,}71$ \\
+\bottomrule
+\end{tabular}
+\caption{Prix ambiant, en nats, de trois compositions délivrant la même
+sévérité de portefeuille (moyenne, volatilité, ES$_{99}=5{,}9\%$, identiques
+aux trois lignes par construction).
+\texttt{scripts/\allowbreak{}calibrated\_\allowbreak{}stress\_\allowbreak{}demo.py}, panel S\&P~500. Sur les secteurs de
+French ($\eta=0{,}37$) : $14{,}7$, $8{,}3$ et $5{,}8$~nats pour des parts de
+$0{,}00$, $0{,}20$ et $0{,}75$.}
+\label{tab:composition}
+\end{table}
+
+\paragraph{Ce que cela change, à sévérité fixée.} Le tableau~\ref{tab:composition}
+tarife le scénario décennal du tableau~\ref{tab:ladder} sous ces compositions.
+Le prix en nats \emph{ambiants} --- la divergence KL complète entre le scénario
+stressé et la distribution d'aujourd'hui, calculable en dimension pleine, à ne
+pas confondre avec le rayon $\eta$ qui ne contraint que la projection ---
+\emph{diminue} à mesure que la part de dépendance augmente, plutôt que
+d'augmenter. Ce n'est pas une anomalie de calcul : la dilatation uniforme n'est
+le choix le moins cher qu'au sens de la contrainte projetée ; ce n'est pas un
+minimum prouvé de la divergence ambiante. Ce minimum-là existe --- les
+conditions du premier ordre du problème \og minimiser
+$\mathrm{tr}(\Sigma_1\Sigma_0^{-1})-\log\det\Sigma_1$ sous
+$w^\top\Sigma_1w=s^2$ \fg{} donnent une perturbation de rang un de la matrice
+de \emph{précision}, $\Sigma_1^{-1}=\Sigma_0^{-1}-\lambda\,ww^\top$ --- mais cet
+objet n'est pas interprétable actif par actif et n'est pas utilisé ici. Le
+constat empirique est donc le suivant : sur ce panel, se rapprocher de la
+composition observée historiquement rapproche aussi, sans que ce soit
+recherché, de ce minimum non utilisé. Un gestionnaire de risque qui suppose par
+défaut une dilatation uniforme ne se protège pas par prudence en le faisant ---
+la composition ancrée sur H1 et raffinée par H8 est à la fois plus réaliste
+\emph{et} moins chère sur l'échelle d'information du marché.
+
+
 \begin{thebibliography}{99}
 \small
+
+\bibitem[Abedi(2026)]{abedi2026} Abedi, M. (2026). Entropic Dynamics of Jump-Diffusion Option Pricing. arXiv:2607.06355.
+
+\bibitem[Abedi \& Bartolomeo(2019)]{abedi2019} Abedi, M., \& Bartolomeo, D. (2019). Entropic Dynamics of Stocks and European Options. \textit{Entropy}, 21(8), 765. arXiv:1908.06355.
 
 \bibitem[Ahmadi-Javid(2012)]{ahmadijavid2012} Ahmadi-Javid, A. (2012). Entropic Value-at-Risk: A New Coherent Risk Measure. \textit{Journal of Optimization Theory and Applications}, 155(3), 1105--1123.
 
@@ -2683,23 +2667,27 @@ mouvement directionnel qu'un scénario de même rayon produirait.
 
 \bibitem[Barndorff-Nielsen \& Shephard(2004)]{bns2004} Barndorff-Nielsen, O. E., \& Shephard, N. (2004). Power and Bipower Variation with Stochastic Volatility and Jumps. \textit{Journal of Financial Econometrics}, 2(1), 1--37.
 
+\bibitem[Billio et al.(2012)]{billio2012} Billio, M., Getmansky, M., Lo, A. W., \& Pelizzon, L. (2012). Econometric Measures of Connectedness and Systemic Risk in the Finance and Insurance Sectors. \textit{Journal of Financial Economics}, 104(3), 535--559.
+
+\bibitem[Billio et al.(2016)]{billio2016} Billio, M., Casarin, R., Costola, M., \& Pasqualini, A. (2016). An Entropy-Based Early Warning Indicator for Systemic Risk. \textit{Journal of International Financial Markets, Institutions and Money}, 45, 42--59.
+
 \bibitem[Black(1976)]{black1976} Black, F. (1976). Studies of Stock Price Volatility Changes. \textit{Proceedings of the Business and Economic Statistics Section, American Statistical Association}, 177--181.
-
-\bibitem[Christie(1982)]{christie1982} Christie, A. A. (1982). The Stochastic Behavior of Common Stock Variances: Value, Leverage and Interest Rate Effects. \textit{Journal of Financial Economics}, 10(4), 407--432.
-
-\bibitem[Doob(1942)]{doob1942} Doob, J. L. (1942). The Brownian Movement and Stochastic Equations. \textit{Annals of Mathematics}, 43(2), 351--369.
-
-\bibitem[Engle \& Ng(1993)]{engle1993} Engle, R. F., \& Ng, V. K. (1993). Measuring and Testing the Impact of News on Volatility. \textit{Journal of Finance}, 48(5), 1749--1778.
-
-\bibitem[Nelson(1991)]{nelson1991} Nelson, D. B. (1991). Conditional Heteroskedasticity in Asset Returns: A New Approach. \textit{Econometrica}, 59(2), 347--370.
 
 \bibitem[Bollerslev \& Ghysels(1996)]{bollerslev1996} Bollerslev, T., \& Ghysels, E. (1996). Periodic Autoregressive Conditional Heteroscedasticity. \textit{Journal of Business \& Economic Statistics}, 14(2), 139--151.
 
 \bibitem[Breuer \& Csiszár(2013)]{breuer2013} Breuer, T., \& Csiszár, I. (2013). Systematic Stress Tests with Entropic Plausibility Constraints. \textit{Journal of Banking \& Finance}, 37(5), 1552--1559.
 
+\bibitem[Breuer et al.(2009)]{breuer2009} Breuer, T., Jandačka, M., Rheinberger, K., \& Summer, M. (2009). How to Find Plausible, Severe and Useful Stress Scenarios. \textit{International Journal of Central Banking}, 5(3), 205--224.
+
 \bibitem[Caraiani(2018)]{caraiani2018} Caraiani, P. (2018). Modeling the Comovement of Entropy between Financial Markets. \textit{Entropy}, 20(6), 417.
 
+\bibitem[Chakraborti et al.(2019)]{chakraborti2019} Chakraborti, A., Hrishidev, Sharma, K., \& Pharasi, H. K. (2019). Phase Separation and Scaling in Correlation Structures of Financial Markets. arXiv:1910.06242.
+
+\bibitem[Christie(1982)]{christie1982} Christie, A. A. (1982). The Stochastic Behavior of Common Stock Variances: Value, Leverage and Interest Rate Effects. \textit{Journal of Financial Economics}, 10(4), 407--432.
+
 \bibitem[Clark(1973)]{clark1973} Clark, P. K. (1973). A Subordinated Stochastic Process Model with Finite Variance for Speculative Prices. \textit{Econometrica}, 41(1), 135--155.
+
+\bibitem[Comon(1994)]{comon1994} Comon, P. (1994). Independent Component Analysis, a New Concept? \textit{Signal Processing}, 36(3), 287--314.
 
 \bibitem[Cover \& Thomas(2006)]{cover2006} Cover, T. M., \& Thomas, J. A. (2006). \textit{Elements of Information Theory}, 2\ieme{} éd. Wiley.
 
@@ -2707,46 +2695,68 @@ mouvement directionnel qu'un scénario de même rayon produirait.
 
 \bibitem[Diebold \& Mariano(1995)]{dm1995} Diebold, F. X., \& Mariano, R. S. (1995). Comparing Predictive Accuracy. \textit{Journal of Business \& Economic Statistics}, 13(3), 253--263.
 
+\bibitem[Doob(1942)]{doob1942} Doob, J. L. (1942). The Brownian Movement and Stochastic Equations. \textit{Annals of Mathematics}, 43(2), 351--369.
+
 \bibitem[Engle(2002)]{engle2002} Engle, R. (2002). Dynamic Conditional Correlation. \textit{Journal of Business \& Economic Statistics}, 20(3), 339--350.
 
+\bibitem[Engle \& Ng(1993)]{engle1993} Engle, R. F., \& Ng, V. K. (1993). Measuring and Testing the Impact of News on Volatility. \textit{Journal of Finance}, 48(5), 1749--1778.
+
+\bibitem[Forbes \& Rigobon(2002)]{forbes2002} Forbes, K. J., \& Rigobon, R. (2002). No Contagion, Only Interdependence: Measuring Stock Market Comovements. \textit{Journal of Finance}, 57(5), 2223--2261.
+
+\bibitem[Glasserman, Kang \& Kang(2015)]{glasserman2015} Glasserman, P., Kang, C., \& Kang, W. (2015). Stress Scenario Selection by Empirical Likelihood. \textit{Quantitative Finance}, 15(1), 25--41.
+
 \bibitem[Glasserman \& Xu(2014)]{glasserman2014} Glasserman, P., \& Xu, X. (2014). Robust Risk Measurement and Model Risk. \textit{Quantitative Finance}, 14(1), 29--58.
+
+\bibitem[Hollo, Kremer \& Lo Duca(2012)]{hollo2012} Hollo, D., Kremer, M., \& Lo Duca, M. (2012). CISS -- A Composite Indicator of Systemic Stress in the Financial System. ECB Working Paper No.~1426.
 
 \bibitem[Hyvärinen(1998)]{hyvarinen1998} Hyvärinen, A. (1998). New Approximations of Differential Entropy for Independent Component Analysis and Projection Pursuit. \textit{Advances in Neural Information Processing Systems}, 10, 273--279. (Constantes telles que dans Hyvärinen \& Oja, 2000, \textit{Neural Networks} 13, 411--430.)
 
 \bibitem[Jaynes(1957)]{jaynes1957} Jaynes, E. T. (1957). Information Theory and Statistical Mechanics. \textit{Physical Review}, 106, 620--630.
 
+\bibitem[Kritzman et al.(2011)]{kritzman2011} Kritzman, M., Li, Y., Page, S., \& Rigobon, R. (2011). Principal Components as a Measure of Systemic Risk. \textit{Journal of Portfolio Management}, 37(4), 112--126.
+
+\bibitem[Kukreti et al.(2020)]{kukreti2020} Kukreti, V., Pharasi, H. K., Gupta, P., \& Kumar, S. (2020). A Perspective on Correlation-Based Financial Networks and Entropy Measures. arXiv:2004.09448.
+
 \bibitem[Kyle(1985)]{kyle1985} Kyle, A. S. (1985). Continuous Auctions and Insider Trading. \textit{Econometrica}, 53(6), 1315--1335.
 
 \bibitem[Ledoit \& Wolf(2004)]{ledoit2004} Ledoit, O., \& Wolf, M. (2004). A Well-Conditioned Estimator for Large-Dimensional Covariance Matrices. \textit{Journal of Multivariate Analysis}, 88(2), 365--411.
 
+\bibitem[Longin \& Solnik(2001)]{longin2001} Longin, F., \& Solnik, B. (2001). Extreme Correlation of International Equity Markets. \textit{Journal of Finance}, 56(2), 649--676.
+
 \bibitem[Mandelbrot \& Taylor(1967)]{mandelbrot1967} Mandelbrot, B., \& Taylor, H. M. (1967). On the Distribution of Stock Price Differences. \textit{Operations Research}, 15(6), 1057--1062.
 
+\bibitem[Meucci(2008)]{meucci2008} Meucci, A. (2008). Fully Flexible Views: Theory and Practice. \textit{Risk}, 21(10), 97--102. arXiv:1012.2848.
+
 \bibitem[Monroe(1978)]{monroe1978} Monroe, I. (1978). Processes That Can Be Embedded in Brownian Motion. \textit{Annals of Probability}, 6(1), 42--56.
+
+\bibitem[Mukhia, Ansari \& Nurujjaman(2026)]{mukhia2026} Mukhia, K., Ansari, I., \& Nurujjaman, M. (2026). Structural Dynamics of G5 Stock Markets During Exogenous Shocks: A Random Matrix Theory-Based Complexity Gap Approach. arXiv:2604.19107.
+
+\bibitem[Nelson(1991)]{nelson1991} Nelson, D. B. (1991). Conditional Heteroskedasticity in Asset Returns: A New Approach. \textit{Econometrica}, 59(2), 347--370.
+
+\bibitem[Noguer i Alonso(2025)]{noguer2025} Noguer i Alonso, M. (2025). Financial Information Theory. arXiv:2511.16339.
 
 \bibitem[Papla \& Siedlecki(2024)]{papla2024} Papla, D., \& Siedlecki, R. (2024). Entropy as a Tool for the Analysis of Stock Market Efficiency During Periods of Crisis. \textit{Entropy}, 26(12), 1079.
 
 \bibitem[Politis \& Romano(1994)]{politis1994} Politis, D. N., \& Romano, J. P. (1994). The Stationary Bootstrap. \textit{Journal of the American Statistical Association}, 89(428), 1303--1313.
 
+\bibitem[Schreiber \& Schmitz(2000)]{schreiber2000} Schreiber, T., \& Schmitz, A. (2000). Surrogate Time Series. \textit{Physica D}, 142(3--4), 346--382. arXiv:chao-dyn/9909037.
+
 \bibitem[Tauchen \& Pitts(1983)]{tauchen1983} Tauchen, G. E., \& Pitts, M. (1983). The Price Variability--Volume Relationship on Speculative Markets. \textit{Econometrica}, 51(2), 485--505.
 
+\bibitem[Theiler et al.(1992)]{theiler1992} Theiler, J., Eubank, S., Longtin, A., Galdrikian, B., \& Farmer, J. D. (1992). Testing for Nonlinearity in Time Series: The Method of Surrogate Data. \textit{Physica D}, 58(1--4), 77--94.
+
 \bibitem[Vasicek(1976)]{vasicek1976} Vasicek, O. (1976). A Test for Normality Based on Sample Entropy. \textit{Journal of the Royal Statistical Society B}, 38(1), 54--59.
+
+\bibitem[Watanabe(1960)]{watanabe1960} Watanabe, S. (1960). Information Theoretical Analysis of Multivariate Correlation. \textit{IBM Journal of Research and Development}, 4(1), 66--82.
 
 \bibitem[Zhou, Cai \& Tong(2013)]{zhou2013} Zhou, R., Cai, R., \& Tong, G. (2013). Applications of Entropy in Finance: A Review. \textit{Entropy}, 15(11), 4909--4931.
 
 \end{thebibliography}
 
 \vspace{10pt}
-\noindent\footnotesize\textit{Note sur les versions.} \textbf{Cette version
-française est la version de référence.} Elle intègre des corrections d'exposition
-que la version anglaise \texttt{paper/main.tex} ne porte pas encore : séparation
-de la proposition sur le conditionnement en deux énoncés distincts (l'entropie
-conditionnelle moyenne baisse d'exactement $I(X;Y)$ ; le plafond de maximum
-d'entropie baisse au sens large sans quantification), levée des collisions de
-notation ($\Dun$ contre $\JJ$, $\sigma_\JJ$ contre $\eta$, $\mathcal{P}$ contre
-$N$), ajout d'un tableau de notations et des annexes A à E. Les résultats
-numériques sont inchangés et proviennent du même code
-(\texttt{python -m src.run\_empirical}). En cas de divergence entre les deux
-versions, c'est celle-ci qui fait foi jusqu'à ce que l'anglaise soit
-resynchronisée.
+\noindent\footnotesize\textit{Reproductibilité.} Chaque tableau et chaque figure
+est reproduit par le code d'accompagnement (\texttt{python -m src.run\_\allowbreak{}empirical},
+puis les scripts de \texttt{scripts/\allowbreak{}}). Une version anglaise de même contenu est
+disponible.
 
 \end{document}
