@@ -51,6 +51,9 @@ from scripts.episode_null import typology_of
 PANELS = {'ff49': 'config/default.yaml', 'sp500': 'config/sp500.yaml'}
 NULLS = {'iid': 1, 'block21': 21}
 SEED = 11
+# Version du code de calcul : un point de reprise d'une autre version est ignoré,
+# pour ne jamais mélanger d'anciens résultats avec ceux du code courant.
+CODE_VERSION = 'phase0-v1'
 # Le panel S&P 500 est livré dans calcul_local/data : aucun téléchargement.
 SP500_CSV = ICI / 'data' / 'sp500_prices.csv'
 FF49_ZIP = RACINE / 'data' / '49_Industry_Portfolios_daily_CSV.zip'
@@ -116,7 +119,7 @@ def run_task(panel: str, null: str, rep: int) -> dict:
     typo = typology_of(ent, threshold=thr, scale_window=sw, gap=40, pre=10, post_search=20)
     stats.update({f'H8_{k}': v for k, v in typo.items()})
     stats = {k: (float(v) if v is not None else None) for k, v in stats.items()}
-    return {'panel': panel, 'null': null, 'rep': rep, 'seconds': round(time.time() - t0, 1),
+    return {'code_version': CODE_VERSION, 'panel': panel, 'null': null, 'rep': rep, 'seconds': round(time.time() - t0, 1),
             'stats': stats}
 
 
@@ -167,11 +170,18 @@ def main() -> None:
     ckpt = out_dir / 'checkpoint.jsonl'
 
     done = set()
+    stale = 0
     if ckpt.exists():
         for line in ckpt.read_text(encoding='utf-8').splitlines():
             if line.strip():
                 r = json.loads(line)
+                if r.get('code_version') != CODE_VERSION:
+                    stale += 1
+                    continue
                 done.add((r['panel'], r['null'], r['rep']))
+    if stale:
+        print(f'ATTENTION : {stale} résultats d\'une ancienne version du code ignorés '
+              f'(point de reprise périmé). Ils seront recalculés.', flush=True)
 
     tasks = [(pa, 'observed', -1) for pa in panels]
     tasks += [(pa, nu, r) for pa in panels for nu in NULLS for r in range(n_rep)]
@@ -201,7 +211,8 @@ def main() -> None:
                       f'reste ~{eta / 3600:.1f} h', flush=True)
 
     # Assemblage : un CSV long (toutes les réplications), un résumé, les métadonnées.
-    recs = [json.loads(l) for l in ckpt.read_text(encoding='utf-8').splitlines() if l.strip()]
+    recs = [r for r in (json.loads(l) for l in ckpt.read_text(encoding='utf-8').splitlines()
+                        if l.strip()) if r.get('code_version') == CODE_VERSION]
     long = pd.DataFrame([{'panel': r['panel'], 'null': r['null'], 'rep': r['rep'],
                           'statistic': k, 'value': v}
                          for r in recs for k, v in r['stats'].items()])
@@ -212,7 +223,7 @@ def main() -> None:
 
     import scipy, sklearn, statsmodels
     info = {
-        'code_commit': _code_commit(),
+        'code_commit': _code_commit(), 'code_version': CODE_VERSION,
         'seed': SEED, 'n_rep': n_rep, 'panels': panels, 'nulls': NULLS,
         'jobs': args.jobs, 'test_mode': args.test,
         'wall_seconds_this_session': round(time.time() - t_start, 1),
