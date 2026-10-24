@@ -1,0 +1,7 @@
+measure,auroc_recession,auroc_12m_before_recession,auroc_recession_vol_orth,auroc_12m_before_vol_orth,corr_with_log_vol21
+h_dep,0.6176,0.4506,0.5408,0.4538,0.3673
+h_dep_devol,0.6889,0.3807,0.5966,0.3959,0.3752
+h_dep_rank,0.6808,0.4222,0.5920,0.4299,0.3430
+absorption_ratio,0.5804,0.4178,0.5275,0.4214,0.1474
+eig1_share,0.5912,0.4064,0.5032,0.4218,0.3762
+log_vol21,0.8417,0.5002,,,

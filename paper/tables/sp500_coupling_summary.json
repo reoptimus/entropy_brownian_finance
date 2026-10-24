@@ -1,0 +1,80 @@
+{
+  "n_dates": 8040,
+  "corr_levels": {
+    "h_dep": {
+      "h_dep": 1.0,
+      "h_dep_devol": 0.936,
+      "h_dep_rank": 0.953,
+      "absorption_ratio": 0.812,
+      "eig1_share": 0.952
+    },
+    "h_dep_devol": {
+      "h_dep": 0.936,
+      "h_dep_devol": 1.0,
+      "h_dep_rank": 0.983,
+      "absorption_ratio": 0.789,
+      "eig1_share": 0.939
+    },
+    "h_dep_rank": {
+      "h_dep": 0.953,
+      "h_dep_devol": 0.983,
+      "h_dep_rank": 1.0,
+      "absorption_ratio": 0.81,
+      "eig1_share": 0.937
+    },
+    "absorption_ratio": {
+      "h_dep": 0.812,
+      "h_dep_devol": 0.789,
+      "h_dep_rank": 0.81,
+      "absorption_ratio": 1.0,
+      "eig1_share": 0.779
+    },
+    "eig1_share": {
+      "h_dep": 0.952,
+      "h_dep_devol": 0.939,
+      "h_dep_rank": 0.937,
+      "absorption_ratio": 0.779,
+      "eig1_share": 1.0
+    }
+  },
+  "corr_21d_changes": {
+    "h_dep": {
+      "h_dep": 1.0,
+      "h_dep_devol": 0.791,
+      "h_dep_rank": 0.841,
+      "absorption_ratio": 0.682,
+      "eig1_share": 0.967
+    },
+    "h_dep_devol": {
+      "h_dep": 0.791,
+      "h_dep_devol": 1.0,
+      "h_dep_rank": 0.923,
+      "absorption_ratio": 0.546,
+      "eig1_share": 0.798
+    },
+    "h_dep_rank": {
+      "h_dep": 0.841,
+      "h_dep_devol": 0.923,
+      "h_dep_rank": 1.0,
+      "absorption_ratio": 0.555,
+      "eig1_share": 0.847
+    },
+    "absorption_ratio": {
+      "h_dep": 0.682,
+      "h_dep_devol": 0.546,
+      "h_dep_rank": 0.555,
+      "absorption_ratio": 1.0,
+      "eig1_share": 0.659
+    },
+    "eig1_share": {
+      "h_dep": 0.967,
+      "h_dep_devol": 0.798,
+      "h_dep_rank": 0.847,
+      "absorption_ratio": 0.659,
+      "eig1_share": 1.0
+    }
+  },
+  "external_indices": [
+    "STLFSI4"
+  ]
+}
