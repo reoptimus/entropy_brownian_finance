@@ -74,5 +74,7 @@
       "eig1_share": 1.0
     }
   },
-  "external_indices": []
+  "external_indices": [
+    "STLFSI4"
+  ]
 }

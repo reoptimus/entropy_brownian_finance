@@ -1,0 +1,10 @@
+regressors,n,r2,coef_h_dep,t_h_dep,index,coef_h_dep_devol,t_h_dep_devol,coef_h_dep_rank,t_h_dep_rank,coef_absorption_ratio,t_absorption_ratio,coef_eig1_share,t_eig1_share
+h_dep,548,0.1796,0.4238,4.9289,STLFSI4,,,,,,,,
+h_dep_devol,548,0.1203,,,STLFSI4,0.3469,6.1003,,,,,,
+h_dep_rank,548,0.1332,,,STLFSI4,,,0.3650,5.8065,,,,
+absorption_ratio,548,0.1469,,,STLFSI4,,,,,0.3833,5.5418,,
+eig1_share,548,0.2401,,,STLFSI4,,,,,,,0.4900,4.8161
+h_dep + h_dep_devol,548,0.1927,0.6966,2.1266,STLFSI4,-0.2957,-1.0450,,,,,,
+h_dep + h_dep_rank,548,0.2270,1.3809,1.9804,STLFSI4,,,-0.9815,-1.4995,,,,
+h_dep + absorption_ratio,548,0.1807,0.5091,2.3104,STLFSI4,,,,,-0.0915,-0.5296,,
+h_dep + eig1_share,548,0.2905,-0.9599,-2.0864,STLFSI4,,,,,,,1.4232,2.7620
