@@ -33,6 +33,7 @@ import yaml
 from src.empirical import DATA_READERS, rolling_measures
 from src.regimes import past_only_stress
 from src.jumps import detect_jumps, estimate_relaxation, jump_asymmetry
+from src.coupling import coupling_statistics
 
 
 def _slope(ent: pd.DataFrame, mask) -> float:
@@ -101,6 +102,9 @@ def statistics_of(ent: pd.DataFrame, logret: pd.DataFrame, threshold: float,
         # --- is J just volatility? ----------------------------------------------
         'corr_J_logvol': float(ent['J'].corr(np.log(signal.replace(0, np.nan)))),
     }
+    # --- phase A: coupling benchmark (only when the pipeline computed it) -----
+    if 'absorption_ratio' in ent.columns:
+        out.update(coupling_statistics(ent, logret, stress_quantile))
     return out
 
 
@@ -115,6 +119,8 @@ def main() -> None:
                         'the longer-horizon regime dynamics, which is the fairer '
                         'intermediate null for regime-based hypotheses.')
     p.add_argument('--seed', type=int, default=11)
+    p.add_argument('--coupling', action='store_true',
+                   help='Also compute the phase A coupling benchmark statistics.')
     p.add_argument('--out', default=None)
     args = p.parse_args()
 
@@ -127,7 +133,8 @@ def main() -> None:
               jump_method=est.get('jump_covariance', 'ewma'),
               halflife=float(est.get('ewma_halflife', 60)),
               shrinkage=float(est.get('ewma_shrinkage', 0.10)),
-              shape_estimator=est.get('shape_estimator', 'hyvarinen'))
+              shape_estimator=est.get('shape_estimator', 'hyvarinen'),
+              coupling=args.coupling)
     jcfg = cfg.get('jumps', {})
     threshold = float(jcfg.get('threshold', 4.0))
     scale_window = int(jcfg.get('scale_window', 250))

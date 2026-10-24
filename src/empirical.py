@@ -56,6 +56,7 @@ from .entropy import (
     gaussian_kl,
 )
 from .shape import entropy_deficit, structural_index, tail_dependence
+from .coupling import coupling_from_window, ewma_devolatilize
 
 DATA_READERS = {
     'ff49': lambda cfg: read_ff49_daily(cfg['data']['raw_file'], cfg['estimation']['exclude_other']),
@@ -74,6 +75,7 @@ def rolling_measures(
     shape_estimator: str = 'hyvarinen',
     tail_quantile: float = 0.05,
     flow_horizon: int = 21,
+    coupling: bool = False,
 ) -> pd.DataFrame:
     """Compute every entropy channel on a rolling window.
 
@@ -83,8 +85,13 @@ def rolling_measures(
     structural index and the flow measures: a box-car window makes an extreme
     observation *leaving* the sample look like an event, which would contaminate
     any jump test run on the resulting series.
+
+    ``coupling=True`` adds the phase A benchmark columns (absorption ratio,
+    first-eigenvalue share, devolatilised and rank versions of ``h_dep``; see
+    :mod:`src.coupling`).
     """
     X = logret.to_numpy()
+    Z = ewma_devolatilize(X) if coupling else None
     T, N = X.shape
     w_ewma = ewma_weights(window, halflife)
     uniform = np.full(window, 1.0 / window)
@@ -115,6 +122,8 @@ def rolling_measures(
         rec['J'] = structural_index(resp['h_dep'], shape['d_total'])
         rec['J_lw'] = structural_index(base['h_dep'], shape['d_total'])
         rec['tail_dep'] = tail_dependence(Xw, tail_quantile)
+        if coupling:
+            rec.update(coupling_from_window(cov_base, Xw, Z[end - window:end]))
 
         mu = weights @ Xw
         if prev_cov is not None:
