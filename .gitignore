@@ -19,3 +19,5 @@ paper/*.synctex.gz
 # Sorties du calcul local (seul le zip final est renvoyé)
 calcul_local/resultats/
 calcul_local/resultats_test/
+data/zone_euro/
+data/external/
