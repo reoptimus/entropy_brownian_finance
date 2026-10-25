@@ -1,0 +1,157 @@
+\documentclass[11pt]{article}
+\usepackage{amsmath,amssymb,amsthm,booktabs,geometry,graphicx}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[round,authoryear]{natbib}
+\usepackage[colorlinks=true,linkcolor=black,citecolor=black,urlcolor=blue!50!black]{hyperref}
+\geometry{margin=1in}
+\setlength{\emergencystretch}{2em}
+
+\newtheorem{proposition}{Proposition}
+\newtheorem{corollary}{Corollary}
+\newtheorem{assumption}{Assumption}
+\theoremstyle{definition}
+\newtheorem{postulate}{Postulate}
+\newtheorem{definition}{Definition}
+\theoremstyle{remark}
+\newtheorem*{remark}{Remark}
+
+\newcommand{\JJ}{\mathcal{J}}
+\newcommand{\DD}{\mathcal{D}}
+\newcommand{\Dun}{\mathcal{D}_1}
+\newcommand{\KL}[2]{D_{KL}\!\left(#1\,\Vert\,#2\right)}
+
+\title{Theoretical Supplement\\[4pt]
+\large Information-theoretic foundations of an entropic systemic-stress\\indicator: what the main paper leaves out}
+\author{Supplement to ``Entropy Jumps and Information Relaxation\\in Financial Markets''}
+\date{October 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+\noindent The main paper is refocused on a single object aimed at central banks:
+the dependence channel $-\tfrac12\log\det R$ of a multi-market panel, its exact
+decomposition into within-block and between-block terms, and the pricing in
+nats of published stress scenarios. This document collects everything that
+refocusing removes from the body of the paper, to serve as an appendix or to be
+supplied on request. It contains the bridge from maximum entropy in volume time
+to geometric Brownian motion, the decomposition of entropy into three channels
+and the structural index $\JJ=\KL{p}{\prod_i q_i}$, the jump-diffusion dynamics
+(one theorem, two postulates, and the Ornstein--Uhlenbeck structure forced by
+Doob's theorem), the empirical programme H1--H8 with its verdict against the
+calibrated nulls, and the full geometry of Kullback--Leibler-ball scenarios. Two
+results are new relative to arXiv~v1. The first is a block decomposition
+identity for the dependence channel, which links this document to the main
+paper. The second shows that the full-dimensional lift of a portfolio scenario
+that minimises the ambient divergence costs exactly the radius $\eta$ and has an
+asset-by-asset reading (the shock is carried by each asset's covariance with
+the portfolio), while the default uniform dilation costs $N$~times as much in
+variance. The second point corrects a remark in v1.
+\end{abstract}
+
+\tableofcontents
+
+\section*{Foreword: what this document contains, and why}
+\addcontentsline{toc}{section}{Foreword}
+
+\paragraph{How it relates to the main paper.} The October 2026 assessment found
+that a single result of arXiv~v1 clears both calibrated nulls on both panels:
+the regime gap of the dependence channel $H^{dep}=\tfrac12\log\det R$. Phase~A
+confirmed it in three forms (raw, Forbes--Rigobon devolatilised, rank-based) and
+showed that the absorption ratio of \citet{kritzman2011}, the benchmark measure
+of the same family, fails the block null on both panels. The main paper is
+therefore rebuilt around an ``entropic CISS'' in the sense of
+\citet{hollo2012}: the dependence channel of a multi-market panel, its
+within/between-block decomposition, central-bank-style validation, and the
+pricing of published scenarios in nats.
+
+Everything else leaves the body of the paper. Not because it is wrong: the
+mathematical results remain exact. It is because these elements are not needed
+for the indicator, or because they do not survive the nulls and therefore
+cannot ground a surveillance tool. Collecting them here serves two purposes. A
+referee who asks where the dependence channel comes from, and why it is this
+channel rather than the full structural index, finds the answer. A reader who
+wants to take up the theory of information dynamics finds the whole chain, with
+the exact status of each link.
+
+\paragraph{Status of each statement.} The document separates three categories
+and flags them throughout: \emph{theorems} (exact under their assumptions),
+\emph{postulates} (substantive, testable economic assumptions), and
+\emph{empirical findings} (with the null they clear or fail).
+Table~\ref{tab:statut} gives the map.
+
+\begin{table}[htbp]
+\centering
+\small
+\begin{tabular}{@{}p{5.0cm}p{3.0cm}p{4.6cm}l@{}}
+\toprule
+Item & Status & Empirical verdict & Section \\
+\midrule
+Gaussian maximum entropy & theorem & --- & \ref{sec:bridge} \\
+Volume bridge (MDH, subordinated Brownian motion) & argument under assumptions & not tested here & \ref{sec:bridge} \\
+Three-channel decomposition & exact identity & --- & \ref{sec:channels} \\
+Structural index $\JJ$ as a divergence & exact identity & range clears both nulls & \ref{sec:channels} \\
+Downward entropy jumps & theorem (on average) & not directly estimable & \ref{sec:dynamics} \\
+Relaxation (P1) & postulate & half-life not identified & \ref{sec:dynamics} \\
+One-sided constraint (P2) & postulate & not established (H5) & \ref{sec:dynamics} \\
+Tail--correlation coupling & consequence & not identified (H6) & \ref{sec:dynamics} \\
+Dependence channel under stress & finding & \textbf{clears both nulls} & \ref{sec:program}, \ref{sec:blocks} \\
+KL ball, $1$~nat $=\sqrt2\,\sigma$ & theorem & --- & \ref{sec:stress} \\
+Minimal lift (rank one) & theorem (new) & --- & \ref{sec:stress} \\
+Radius calibrated on the flow & rule & too mild against history & \ref{sec:stress} \\
+Block decomposition & identity (new here) & subject of the main paper & \ref{sec:blocks} \\
+\bottomrule
+\end{tabular}
+\caption{Map of the statements in this document and their status.}
+\label{tab:statut}
+\end{table}
+
+\paragraph{Provenance.} Sections~\ref{sec:bridge} to \ref{sec:dynamics} and
+Appendices~\ref{app:units} to \ref{app:mi} take up, with updated
+cross-references, the text of the reference French version
+(\texttt{paper/main\_fr.tex}), which supersedes \texttt{paper/main.tex} for
+the dynamics section and the appendices. Sections~\ref{sec:program} to
+\ref{sec:open} are written for this document. Every number quoted comes from the
+same code (\texttt{python -m src.run\_empirical}, two-hundred-replication nulls,
+Phase~A); none was recomputed for this supplement.
+
+\section*{Notation}
+\addcontentsline{toc}{section}{Notation}
+
+\noindent Two warnings before the table. First, differential entropy $h$
+\textbf{depends on units}: $h(aX)=h(X)+\log|a|$, so expressing returns in
+percent rather than decimals shifts $h$ by a constant. Divergences
+($\KL{\cdot}{\cdot}$, $I$, $\DD$, $\JJ$), by contrast, are invariant under any
+invertible change of variable: that is the reason for the structural index.
+Second, $K$ denotes kurtosis and ``KL'' stands for Kullback and Leibler; the two
+are unrelated.
+
+\begin{center}
+\small
+\begin{tabular}{@{}lll@{}}
+\toprule
+Symbol & Meaning & Nature \\
+\midrule
+$p_t$ & true conditional return distribution at $t$ & --- \\
+$q_t$ & Gaussian with the same mean and covariance as $p_t$ & --- \\
+$h(\cdot)$ & differential entropy & nats, \emph{unit-dependent} \\
+$\KL{p}{q}$ & Kullback--Leibler divergence & nats, invariant \\
+$\DD_t$ & entropy deficit $=\KL{p_t}{q_t}\ge0$ & nats, invariant \\
+$\Dun(z)$ & deficit of a standardised scalar (negentropy) & nats, invariant \\
+$H^{vol}_t$ & scale channel $=\sum_i\log\sigma_{i,t}$ & nats, \emph{unit-dependent} \\
+$H^{dep}_t$ & dependence channel $=\tfrac12\log\det R_t\le0$ & nats, invariant \\
+$H^{cov}_t$ & $H^{vol}_t+H^{dep}_t$; the constant $\tfrac N2\log2\pi e$ is omitted & nats \\
+$\JJ_t$ & structural index $=\DD_t-H^{dep}_t\ge0$ & nats, invariant \\
+$I(X;Y)$ & mutual information & nats, invariant \\
+$I^{(h)}_t$ & information flow $=\KL{p_t}{p_{t-h}}$ & nats \\
+$S$, $K$ & skewness, excess kurtosis & dimensionless \\
+$\Sigma_t=D_tR_tD_t$ & covariance, standard deviations, correlation & --- \\
+$\lambda_k$, $N^{\text{eff}}_t$ & eigenvalues of $R_t$, effective number of modes & $1\le N^{\text{eff}}\le N$ \\
+$\kappa$, $\sigma_\JJ$ & relaxation rate and diffusion coefficient of $\JJ$ & --- \\
+$\eta$ & radius of a stress scenario & nats \\
+$N$ & number of assets & --- \\
+\bottomrule
+\end{tabular}
+\end{center}
+

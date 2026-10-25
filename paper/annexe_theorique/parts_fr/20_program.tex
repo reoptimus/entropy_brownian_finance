@@ -1,0 +1,134 @@
+
+\section{Le programme empirique H1--H8 et ce que les témoins en laissent}
+\label{sec:program}
+
+Cette section résume, sans les reproduire, les estimateurs et les tests de la
+version arXiv~v1. Elle sert à une chose : expliquer pourquoi, de toute la
+théorie des sections~\ref{sec:bridge} à~\ref{sec:dynamics}, seul le canal de
+dépendance passe dans le papier principal.
+
+\subsection{Les huit hypothèses}
+
+\begin{description}
+\item[H1 (signature de régime).] Sous stress, $H^{dep}$ baisse, $\DD$ monte, et
+donc $\JJ$ monte.
+\item[H2 (compensation partielle).] $\Delta H^{dep}_t=-\beta\,\Delta H^{vol}_t+u_t$
+avec $\beta>0$, et $\beta_{\text{stress}}>\beta_{\text{calme}}$.
+\item[H3 (asymétrie des sauts).] Les variations de $\JJ$ sont unilatérales,
+au-delà de ce que produit le même estimateur sur des données sans structure
+temporelle.
+\item[H4 (relaxation).] $\JJ$ revient à la moyenne avec une demi-vie plus longue
+que la mémoire de l'estimateur.
+\item[H5 (signature d'asymétrie).] Les sauts positifs de $\JJ$ coïncident avec
+une asymétrie négative du facteur de marché (postulat~P\ref{p:sign}).
+\item[H6 (couplage des canaux).] Dépendance et forme sont faiblement couplées en
+marché calme, fortement sous stress.
+\item[H7 (pouvoir prédictif).] L'entropie d'aujourd'hui améliore, hors
+échantillon, la prévision du risque à 21~jours par rapport à la volatilité.
+\item[H8 (composition du budget de crise).] Regroupés en épisodes, les sauts ont
+plus souvent le canal de dépendance pour contributeur dominant qu'un
+rééchantillonnage sans mémoire.
+\end{description}
+
+\paragraph{Estimation, en une phrase.} Fenêtres glissantes de 252~jours,
+covariance rétrécie à la \citet{ledoit2004}, déficit marginal par
+l'approximation de \citet{hyvarinen1998} plutôt que par le développement
+d'Edgeworth~\eqref{eq:edgeworth} (inutilisable sur des rendements quotidiens),
+régime de stress défini par un seuil de volatilité calculé sur le passé
+seulement, sauts détectés par un filtre à quatre sigmas sur $\Delta\JJ$.
+
+\subsection{Pourquoi un témoin calibré est indispensable}
+
+Le point théorique qui gouverne toute la lecture des résultats est le suivant.
+$\JJ$ est une fonctionnelle \emph{convexe et positive} des moments d'ordre deux à
+quatre estimés sur une fenêtre. Quand une observation à queue épaisse entre dans
+la fenêtre, les moments estimés sautent, et la fonctionnelle convexe saute
+\emph{vers le haut} quel que soit le signe de l'observation. Quand
+l'observation vieillit (pondération exponentielle) ou sort de la fenêtre, la
+fonctionnelle redescend graduellement. L'appareil de mesure fabrique donc, à
+lui seul, la dent de scie que prédisent la proposition~\ref{prop:conditioning}
+et le postulat~P\ref{p:relax}. Une simulation gaussienne i.i.d., sans aucun
+événement, produit déjà une demi-vie apparente de 35~jours et 37~sauts positifs
+contre aucun négatif au filtre à quatre sigmas.
+
+D'où deux témoins, construits en rééchantillonnant la matrice de rendements
+observée et en faisant tourner la chaîne identique deux cents fois : le témoin
+\emph{i.i.d.} (lignes tirées indépendamment, queues marginales et dépendance
+transversale conservées, toute chronologie détruite) et le témoin \emph{par
+blocs} de 21~jours (qui conserve en outre le regroupement de volatilité). Une
+statistique qui franchit les deux est une preuve ; une statistique qui en
+franchit un seul n'est pas identifiée.
+
+\subsection{Le verdict}
+
+\begin{table}[htbp]
+\centering
+\small
+\begin{tabular}{@{}llrrrl@{}}
+\toprule
+& Statistique & Données & i.i.d. & blocs-21 & Verdict \\
+\midrule
+H1 & écart de régime $H^{dep}$ & $-0{,}99$ & $-0{,}21$ & $-0{,}51$ & \textbf{franchit les deux} \\
+H1 & écart de régime $\JJ$ & $1{,}93$ & $2{,}14$ & $1{,}97$ & échoue aux deux \\
+H1 & écart de régime $\DD$ & $0{,}27$ & $1{,}25$ & $0{,}65$ & à contre-sens \\
+H2 & $\beta$ (stress) & $0{,}20$ & $0{,}05$ & $0{,}11$ & échoue aux deux \\
+H3 & sauts positifs & $158$ & $148{,}5$ & $133{,}2$ & blocs seulement \\
+H3 & asymétrie de $\Delta\JJ$ & $12{,}26$ & $14{,}80$ & $12{,}97$ & à contre-sens \\
+H4 & demi-vie (jours) & $120{,}8$ & $92{,}1$ & $162{,}8$ & entre les deux \\
+H4 & étendue de $\JJ$ & $18{,}95$ & $10{,}05$ & $13{,}77$ & \textbf{franchit les deux} \\
+H5 & $\mathrm{corr}(\Delta\JJ,\Delta S_{mkt})$ & $-0{,}24$ & $-0{,}04$ & $-0{,}07$ & échoue aux deux \\
+H6 & écart de couplage & $0{,}59$ & $0{,}77$ & $0{,}67$ & à contre-sens \\
+H7 & gain hors échantillon & \multicolumn{3}{c}{aucun sur deux panels} & rejetée \\
+H8 & part d'épisodes à dominante dépendance & $46\,\%$ & $19$--$33\,\%$ & n.i. & i.i.d.\ seulement \\
+\bottomrule
+\end{tabular}
+\caption{Verdicts face aux témoins (moyennes de deux cents réplications),
+panel principal de vingt titres du S\&P~500, 1990--2022. Source :
+\texttt{paper/tables/tab\_placebo\_sp500.tex} et sections H7--H8 de la v1.
+n.i.\ : non identifié, à toute longueur de bloc testée entre 5 et 126~jours.}
+\label{tab:program}
+\end{table}
+
+Deux statistiques franchissent les deux témoins sur le panel principal, et une
+seule se reproduit sur les 48~portefeuilles sectoriels de Kenneth French :
+l'écart de régime du canal de dépendance ($-3{,}65$~nats contre $-0{,}56$ et
+$-2{,}46$). La phase~A l'a ensuite durci : il tient en version dévolatilisée
+(Forbes--Rigobon) et en version en rangs, cette dernière étant la plus forte
+face au témoin par blocs ($p=0{,}03$ sur le S\&P~500, $0{,}01$ sur les secteurs),
+alors que le ratio d'absorption de \citet{kritzman2011} échoue au témoin par
+blocs sur les deux panels.
+
+\subsection{Ce que le verdict dit de la théorie}
+
+Il faut séparer ce que le verdict touche et ce qu'il ne touche pas.
+
+\paragraph{Ce qui n'est pas touché.} Les énoncés des
+sections~\ref{sec:bridge} et~\ref{sec:channels} sont des identités et des
+théorèmes. La proposition~\ref{prop:conditioning} aussi. Aucun résultat empirique
+ne peut les réfuter ; il peut seulement montrer que les estimateurs disponibles
+ne permettent pas de les voir à l'\oe uvre.
+
+\paragraph{Ce qui est touché.} Les deux postulats. P\ref{p:relax} n'est soutenu
+que par l'amplitude (l'étendue de $\JJ$), pas par un taux de relaxation : la
+demi-vie se situe entre les deux témoins et son niveau dépend du témoin
+choisi. P\ref{p:sign} n'est pas établi (H5). Le couplage des canaux (H6), que la
+section~\ref{sec:dynamics} dérivait du caractère commun de la nouvelle, est
+reproduit et même dépassé par des données rééchantillonnées.
+
+\paragraph{Pourquoi le canal de dépendance survit.} Une explication
+vraisemblable, cohérente avec la phase~A, tient à la forme de l'estimateur.
+$\tfrac12\log\det R=\tfrac12\sum_k\log\lambda_k$ pèse tout le spectre de la
+matrice de corrélation, y compris les petites valeurs propres, qui s'effondrent
+quand la coupe transversale se couple sur quelques modes collectifs. Un seul
+gros rendement isolé déplace peu ces petites valeurs propres. À l'inverse, le
+canal de forme $\DD$ réagit fortement à une seule observation extrême, ce qui
+est exactement la signature que reproduit le témoin. Les mesures de
+concentration (ratio d'absorption, part de la première valeur propre) ne
+regardent que le haut du spectre, où le témoin par blocs les rattrape.
+
+\paragraph{Conséquence pour le papier principal.} L'indicateur retient le seul
+canal identifié, en abandonnant $\DD$ et donc $\JJ$. La théorie des
+sections~\ref{sec:channels} et~\ref{sec:dynamics} reste la justification de
+\emph{pourquoi} ce canal mesure une information partagée (la
+multi-information gaussienne, équation~\eqref{eq:ceiling} et annexe~\ref{app:gauss}),
+mais la dynamique postulée n'est pas utilisée.

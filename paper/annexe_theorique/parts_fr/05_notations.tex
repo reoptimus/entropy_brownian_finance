@@ -1,0 +1,39 @@
+\section*{Notations}
+\addcontentsline{toc}{section}{Notations}
+
+\noindent Deux mises en garde avant le tableau. D'abord, l'entropie
+différentielle $h$ \textbf{dépend des unités} : $h(aX)=h(X)+\log|a|$, de sorte
+qu'exprimer les rendements en pourcentages plutôt qu'en décimales déplace $h$
+d'une constante. Les divergences ($\KL{\cdot}{\cdot}$, $I$, $\DD$, $\JJ$) sont au
+contraire invariantes par tout changement de variable inversible : c'est la
+raison d'être de l'indice structurel. Ensuite, $K$ désigne un kurtosis et les
+lettres \og KL \fg{} sont les initiales de Kullback et Leibler ; il n'y a aucun
+lien entre les deux.
+
+\begin{center}
+\small
+\begin{tabular}{@{}lll@{}}
+\toprule
+Symbole & Signification & Nature \\
+\midrule
+$p_t$ & loi conditionnelle vraie des rendements en $t$ & --- \\
+$q_t$ & gaussienne de mêmes moyenne et covariance que $p_t$ & --- \\
+$h(\cdot)$ & entropie différentielle & nats, \emph{dépend des unités} \\
+$\KL{p}{q}$ & divergence de Kullback--Leibler & nats, invariante \\
+$\DD_t$ & déficit d'entropie $=\KL{p_t}{q_t}\ge0$ & nats, invariante \\
+$\Dun(z)$ & déficit d'un scalaire standardisé (néguentropie) & nats, invariante \\
+$H^{vol}_t$ & canal d'échelle $=\sum_i\log\sigma_{i,t}$ & nats, \emph{dépend des unités} \\
+$H^{dep}_t$ & canal de dépendance $=\tfrac12\log\det R_t\le0$ & nats, invariante \\
+$H^{cov}_t$ & $H^{vol}_t+H^{dep}_t$ ; la constante $\tfrac N2\log2\pi e$ est omise & nats \\
+$\JJ_t$ & indice structurel $=\DD_t-H^{dep}_t\ge0$ & nats, invariante \\
+$I(X;Y)$ & information mutuelle & nats, invariante \\
+$I^{(h)}_t$ & flux d'information $=\KL{p_t}{p_{t-h}}$ & nats \\
+$S$, $K$ & asymétrie, kurtosis excédentaire & sans dimension \\
+$\Sigma_t=D_tR_tD_t$ & covariance, écarts types, corrélation & --- \\
+$\lambda_k$, $N^{\text{eff}}_t$ & valeurs propres de $R_t$, nombre effectif de modes & $1\le N^{\text{eff}}\le N$ \\
+$\kappa$, $\sigma_\JJ$ & taux de relaxation et coefficient de diffusion de $\JJ$ & --- \\
+$\eta$ & rayon d'un scénario de stress & nats \\
+$N$ & nombre d'actifs & --- \\
+\bottomrule
+\end{tabular}
+\end{center}

@@ -1,0 +1,130 @@
+
+\section{The H1--H8 empirical programme and what the nulls leave of it}
+\label{sec:program}
+
+This section summarises, without reproducing them, the estimators and tests of
+arXiv~v1. It serves one purpose: to explain why, of all the theory in
+Sections~\ref{sec:bridge} to~\ref{sec:dynamics}, only the dependence channel
+makes it into the main paper.
+
+\subsection{The eight hypotheses}
+
+\begin{description}
+\item[H1 (regime signature).] Under stress, $H^{dep}$ falls, $\DD$ rises, and so
+$\JJ$ rises.
+\item[H2 (partial compensation).] $\Delta H^{dep}_t=-\beta\,\Delta H^{vol}_t+u_t$
+with $\beta>0$, and $\beta_{\text{stress}}>\beta_{\text{calm}}$.
+\item[H3 (jump asymmetry).] Changes in $\JJ$ are one-sided, beyond what the same
+estimator produces on data with no temporal structure.
+\item[H4 (relaxation).] $\JJ$ mean-reverts with a half-life longer than the
+estimator's own memory.
+\item[H5 (skewness signature).] Positive jumps in $\JJ$ coincide with negative
+skewness of the market factor (Postulate~P\ref{p:sign}).
+\item[H6 (channel coupling).] Dependence and shape are weakly coupled in calm
+markets and strongly coupled under stress.
+\item[H7 (predictive power).] Today's entropy improves, out of sample, the
+forecast of 21-day risk relative to volatility.
+\item[H8 (composition of the crisis budget).] Grouped into episodes, jumps have
+the dependence channel as their dominant contributor more often than a
+memoryless resampling does.
+\end{description}
+
+\paragraph{Estimation, in one sentence.} Rolling 252-day windows,
+\citet{ledoit2004} shrinkage covariance, marginal deficit via the
+\citet{hyvarinen1998} approximation rather than the Edgeworth
+expansion~\eqref{eq:edgeworth} (unusable on daily returns), stress regime
+defined by a volatility threshold computed on the past only, jumps detected by a
+four-sigma filter on $\Delta\JJ$.
+
+\subsection{Why a calibrated null is indispensable}
+
+The theoretical point that governs the whole reading of the results is the
+following. $\JJ$ is a \emph{convex, non-negative} functional of second- to
+fourth-order moments estimated over a window. When a fat-tailed observation
+enters the window, the estimated moments jump, and the convex functional jumps
+\emph{up} whatever the sign of the observation. As the observation ages
+(exponential weighting) or leaves the window, the functional comes down
+gradually. The measuring device therefore manufactures, on its own, the
+sawtooth predicted by Proposition~\ref{prop:conditioning} and
+Postulate~P\ref{p:relax}. An i.i.d.\ Gaussian simulation with no events at all
+already yields an apparent half-life of 35~days and 37~positive jumps against
+none negative under the four-sigma filter.
+
+Hence two nulls, built by resampling the observed return matrix and running the
+identical pipeline two hundred times: the \emph{i.i.d.} null (rows drawn
+independently; marginal fat tails and cross-sectional dependence kept, all
+chronology destroyed) and the 21-day \emph{block} null (which also keeps
+volatility clustering). A statistic that clears both is evidence; one that
+clears only one is not identified.
+
+\subsection{The verdict}
+
+\begin{table}[htbp]
+\centering
+\small
+\begin{tabular}{@{}llrrrl@{}}
+\toprule
+& Statistic & Data & i.i.d. & block-21 & Verdict \\
+\midrule
+H1 & regime gap $H^{dep}$ & $-0.99$ & $-0.21$ & $-0.51$ & \textbf{clears both} \\
+H1 & regime gap $\JJ$ & $1.93$ & $2.14$ & $1.97$ & fails both \\
+H1 & regime gap $\DD$ & $0.27$ & $1.25$ & $0.65$ & wrong-signed \\
+H2 & $\beta$ (stress) & $0.20$ & $0.05$ & $0.11$ & fails both \\
+H3 & positive jumps & $158$ & $148.5$ & $133.2$ & block only \\
+H3 & skewness of $\Delta\JJ$ & $12.26$ & $14.80$ & $12.97$ & wrong-signed \\
+H4 & half-life (days) & $120.8$ & $92.1$ & $162.8$ & between the two \\
+H4 & range of $\JJ$ & $18.95$ & $10.05$ & $13.77$ & \textbf{clears both} \\
+H5 & $\mathrm{corr}(\Delta\JJ,\Delta S_{mkt})$ & $-0.24$ & $-0.04$ & $-0.07$ & fails both \\
+H6 & coupling gap & $0.59$ & $0.77$ & $0.67$ & wrong-signed \\
+H7 & out-of-sample gain & \multicolumn{3}{c}{none on two panels} & rejected \\
+H8 & share of dependence-led episodes & $46\%$ & $19$--$33\%$ & n.i. & i.i.d.\ only \\
+\bottomrule
+\end{tabular}
+\caption{Verdicts against the nulls (means over two hundred replications),
+main panel of twenty S\&P~500 stocks, 1990--2022. Source:
+\texttt{paper/tables/tab\_placebo\_sp500.tex} and the H7--H8 sections of v1.
+n.i.: not identified, at every block length tested between 5 and 126~days.}
+\label{tab:program}
+\end{table}
+
+Two statistics clear both nulls on the main panel, and only one replicates on
+Kenneth French's 48 industry portfolios: the regime gap of the dependence
+channel ($-3.65$~nats against $-0.56$ and $-2.46$). Phase~A then hardened it: it
+holds in devolatilised (Forbes--Rigobon) and rank-based form, the latter being
+the strongest against the block null ($p=0.03$ on the S\&P~500, $0.01$ on the
+industries), whereas the \citet{kritzman2011} absorption ratio fails the block
+null on both panels.
+
+\subsection{What the verdict says about the theory}
+
+One must separate what the verdict touches from what it does not.
+
+\paragraph{What is untouched.} The statements of Sections~\ref{sec:bridge}
+and~\ref{sec:channels} are identities and theorems. So is
+Proposition~\ref{prop:conditioning}. No empirical result can refute them; it can
+only show that the available estimators do not let us see them at work.
+
+\paragraph{What is touched.} The two postulates. P\ref{p:relax} is supported only
+by amplitude (the range of $\JJ$), not by a relaxation rate: the half-life lies
+between the two nulls and its level depends on the null chosen. P\ref{p:sign} is
+not established (H5). Channel coupling (H6), which Section~\ref{sec:dynamics}
+derived from the common nature of news, is reproduced and even exceeded by
+resampled data.
+
+\paragraph{Why the dependence channel survives.} A plausible explanation,
+consistent with Phase~A, lies in the form of the estimator.
+$\tfrac12\log\det R=\tfrac12\sum_k\log\lambda_k$ weighs the whole spectrum of the
+correlation matrix, including the small eigenvalues, which collapse when the
+cross-section couples onto a few collective modes. A single large isolated return
+barely moves those small eigenvalues. The shape channel $\DD$, by contrast,
+reacts strongly to a single extreme observation, which is exactly the signature
+the null reproduces. Concentration measures (absorption ratio, first-eigenvalue
+share) look only at the top of the spectrum, where the block null catches up
+with them.
+
+\paragraph{Consequence for the main paper.} The indicator keeps the one
+identified channel and drops $\DD$, and hence $\JJ$. The theory of
+Sections~\ref{sec:channels} and~\ref{sec:dynamics} remains the justification of
+\emph{why} this channel measures shared information (the Gaussian
+multi-information, equation~\eqref{eq:ceiling} and Appendix~\ref{app:gauss}),
+but the postulated dynamics is not used.

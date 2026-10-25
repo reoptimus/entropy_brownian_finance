@@ -1,0 +1,133 @@
+
+\section{Le pont vers le papier principal : décomposition par blocs}
+\label{sec:blocks}
+
+Cette section relie la théorie qui précède à l'indicateur du papier principal.
+Elle établit l'identité sur laquelle repose la \og carte de contagion \fg{} et
+montre où le canal de dépendance se place dans l'indice structurel.
+
+\subsection{L'identité}
+
+Partitionnons les $N$ séries en $B$ blocs (par exemple les segments du CISS :
+monétaire, obligataire, actions, intermédiaires financiers, change), et notons
+$R_{bb}$ les blocs diagonaux de la matrice de corrélation $R$ et
+$R_D=\operatorname{diag}(R_{11},\dots,R_{BB})$.
+
+\begin{proposition}[Décomposition intra/inter-blocs]
+\label{prop:blocks}
+\begin{equation}
+\label{eq:blocks}
+\underbrace{-\tfrac12\log\det R}_{\text{dépendance totale}}
+\;=\;\sum_{b=1}^{B}\underbrace{\left(-\tfrac12\log\det R_{bb}\right)}_{\text{intra-bloc }b}
+\;+\;\underbrace{\left(-\tfrac12\log\det\big(R_D^{-1/2}RR_D^{-1/2}\big)\right)}_{\text{inter-blocs}} ,
+\end{equation}
+et chacun des $B+1$ termes est positif ou nul. Le terme inter-blocs est la
+multi-information gaussienne entre les blocs,
+$\KL{\mathcal N(0,R)}{\bigotimes_b\mathcal N(0,R_{bb})}$ ; il est nul si et
+seulement si les blocs sont deux à deux non corrélés.
+\end{proposition}
+
+\begin{proof}
+$R=R_D^{1/2}\,\big(R_D^{-1/2}RR_D^{-1/2}\big)\,R_D^{1/2}$ et le déterminant est
+multiplicatif, donc $\log\det R=\log\det R_D+\log\det(R_D^{-1/2}RR_D^{-1/2})$, avec
+$\log\det R_D=\sum_b\log\det R_{bb}$. Chaque $R_{bb}$ est une matrice de
+corrélation, donc $-\tfrac12\log\det R_{bb}\ge0$ par l'inégalité de Hadamard
+(annexe~\ref{app:gauss}). La matrice $\tilde R=R_D^{-1/2}RR_D^{-1/2}$ a des blocs
+diagonaux égaux à l'identité, donc une diagonale unité, et Hadamard s'applique
+encore. Enfin la proposition~\ref{prop:klgauss} avec $\mu_1=\mu_0$,
+$\Sigma_1=R$, $\Sigma_0=R_D$ donne
+$\tfrac12[\operatorname{tr}(R_D^{-1}R)-N-\log\det(R_D^{-1}R)]$, et
+$\operatorname{tr}(R_D^{-1}R)=\sum_b\operatorname{tr}(I)=N$.
+\end{proof}
+
+\paragraph{Deux blocs : les corrélations canoniques.} Pour $B=2$, en notant
+$C=R_{11}^{-1/2}R_{12}R_{22}^{-1/2}$ et $\rho_1,\dots,\rho_k$ ses valeurs
+singulières (les corrélations canoniques entre les deux blocs),
+$\det\tilde R=\det(I-CC^\top)=\prod_j(1-\rho_j^2)$ et le terme inter-blocs vaut
+$-\tfrac12\sum_j\log(1-\rho_j^2)$. C'est l'information mutuelle gaussienne
+entre les deux segments, somme des informations portées par chaque paire
+canonique. Pour $B>2$, l'identité~\eqref{eq:blocks} s'applique de façon
+emboîtée et permet d'attribuer la contagion à des paires ou des groupes de
+segments par règle de chaînage.
+
+\subsection{Où se place le canal de dépendance dans l'indice structurel}
+
+La règle de chaînage de l'annexe~\ref{app:index} écrit
+$\JJ=\sum_i\Dun(x_i)+I(x)$. En remplaçant la multi-information $I(x)$ par sa
+part gaussienne $-H^{dep}$ et en appliquant~\eqref{eq:blocks} :
+\begin{equation}
+\label{eq:jblocks}
+\JJ\;\approx\;\underbrace{\sum_i\Dun(x_i)}_{\text{forme}}
+\;+\;\underbrace{\sum_b\left(-\tfrac12\log\det R_{bb}\right)}_{\text{intra}}
+\;+\;\underbrace{\left(-\tfrac12\log\det\tilde R\right)}_{\text{inter}} .
+\end{equation}
+Le papier principal conserve les deux derniers termes et abandonne le premier,
+qui est celui que le témoin reproduit (section~\ref{sec:program}). Le CISS
+entropique est donc l'indice structurel amputé de son canal de forme, et sa
+décomposition est exacte, sans approximation, parce qu'elle ne porte que sur la
+partie gaussienne.
+
+\subsection{Trois propriétés utiles à l'indicateur}
+
+\paragraph{Invariance d'échelle.} Les termes de~\eqref{eq:blocks} ne dépendent
+que de $R$ : ils sont invariants à toute remise à l'échelle série par série,
+ce qui permet d'agréger des marchés aux volatilités très différentes sans
+pondération ad hoc. La dévolatilisation de \citet{forbes2002} n'agit donc pas
+sur la formule mais sur le biais de l'\emph{estimateur} de $R$ en période
+d'hétéroscédasticité.
+
+\paragraph{Version en rangs.} En remplaçant $R$ par la corrélation des scores
+normaux $\Phi^{-1}(\hat F_i(x_i))$, on estime la multi-information d'une copule
+gaussienne. La quantité devient invariante à toute transformation monotone des
+marges, ce qui explique sa robustesse aux queues observée en phase~A.
+
+\paragraph{Normalisation en $N$.} Pour une corrélation constante $\rho$,
+$\det R=(1-\rho)^{N-1}\big(1+(N-1)\rho\big)$, de sorte que $-H^{dep}$ croît à peu
+près linéairement en $N$. Diviser par $N-1$, ou rapporter la valeur à la
+corrélation constante équivalente $\rho^\star$ qui donne le même déterminant,
+rend l'indicateur comparable d'un panel à l'autre. Pour $\rho^\star$ petit,
+$-H^{dep}\approx\tfrac14N(N-1)\rho^{\star2}$.
+
+\section{Indicateurs de suivi et solvabilité en assurance}
+\label{sec:monitoring}
+
+\paragraph{Deux indicateurs de la v1.} La séparation saut/diffusion livrait deux
+quantités quotidiennes : la composante de saut positif standardisée de $\JJ$
+(quelle quantité d'information est arrivée aujourd'hui) et $\JJ_t$ rapporté à
+son maximum glissant (quelle part n'est pas encore résorbée). Ni l'un ni l'autre
+n'améliore la prévision de la volatilité (H7), et tous deux reposent sur des
+statistiques que le témoin n'identifie pas. Ils ne sont pas repris.
+
+\paragraph{Assurance.} Trois liens restent valables en principe. Un scénario en
+boule d'entropie produit une loi stressée complète, objet naturel pour l'ORSA.
+La décomposition des bundles classiques concerne la formule standard de
+Solvabilité~II, dont le crédit de diversification repose sur une matrice de
+corrélation fixe. Enfin les mesures de risque entropiques sont cohérentes
+\citep{ahmadijavid2012,artzner1999}. Rien n'a cependant été testé sur des
+passifs, et les panels courts et peu fréquents des données d'assurance mettraient
+à mal chacun des estimateurs employés.
+
+\section{Questions ouvertes}
+\label{sec:open}
+
+\begin{enumerate}
+\item \textbf{Arrivées auto-excitantes.} Le regroupement des sauts observé dans
+l'étude d'événement de la v1 contredit la mesure de Poisson de~\eqref{eq:ou}.
+Un processus de Hawkes est la spécification suivante.
+\item \textbf{Positivité.} $\JJ\ge0$ alors qu'un Ornstein--Uhlenbeck à terme
+brownien peut devenir négatif. Il faudrait soit supprimer $\sigma_\JJ$ (forme
+pure de \citealt{bns2001}), soit modéliser $\log\JJ$.
+\item \textbf{Dépendance de queue non linéaire.} $\JJ$ et le canal de dépendance
+ne voient que la part gaussienne de la multi-information. Une estimation de la
+multi-information de copule complète (par exemple par plus proches voisins sur
+les rangs) mesurerait ce qui manque, au prix d'une variance d'estimation bien
+plus forte.
+\item \textbf{Queue du flux d'information.} Au-delà d'une vingtaine d'années,
+les quantiles de $I^{(h)}$ sont extrapolés. Un ajustement de Pareto généralisée
+serait la correction disciplinée.
+\item \textbf{Relèvement minimal et scénarios publiés.} La
+proposition~\ref{prop:lift} donne un étalon : pour tout scénario publié, le
+rapport entre son prix ambiant et le prix minimal $g(u,v)$ de sa projection
+mesure combien d'information il dépense hors de la direction qui compte pour le
+portefeuille. C'est un prolongement direct de l'audit du papier principal.
+\end{enumerate}

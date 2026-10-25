@@ -1,0 +1,220 @@
+
+\section{The geometry of Kullback--Leibler-ball scenarios}
+\label{sec:stress}
+
+The main paper keeps the simplest use of this geometry: pricing a published
+scenario in nats, which for a pure mean shift is half the squared Mahalanobis
+distance. This section gives the full construction of which that use is a
+special case, with the proofs that v1 only stated, and a new result on lifting a
+portfolio scenario to full dimension.
+
+\subsection{Divergence between two Gaussians}
+
+\begin{proposition}[Closed form]
+\label{prop:klgauss}
+For $p_1=\mathcal N(\mu_1,\Sigma_1)$ and $p_0=\mathcal N(\mu_0,\Sigma_0)$ on
+$\mathbb R^N$, with $\delta=\mu_1-\mu_0$,
+\begin{equation}
+\label{eq:klgauss}
+\KL{p_1}{p_0}=\tfrac12\Big[\underbrace{\delta^\top\Sigma_0^{-1}\delta}_{\text{shift}}
++\underbrace{\operatorname{tr}(\Sigma_0^{-1}\Sigma_1)-N-\log\det(\Sigma_0^{-1}\Sigma_1)}_{\text{deformation}}\Big].
+\end{equation}
+\end{proposition}
+
+\begin{proof}
+$\KL{p_1}{p_0}=\mathbb E_{p_1}[\log p_1-\log p_0]$. Both logarithms are
+quadratic; the trace trick of Appendix~\ref{app:gauss} gives
+$\mathbb E_{p_1}[(X-\mu_1)^\top\Sigma_1^{-1}(X-\mu_1)]=N$ and
+$\mathbb E_{p_1}[(X-\mu_0)^\top\Sigma_0^{-1}(X-\mu_0)]
+=\operatorname{tr}(\Sigma_0^{-1}\Sigma_1)+\delta^\top\Sigma_0^{-1}\delta$.
+Collect with the $\log\det$ terms.
+\end{proof}
+
+The shift term is half the squared Mahalanobis distance: this is the unit in
+which the main paper audits published scenarios. The deformation term is
+non-negative and zero if and only if $\Sigma_1=\Sigma_0$; writing $\nu_k$ for
+the eigenvalues of $\Sigma_0^{-1}\Sigma_1$, it equals
+$\tfrac12\sum_k(\nu_k-1-\log\nu_k)$, a sum of non-negative terms, one per
+eigendirection.
+
+\subsection{The projected ball and the exchange rate}
+
+\begin{definition}[Entropy-ball scenario]
+Given today's conditional law $p_0$ and a severity $\eta>0$, the severity-$\eta$
+scenario for a risk functional $\rho$ is
+\begin{equation}
+\label{eq:ball}
+p^\star_\eta=\arg\max_{p\,:\,\KL{p}{p_0}\le\eta}\rho(p).
+\end{equation}
+\end{definition}
+
+For a linear portfolio $w^\top r$ with mean $m_0$ and standard deviation $s_0$
+under $p_0$, set $u=(m-m_0)/s_0$ and $v=s/s_0$. By
+Proposition~\ref{prop:klgauss} in one dimension,
+\begin{equation}
+\label{eq:g}
+g(u,v)=\tfrac12\left(u^2+v^2-1-2\log v\right).
+\end{equation}
+
+\begin{proposition}[Solution of the projected ball]
+\label{prop:ballsol}
+For $\rho=-m+c\,s$ with $c\ge0$ (Gaussian VaR and expected shortfall are of this
+form), the maximum of $\rho$ subject to $g(u,v)\le\eta$ is attained on the
+boundary $g=\eta$ at a point satisfying
+\begin{equation*}
+u=-t,\qquad v-v^{-1}=c\,t,\qquad t>0 .
+\end{equation*}
+For $c=0$: $v=1$ and $u=-\sqrt{2\eta}$. \emph{A purely directional scenario of
+$\eta$~nats is a move of $\sqrt{2\eta}$~sigmas}; one nat buys
+$\sqrt2\approx1.41$~sigma, and $k$~sigmas cost $k^2/2$~nats.
+\end{proposition}
+
+\begin{proof}
+$g$ is convex on $\mathbb R\times(0,\infty)$ (the sum of $u^2/2$ and
+$(v^2-1-2\log v)/2$, whose second derivative is $1+v^{-2}>0$) and the objective
+$s_0(-u+cv)$ is linear, so the Karush--Kuhn--Tucker conditions are sufficient.
+The objective has no interior maximum, so the constraint binds. The Lagrangian
+gives $-1=\lambda u$ and $c=\lambda(v-v^{-1})$ with $\lambda>0$; setting
+$t=1/\lambda$ yields the stated system, and $t$ is pinned down by
+$g(-t,v(t))=\eta$. For $c=0$, $v-v^{-1}=0$ forces $v=1$ and $g=u^2/2=\eta$.
+\end{proof}
+
+\subsection{From the portfolio to full dimension}
+
+The ball~\eqref{eq:ball} is solved on the portfolio's law, but a stress test must
+say how each asset moves. Two facts settle the question.
+
+\begin{proposition}[Data processing]
+\label{prop:dpi}
+For any law $p$ on $\mathbb R^N$, with $p^w$ and $p_0^w$ the laws of $w^\top r$
+under $p$ and $p_0$,
+$\KL{p^w}{p_0^w}\le\KL{p}{p_0}$.
+\end{proposition}
+
+This is the data-processing inequality \citep{cover2006} applied to the map
+$r\mapsto w^\top r$. The \emph{ambient} price of a scenario (in full dimension)
+is therefore always at least its \emph{portfolio} price (in projection). The
+classical-bundle table of v1 bears this out line by line ($9.97$ against
+$7.24$~nats for the standard bundle).
+
+\begin{proposition}[Minimal lift]
+\label{prop:lift}
+Let $p_0=\mathcal N(\mu_0,\Sigma_0)$, $m_0=w^\top\mu_0$, $s_0^2=w^\top\Sigma_0w$,
+and a target $(m,s)$ with $s>0$. Among Gaussians $\mathcal N(\mu_1,\Sigma_1)$
+with $w^\top\mu_1=m$ and $w^\top\Sigma_1w=s^2$, the divergence $\KL{p_1}{p_0}$
+is minimised by
+\begin{equation}
+\label{eq:lift}
+\mu_1=\mu_0+u\,s_0\,\beta,\qquad
+\Sigma_1=\Sigma_0+(v^2-1)\,s_0^2\,\beta\beta^\top,
+\qquad\beta=\frac{\Sigma_0w}{s_0^2},
+\end{equation}
+and the minimum equals exactly $g(u,v)$, the portfolio price.
+\end{proposition}
+
+\begin{proof}
+By Proposition~\ref{prop:dpi}, every candidate costs at least the price of its
+projection, which is $g(u,v)$ since the projection of a Gaussian is Gaussian
+with mean $m$ and standard deviation $s$. It therefore suffices to check that
+\eqref{eq:lift} attains this bound. We have $w^\top\beta=1$, so
+$w^\top\mu_1=m_0+us_0=m$ and $w^\top\Sigma_1w=s_0^2+(v^2-1)s_0^2=s^2$. In
+\eqref{eq:klgauss}: $\delta^\top\Sigma_0^{-1}\delta=u^2s_0^2\,\beta^\top\Sigma_0^{-1}\beta=u^2$;
+$\operatorname{tr}(\Sigma_0^{-1}\Sigma_1)=N+(v^2-1)s_0^2\,\beta^\top\Sigma_0^{-1}\beta=N+v^2-1$;
+and by the matrix determinant lemma,
+$\det(\Sigma_0^{-1}\Sigma_1)=1+(v^2-1)s_0^2\,\beta^\top\Sigma_0^{-1}\beta=v^2$.
+Hence $\KL{p_1}{p_0}=\tfrac12(u^2+v^2-1-2\log v)=g(u,v)$. The matrix $\Sigma_1$ is
+positive definite for every $v>0$.
+\end{proof}
+
+\paragraph{Asset-by-asset reading.} The vector $\beta$ collects the assets'
+betas on the portfolio, $\beta_i=\operatorname{Cov}(r_i,w^\top r)/s_0^2$. Write
+$r=\beta f+e$ with $f=w^\top r$ and $e$ uncorrelated with $f$ under $p_0$. The
+scenario~\eqref{eq:lift} multiplies the standard deviation of the portfolio
+factor $f$ by $v$, shifts its mean by $u$~sigmas, and leaves the law of $e$
+unchanged. Each asset's variance rises by $(v^2-1)s_0^2\beta_i^2$ and its mean
+moves by $us_0\beta_i$: high-beta assets take the shock, and the correlations
+among them rise. It is a one-factor scenario, and it is the least informative of
+all scenarios that reach the target severity.
+
+\begin{remark}[Correction to v1]
+arXiv~v1 identified this minimum through its first-order conditions,
+$\Sigma_1^{-1}=\Sigma_0^{-1}-\lambda ww^\top$, and judged it ``not interpretable
+asset by asset''. By the Sherman--Morrison formula, this rank-one perturbation of
+the precision matrix \emph{is}~\eqref{eq:lift}, a rank-one perturbation of the
+covariance along $\Sigma_0w$, and it reads as above. Since v1 never uses it, no
+number depends on it.
+\end{remark}
+
+\begin{corollary}[Cost of uniform dilation]
+\label{cor:uniform}
+Uniform dilation $\Sigma_1=v^2\Sigma_0$, the v1 default, has a deformation
+component equal to $N\cdot\tfrac12(v^2-1-2\log v)$, that is $N$~times that of the
+minimal lift.
+\end{corollary}
+
+\begin{proof}
+Every eigenvalue of $\Sigma_0^{-1}\Sigma_1$ equals $v^2$; apply the spectral form
+of the deformation term.
+\end{proof}
+
+For the ten-year scenario on the main panel ($v=1.63$, $N=20$), the variance
+component is $0.34$~nat at the minimum and $20\times0.34\approx6.8$ under uniform
+dilation, which is the figure in the v1 composition table. The corollary
+explains the v1 finding that the compositions calibrated on H1 ($2.88$~nats) and
+refined by H8 ($0.71$) cost \emph{less} than the default: the default deforms
+every eigendirection equally, whereas a composition that concentrates the shock
+on the common mode moves towards the one-factor scenario~\eqref{eq:lift}, whose
+total cost is $0.41$~nat including the mean shift. That uniform dilation costs
+$N$~times the minimum in variance is a general result; that the calibrated
+compositions fall between the two remains a finding on these panels, but it
+becomes expected rather than surprising.
+
+\subsection{Composing a given severity}
+
+\begin{proposition}[One severity, many compositions]
+\label{prop:composition}
+If $w^\top\Sigma_aw=w^\top\Sigma_bw=s^2$, then for every $\alpha\in[0,1]$,
+$\Sigma_\alpha=(1-\alpha)\Sigma_a+\alpha\Sigma_b$ satisfies
+$w^\top\Sigma_\alpha w=s^2$.
+\end{proposition}
+
+\begin{proof}
+$w^\top\Sigma w$ is linear in $\Sigma$.
+\end{proof}
+
+Portfolio severity therefore does not constrain the composition. The ambient
+price, for its part, is convex in $\Sigma_1$ (the $-\log\det$ term is convex and
+the rest is linear), so along a mixture it is bounded by the mixture of prices,
+which guarantees that an intermediate composition never costs more than the
+dearer of its two endpoints.
+
+\paragraph{A physical ceiling on correlation.} With marginal volatilities fixed,
+$w^\top\Sigma w$ is maximised over valid correlation matrices at
+$\rho_{ij}=1$, where it equals $(\sum_iw_i\sigma_i)^2$. On the main panel this
+ceiling is only about $1.5$~times today's volatility: beyond the five-year rung,
+no rise in correlation alone suffices, and some rise in volatilities is
+unavoidable.
+
+\subsection{Calibrating the radius, and the limit of that calibration}
+
+The radius is read off the information flow of the projection,
+$I^{(h)}_t=\KL{p^w_t}{p^w_{t-h}}$, whose quantiles (on non-overlapping 21-day
+blocks) convert a return period into a radius. Reading the radius off the
+$N$-dimensional flow overstates it by an order of magnitude, by
+Proposition~\ref{prop:dpi}. Calibrated this way, the v1 ladder gives a ten-year
+volatility multiplier of $1.63$, while the ten-year quantile of the realised
+one-month volatility rise is $3.2$. The ladder is a coherent, reproducible rule;
+its return periods are not validated. This is one of the reasons the main paper
+keeps the audit (pricing a given scenario) and drops generation (building a
+scenario with a given return period).
+
+\subsection{Reverse stress testing}
+
+Asking for the cheapest scenario that produces a given loss $L$ inverts the ball.
+In the projected Gaussian setting, Proposition~\ref{prop:ballsol} reads
+backwards. In the non-parametric setting, the solution is the exponential
+tilting of the sample \citep{csiszar1975}, whose effective sample size collapses
+as the radius grows: at $9$~nats it is $1.0$ on the main panel, meaning that the
+tilted law is nothing but the worst observed day. Any implementation should
+report this effective size and switch to the Gaussian ball as soon as it drops
+below a few dozen.

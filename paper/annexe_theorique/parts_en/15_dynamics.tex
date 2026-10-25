@@ -1,0 +1,267 @@
+
+\section{Information dynamics: one theorem, two postulates}
+\label{sec:dynamics}
+
+\subsection{Downward jumps are a theorem}
+
+Two distinct statements underpin the downward half of the postulated dynamics.
+Conflating them is an easy mistake, and earlier versions of this work made it;
+we therefore separate them explicitly.
+
+Recall first the definition of the \emph{mutual information} between the return
+vector $X$ and a signal $Y$:
+\begin{equation}
+\label{eq:mi}
+I(X;Y) \;=\; \KL{p_{XY}}{p_X\otimes p_Y}
+\;=\; \iint p(x,y)\,\log\frac{p(x,y)}{p(x)p(y)}\,dx\,dy ,
+\end{equation}
+that is, the divergence of the joint law from the product of the marginals: how
+far the joint law is from independence. It is non-negative, symmetric, zero if
+and only if $X\perp Y$, and, unlike $h$, invariant under invertible
+reparametrisation. For a scalar Gaussian pair with correlation $\rho$,
+$I=-\tfrac12\log(1-\rho^2)$.
+
+\begin{proposition}[Fall in average conditional entropy]
+\label{prop:conditioning}
+Let $X$ be the return vector and $Y$ a signal. Then
+\begin{equation*}
+\mathbb{E}_Y\!\left[h(X\mid Y)\right] \;=\; h(X) - I(X;Y) \;\le\; h(X),
+\end{equation*}
+with equality if and only if $X\perp Y$.
+\end{proposition}
+
+\begin{proposition}[Monotonicity of the ceiling under constraint]
+\label{prop:constraint}
+Let $\mathcal{C}\subseteq\mathcal{C}'$ be two constraint sets and
+$\mathcal{Q}(\cdot)$ the set of laws that satisfy them. Then
+$\mathcal{Q}(\mathcal{C}')\subseteq\mathcal{Q}(\mathcal{C})$ and hence
+\begin{equation*}
+\sup_{p\,\in\,\mathcal{Q}(\mathcal{C}')} h(p) \;\le\; \sup_{p\,\in\,\mathcal{Q}(\mathcal{C})} h(p).
+\end{equation*}
+\end{proposition}
+
+Both results are classical \citep{cover2006} and they are not equivalent; the
+detailed proof and a worked Gaussian example are in Appendix~\ref{app:mi}. Their
+scopes differ along two axes.
+
+Proposition~\ref{prop:conditioning} \emph{quantifies} the fall (exactly
+$I(X;Y)$ nats) but only \emph{on average} over realisations of the signal. For a
+particular $y$, $h(X\mid Y=y)$ can exceed $h(X)$: a sufficiently confusing signal
+leaves the market more uncertain than before. One should therefore expect a jump
+component that is mainly, not exclusively, one-sided, which is what
+Section~\ref{sec:program} reports.
+
+Proposition~\ref{prop:constraint}, by contrast, holds \emph{for every
+realisation}, but it concerns the maximum-entropy \emph{ceiling}, not the actual
+entropy, and it quantifies nothing: it says that the ceiling cannot rise, not by
+how much it falls.
+
+What the two say together, and what motivates everything that follows: the fall
+is \emph{discontinuous}, because the signal arrives at a point in time, and its
+expected size in nats is the information content of the news, an amplitude
+measured on a scale that depends on neither the asset, the currency nor the
+units.
+
+\paragraph{An honesty caveat.} Neither proposition is used to compute anything in
+the empirical part. We measure $\JJ$, not $h(X)-\mathbb{E}_Y[h(X\mid Y)]$:
+estimating a differential entropy in dimension~20 on a 252-day window is out of
+reach (Appendix~\ref{app:units}). The link between the theorem and the
+statistics reported later is a line of reasoning, not an estimated identity, and
+the reader should treat it as such.
+
+\subsection{Two postulates}
+
+\begin{postulate}[Relaxation]
+\label{p:relax}
+In the absence of new information, the structural index decays towards a
+long-run level at a constant rate:
+$d\JJ_t = -\kappa\left(\JJ_t-\bar\JJ\right)dt + \sigma_\JJ\,dW_t$ with $\kappa>0$.
+\end{postulate}
+
+The economics behind P\ref{p:relax} is that a constraint goes stale. The news is
+priced in, disagreement re-forms, positions disperse, and the cross-section
+recovers the freedom the shock took away. Nothing in information theory delivers
+this; it is the substantive assumption of the paper, and $\kappa$ is the object
+to be estimated.
+
+\paragraph{Why an Ornstein--Uhlenbeck process and not something else?} The choice
+is not one of convenience: it is \emph{forced} once three minimal requirements
+are imposed, and it is the only process that meets all three.
+
+\begin{enumerate}
+\item \emph{Markov.} The future of $\JJ$ depends on the past only through its
+current level. This is the parsimony requirement: postulate no memory beyond
+what the current state already holds.
+\item \emph{Stationary.} $\JJ$ has a finite long-run level and variance. Without
+this the index drifts, it is not a state variable, and the regime comparisons of
+Section~\ref{sec:program} are meaningless.
+\item \emph{Gaussian noise.} Between two information arrivals we claim to know
+nothing about the noise beyond its variance: this is the maximum-entropy
+principle applied to the noise itself, exactly as it was applied to returns in
+Section~\ref{sec:bridge}.
+\end{enumerate}
+
+\citet{doob1942}'s theorem states that \textbf{the Ornstein--Uhlenbeck process is
+the only continuous-time process that is at once Markov, Gaussian and
+stationary}. The three requirements therefore leave no latitude on the diffusive
+part: it is determined. The jump term is added precisely to \emph{break}
+Gaussianity where the framework says it fails, namely at information arrivals.
+The structure of \eqref{eq:ou} is thus an imposed skeleton plus a deliberately
+non-Gaussian component, which is exactly the class introduced by
+\citet{bns2001}.
+
+\paragraph{What remains arbitrary.} Three things, which must be stated rather
+than presented as if they followed from the theorem. The rate $\kappa$ is
+assumed \emph{constant}: nothing rules out a crisis being absorbed faster, or
+slower, than ordinary news, and the data used here cannot tell. The pull-back is
+\emph{linear} in the deviation from the long-run level, whereas a pull-back that
+accelerates far from the mean would be just as plausible. Finally, $\JJ$ is
+non-negative by construction, whereas an Ornstein--Uhlenbeck process with a
+Brownian term can turn negative: the \citet{bns2001} specification avoids this
+by dropping the Brownian term and driving the process with a subordinator with
+positive jumps, which guarantees a stationary law supported on $\mathbb{R}^+$.
+Empirically the issue does not arise ($\JJ$ stays between $2.17$ and
+$21.13$~nats on the main panel and between $0.42$ and $1.69$ on the replication
+panel, far from the boundary), but formally one should either drop
+$\sigma_\JJ$ or write the process on $\log\JJ$.
+
+Nor is the postulate innocent as a matter of measurement: an estimator with
+memory will manufacture decay even with no economic relaxation at all, which is
+why Section~\ref{sec:program} measures the decay that a memoryless world already
+produces.
+
+\begin{postulate}[Asymmetry of the constraint]
+\label{p:sign}
+The constraint imposed by information is one-sided in the direction of losses,
+so that an entropy jump comes with negative skewness of the market factor.
+\end{postulate}
+
+\paragraph{Why this postulate is logically necessary.} The index $\JJ$ is an
+\emph{even} function of skewness: flipping the sign of skewness leaves its value
+unchanged. The reason is immediate. The shape channel is
+$\Dun(z)=\KL{p_z}{\varphi}$, and the normal law $\varphi$ is symmetric; so
+replacing $z$ by $-z$ leaves the reference law unchanged, and the divergence too:
+\begin{equation}
+\label{eq:even}
+\Dun(-z)=\Dun(z),\qquad\text{and therefore}\qquad \JJ(-x)=\JJ(x).
+\end{equation}
+The Edgeworth expansion \eqref{eq:edgeworth} makes it visible at a glance:
+skewness $S$ enters squared.
+
+The consequence is structural, not anecdotal. \textbf{A distribution with a long
+left tail (a crash) and its mirror image with a long right tail (a melt-up) have
+exactly the same $\JJ$.} The index measures the \emph{size} of the information,
+never its direction. No refinement of the estimator will change this: it is a
+property of the object measured. If the paper is to say anything about direction,
+it must therefore add an external ingredient. P\ref{p:sign} is that ingredient,
+and it is the smallest possible: a single statement, about the sign, added to a
+framework that by construction produces none.
+
+\paragraph{What it rests on.} Not on a mechanism we would assert, but on an
+established empirical regularity: the \emph{leverage effect} in the sense of
+\citet{black1976}, namely that negative returns are followed by larger rises in
+volatility than positive returns of the same size. It is one of the most robust
+stylised facts in empirical finance \citep{christie1982,engle1993,nelson1991}.
+Translated into the language of this paper: for an equal quantity of
+information, the market's response is larger on the way down than on the way up,
+so a jump in $\JJ$ comes with negative market skewness.
+
+We deliberately abstain from choosing among the competing causal explanations of
+this effect (financial leverage proper, volatility feedback, or asymmetric
+withdrawal of liquidity on the sell side). The postulate depends on none of them:
+it asserts only the asymmetry, not its cause. It is separately testable (H5) and
+separately refutable, and Section~\ref{sec:program} concludes that it is not
+established.
+
+\subsection{The resulting dynamics}
+
+Proposition~\ref{prop:conditioning} together with P\ref{p:relax} gives a
+non-Gaussian Ornstein--Uhlenbeck process with one-sided jumps, of the class
+introduced by \citet{bns2001} for stochastic volatility:
+\begin{equation}
+\label{eq:ou}
+d\JJ_t \;=\; -\kappa\left(\JJ_t-\bar\JJ\right)dt \;+\; \sigma_\JJ\,dW_t \;+\; \int_{z>0} z\,\mathcal{P}(dt,dz).
+\end{equation}
+The integral term needs careful reading, because its notation is compact.
+
+\paragraph{What $\mathcal{P}$ is not.} It is neither a Gaussian law nor a
+function. The letter $\mathcal N$ is reserved in this document for the normal
+law, so the jump measure carries a distinct symbol.
+
+\paragraph{What $\mathcal{P}$ is.} A \emph{random counting measure}, known as a
+Poisson random measure. One can picture it as a random scatter of points in the
+(date, size) plane: each point is an information event, its abscissa is the date
+it occurs and its ordinate the size of the jump it causes. Formally,
+$\mathcal{P}(dt,dz)$ equals $1$ if there is a jump in the time interval
+$[t,t+dt)$ whose size falls in $[z,z+dz)$, and $0$ otherwise. The integral
+$\int_{z>0} z\,\mathcal{P}(dt,dz)$ then reads simply: ``if there is a jump at
+date $t$, add its size $z$ to $\JJ$; otherwise add nothing''. It is a compact
+way of writing $\sum_{j} z_j$, the sum of the jumps that occurred.
+
+\paragraph{What characterises it.} Two ingredients, combined in its
+\emph{intensity measure} $\nu(dz)\,dt$, the expected number of jumps of size
+between $z$ and $z+dz$ during $dt$: an \emph{arrival rate}
+$\lambda=\nu(\mathbb{R}^+)$, in jumps per unit time, and a \emph{size
+distribution} $\nu(dz)/\lambda$. On the main panel, v1 estimates
+$\lambda\approx5$ jumps per year, a mean size of $0.62$~nat and a maximum of
+$3.21$~nats.
+
+\paragraph{What $z$ is.} The size of an individual jump, in nats. Conceptually, it
+is the mutual information of the news that caused it, in the sense of
+Proposition~\ref{prop:conditioning}. Operationally, it is the change in $\JJ$
+picked up by the four-sigma filter of Section~\ref{sec:program}. The two coincide
+only approximately, and the paper does not claim to identify them.
+
+\paragraph{Why the integral runs over $z>0$ only.} Because $\JJ$ measures an
+entropy \emph{deficit} and, by Proposition~\ref{prop:conditioning}, information
+can only increase that deficit in expectation. Within this framework nothing
+creates a \emph{sudden increase} in entropy: entropy is restored only by the slow
+relaxation of the first term, never by a jump. Hence one-sided jumps.
+
+Two caveats, however. Proposition~\ref{prop:conditioning} is a statement
+\emph{on average}: a particularly confusing realisation can raise entropy, so a
+faithful specification would allow a small probability of negative jumps rather
+than forbid them. And the Poisson measure assumes independent arrivals, whereas
+the event study of v1 shows clear clustering of jumps; a self-exciting
+Hawkes-type process would be more faithful.
+
+Note finally that the diffusion coefficient is written $\sigma_\JJ$ rather than
+$\eta$, the latter being reserved for the radius of stress scenarios
+(Section~\ref{sec:stress}). Read on entropy itself rather than on $\JJ$, the sign
+flips: entropy falls by jumps and recovers by diffusion. The observable
+predictions are sharp, and they are what Section~\ref{sec:program} tests: the
+distribution of $\Delta\JJ$ is right-skewed; large moves are up and small moves
+down; and after a positive jump the index decays with half-life $\ln 2/\kappa$.
+
+\subsection{Why fat tails, correlation and jumps arrive together}
+
+The framework yields a prediction that no volatility or correlation model
+produces on its own. It follows in four steps, without technical vocabulary.
+
+\begin{enumerate}
+\item Important news concerns \emph{all} assets at once: the same information
+constrains each of them.
+\item If the news is bad, all assets therefore fall \emph{on the same day}.
+\item That day also appears, taken in isolation, in each asset's own history: for
+that asset it is an unusually large loss.
+\item Accumulating such days distorts each asset's return distribution: the loss
+side lengthens and thickens more than the gain side.
+\end{enumerate}
+
+Step 2 is what the dependence channel measures: assets move together, measured
+correlation rises, $-H^{dep}$ rises. Step 4 is what the shape channel measures:
+extreme losses more numerous and larger than extreme gains, that is higher
+kurtosis and negative skewness, so $\DD$ rises. The two channels rise together
+because they describe the same day seen from two places: the cross-section for
+one, each asset's distribution for the other.
+
+In calm markets, notable moves are asset-specific: they do not align the
+cross-section and so have no reason to lift both channels at the same time.
+
+The testable form is a \emph{regime-dependent coupling}: the correlation between
+$-\Delta H^{dep}$ and $\Delta\DD$ should be close to zero in calm markets and
+strongly positive under stress. This is H6, and it is the paper's answer to the
+question ``does the link between fat tails, correlation and entropy jumps
+require an additional postulate?'': no. Given
+Proposition~\ref{prop:conditioning}, the coupling follows from the common nature
+of the news. Only the \emph{sign} requires P\ref{p:sign}.

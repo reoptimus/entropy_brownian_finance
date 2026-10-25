@@ -1,0 +1,120 @@
+\documentclass[11pt]{article}
+\usepackage{amsmath,amssymb,amsthm,booktabs,geometry,graphicx}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+\usepackage[round,authoryear]{natbib}
+\usepackage[colorlinks=true,linkcolor=black,citecolor=black,urlcolor=blue!50!black]{hyperref}
+\geometry{margin=1in}
+\setlength{\emergencystretch}{2em}
+
+\newtheorem{proposition}{Proposition}
+\newtheorem{corollary}{Corollaire}
+\newtheorem{assumption}{Hypothèse}
+\theoremstyle{definition}
+\newtheorem{postulate}{Postulat}
+\newtheorem{definition}{Définition}
+\theoremstyle{remark}
+\newtheorem*{remark}{Remarque}
+\renewcommand{\proofname}{Démonstration}
+
+\newcommand{\JJ}{\mathcal{J}}
+\newcommand{\DD}{\mathcal{D}}
+\newcommand{\Dun}{\mathcal{D}_1}
+\newcommand{\KL}[2]{D_{KL}\!\left(#1\,\Vert\,#2\right)}
+
+\title{Compléments théoriques\\[4pt]
+\large Fondements informationnels d'un indicateur entropique\\de stress systémique : ce que le papier principal laisse de côté}
+\author{Annexe au papier \og Sauts d'entropie et relaxation\\de l'information sur les marchés financiers \fg{}}
+\date{Octobre 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+\noindent Le papier principal est recentré sur un seul objet destiné aux
+banques centrales : le canal de dépendance $-\tfrac12\log\det R$ d'un panel
+multi-marchés, sa décomposition exacte entre blocs et à l'intérieur des blocs,
+et l'audit en nats des scénarios de stress publiés. Ce document rassemble tout
+ce que ce recentrage retire du corps du texte, pour servir d'annexe ou être
+fourni sur demande. On y trouve le pont qui mène du maximum d'entropie en
+temps-volume au mouvement brownien géométrique, la décomposition de l'entropie
+en trois canaux et l'indice structurel $\JJ=\KL{p}{\prod_i q_i}$, la dynamique
+de saut et diffusion (un théorème, deux postulats, la structure
+d'Ornstein--Uhlenbeck imposée par le théorème de Doob), le programme empirique
+H1--H8 avec son verdict face aux témoins calibrés, et la géométrie complète des
+scénarios en boule de Kullback--Leibler. Deux résultats sont nouveaux par
+rapport à la version arXiv~v1. Le premier est une identité de décomposition par
+blocs du canal de dépendance, qui relie ce document au papier principal. Le
+second montre que le relèvement d'un scénario de portefeuille à la dimension
+pleine qui minimise la divergence ambiante coûte exactement le rayon $\eta$, et
+qu'il s'interprète actif par actif (choc porté par la covariance de chaque actif
+avec le portefeuille), alors que la dilatation uniforme par défaut coûte $N$~fois
+plus en variance. Ce second point corrige une remarque de la v1.
+\end{abstract}
+
+\tableofcontents
+
+\section*{Avant-propos : ce que contient ce document, et pourquoi}
+\addcontentsline{toc}{section}{Avant-propos}
+
+\paragraph{L'articulation avec le papier principal.} L'évaluation d'octobre 2026
+a conclu qu'un seul résultat de la version arXiv~v1 franchit les deux témoins
+calibrés sur les deux panels : l'écart de régime du canal de dépendance
+$H^{dep}=\tfrac12\log\det R$. La phase~A l'a confirmé sous trois formes (brute,
+dévolatilisée à la Forbes--Rigobon, en rangs) et a montré que le ratio
+d'absorption de \citet{kritzman2011}, mesure de référence de la même famille,
+échoue au témoin par blocs. Le papier principal se reconstruit donc autour d'un
+\og CISS entropique \fg{} au sens de \citet{hollo2012} : canal de dépendance d'un
+panel multi-marchés, décomposition intra/inter-blocs, validation à la manière
+des banques centrales, et audit des scénarios publiés en nats.
+
+Tout le reste sort du corps du texte. Ce n'est pas parce que c'est faux : les
+résultats mathématiques restent exacts. C'est parce que ces éléments ne sont
+pas nécessaires à l'indicateur, ou parce qu'ils ne survivent pas aux témoins et
+ne peuvent donc pas fonder un outil de surveillance. Les rassembler ici a deux
+usages. Un rapporteur qui demande d'où vient le canal de dépendance, et pourquoi
+c'est lui et pas l'indice structurel complet, trouve la réponse. Un lecteur qui
+veut reprendre la théorie de la dynamique de l'information trouve la chaîne
+entière, avec le statut exact de chaque maillon.
+
+\paragraph{Statut de chaque énoncé.} Le document distingue trois catégories et
+les signale au fil du texte : les \emph{théorèmes} (exacts sous leurs
+hypothèses), les \emph{postulats} (hypothèses économiques substantielles,
+testables), et les \emph{constats empiriques} (avec le témoin qu'ils
+franchissent ou non). Le tableau~\ref{tab:statut} en donne la carte.
+
+\begin{table}[htbp]
+\centering
+\small
+\begin{tabular}{@{}p{5.0cm}p{3.0cm}p{4.6cm}l@{}}
+\toprule
+Élément & Statut & Verdict empirique & Section \\
+\midrule
+Maximum d'entropie gaussien & théorème & --- & \ref{sec:bridge} \\
+Pont volume (MDH, brownien subordonné) & argument sous hypothèses & non testé ici & \ref{sec:bridge} \\
+Décomposition en trois canaux & identité exacte & --- & \ref{sec:channels} \\
+Indice structurel $\JJ$ comme divergence & identité exacte & étendue franchit les deux témoins & \ref{sec:channels} \\
+Sauts d'entropie vers le bas & théorème (en moyenne) & non estimable directement & \ref{sec:dynamics} \\
+Relaxation (P1) & postulat & demi-vie non identifiée & \ref{sec:dynamics} \\
+Contrainte unilatérale (P2) & postulat & non établie (H5) & \ref{sec:dynamics} \\
+Couplage queues--corrélation & conséquence & non identifié (H6) & \ref{sec:dynamics} \\
+Canal de dépendance sous stress & constat & \textbf{franchit les deux témoins} & \ref{sec:program}, \ref{sec:blocks} \\
+Boule KL, $1$~nat $=\sqrt2\,\sigma$ & théorème & --- & \ref{sec:stress} \\
+Relèvement minimal (rang un) & théorème (nouveau) & --- & \ref{sec:stress} \\
+Calibration du rayon sur le flux & règle & trop douce face à l'histoire & \ref{sec:stress} \\
+Décomposition par blocs & identité (nouvelle ici) & objet du papier principal & \ref{sec:blocks} \\
+\bottomrule
+\end{tabular}
+\caption{Carte des énoncés du document et de leur statut.}
+\label{tab:statut}
+\end{table}
+
+\paragraph{Origine des textes.} Les sections~\ref{sec:bridge} à
+\ref{sec:dynamics} et les annexes~\ref{app:units} à \ref{app:mi} reprennent, avec
+des retouches de renvois, le texte de la version française de référence
+(\texttt{paper/main\_fr.tex}). Les sections~\ref{sec:program} à
+\ref{sec:open} sont rédigées pour ce document. Tous les chiffres cités
+proviennent du même code (\texttt{python -m src.run\_empirical}, témoins à
+deux cents réplications, phase~A) ; aucun n'a été recalculé pour cette annexe.
+
