@@ -52,10 +52,11 @@ CEPR_RECESSIONS = [('2008-01-01', '2009-06-30'), ('2011-07-01', '2013-03-31'),
 _CACHE: dict = {}
 
 
-def _panel(folder: str):
-    if folder not in _CACHE:
-        _CACHE[folder] = build_euro_panel(folder)
-    return _CACHE[folder]
+def _panel(folder: str, mm_substitute: bool = True):
+    key = (folder, mm_substitute)
+    if key not in _CACHE:
+        _CACHE[key] = build_euro_panel(folder, mm_substitute=mm_substitute)
+    return _CACHE[key]
 
 
 def stress_signal(M: pd.DataFrame, blocks: dict) -> pd.Series:
@@ -74,9 +75,9 @@ def statistics(dec: pd.DataFrame, M: pd.DataFrame, blocks: dict) -> dict:
     return out
 
 
-def run_task(folder: str, null: str, rep: int) -> dict:
+def run_task(folder: str, mm_substitute: bool, null: str, rep: int) -> dict:
     t0 = time.time()
-    M, blocks = _panel(folder)
+    M, blocks = _panel(folder, mm_substitute)
     if null == 'observed':
         data = M
     else:
@@ -127,15 +128,23 @@ def comparisons(folder: Path, dec: pd.DataFrame, M: pd.DataFrame, blocks: dict) 
         gdp = r['pib_reel_zone_euro'].dropna()
         gdp.index = gdp.index.to_period('Q')
         g4 = 100 * (np.log(gdp).shift(-4) - np.log(gdp))
+        # Past four-quarter growth, the usual control in Growth-at-Risk.
+        g_past = 100 * (np.log(gdp) - np.log(gdp).shift(4))
         q = ind.groupby(ind.index.to_period('Q')).mean()
-        d = pd.concat([g4.rename('g4'), q], axis=1).dropna()
+        d = pd.concat([g4.rename('g4'), g_past.rename('g_past'), q], axis=1).dropna()
         d = (d - d.mean()) / d.std().where(d.columns != 'g4', 1.0)
         gar = []
-        for c in [c for c in q.columns if c in d]:
+        cand = [c for c in q.columns if c in d]
+        specs = [[c] for c in cand] + [[c, 'g_past'] for c in cand]
+        if 'ciss' in cand:
+            specs += [['ciss', c, 'g_past'] for c in ('total', 'inter') if c in cand]
+        for cols in specs:
             for tau in (0.10, 0.50):
-                fit = smf.quantreg(f'g4 ~ {c}', d).fit(q=tau)
-                gar.append({'indicator': c, 'quantile': tau, 'n': int(fit.nobs),
-                            'coef': fit.params[c], 'pvalue': fit.pvalues[c]})
+                fit = smf.quantreg('g4 ~ ' + ' + '.join(cols), d).fit(q=tau)
+                gar.append({'regressors': ' + '.join(cols), 'quantile': tau,
+                            'n': int(fit.nobs),
+                            **{f'coef_{c}': fit.params[c] for c in cols},
+                            **{f'p_{c}': fit.pvalues[c] for c in cols}})
         out['growth_at_risk'] = gar
     return out
 
@@ -146,10 +155,14 @@ def main() -> None:
     p.add_argument('--n-rep', type=int, default=200)
     p.add_argument('--jobs', type=int, default=max(1, (os.cpu_count() or 2) - 1))
     p.add_argument('--out-dir', default='outputs/euro_ciss')
+    p.add_argument('--overnight-only', action='store_true',
+                   help='no Euribor substitute: money-market block = overnight rate alone')
     args = p.parse_args()
 
     folder = Path(args.data)
-    M, blocks = _panel(str(folder))
+    sub = not args.overnight_only
+    tag = '' if sub else '_overnight_only'
+    M, blocks = _panel(str(folder), sub)
     print(f'Panel: {M.shape[0]} days x {M.shape[1]} series, '
           f'{M.index.min().date()} -> {M.index.max().date()}')
     for k, v in blocks.items():
@@ -157,12 +170,12 @@ def main() -> None:
 
     dest = Path('paper/tables')
     dec = rolling_block_coupling(M, blocks, WINDOW, 'rank')
-    dec.to_csv(dest / 'euro_block_coupling_series.csv', float_format='%.6g')
+    dec.to_csv(dest / f'euro_block_coupling_series{tag}.csv', float_format='%.6g')
     comp = comparisons(folder, dec, M, blocks)
-    (dest / 'euro_ciss_comparisons.json').write_text(json.dumps(comp, indent=2, default=float))
+    (dest / f'euro_ciss_comparisons{tag}.json').write_text(json.dumps(comp, indent=2, default=float))
     print(json.dumps(comp, indent=1, default=float)[:4000])
 
-    out = Path(args.out_dir)
+    out = Path(args.out_dir + tag)
     out.mkdir(parents=True, exist_ok=True)
     ckpt = out / 'checkpoint.jsonl'
     done = set()
@@ -173,7 +186,7 @@ def main() -> None:
     t_start = time.time()
     if todo:
         with ProcessPoolExecutor(max_workers=args.jobs) as ex, open(ckpt, 'a') as fh:
-            futs = [ex.submit(run_task, str(folder), *t) for t in todo]
+            futs = [ex.submit(run_task, str(folder), sub, *t) for t in todo]
             for n, fut in enumerate(as_completed(futs), 1):
                 r = fut.result()
                 fh.write(json.dumps(r) + '\n')
@@ -189,9 +202,9 @@ def main() -> None:
     obs = long[long.null == 'observed'].set_index('statistic')['value']
     rows = []
     for null in NULLS:
-        sub = long[long.null == null]
+        nl = long[long.null == null]
         for stat, v in obs.items():
-            col = sub.loc[sub.statistic == stat, 'value'].dropna()
+            col = nl.loc[nl.statistic == stat, 'value'].dropna()
             sd = col.std()
             rows.append({'null': null, 'statistic': stat, 'observed': v,
                          'null_mean': col.mean(), 'null_q05': col.quantile(0.05),
@@ -200,8 +213,8 @@ def main() -> None:
                          'p_greater': float((col >= v).mean()),
                          'p_less': float((col <= v).mean()), 'n_rep': len(col)})
     summary = pd.DataFrame(rows)
-    long.to_csv(dest / 'euro_null_200rep_replications_long.csv', index=False, float_format='%.6g')
-    summary.to_csv(dest / 'euro_null_200rep_summary.csv', index=False, float_format='%.4f')
+    long.to_csv(dest / f'euro_null_200rep_replications_long{tag}.csv', index=False, float_format='%.6g')
+    summary.to_csv(dest / f'euro_null_200rep_summary{tag}.csv', index=False, float_format='%.4f')
     pd.set_option('display.width', 180)
     print(summary.round(3).to_string(index=False))
 

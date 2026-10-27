@@ -1,10 +1,46 @@
-regressors,n,r2,coef_h_dep,t_h_dep,index,coef_h_dep_devol,t_h_dep_devol,coef_h_dep_rank,t_h_dep_rank,coef_absorption_ratio,t_absorption_ratio,coef_eig1_share,t_eig1_share
-h_dep,548,0.1796,0.4238,4.9289,STLFSI4,,,,,,,,
-h_dep_devol,548,0.1203,,,STLFSI4,0.3469,6.1003,,,,,,
-h_dep_rank,548,0.1332,,,STLFSI4,,,0.3650,5.8065,,,,
-absorption_ratio,548,0.1469,,,STLFSI4,,,,,0.3833,5.5418,,
-eig1_share,548,0.2401,,,STLFSI4,,,,,,,0.4900,4.8161
-h_dep + h_dep_devol,548,0.1927,0.6966,2.1266,STLFSI4,-0.2957,-1.0450,,,,,,
-h_dep + h_dep_rank,548,0.2270,1.3809,1.9804,STLFSI4,,,-0.9815,-1.4995,,,,
-h_dep + absorption_ratio,548,0.1807,0.5091,2.3104,STLFSI4,,,,,-0.0915,-0.5296,,
-h_dep + eig1_share,548,0.2905,-0.9599,-2.0864,STLFSI4,,,,,,,1.4232,2.7620
+regressors,n,r2,coef_h_dep,t_h_dep,index,period,coef_h_dep_devol,t_h_dep_devol,coef_h_dep_rank,t_h_dep_rank,coef_absorption_ratio,t_absorption_ratio,coef_eig1_share,t_eig1_share,coef_log_vol21,t_log_vol21
+h_dep,1697,0.1036,0.3218,4.5731,STLFSI4,full,,,,,,,,,,
+h_dep_devol,1697,0.0920,,,STLFSI4,full,0.3033,4.1525,,,,,,,,
+h_dep_rank,1697,0.0923,,,STLFSI4,full,,,0.3038,4.2204,,,,,,
+absorption_ratio,1697,0.0710,,,STLFSI4,full,,,,,0.2664,4.0925,,,,
+eig1_share,1697,0.0740,,,STLFSI4,full,,,,,,,0.2721,4.2491,,
+log_vol21,1697,0.4099,,,STLFSI4,full,,,,,,,,,0.6402,6.8836
+h_dep + h_dep_devol,1697,0.1077,0.6490,2.1364,STLFSI4,full,-0.3334,-1.0410,,,,,,,,
+h_dep + h_dep_rank,1697,0.1242,1.6065,3.7300,STLFSI4,full,,,-1.2927,-2.8618,,,,,,
+h_dep + absorption_ratio,1697,0.1284,0.8757,5.1253,STLFSI4,full,,,,,-0.5759,-4.4610,,,,
+h_dep + eig1_share,1697,0.1302,0.9679,3.9127,STLFSI4,full,,,,,,,-0.6664,-3.1678,,
+log_vol21 + h_dep,1697,0.4100,0.0102,0.3197,STLFSI4,full,,,,,,,,,0.6352,6.8001
+log_vol21 + h_dep_devol,1697,0.4101,,,STLFSI4,full,0.0144,0.4563,,,,,,,0.6337,7.0684
+log_vol21 + h_dep_rank,1697,0.4099,,,STLFSI4,full,,,-0.0027,-0.0864,,,,,0.6415,7.0047
+log_vol21 + absorption_ratio,1697,0.4125,,,STLFSI4,full,,,,,-0.0578,-1.9549,,,0.6682,7.0738
+log_vol21 + eig1_share,1697,0.4099,,,STLFSI4,full,,,,,,,-0.0060,-0.2054,0.6428,6.8313
+h_dep,1096,0.1021,0.3195,3.8919,STLFSI4,pre2015,,,,,,,,,,
+h_dep_devol,1096,0.0940,,,STLFSI4,pre2015,0.3066,3.6084,,,,,,,,
+h_dep_rank,1096,0.1024,,,STLFSI4,pre2015,,,0.3200,3.7578,,,,,,
+absorption_ratio,1096,0.0853,,,STLFSI4,pre2015,,,,,0.2920,3.6783,,,,
+eig1_share,1096,0.0534,,,STLFSI4,pre2015,,,,,,,0.2310,3.1806,,
+log_vol21,1096,0.4882,,,STLFSI4,pre2015,,,,,,,,,0.6987,6.5318
+h_dep + h_dep_devol,1096,0.1076,0.8591,1.4258,STLFSI4,pre2015,-0.5446,-0.8724,,,,,,,,
+h_dep + h_dep_rank,1096,0.1024,0.0222,0.0142,STLFSI4,pre2015,,,0.2979,0.1841,,,,,,
+h_dep + absorption_ratio,1096,0.1092,0.6826,2.8251,STLFSI4,pre2015,,,,,-0.3728,-1.7137,,,,
+h_dep + eig1_share,1096,0.2192,1.7477,5.8678,STLFSI4,pre2015,,,,,,,-1.4686,-6.1226,,
+log_vol21 + h_dep,1096,0.4900,-0.0495,-1.4563,STLFSI4,pre2015,,,,,,,,,0.7239,6.5277
+log_vol21 + h_dep_devol,1096,0.4899,,,STLFSI4,pre2015,-0.0469,-1.5379,,,,,,,0.7217,6.7394
+log_vol21 + h_dep_rank,1096,0.4898,,,STLFSI4,pre2015,,,-0.0461,-1.4154,,,,,0.7221,6.6381
+log_vol21 + absorption_ratio,1096,0.4958,,,STLFSI4,pre2015,,,,,-0.1025,-3.0586,,,0.7525,6.7614
+log_vol21 + eig1_share,1096,0.4955,,,STLFSI4,pre2015,,,,,,,-0.0954,-3.0001,0.7408,6.7302
+h_dep,601,0.2037,0.4513,5.3025,STLFSI4,post2015,,,,,,,,,,
+h_dep_devol,601,0.1457,,,STLFSI4,post2015,0.3817,6.6219,,,,,,,,
+h_dep_rank,601,0.1572,,,STLFSI4,post2015,,,0.3965,6.2755,,,,,,
+absorption_ratio,601,0.1713,,,STLFSI4,post2015,,,,,0.4139,5.9998,,,,
+eig1_share,601,0.2599,,,STLFSI4,post2015,,,,,,,0.5098,5.1894,,
+log_vol21,601,0.3443,,,STLFSI4,post2015,,,,,,,,,0.5868,3.6692
+h_dep + h_dep_devol,601,0.2153,0.7298,2.1310,STLFSI4,post2015,-0.2987,-1.0070,,,,,,,,
+h_dep + h_dep_rank,601,0.2483,1.4301,2.0078,STLFSI4,post2015,,,-1.0014,-1.4976,,,,,,
+h_dep + absorption_ratio,601,0.2047,0.5385,2.3462,STLFSI4,post2015,,,,,-0.0927,-0.5115,,,,
+h_dep + eig1_share,601,0.2957,-0.8087,-1.9519,STLFSI4,post2015,,,,,,,1.2960,2.7593,,
+log_vol21 + h_dep,601,0.3847,0.2271,3.3172,STLFSI4,post2015,,,,,,,,,0.4809,2.6609
+log_vol21 + h_dep_devol,601,0.3733,,,STLFSI4,post2015,0.1842,2.5002,,,,,,,0.5163,2.8023
+log_vol21 + h_dep_rank,601,0.3702,,,STLFSI4,post2015,,,0.1781,2.2328,,,,,0.5106,2.6914
+log_vol21 + absorption_ratio,601,0.3792,,,STLFSI4,post2015,,,,,0.2054,2.9997,,,0.5014,2.7694
+log_vol21 + eig1_share,601,0.4262,,,STLFSI4,post2015,,,,,,,0.3166,5.9045,0.4512,2.7943

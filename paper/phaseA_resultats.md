@@ -50,26 +50,31 @@ Trois lectures :
   le couplage est plutôt plus bas que d'habitude (AUROC 0,37 à 0,45) : c'est le calme d'avant la
   crise, avec seulement quatre récessions dans l'échantillon. L'indicateur doit être présenté comme
   coïncident, ce que confirmait déjà H7. Source : `paper/tables/*_coupling_auroc.csv`.
-- **Face à l'indice de stress de la Fed de St. Louis, pas de domination nette.** Fichier
-  `STLFSI4` fourni par seb, hebdomadaire, 2015 à mi-2025 seulement (418 semaines communes avec
-  le S&P 500, 548 avec FF49). Régressions standardisées, erreurs HAC (4 retards) :
+- **Face à l'indice de stress de la Fed de St. Louis, sur 1994–2026 : un apport au-delà de la
+  volatilité sur les titres, pas sur les secteurs.** Historique complet du `STLFSI4` (fin 1993 à
+  octobre 2026, hebdomadaire, issu du téléchargement zone euro de seb), 1 514 semaines communes avec
+  le S&P 500 (jusqu'à fin 2022) et 1 697 avec FF49 (jusqu'à mi-2026). Régressions standardisées,
+  erreurs HAC (4 retards) ; t de la mesure de couplage quand la volatilité 21 jours est aussi
+  dans la régression :
 
-  | Mesure seule, R² | S&P 500 | FF49 |
-  |---|---|---|
-  | `h_dep` | 0,12 | 0,18 |
-  | `h_dep` dévolatilisé | 0,13 | 0,12 |
-  | `h_dep` en rangs | 0,15 | 0,13 |
-  | Ratio d'absorption | 0,13 | 0,15 |
-  | Part de la 1re valeur propre | **0,23** | **0,24** |
+  | Mesure | S&P 500, R² seule | S&P 500, t avec vol. | FF49, R² seule | FF49, t avec vol. |
+  |---|---|---|---|---|
+  | `h_dep` | 0,16 | **4,2** | 0,10 | 0,3 |
+  | `h_dep` dévolatilisé | 0,16 | **4,8** | 0,09 | 0,5 |
+  | `h_dep` en rangs | 0,16 | **4,7** | 0,09 | −0,1 |
+  | Ratio d'absorption | 0,06 | 4,2 | 0,07 | −2,0 |
+  | Part de la 1re valeur propre | 0,16 | 4,6 | 0,07 | −0,2 |
+  | Volatilité 21 jours seule | 0,48 | | 0,41 | |
 
-  Ensemble avec le ratio d'absorption, `h_dep` l'englobe sur les secteurs (t = 2,3 contre −0,5)
-  mais pas sur les titres (t = 1,8 contre 2,8). La part de la première valeur propre suit l'indice
-  officiel de plus près que toutes les autres. Les mesures sont corrélées à plus de 0,9, donc les
-  régressions jointes sont fragiles. Lecture : l'indice de la Fed est surtout fait de spreads et de
-  taux, et le couplage actions n'en explique que 12 à 24 %. Suivre un indice officiel et franchir
-  le témoin calibré sont deux critères différents, et ils ne désignent pas la même mesure. Il faudra
-  l'historique complet (depuis fin 1993) pour couvrir 2001 et 2008. Source :
-  `paper/tables/*_coupling_encompassing.csv`.
+  Sur l'historique long, `h_dep` suit l'indice officiel aussi bien que la part de la première
+  valeur propre et bien mieux que le ratio d'absorption (R² 0,16 contre 0,06 sur les titres) ;
+  ensemble, `h_dep` garde t = 5,9 et le ratio d'absorption passe à −6,0. Sur les titres, le couplage
+  ajoute à la volatilité (R² de 0,48 à 0,51), surtout avant 2015 (t ≈ 6 sur 1994–2014, ≈ 0 après) :
+  le constat fait sur 2015–2025 seulement tenait à la fenêtre courte. Sur les portefeuilles
+  sectoriels, rien n'ajoute à la volatilité sur la période complète. Les mesures restent corrélées à
+  plus de 0,9, donc les régressions jointes entre mesures de couplage sont fragiles ; celles avec la
+  volatilité le sont moins. Source : `paper/tables/*_coupling_encompassing.csv` (colonnes `period` :
+  `full`, `pre2015`, `post2015`).
 - **Tests multiples.** Cinq mesures sont testées ; les p-valeurs du témoin par blocs (0,01 à 0,04)
   sont individuellement significatives, mais une seule (la version en rangs sur FF49, p = 0,010) atteint le seuil corrigé de Bonferroni (0,05 / 5 = 0,01). Le
   résultat tient par sa cohérence sur deux panels et trois variantes, pas par une p-valeur isolée.

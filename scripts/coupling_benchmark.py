@@ -94,11 +94,14 @@ def _read_external() -> dict:
 
 def _encompassing(target: pd.Series, X: pd.DataFrame, lags: int) -> list[dict]:
     """Standardised OLS of an official index on each measure alone, then on
-    h_dep together with each competitor."""
+    h_dep together with each competitor, then on log volatility together with
+    each coupling measure (does coupling add to what volatility already says?)."""
     d = pd.concat([target.rename('y'), X], axis=1).dropna()
     d = (d - d.mean()) / d.std()
     rows = []
-    specs = [[c] for c in X.columns] + [['h_dep', c] for c in X.columns if c != 'h_dep']
+    cpl = [c for c in X.columns if c != 'log_vol21']
+    specs = ([[c] for c in X.columns] + [['h_dep', c] for c in cpl if c != 'h_dep']
+             + ([['log_vol21', c] for c in cpl] if 'log_vol21' in X else []))
     for cols in specs:
         fit = sm.OLS(d['y'], sm.add_constant(d[cols])).fit(
             cov_type='HAC', cov_kwds={'maxlags': lags})
@@ -162,14 +165,19 @@ def main() -> None:
     enc_rows = []
     for name, s in _read_external().items():
         if name == 'STLFSI4':
-            X = M.resample('W-FRI').last()
+            X = series.resample('W-FRI').last()
             tgt = s.resample('W-FRI').last()
             lags = 4
         else:
-            X, tgt, lags = M, s, 21
-        for r in _encompassing(tgt, X, lags):
-            r['index'] = name
-            enc_rows.append(r)
+            X, tgt, lags = series, s, 21
+        # Full overlap, then before and after 2015 (the first STLFSI4 file
+        # covered 2015-2025 only, so the split shows what the long history adds).
+        for period, (a, b) in {'full': (None, None), 'pre2015': (None, '2014-12-31'),
+                               'post2015': ('2015-01-01', None)}.items():
+            for r in _encompassing(tgt.loc[a:b], X.loc[a:b], lags):
+                r['index'] = name
+                r['period'] = period
+                enc_rows.append(r)
     if enc_rows:
         pd.DataFrame(enc_rows).to_csv(dest / f'{prefix}_coupling_encompassing.csv',
                                       index=False, float_format='%.4f')

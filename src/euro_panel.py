@@ -6,7 +6,11 @@ them into one matrix of daily moves:
 
 * rates and yields (money market, bonds): first difference of the level, plus
   two spreads that carry stress on their own (Euribor 3M minus the overnight
-  rate; all-ratings minus AAA 10-year yield);
+  rate; all-ratings minus AAA 10-year yield). When no Euribor series is
+  available (the ECB FM keys are not always served), the money-market term
+  spread is replaced by the AAA 2-year yield minus the overnight rate, which
+  carries the same policy-expectation and term-liquidity information at a
+  longer horizon but no unsecured bank credit risk;
 * prices (equity indices, banks and insurers, exchange rates): log returns.
 
 Everything enters through correlations, which are invariant to the unit of each
@@ -49,12 +53,16 @@ def _overnight(mm: pd.DataFrame) -> pd.Series | None:
 
 def build_euro_panel(folder: str | Path, start: str = '2005-01-01',
                      end: str | None = None, max_fill: int = 3,
-                     min_coverage: float = 0.95) -> tuple[pd.DataFrame, dict[str, list[str]]]:
+                     min_coverage: float = 0.95,
+                     mm_substitute: bool = True) -> tuple[pd.DataFrame, dict[str, list[str]]]:
     """Return ``(moves, blocks)``.
 
     Series covering less than ``min_coverage`` of the business days in
     ``[start, end]`` are dropped (and reported in the returned block map only if
     kept), so one late-starting stock does not shorten the whole panel.
+    ``mm_substitute=False`` leaves the money-market block with the overnight
+    rate alone when no Euribor is available (the substitute spread shares the
+    AAA 2-year yield with the bond block, which links the two by construction).
     """
     folder = Path(folder)
     levels: dict[str, pd.Series] = {}
@@ -79,6 +87,12 @@ def build_euro_panel(folder: str | Path, start: str = '2005-01-01',
             if on is not None and 'euribor_3m' in df:
                 levels['mm_spread_3m_on'] = df['euribor_3m'] - on.reindex(df.index).ffill()
                 names.append('mm_spread_3m_on')
+            elif mm_substitute and on is not None and (folder / 'obligataire.csv').exists():
+                bonds = _read(folder / 'obligataire.csv')
+                if 'aaa_2a' in bonds:
+                    on_b = on.reindex(on.index.union(bonds.index)).ffill(limit=max_fill)
+                    levels['mm_spread_2a_on'] = bonds['aaa_2a'] - on_b.reindex(bonds.index)
+                    names.append('mm_spread_2a_on')
         elif seg == 'obligataire':
             for c in df.columns:
                 levels[f'bd_{c}'] = df[c]

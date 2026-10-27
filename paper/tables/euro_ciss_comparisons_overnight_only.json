@@ -1,0 +1,249 @@
+{
+  "corr_levels": {
+    "total": {
+      "total": 1.0,
+      "inter": 0.695,
+      "log_vol21": 0.549,
+      "ciss": 0.585
+    },
+    "inter": {
+      "total": 0.695,
+      "inter": 1.0,
+      "log_vol21": 0.386,
+      "ciss": 0.352
+    },
+    "log_vol21": {
+      "total": 0.549,
+      "inter": 0.386,
+      "log_vol21": 1.0,
+      "ciss": 0.745
+    },
+    "ciss": {
+      "total": 0.585,
+      "inter": 0.352,
+      "log_vol21": 0.745,
+      "ciss": 1.0
+    }
+  },
+  "ciss_encompassing": [
+    {
+      "regressors": "inter",
+      "n": 1089,
+      "r2": 0.12222868178356461,
+      "t_inter": 6.51372097574986,
+      "coef_inter": 0.34961218769311325
+    },
+    {
+      "regressors": "total",
+      "n": 1089,
+      "r2": 0.3404418930519767,
+      "t_total": 11.878213769181736,
+      "coef_total": 0.5834739866112082
+    },
+    {
+      "regressors": "log_vol21",
+      "n": 1089,
+      "r2": 0.5536317149785663,
+      "t_log_vol21": 14.446157219527793,
+      "coef_log_vol21": 0.7440643218019297
+    },
+    {
+      "regressors": "log_vol21 + inter",
+      "n": 1089,
+      "r2": 0.5585623370816379,
+      "t_log_vol21": 12.46840673425416,
+      "t_inter": 1.7080710769331866,
+      "coef_log_vol21": 0.7149791909915882,
+      "coef_inter": 0.07600372975931062
+    },
+    {
+      "regressors": "log_vol21 + total",
+      "n": 1089,
+      "r2": 0.5975889290631261,
+      "t_log_vol21": 10.2053196961069,
+      "t_total": 6.740175411956296,
+      "coef_log_vol21": 0.6065030832959312,
+      "coef_total": 0.2507594632787841
+    }
+  ],
+  "auroc_cepr_recession": {
+    "total": 0.8473263265784514,
+    "inter": 0.7465422026970928,
+    "log_vol21": 0.7965158586141222,
+    "ciss": 0.8348337310773312
+  },
+  "growth_at_risk": [
+    {
+      "regressors": "total",
+      "quantile": 0.1,
+      "n": 79,
+      "coef_total": -1.2527650763122529,
+      "p_total": 0.040965439042311924
+    },
+    {
+      "regressors": "total",
+      "quantile": 0.5,
+      "n": 79,
+      "coef_total": -0.21149888700343308,
+      "p_total": 0.34963723222841053
+    },
+    {
+      "regressors": "inter",
+      "quantile": 0.1,
+      "n": 79,
+      "coef_inter": -1.5720412884895472,
+      "p_inter": 1.1080182104531008e-07
+    },
+    {
+      "regressors": "inter",
+      "quantile": 0.5,
+      "n": 79,
+      "coef_inter": 0.03052322915185846,
+      "p_inter": 0.8901746110413813
+    },
+    {
+      "regressors": "log_vol21",
+      "quantile": 0.1,
+      "n": 79,
+      "coef_log_vol21": -0.04218674740252901,
+      "p_log_vol21": 0.9807359527672114
+    },
+    {
+      "regressors": "log_vol21",
+      "quantile": 0.5,
+      "n": 79,
+      "coef_log_vol21": -0.12083688173614959,
+      "p_log_vol21": 0.5844112193766534
+    },
+    {
+      "regressors": "ciss",
+      "quantile": 0.1,
+      "n": 79,
+      "coef_ciss": -2.55732173616555,
+      "p_ciss": 1.2412415183540082e-12
+    },
+    {
+      "regressors": "ciss",
+      "quantile": 0.5,
+      "n": 79,
+      "coef_ciss": -0.8345539224555427,
+      "p_ciss": 0.0001210305736213883
+    },
+    {
+      "regressors": "total + g_past",
+      "quantile": 0.1,
+      "n": 79,
+      "coef_total": -1.3684920747213711,
+      "coef_g_past": -0.9527232757259145,
+      "p_total": 0.03972321459976268,
+      "p_g_past": 0.013319261080322506
+    },
+    {
+      "regressors": "total + g_past",
+      "quantile": 0.5,
+      "n": 79,
+      "coef_total": -0.13343239565270396,
+      "coef_g_past": 0.07744437133822497,
+      "p_total": 0.5581431361668596,
+      "p_g_past": 0.7337511903864583
+    },
+    {
+      "regressors": "inter + g_past",
+      "quantile": 0.1,
+      "n": 79,
+      "coef_inter": -1.5790522117006043,
+      "coef_g_past": -0.21262449845990122,
+      "p_inter": 7.032751009287627e-05,
+      "p_g_past": 0.4749675872153833
+    },
+    {
+      "regressors": "inter + g_past",
+      "quantile": 0.5,
+      "n": 79,
+      "coef_inter": 0.04946058576054621,
+      "coef_g_past": 0.12723808423363386,
+      "p_inter": 0.8227962308997014,
+      "p_g_past": 0.5648998399473529
+    },
+    {
+      "regressors": "log_vol21 + g_past",
+      "quantile": 0.1,
+      "n": 79,
+      "coef_log_vol21": -0.6886213113443755,
+      "coef_g_past": -2.0870293069028394,
+      "p_log_vol21": 0.5528220618226775,
+      "p_g_past": 1.54754576812498e-05
+    },
+    {
+      "regressors": "log_vol21 + g_past",
+      "quantile": 0.5,
+      "n": 79,
+      "coef_log_vol21": -0.14025969293584983,
+      "coef_g_past": -0.03094288373408428,
+      "p_log_vol21": 0.5756017270927922,
+      "p_g_past": 0.9016124340209224
+    },
+    {
+      "regressors": "ciss + g_past",
+      "quantile": 0.1,
+      "n": 79,
+      "coef_ciss": -2.8597206762872,
+      "coef_g_past": -1.728236705602056,
+      "p_ciss": 6.386024779897427e-12,
+      "p_g_past": 4.370149564010791e-09
+    },
+    {
+      "regressors": "ciss + g_past",
+      "quantile": 0.5,
+      "n": 79,
+      "coef_ciss": -0.8020838486512513,
+      "coef_g_past": -0.02834424723948393,
+      "p_ciss": 0.0009373115512541802,
+      "p_g_past": 0.903467892040484
+    },
+    {
+      "regressors": "ciss + total + g_past",
+      "quantile": 0.1,
+      "n": 79,
+      "coef_ciss": -2.7261726774577006,
+      "coef_total": -0.10742115448337941,
+      "coef_g_past": -1.7293029656890107,
+      "p_ciss": 8.297855719386894e-13,
+      "p_total": 0.783003474832925,
+      "p_g_past": 1.0797192078370152e-08
+    },
+    {
+      "regressors": "ciss + total + g_past",
+      "quantile": 0.5,
+      "n": 79,
+      "coef_ciss": -1.034283113576059,
+      "coef_total": 0.2812827353306915,
+      "coef_g_past": 0.06572981005551526,
+      "p_ciss": 0.00014174083090223857,
+      "p_total": 0.24825965337514302,
+      "p_g_past": 0.755534888680587
+    },
+    {
+      "regressors": "ciss + inter + g_past",
+      "quantile": 0.1,
+      "n": 79,
+      "coef_ciss": -2.7809414207699383,
+      "coef_inter": 0.07170278157360244,
+      "coef_g_past": -1.8486647596584298,
+      "p_ciss": 2.647067387569383e-09,
+      "p_inter": 0.8121572853407351,
+      "p_g_past": 6.576225083849742e-08
+    },
+    {
+      "regressors": "ciss + inter + g_past",
+      "quantile": 0.5,
+      "n": 79,
+      "coef_ciss": -0.7944874880799482,
+      "coef_inter": -0.006391132155684431,
+      "coef_g_past": -0.04407743386990148,
+      "p_ciss": 0.001894450257026606,
+      "p_inter": 0.9778920344550589,
+      "p_g_past": 0.8515763966143565
+    }
+  ]
+}
