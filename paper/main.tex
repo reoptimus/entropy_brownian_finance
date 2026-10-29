@@ -91,6 +91,16 @@ between the twenty- and fifty-year rungs, but delivers a tail loss an entropy
 scenario reaches for $5.47$; the committee has bought a ten-year loss at
 thirty-year implausibility. We decompose that price to show where it goes, and
 the expensive leg is not the one intuition picks.
+
+A central-bank application is built on the one result that survives. The
+rank-based total correlation $-\tfrac12\log\det R$ survives devolatilisation and
+clears both nulls where the absorption ratio does not, and it splits exactly into
+coupling within and between market segments. On a euro-area panel of the five
+CISS segments (2005--2026), coupling between segments rises under stress beyond
+both nulls, and the sovereign--bank link peaks in 2011. Total coupling identifies
+CEPR recessions slightly better than the ECB CISS (AUROC $0.85$ against $0.83$),
+but adds nothing to it in a Growth-at-Risk regression: it is a coincident map of
+which segments stress links, not a forecast.
 \end{abstract}
 
 \tableofcontents
@@ -166,6 +176,15 @@ inflation are chosen on one budget, the scenario cannot be internally
 inconsistent, and because \emph{any} scenario can be priced on the same scale,
 ``is this stress test severe enough?'' becomes arithmetic.
 
+\paragraph{An entropic CISS (Section~\ref{sec:cb}).}
+The one regime result that clears both nulls, the coupling of the
+cross-section, is turned into an indicator in the format of the ECB's CISS. The
+total correlation $-\tfrac12\log\det R$ splits exactly into coupling within each
+market segment and mutual information between segments, so one number comes with
+its own contagion map, in nats. On the euro area it shows stress linking the
+segments beyond both nulls, and it is compared with the CISS, CEPR recessions,
+Growth-at-Risk and the St.~Louis Fed stress index.
+
 \paragraph{A warning about measuring any of this.}
 The structural index is a non-negative, convex functional of estimated second,
 third and fourth moments. Estimation noise on fat-tailed data pushes such a
@@ -182,6 +201,7 @@ Section~\ref{sec:dynamics} states the theorem and the two postulates and derives
 the jump-diffusion; Section~\ref{sec:hypotheses} lists the hypotheses;
 Sections~\ref{sec:data}--\ref{sec:results} give data, estimators and results,
 including a placebo null that the jump and relaxation statistics must clear;
+Section~\ref{sec:cb} builds the entropic CISS;
 Section~\ref{sec:stress} builds the stress test; Section~\ref{sec:limits} is
 honest about what none of this establishes.
 
@@ -1162,6 +1182,283 @@ episodes and the October--November 1997 Asian crisis.}
 \label{fig:eu}
 \end{figure}
 
+\section{An entropic CISS for central banks}
+\label{sec:cb}
+
+Only one regime result in this paper clears both calibrated nulls: under stress
+the cross-section couples. This section turns that result into an indicator in
+the format central banks already use. The model is the Composite Indicator of
+Systemic Stress \citep{hollo2012}. Like the CISS, the indicator aggregates
+the money, bond, equity, financial-intermediary and foreign-exchange segments.
+Unlike the CISS, it says in nats how much of the coupling lies within each
+segment and how much lies between them. It is validated against the same nulls
+as above, then against the official indices. The code is in
+\texttt{src/coupling.py}, \texttt{src/blocks.py} and
+\texttt{scripts/euro\_ciss.py}.
+
+\subsection{Which dependence measure}
+\label{sec:cb-measure}
+
+Write $C(R)=-\tfrac12\log\det R\ge0$ for the Gaussian total correlation of
+\citet{watanabe1960}, which is minus the dependence channel of
+Section~\ref{sec:channels}. Before building on it we check three ways in which
+the result could be an artefact.
+\begin{itemize}
+\item Correlations rise mechanically when variances rise \citep{forbes2002}.
+  The \emph{devolatilised} version divides each return by its past-only EWMA
+  volatility ($\lambda=0.94$) before estimating $R$.
+\item A few extreme days could drive the result. The \emph{rank} version
+  replaces each return by its normal score, which makes $C$ invariant to the
+  marginal distributions.
+\item An existing measure might already capture the same thing. We compare
+  with the absorption ratio of \citet{kritzman2011} (share of variance in the
+  first $N/5$ eigenvectors) and with the share of the first eigenvalue.
+\end{itemize}
+All versions use Ledoit--Wolf shrinkage, a 252-day window and the past-only
+stress label, and are judged on the stress-minus-calm gap against the same 200
+i.i.d.\ and 200 block resamples.
+
+\begin{table}[ht]
+\centering
+\small
+\begin{tabular}{lcccc}
+\toprule
+& \multicolumn{2}{c}{S\&P~500, 20 stocks} & \multicolumn{2}{c}{FF49, 48 industries} \\
+Measure & i.i.d. & 21-day blocks & i.i.d. & 21-day blocks \\
+\midrule
+$C$, raw & $6.2$ ($<0.005$) & $2.0$ ($0.030$) & $11.9$ ($<0.005$) & $1.8$ ($0.025$) \\
+$C$, devolatilised & $5.1$ ($<0.005$) & $2.0$ ($0.040$) & $7.9$ ($<0.005$) & $1.7$ ($0.040$) \\
+$C$, ranks & $9.6$ ($<0.005$) & $\mathbf{2.3}$ ($\mathbf{0.030}$) & $12.7$ ($<0.005$) & $\mathbf{2.2}$ ($\mathbf{0.010}$) \\
+Absorption ratio & $0.7$ ($0.215$) & $-0.5$ ($0.695$) & $6.9$ ($<0.005$) & $0.4$ ($0.375$) \\
+First-eigenvalue share & $5.3$ ($<0.005$) & $1.8$ ($0.040$) & $6.7$ ($<0.005$) & $0.2$ ($0.445$) \\
+\bottomrule
+\end{tabular}
+\caption{Stress-minus-calm gap of each dependence measure against the two
+nulls: $z$-score against the null distribution, and in brackets the share of
+the 200 resamples at least as extreme on the predicted side.
+Source: \texttt{paper/tables/coupling\_null\_200rep\_summary.csv}.}
+\label{tab:cb-measures}
+\end{table}
+
+Table~\ref{tab:cb-measures} gives three answers.
+\begin{itemize}
+\item \emph{Volatility.} Coupling survives devolatilisation. It is about
+  $30\%$ weaker, but it still clears both nulls on both panels.
+\item \emph{Extreme days.} The rank version is the strongest against the block
+  null on both panels. It is the only one that would survive a Bonferroni
+  correction for five measures, on FF49.
+\item \emph{Existing measures.} The absorption ratio fails the block null on
+  both panels. The first-eigenvalue share passes on stocks but not on
+  industries. A likely reason is that $\log\det R$ weighs the whole spectrum,
+  including the small eigenvalues that collapse when the cross-section
+  couples, whereas concentration measures look only at the top.
+\end{itemize}
+The rank version is used from here on.
+
+\subsection{An exact block decomposition}
+\label{sec:cb-blocks}
+
+Split the variables into blocks $B_1,\dots,B_K$, such as market segments,
+sectors or countries. Then
+\begin{equation}
+\label{eq:blocks}
+C(R) \;=\; \sum_{k=1}^{K} C(R_{kk}) \;+\; I(B_1;\dots;B_K),
+\qquad
+I(B_1;\dots;B_K) = -\tfrac12\log\det R + \tfrac12\sum_k \log\det R_{kk} \;\ge\; 0,
+\end{equation}
+where $R_{kk}$ is the correlation matrix within block $k$. The between-block
+term $I$ is the multi-information of the Gaussian copula. It is zero exactly
+when the segments move independently of one another, whatever happens inside
+each of them, so it is the systemic part. For two blocks $A$ and $B$, the
+mutual information
+$I(A;B)=\tfrac12\bigl(\log\det R_{AA}+\log\det R_{BB}-\log\det R_{A\cup B}\bigr)$
+gives a contagion map in the same unit. Everything in \eqref{eq:blocks} is
+invariant to rescaling any variable, so returns, yield changes and exchange
+rates can sit in one matrix.
+
+As a first test we used sector blocks. On the S\&P~500 stocks the
+between-sector term rises under stress beyond both nulls (block-null
+$p=0.015$), and so does its share of the total ($p=0.025$). On the FF49
+portfolios the rise stays within macro-sectors (block-null $p=0.275$ for the
+between term), because aggregation into portfolios already absorbs much of the
+common factor.
+
+\subsection{The euro-area panel}
+\label{sec:cb-data}
+
+The panel is daily, from January 2005 to October 2026: 5\,690 days and 28
+series in the five CISS segments.
+\begin{itemize}
+\item \emph{Money market:} the overnight rate (EONIA, then \texteuro{}STR from
+  October 2019; the splice day is dropped).
+\item \emph{Bonds:} ECB AAA yields at 2, 5 and 10 years, all-ratings yields at
+  2 and 10 years, and the all-ratings minus AAA 10-year spread.
+\item \emph{Equities:} DAX, CAC~40, FTSE~MIB, IBEX~35 and AEX.
+\item \emph{Financial intermediaries:} nine banks and three insurers.
+\item \emph{Foreign exchange:} the euro against the dollar, sterling, yen and
+  Swiss franc.
+\end{itemize}
+Rates enter as daily changes and prices as log returns.
+
+The CISS money-market segment uses the 3-month Euribor minus overnight spread.
+Euribor was not available from the ECB data portal at the time of writing. We
+first used the AAA 2-year yield minus overnight as a substitute. That spread
+shares the 2-year yield with the bond block, which ties the two blocks
+together by construction. Under stress their mutual information \emph{falls}
+($-0.14$ nats, outside both nulls), and this artefact is enough to hide the rise
+in between-segment coupling. The results below therefore keep the overnight
+rate alone in the money-market block. The variant with the substitute is in the
+replication files.
+
+\subsection{Results}
+\label{sec:cb-results}
+
+\begin{table}[ht]
+\centering
+\small
+\begin{tabular}{lccc}
+\toprule
+Component & Gap (nats) & $p$, i.i.d. & $p$, 21-day blocks \\
+\midrule
+Total coupling $C$ & $+1.61$ & $<0.005$ & $<0.005$ \\
+\textbf{Between segments $I$} & $+0.19$ & $<0.005$ & $\mathbf{<0.005}$ \\
+Between-segment share $I/C$ & $-0.005$ & \multicolumn{2}{c}{opposite sign} \\
+Within equities & $+0.46$ & $<0.005$ & $<0.005$ \\
+Within intermediaries & $+0.48$ & $<0.005$ & $0.045$ \\
+Within bonds & $+0.34$ & $<0.005$ & $<0.005$ \\
+Within FX & $+0.14$ & $<0.005$ & $<0.005$ \\
+Bonds -- FX & $+0.055$ & $<0.005$ & $<0.005$ \\
+Equities -- FX & $+0.046$ & $<0.005$ & $<0.005$ \\
+Equities -- intermediaries & $+0.096$ & $<0.005$ & $0.025$ \\
+Intermediaries -- FX & $+0.040$ & $<0.005$ & $0.045$ \\
+Bonds -- intermediaries & $+0.040$ & $<0.005$ & $0.050$ \\
+Bonds -- equities & $+0.029$ & $<0.005$ & $0.055$ \\
+Money market -- any segment & $\approx 0$ & n.s. & n.s. \\
+\bottomrule
+\end{tabular}
+\caption{Euro area, stress minus calm, against 200 + 200 resamples. Stress is
+the top decile of the 21-day volatility of the equal-weight equity block, with
+a past-only threshold. Source:
+\texttt{paper/tables/euro\_null\_200rep\_summary\_overnight\_only.csv}.}
+\label{tab:cb-euro}
+\end{table}
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=0.9\linewidth]{figures/euro_ciss_entropique_overnight_only_en.png}
+\caption{The euro-area entropic CISS. Top: total coupling and the ECB CISS,
+standardised. Middle: coupling between the five segments, in nats, and its
+share of the total. Bottom: mutual information between pairs of segments.}
+\label{fig:cb-euro}
+\end{figure}
+
+Table~\ref{tab:cb-euro} and Figure~\ref{fig:cb-euro} support three readings.
+\begin{itemize}
+\item \emph{Stress ties the segments together.} Between-segment coupling rises
+  beyond both nulls, as between sectors in the S\&P~500. Every pair outside the
+  money market rises; the links with foreign exchange and between equities and
+  intermediaries are the clearest. The between-segment share falls slightly,
+  because each segment also tightens internally, and faster.
+\item \emph{The sovereign--bank link stands out.} Mutual information between
+  bonds and intermediaries, and between bonds and equities, peaks in late 2011,
+  at the height of the sovereign debt crisis: $0.46$ and $0.35$ nats, against
+  $0.10$ and $0.05$ at the end of 2006. The aggregate CISS cannot show which
+  segments a stress episode links.
+\item \emph{The money market does not couple} with the other segments in daily
+  data. The overnight rate moves on policy decisions, not with market stress.
+  An unsecured term spread is needed for this segment to carry bank funding
+  stress (Section~\ref{sec:cb-next}).
+\end{itemize}
+
+\paragraph{Against official indicators.} Table~\ref{tab:cb-official} sets the
+indicator against the ECB CISS, CEPR recession dates and a Growth-at-Risk
+regression in the spirit of \citet{adrian2019}.
+\begin{itemize}
+\item \emph{Recessions.} Total coupling identifies the CEPR recessions slightly
+  better than the CISS and better than volatility.
+\item \emph{The CISS.} Total coupling explains the CISS beyond what volatility
+  already explains.
+\item \emph{Future growth.} For the lower tail of growth four quarters ahead,
+  both coupling measures are significant alone. Neither adds anything once the
+  CISS and past growth are in the regression.
+\end{itemize}
+The indicator is therefore coincident: a complement to the CISS that explains
+which segments are linked, not a better predictor. With three recessions and
+79 quarters, these comparisons are indicative.
+
+\begin{table}[ht]
+\centering
+\small
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{lcccc}
+\toprule
+& Total $C$ & Between $I$ & 21-day vol. & ECB CISS \\
+\midrule
+Correlation with the CISS (levels) & $0.58$ & $0.35$ & $0.74$ & $1$ \\
+AUROC, CEPR recessions & $\mathbf{0.85}$ & $0.75$ & $0.80$ & $0.83$ \\
+CISS on indicator and volatility: $t$ (HAC) & $\mathbf{6.7}$ & $1.7$ & & \\
+GaR, $\tau=0.10$, alone: coef.\ ($p$) & $-1.25$ ($0.04$) & $-1.57$ ($<0.001$) & $-0.04$ ($0.98$) & $-2.56$ ($<0.001$) \\
+GaR, $\tau=0.10$, with CISS and past growth: $p$ & $0.78$ & $0.81$ & & $<0.001$ \\
+\bottomrule
+\end{tabular}}
+\caption{Euro area against official indicators. CEPR recessions: 2008Q1--2009Q2,
+2011Q3--2013Q1, 2019Q4--2020Q2. Weekly standardised regressions, 1\,089 weeks.
+Growth-at-Risk: quantile regression of four-quarter-ahead real GDP growth on the
+quarterly mean of the indicator, 79 quarters. Source:
+\texttt{paper/tables/euro\_ciss\_comparisons\_overnight\_only.json}.}
+\label{tab:cb-official}
+\end{table}
+
+\paragraph{Against the St.~Louis Fed stress index, 1994--2026.} On the US
+panels, the official benchmark is the STLFSI4 \citep{kliesen2010}, weekly
+since the end of 1993 (Table~\ref{tab:cb-stlfsi}).
+\begin{itemize}
+\item On its own, $C$ tracks the STLFSI4 about as well as the first-eigenvalue
+  share, and much better than the absorption ratio on stocks. In a joint
+  regression on stocks, $C$ keeps $t=5.9$ and the absorption ratio turns to $-6.0$.
+\item On the twenty stocks, coupling adds to volatility in explaining the
+  STLFSI4 ($t\approx4$--$5$), mostly before 2015.
+\item On the 48 industry portfolios nothing adds to volatility.
+\end{itemize}
+
+\begin{table}[ht]
+\centering
+\small
+\begin{tabular}{lcccc}
+\toprule
+& \multicolumn{2}{c}{S\&P~500 (1994--2022)} & \multicolumn{2}{c}{FF49 (1994--2026)} \\
+Measure & $R^2$ alone & $t$ with vol. & $R^2$ alone & $t$ with vol. \\
+\midrule
+$C$, raw & $0.16$ & $\mathbf{4.2}$ & $0.10$ & $0.3$ \\
+$C$, devolatilised & $0.16$ & $\mathbf{4.8}$ & $0.09$ & $0.5$ \\
+$C$, ranks & $0.16$ & $\mathbf{4.7}$ & $0.09$ & $-0.1$ \\
+Absorption ratio & $0.06$ & $4.2$ & $0.07$ & $-2.0$ \\
+First-eigenvalue share & $0.16$ & $4.6$ & $0.07$ & $-0.2$ \\
+21-day volatility alone & $0.48$ & & $0.41$ & \\
+\bottomrule
+\end{tabular}
+\caption{STLFSI4 on each measure, weekly standardised regressions with HAC
+errors (4 lags); 1\,514 and 1\,697 weeks. Source:
+\texttt{paper/tables/*\_coupling\_encompassing.csv}.}
+\label{tab:cb-stlfsi}
+\end{table}
+
+\subsection{Work in progress}
+\label{sec:cb-next}
+
+Three steps remain before the indicator can be proposed for monitoring.
+\begin{itemize}
+\item \emph{Money-market segment.} Add the 3-month Euribor from its
+  administrator (EMMI) and rebuild the segment with the Euribor minus
+  overnight spread, as in the CISS.
+\item \emph{Event study.} Date the stress episodes in the European Systemic
+  Risk Board's crisis database \citep{loduca2017} and measure how the between-segment
+  term and the pairwise map behave around them, country by country.
+\item \emph{Encompassing tests.} Test the indicator against firm-level systemic
+  risk measures, SRISK \citep{brownlees2017} and $\Delta$CoVaR
+  \citep{adrian2016}.
+\end{itemize}
+
 \section{Stress testing by entropy}
 \label{sec:stress}
 
@@ -1416,6 +1713,11 @@ generalised Pareto tail to $I^{(h)}$ would be the disciplined fix.
 \paragraph{Nothing here forecasts.} H7 is rejected on two datasets under a
 demanding protocol. Any use of these measures should be diagnostic.
 
+\paragraph{The entropic CISS is coincident and still incomplete.} It identifies
+recessions about as well as the CISS but adds nothing to it for future growth.
+Its money-market segment holds only the overnight rate until Euribor is added,
+and the comparisons rest on three euro-area recessions and 79 quarters.
+
 \section{Conclusion}
 
 The theoretical contribution is a chain that is explicit about which link is a
@@ -1465,8 +1767,21 @@ textbook bundle sits between the twenty- and fifty-year rungs but buys its tail
 loss at a $45\%$ markup, because it spends most of its budget inflating every
 marginal volatility uniformly -- which is not the route observed crises take.
 
+The central-bank application keeps the one result that survives and gives it a
+format a monitoring desk can use. Total correlation in ranks survives
+devolatilisation and clears both nulls where the absorption ratio does not. Its
+exact split into within- and between-segment terms turns one number into a map:
+on the euro area, stress links the five CISS segments beyond both nulls, and the
+sovereign--bank link stands out in 2011. The indicator is coincident, a
+complement to the CISS rather than a better forecaster; Euribor, an event study
+on the ESRB crisis database and tests against SRISK and $\Delta$CoVaR come next.
+
 \begin{thebibliography}{99}
 \small
+
+\bibitem[Adrian \& Brunnermeier(2016)]{adrian2016} Adrian, T., \& Brunnermeier, M. K. (2016). CoVaR. \textit{American Economic Review}, 106(7), 1705--1741.
+
+\bibitem[Adrian, Boyarchenko \& Giannone(2019)]{adrian2019} Adrian, T., Boyarchenko, N., \& Giannone, D. (2019). Vulnerable Growth. \textit{American Economic Review}, 109(4), 1263--1289.
 
 \bibitem[Ahmadi-Javid(2012)]{ahmadijavid2012} Ahmadi-Javid, A. (2012). Entropic Value-at-Risk: A New Coherent Risk Measure. \textit{Journal of Optimization Theory and Applications}, 155(3), 1105--1123.
 
@@ -1484,6 +1799,8 @@ marginal volatility uniformly -- which is not the route observed crises take.
 
 \bibitem[Breuer \& Csiszár(2013)]{breuer2013} Breuer, T., \& Csiszár, I. (2013). Systematic Stress Tests with Entropic Plausibility Constraints. \textit{Journal of Banking \& Finance}, 37(5), 1552--1559.
 
+\bibitem[Brownlees \& Engle(2017)]{brownlees2017} Brownlees, C., \& Engle, R. F. (2017). SRISK: A Conditional Capital Shortfall Measure of Systemic Risk. \textit{Review of Financial Studies}, 30(1), 48--79.
+
 \bibitem[Caraiani(2018)]{caraiani2018} Caraiani, P. (2018). Modeling the Comovement of Entropy between Financial Markets. \textit{Entropy}, 20(6), 417.
 
 \bibitem[Clark(1973)]{clark1973} Clark, P. K. (1973). A Subordinated Stochastic Process Model with Finite Variance for Speculative Prices. \textit{Econometrica}, 41(1), 135--155.
@@ -1496,15 +1813,25 @@ marginal volatility uniformly -- which is not the route observed crises take.
 
 \bibitem[Engle(2002)]{engle2002} Engle, R. (2002). Dynamic Conditional Correlation. \textit{Journal of Business \& Economic Statistics}, 20(3), 339--350.
 
+\bibitem[Forbes \& Rigobon(2002)]{forbes2002} Forbes, K. J., \& Rigobon, R. (2002). No Contagion, Only Interdependence: Measuring Stock Market Comovements. \textit{Journal of Finance}, 57(5), 2223--2261.
+
 \bibitem[Glasserman \& Xu(2014)]{glasserman2014} Glasserman, P., \& Xu, X. (2014). Robust Risk Measurement and Model Risk. \textit{Quantitative Finance}, 14(1), 29--58.
+
+\bibitem[Holló, Kremer \& Lo Duca(2012)]{hollo2012} Holló, D., Kremer, M., \& Lo Duca, M. (2012). CISS -- A Composite Indicator of Systemic Stress in the Financial System. ECB Working Paper No.~1426.
 
 \bibitem[Hyvärinen(1998)]{hyvarinen1998} Hyvärinen, A. (1998). New Approximations of Differential Entropy for Independent Component Analysis and Projection Pursuit. \textit{Advances in Neural Information Processing Systems}, 10, 273--279. (Constants as in Hyvärinen \& Oja, 2000, \textit{Neural Networks} 13, 411--430.)
 
 \bibitem[Jaynes(1957)]{jaynes1957} Jaynes, E. T. (1957). Information Theory and Statistical Mechanics. \textit{Physical Review}, 106, 620--630.
 
+\bibitem[Kliesen \& Smith(2010)]{kliesen2010} Kliesen, K. L., \& Smith, D. C. (2010). Measuring Financial Market Stress. Federal Reserve Bank of St.~Louis, \textit{Economic Synopses}, No.~2.
+
+\bibitem[Kritzman et al.(2011)]{kritzman2011} Kritzman, M., Li, Y., Page, S., \& Rigobon, R. (2011). Principal Components as a Measure of Systemic Risk. \textit{Journal of Portfolio Management}, 37(4), 112--126.
+
 \bibitem[Kyle(1985)]{kyle1985} Kyle, A. S. (1985). Continuous Auctions and Insider Trading. \textit{Econometrica}, 53(6), 1315--1335.
 
 \bibitem[Ledoit \& Wolf(2004)]{ledoit2004} Ledoit, O., \& Wolf, M. (2004). A Well-Conditioned Estimator for Large-Dimensional Covariance Matrices. \textit{Journal of Multivariate Analysis}, 88(2), 365--411.
+
+\bibitem[Lo Duca et al.(2017)]{loduca2017} Lo Duca, M., Koban, A., Basten, M., Bengtsson, E., Klaus, B., Kusmierczyk, P., Lang, J. H., Detken, C., \& Peltonen, T. (2017). A New Database for Financial Crises in European Countries. ECB Occasional Paper No.~194.
 
 \bibitem[Mandelbrot \& Taylor(1967)]{mandelbrot1967} Mandelbrot, B., \& Taylor, H. M. (1967). On the Distribution of Stock Price Differences. \textit{Operations Research}, 15(6), 1057--1062.
 
@@ -1517,6 +1844,8 @@ marginal volatility uniformly -- which is not the route observed crises take.
 \bibitem[Tauchen \& Pitts(1983)]{tauchen1983} Tauchen, G. E., \& Pitts, M. (1983). The Price Variability--Volume Relationship on Speculative Markets. \textit{Econometrica}, 51(2), 485--505.
 
 \bibitem[Vasicek(1976)]{vasicek1976} Vasicek, O. (1976). A Test for Normality Based on Sample Entropy. \textit{Journal of the Royal Statistical Society B}, 38(1), 54--59.
+
+\bibitem[Watanabe(1960)]{watanabe1960} Watanabe, S. (1960). Information Theoretical Analysis of Multivariate Correlation. \textit{IBM Journal of Research and Development}, 4(1), 66--82.
 
 \bibitem[Zhou, Cai \& Tong(2013)]{zhou2013} Zhou, R., Cai, R., \& Tong, G. (2013). Applications of Entropy in Finance: A Review. \textit{Entropy}, 15(11), 4909--4931.
 
