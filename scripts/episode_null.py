@@ -57,6 +57,13 @@ def typology_of(ent: pd.DataFrame, threshold: float, scale_window: int,
         'top_episode_share_dependence': float(top['share_dependence']),
         'top_episode_is_dependence_dominant': bool(top['dominant_channel'] == 'dependence'),
         'corr_dJ_share_dependence': float(corr),
+        # Episode amplitude: one crisis (e.g. COVID, nine daily jumps) counts
+        # once, with the full rise of J over the episode as its size.
+        'n_jumps_up': int(jumps['jump_up'].sum()),
+        'mean_jumps_per_episode': float(jumps['jump_up'].sum() / len(budget)),
+        'mean_episode_dJ': float(budget['dJ'].mean()),
+        'max_episode_dJ': float(budget['dJ'].max()),
+        'top5_mean_episode_dJ': float(budget['dJ'].nlargest(5).mean()),
     }
 
 

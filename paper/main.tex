@@ -384,6 +384,7 @@ H1 index $\JJ$ & $+1.93$ nat & fails both & fails both \\
 H1 shape $\DD$ & $+0.27$ nat & null stronger & null stronger \\
 H2 compensation & $\beta=0.20$ under stress & fails both & i.i.d.\ only \\
 H3 one-sided jumps & 158 up, 9 down & null stronger & fails both \\
+H3 largest episode & $15.8$ nats (COVID) & \textbf{passes both} & not tested \\
 H4 half-life & 121 days & not identified & not identified \\
 H4 range of $\JJ$ & $18.95$ nats & \textbf{passes both} & i.i.d.\ only \\
 H5 sign & correlation $-0.24$ & fails ($p=0.08$--$0.10$) & fails both \\
@@ -414,6 +415,21 @@ The second result that passes both nulls on the main panel is the
 against $10.05$ and $13.77$ in the nulls ($p=0.035$ against blocks). Real
 markets move the index further than any resampling of the same returns. This
 result does not, however, replicate against the block null on industries.
+
+\paragraph{A jump is not an event.} The detector judges \emph{daily} changes
+in $\JJ$. A crisis lasting several weeks therefore produces several jumps:
+the COVID crisis yields nine between 24 February and 16 March 2020, while the
+index rises by 16~nats, whereas the largest single-day jump is only
+$3.2$~nats. We therefore also count by \emph{episode}, merging jumps less than
+40 days apart: the 158 jumps of the main panel form 65 episodes. Measured this
+way, the largest shock ($15.8$~nats, COVID) exceeds what both nulls produce:
+$8.1$~nats on average under the i.i.d.\ null (none of the 200 repetitions
+reaches it) and $11.7$ under the block null ($p=0.04$). This result echoes the
+range of $\JJ$ and rests on a single episode. The clustering of jumps ($2.4$
+per episode), by contrast, is reproduced by the block null: it is simply the
+clustering of turbulent days. And the average episode ($1.4$~nat) is smaller
+than in both nulls: most real episodes are modest, only a few are
+exceptional.
 
 \paragraph{Coupling is not just a volatility effect.} Three checks, in
 table~\ref{tab:cb-measures}, rule out the usual objections.

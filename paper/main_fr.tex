@@ -412,6 +412,7 @@ H1 indice $\JJ$ & $+1{,}93$ nat & échoue aux deux & échoue aux deux \\
 H1 forme $\DD$ & $+0{,}27$ nat & témoin plus fort & témoin plus fort \\
 H2 compensation & $\beta=0{,}20$ sous stress & échoue aux deux & i.i.d.\ seulement \\
 H3 sauts unilatéraux & 158 hausses, 9 baisses & témoin plus fort & échoue aux deux \\
+H3 plus grand épisode & $15{,}8$ nats (COVID) & \textbf{franchit les deux} & non testé \\
 H4 demi-vie & 121 jours & non identifiée & non identifiée \\
 H4 étendue de $\JJ$ & $18{,}95$ nats & \textbf{franchit les deux} & i.i.d.\ seulement \\
 H5 signe & corrélation $-0{,}24$ & échoue ($p=0{,}08$--$0{,}10$) & échoue aux deux \\
@@ -444,6 +445,23 @@ contre $10{,}05$ et $13{,}77$ dans les témoins ($p=0{,}035$ face aux blocs).
 Les marchés réels déplacent l'indice plus loin que tout rééchantillonnage des
 mêmes rendements. Ce résultat ne se réplique toutefois pas face au témoin par
 blocs sur les secteurs.
+
+\paragraph{Un saut n'est pas un événement.} Le détecteur juge les
+variations \emph{quotidiennes} de $\JJ$. Une crise qui dure plusieurs semaines
+produit donc plusieurs sauts : la crise COVID en donne neuf entre le
+24~février et le 16~mars 2020, pendant que l'indice monte de 16~nats, alors
+que le plus grand saut d'un seul jour ne fait que $3{,}2$~nats. Nous comptons
+donc aussi par \emph{épisode}, en fusionnant les sauts distants de moins de
+40~jours : les 158~sauts du panel principal forment 65~épisodes. Mesuré ainsi,
+le plus grand choc ($15{,}8$~nats, la COVID) dépasse ce que produisent les
+deux témoins : $8{,}1$~nats en moyenne pour le témoin i.i.d.\ (aucune des
+200~répétitions ne l'atteint) et $11{,}7$ pour le témoin par blocs ($p=0{,}04$).
+Ce résultat rejoint celui de l'étendue de $\JJ$ et repose sur un seul
+épisode. Le regroupement des sauts ($2{,}4$ par épisode), lui, est reproduit
+par le témoin par blocs : c'est le simple regroupement des journées agitées.
+Et l'épisode moyen ($1{,}4$~nat) est plus petit que dans les deux témoins :
+la plupart des épisodes réels sont modestes, seuls quelques-uns sont
+exceptionnels.
 
 \paragraph{Le couplage n'est pas un simple effet de volatilité.} Trois
 vérifications, au tableau~\ref{tab:cb-measures}, écartent les objections
