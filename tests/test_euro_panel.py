@@ -35,3 +35,18 @@ def test_panel_builds_moves_blocks_and_splice(tmp_path):
     # The EONIA -> €STR splice day carries no overnight move.
     assert pd.Timestamp('2019-10-01') not in M.index
     assert M['eq_dax'].abs().max() < 0.2
+
+
+def test_without_euribor_the_2y_term_spread_stands_in(tmp_path):
+    rng = np.random.default_rng(1)
+    idx = pd.bdate_range('2004-01-01', '2012-12-31')
+    walk = lambda s: pd.Series(np.cumsum(rng.standard_normal(len(idx))) * s, index=idx)
+    _write(tmp_path, 'monetaire', pd.DataFrame({'eonia': 1.5 + walk(0.01)}))
+    _write(tmp_path, 'obligataire', pd.DataFrame({'aaa_2a': 2 + walk(0.02),
+                                                  'aaa_10a': 3 + walk(0.02)}))
+    _write(tmp_path, 'actions', pd.DataFrame({'dax': np.exp(8 + walk(0.01))}))
+
+    M, blocks = build_euro_panel(tmp_path, start='2005-01-01', end='2012-12-31')
+    assert blocks['monetaire'] == ['mm_overnight', 'mm_spread_2a_on']
+    np.testing.assert_allclose(M['mm_spread_2a_on'], M['bd_aaa_2a'] - M['mm_overnight'],
+                               atol=1e-12)
