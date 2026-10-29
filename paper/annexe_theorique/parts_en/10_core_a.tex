@@ -1,0 +1,236 @@
+\section{From order flow to a Gaussian price: the volume bridge}
+\label{sec:bridge}
+
+\subsection{The price as accumulated order flow}
+
+Over $[t,t+\Delta]$ let the market execute $M$ trades, trade $k$ carrying signed
+volume $\epsilon_k v_k$ with $\epsilon_k\in\{-1,+1\}$ the sign (buyer- or
+seller-initiated) and $v_k>0$ the size. Write $V=\sum_k v_k$ for total volume
+and $Q=\sum_k \epsilon_k v_k$ for net signed order flow.
+
+\begin{assumption}[Linear impact]\label{as:impact}
+The log-price responds linearly to net signed order flow,
+$\Delta X_{t,\Delta} = X_{t+\Delta}-X_t = \lambda\,Q$, with $\lambda>0$ constant
+over the interval.
+\end{assumption}
+
+This is Kyle's \citeyearpar{kyle1985} equilibrium: the market maker, unable to
+distinguish informed from uninformed flow, sets a linear pricing rule and
+$\lambda$ is the inverse depth. It is the definition of ``price as a function of
+traded volume'' that the rest of the section needs, and it is the weakest link
+in the chain; Section~\ref{sec:bridge-caveats} says what happens when it fails.
+
+\begin{assumption}[Exchangeable signs and a volume-proportional variance]
+\label{as:signs}
+Conditional on $V$ and on the information available at $t$, the market's belief
+about $Q$ is constrained only by its first two moments, with
+$\mathbb{E}[Q\mid V] = m$ and $\mathrm{Var}(Q\mid V) = \varsigma^2 V$.
+\end{assumption}
+
+The variance form is what one gets when trade signs are exchangeable with
+bounded correlation and sizes have a stable mean: for independent signs,
+$\mathrm{Var}(Q)=\sum_k v_k^2 \approx \bar v V$. The economic content is that
+\emph{volume, not time, is the natural measure of how much can happen}.
+
+\subsection{Maximum entropy in volume time}
+
+\begin{proposition}[Maximum entropy under first and second moments]
+\label{prop:maxent}
+Among absolutely continuous distributions on $\mathbb{R}^N$ with mean $\mu$ and
+covariance $\Sigma\succ0$, the Gaussian $\mathcal N(\mu,\Sigma)$ uniquely
+maximises differential entropy, and
+$h^{\max}(\Sigma)=\tfrac12\log\left((2\pi e)^N\det\Sigma\right)$.
+\end{proposition}
+
+\begin{proof}
+Let $q=\mathcal N(\mu,\Sigma)$ and let $p$ have the same first two moments and
+finite differential entropy. Since $\log q$ is an exact quadratic, its
+expectation depends only on those moments, so
+$\mathbb{E}_p[\log q]=\mathbb{E}_q[\log q]=-h(q)$. Non-negativity of relative
+entropy gives
+$0\le \KL{p}{q} = -h(p)+h(q)$, hence $h(p)\le h(q)$, with equality iff $p=q$
+almost everywhere. The argument requires no differentiability of $p$ and no
+prior existence of a maximiser.
+\end{proof}
+
+The variational route -- a Lagrangian in the normalisation, mean and covariance
+constraints, whose first-order condition makes $\log p$ quadratic -- explains
+\emph{why} the maximiser is Gaussian, but the divergence argument is what
+establishes optimality and uniqueness.
+
+Applying Proposition~\ref{prop:maxent} to Assumption~\ref{as:signs} in one
+dimension and mapping through Assumption~\ref{as:impact}:
+
+\begin{equation}
+\label{eq:mdh}
+\Delta X_{t,\Delta}\ \big|\ V \ \sim\ \mathcal{N}\!\left(\lambda m,\ \lambda^2\varsigma^2 V\right).
+\end{equation}
+
+Equation~\eqref{eq:mdh} is the bridge. Three things about it deserve emphasis.
+
+First, \emph{the conditioning variable is volume, not time}. Maximum entropy
+does not deliver a variance; it delivers the least-committal distribution given
+one. Assumption~\ref{as:signs} supplies the variance from an observable, and
+that observable is traded volume. Equation~\eqref{eq:mdh} is the
+mixture-of-distributions hypothesis of \citet{clark1973} and
+\citet{tauchen1983}, obtained here as a maximum-entropy statement rather than
+posited; \citet{ane2000} show empirically that returns measured in trade time
+are close to Gaussian even though calendar-time returns are not, which is the
+prediction \eqref{eq:mdh} makes.
+
+Second, \emph{Gaussianity is conditional}. Unconditionally,
+$\Delta X$ is a scale mixture of normals over the random volume $V$, hence
+leptokurtic even when \eqref{eq:mdh} holds exactly. This is the
+\citet{mandelbrot1967} subordination mechanism, and it means fat tails are not
+by themselves evidence against maximum entropy.
+
+Third, the multivariate extension is immediate: with $N$ assets,
+$\Delta \mathbf{X}\mid V \sim \mathcal N(\boldsymbol\mu V, \Sigma V)$, and
+Proposition~\ref{prop:maxent} applies as stated.
+
+\subsection{From Gaussian increments to Brownian motion and to GBM}
+
+Let $\theta_t=\int_0^t v_s\,ds$ be the cumulative volume clock. Equation
+\eqref{eq:mdh} gives the one-increment distribution; a process needs more.
+
+\begin{assumption}[Temporal consistency]\label{as:time}
+In the volume clock, increments over disjoint intervals are independent, sample
+paths are continuous, and the covariance of an increment is proportional to
+elapsed volume.
+\end{assumption}
+
+Under Assumption~\ref{as:time} with constant coefficients there is a matrix $B$
+with $BB^{\!\top}=\Sigma$ such that $X_\theta = X_0 + \mu\theta + BW_\theta$ in
+volume time, so in calendar time
+\begin{equation}
+\label{eq:subordination}
+X_t = X_0 + \mu\,\theta_t + B\,W_{\theta_t},
+\end{equation}
+a Brownian motion \emph{subordinated} to the volume clock. If trading intensity
+is constant, $\theta_t=\bar v\,t$ and \eqref{eq:subordination} is ordinary
+Brownian motion in calendar time; exponentiating and applying Itô,
+\begin{equation}
+\frac{dS_{i,t}}{S_{i,t}} = \left(a_{i,t}+\tfrac12\sigma_{i,t}^2\right)dt + \sigma_{i,t}\,dW_{i,t},
+\end{equation}
+so the drift of the price is not the drift of the log-price -- the same
+second-order correction that will reappear in Section~\ref{sec:channels} when we
+differentiate $\log\det R_t$.
+
+It is worth being precise about what Assumption~\ref{as:time} does. By Monroe's
+\citeyearpar{monroe1978} theorem, \emph{every} continuous local martingale is a
+time-changed Brownian motion, so subordination alone has no empirical content.
+The content is in the clock: \eqref{eq:mdh} says the right clock is volume, and
+Assumption~\ref{as:time} says the market has no memory in that clock. Maximum
+entropy is what selects Brownian motion from the class Monroe's theorem allows.
+
+\subsection{The contrapositive}
+\label{sec:contrapositive}
+
+Proposition~\ref{prop:maxent} runs both ways. Write $q_t$ for the Gaussian with
+the conditional mean and covariance of $p_t$. Then
+
+\begin{equation}
+\label{eq:deficit}
+\DD_t \;\equiv\; h(q_t) - h(p_t) \;=\; \KL{p_t}{q_t} \;\ge\; 0,
+\end{equation}
+with equality if and only if $p_t$ is Gaussian. So: \emph{prices are non-Gaussian
+exactly to the extent that their conditional distribution is not
+entropy-maximal}, and $\DD_t$ measures the extent. In the language of
+Section~\ref{sec:bridge}, a positive $\DD_t$ means constraints beyond the first
+two moments are binding -- that somebody knows something the second moment does
+not encode.
+
+Two sources produce a positive deficit, and separating them matters. A random
+volume clock produces a scale mixture, which is symmetric and leptokurtic.
+Binding directional information produces asymmetry. Section~\ref{sec:channels}
+splits $\DD$ along exactly this line.
+
+\subsection{Where the bridge is weak}
+\label{sec:bridge-caveats}
+
+Assumption~\ref{as:impact} is linear; the empirical impact of a metaorder is
+closer to square-root in size, which makes the mapping from flow to price
+concave and the induced return distribution thinner-tailed than the flow.
+Assumption~\ref{as:signs} treats signs as exchangeable; order flow is in fact
+strongly autocorrelated, which inflates $\mathrm{Var}(Q)$ above $\varsigma^2 V$
+and makes the volume clock an imperfect variance proxy. Neither failure changes
+the \emph{form} of the argument -- maximum entropy given a variance budget is
+still Gaussian -- but both mean the volume clock is an approximation to the
+information clock rather than the thing itself. We use volume-time reasoning to
+motivate the framework and calendar-time estimation throughout the empirical
+work, so no result below depends on \eqref{eq:mdh} holding exactly.
+
+\section{Three channels of entropy}
+\label{sec:channels}
+
+\subsection{Scale and dependence}
+
+Write $\Sigma_t = D_tR_tD_t$ with $D_t=\mathrm{diag}(\sigma_{1,t},\dots,\sigma_{N,t})$.
+Then $\det\Sigma_t = \left(\prod_i\sigma_{i,t}^2\right)\det R_t$ and
+\begin{equation}
+\label{eq:ceiling}
+h(q_t) \;=\; \underbrace{\tfrac{N}{2}\log(2\pi e)}_{\text{constant}}
+\;+\; \underbrace{\sum_i \log\sigma_{i,t}}_{H^{vol}_t}
+\;+\; \underbrace{\tfrac12\log\det R_t}_{H^{dep}_t}.
+\end{equation}
+By Hadamard's inequality $H^{dep}_t\le 0$, with equality iff $R_t=I$:
+\emph{correlation always destroys entropy}, and $-H^{dep}_t$ is precisely the
+Gaussian multi-information (total correlation) of the return vector. A useful
+reading of the same quantity is spectral: with $\lambda_k$ the eigenvalues of
+$R_t$ and $\tilde\lambda_k=\lambda_k/N$, the participation number
+$N^{\text{eff}}_t=\exp\!\left(-\sum_k\tilde\lambda_k\log\tilde\lambda_k\right)$
+is the effective number of independent risk modes; it equals $N$ for $R=I$ and
+falls toward $1$ as one collective mode absorbs the variance.
+
+Equation~\eqref{eq:ceiling} is the ceiling, not the entropy. It is what the
+covariance matrix alone implies, and Proposition~\ref{prop:maxent} says the
+truth sits below it.
+
+\subsection{Shape: the entropy deficit and what it is made of}
+
+Subtracting \eqref{eq:deficit} from \eqref{eq:ceiling} gives the paper's
+decomposition, three channels and a constant:
+\begin{equation}
+\label{eq:three}
+h(p_t) \;=\; \tfrac{N}{2}\log(2\pi e) \;+\; \underbrace{H^{vol}_t}_{\text{scale}} \;+\; \underbrace{H^{dep}_t}_{\text{dependence}} \;-\; \underbrace{\DD_t}_{\text{shape}}.
+\end{equation}
+
+The shape channel is skewness and fat tails, and the Edgeworth expansion says so
+explicitly: for a standardised variable with skewness $S$ and excess kurtosis
+$K$ near Gaussianity,
+\begin{equation}
+\label{eq:edgeworth}
+J \;\approx\; \frac{S^2}{12} + \frac{K^2}{48}.
+\end{equation}
+Equation~\eqref{eq:edgeworth} is the answer to the question ``where would an
+entropy jump be visible?'': in the third and fourth moments, additively, with an
+asymmetry channel and a tail channel. It is also the source of the sign problem
+that Section~\ref{sec:dynamics} has to solve, because $S$ enters squared --
+\emph{negentropy cannot tell a crash from a melt-up}. As an estimator
+\eqref{eq:edgeworth} is unusable on daily returns; Section~\ref{sec:program}
+documents how badly and what we use instead.
+
+\subsection{The structural index}
+
+The scale channel is a nuisance for our purposes: it dominates the level of
+\eqref{eq:three} numerically, it moves with volatility, and a change in units
+changes it. The other two channels are scale-free. Combining them, and using the
+exact chain rule
+$\KL{p}{\prod_i q_i} = \sum_i \KL{p_i}{q_i} + I(x)$ with $I$ the
+multi-information:
+
+\begin{definition}[Structural information index]
+\label{def:J}
+\begin{equation}
+\JJ_t \;\equiv\; \DD_t \;-\; H^{dep}_t \;=\; \KL{p_t}{\textstyle\prod_i q_{i,t}} \;\ge\; 0 ,
+\end{equation}
+the divergence of the conditional joint return distribution from a product of
+Gaussian marginals with the same scales.
+\end{definition}
+
+$\JJ$ is zero if and only if returns are independent and Gaussian; it rises when
+assets couple, when marginals fatten, or when they skew. It is measured in nats,
+it is invariant to the level of volatility, and it is additive across its two
+channels, so one can always ask how much of a move came from dependence and how
+much from shape. It is the state variable of Section~\ref{sec:dynamics}.
+

@@ -1,0 +1,1453 @@
+\documentclass[11pt]{article}
+\usepackage{amsmath,amssymb,amsthm,booktabs,geometry,graphicx}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[round,authoryear]{natbib}
+\usepackage[colorlinks=true,linkcolor=black,citecolor=black,urlcolor=blue!50!black]{hyperref}
+\geometry{margin=1in}
+\setlength{\emergencystretch}{2em}
+
+\newtheorem{proposition}{Proposition}
+\newtheorem{corollary}{Corollary}
+\newtheorem{assumption}{Assumption}
+\theoremstyle{definition}
+\newtheorem{postulate}{Postulate}
+\newtheorem{definition}{Definition}
+\theoremstyle{remark}
+\newtheorem*{remark}{Remark}
+
+\newcommand{\JJ}{\mathcal{J}}
+\newcommand{\DD}{\mathcal{D}}
+\newcommand{\Dun}{\mathcal{D}_1}
+\newcommand{\KL}[2]{D_{KL}\!\left(#1\,\Vert\,#2\right)}
+
+\title{Theoretical Supplement\\[4pt]
+\large Information-theoretic foundations of an entropic systemic-stress\\indicator: what the main paper leaves out}
+\author{Supplement to ``Entropy Jumps and Information Relaxation\\in Financial Markets''}
+\date{October 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+\noindent The main paper is refocused on a single object aimed at central banks:
+the dependence channel $-\tfrac12\log\det R$ of a multi-market panel, its exact
+decomposition into within-block and between-block terms, and the pricing in
+nats of published stress scenarios. This document collects everything that
+refocusing removes from the body of the paper, to serve as an appendix or to be
+supplied on request. It contains the bridge from maximum entropy in volume time
+to geometric Brownian motion, the decomposition of entropy into three channels
+and the structural index $\JJ=\KL{p}{\prod_i q_i}$, the jump-diffusion dynamics
+(one theorem, two postulates, and the Ornstein--Uhlenbeck structure forced by
+Doob's theorem), the empirical programme H1--H8 with its verdict against the
+calibrated nulls, and the full geometry of Kullback--Leibler-ball scenarios. Two
+results are new relative to arXiv~v1. The first is a block decomposition
+identity for the dependence channel, which links this document to the main
+paper. The second shows that the full-dimensional lift of a portfolio scenario
+that minimises the ambient divergence costs exactly the radius $\eta$ and has an
+asset-by-asset reading (the shock is carried by each asset's covariance with
+the portfolio), while the default uniform dilation costs $N$~times as much in
+variance. The second point corrects a remark in v1.
+\end{abstract}
+
+\tableofcontents
+
+\section*{Foreword: what this document contains, and why}
+\addcontentsline{toc}{section}{Foreword}
+
+\paragraph{How it relates to the main paper.} The October 2026 assessment found
+that a single result of arXiv~v1 clears both calibrated nulls on both panels:
+the regime gap of the dependence channel $H^{dep}=\tfrac12\log\det R$. Phase~A
+confirmed it in three forms (raw, Forbes--Rigobon devolatilised, rank-based) and
+showed that the absorption ratio of \citet{kritzman2011}, the benchmark measure
+of the same family, fails the block null on both panels. The main paper is
+therefore rebuilt around an ``entropic CISS'' in the sense of
+\citet{hollo2012}: the dependence channel of a multi-market panel, its
+within/between-block decomposition, central-bank-style validation, and the
+pricing of published scenarios in nats.
+
+Everything else leaves the body of the paper. Not because it is wrong: the
+mathematical results remain exact. It is because these elements are not needed
+for the indicator, or because they do not survive the nulls and therefore
+cannot ground a surveillance tool. Collecting them here serves two purposes. A
+referee who asks where the dependence channel comes from, and why it is this
+channel rather than the full structural index, finds the answer. A reader who
+wants to take up the theory of information dynamics finds the whole chain, with
+the exact status of each link.
+
+\paragraph{Status of each statement.} The document separates three categories
+and flags them throughout: \emph{theorems} (exact under their assumptions),
+\emph{postulates} (substantive, testable economic assumptions), and
+\emph{empirical findings} (with the null they clear or fail).
+Table~\ref{tab:statut} gives the map.
+
+\begin{table}[htbp]
+\centering
+\small
+\begin{tabular}{@{}p{5.0cm}p{3.0cm}p{4.6cm}l@{}}
+\toprule
+Item & Status & Empirical verdict & Section \\
+\midrule
+Gaussian maximum entropy & theorem & --- & \ref{sec:bridge} \\
+Volume bridge (MDH, subordinated Brownian motion) & argument under assumptions & not tested here & \ref{sec:bridge} \\
+Three-channel decomposition & exact identity & --- & \ref{sec:channels} \\
+Structural index $\JJ$ as a divergence & exact identity & range clears both nulls & \ref{sec:channels} \\
+Downward entropy jumps & theorem (on average) & not directly estimable & \ref{sec:dynamics} \\
+Relaxation (P1) & postulate & half-life not identified & \ref{sec:dynamics} \\
+One-sided constraint (P2) & postulate & not established (H5) & \ref{sec:dynamics} \\
+Tail--correlation coupling & consequence & not identified (H6) & \ref{sec:dynamics} \\
+Dependence channel under stress & finding & \textbf{clears both nulls} & \ref{sec:program}, \ref{sec:blocks} \\
+KL ball, $1$~nat $=\sqrt2\,\sigma$ & theorem & --- & \ref{sec:stress} \\
+Minimal lift (rank one) & theorem (new) & --- & \ref{sec:stress} \\
+Radius calibrated on the flow & rule & too mild against history & \ref{sec:stress} \\
+Block decomposition & identity (new here) & subject of the main paper & \ref{sec:blocks} \\
+\bottomrule
+\end{tabular}
+\caption{Map of the statements in this document and their status.}
+\label{tab:statut}
+\end{table}
+
+\paragraph{Provenance.} Sections~\ref{sec:bridge} to \ref{sec:dynamics} and
+Appendices~\ref{app:units} to \ref{app:mi} take up, with updated
+cross-references, the text of the reference French version
+(\texttt{paper/main\_fr.tex}), which supersedes \texttt{paper/main.tex} for
+the dynamics section and the appendices. Sections~\ref{sec:program} to
+\ref{sec:open} are written for this document. Every number quoted comes from the
+same code (\texttt{python -m src.run\_empirical}, two-hundred-replication nulls,
+Phase~A); none was recomputed for this supplement.
+
+\section*{Notation}
+\addcontentsline{toc}{section}{Notation}
+
+\noindent Two warnings before the table. First, differential entropy $h$
+\textbf{depends on units}: $h(aX)=h(X)+\log|a|$, so expressing returns in
+percent rather than decimals shifts $h$ by a constant. Divergences
+($\KL{\cdot}{\cdot}$, $I$, $\DD$, $\JJ$), by contrast, are invariant under any
+invertible change of variable: that is the reason for the structural index.
+Second, $K$ denotes kurtosis and ``KL'' stands for Kullback and Leibler; the two
+are unrelated.
+
+\begin{center}
+\small
+\begin{tabular}{@{}lll@{}}
+\toprule
+Symbol & Meaning & Nature \\
+\midrule
+$p_t$ & true conditional return distribution at $t$ & --- \\
+$q_t$ & Gaussian with the same mean and covariance as $p_t$ & --- \\
+$h(\cdot)$ & differential entropy & nats, \emph{unit-dependent} \\
+$\KL{p}{q}$ & Kullback--Leibler divergence & nats, invariant \\
+$\DD_t$ & entropy deficit $=\KL{p_t}{q_t}\ge0$ & nats, invariant \\
+$\Dun(z)$ & deficit of a standardised scalar (negentropy) & nats, invariant \\
+$H^{vol}_t$ & scale channel $=\sum_i\log\sigma_{i,t}$ & nats, \emph{unit-dependent} \\
+$H^{dep}_t$ & dependence channel $=\tfrac12\log\det R_t\le0$ & nats, invariant \\
+$H^{cov}_t$ & $H^{vol}_t+H^{dep}_t$; the constant $\tfrac N2\log2\pi e$ is omitted & nats \\
+$\JJ_t$ & structural index $=\DD_t-H^{dep}_t\ge0$ & nats, invariant \\
+$I(X;Y)$ & mutual information & nats, invariant \\
+$I^{(h)}_t$ & information flow $=\KL{p_t}{p_{t-h}}$ & nats \\
+$S$, $K$ & skewness, excess kurtosis & dimensionless \\
+$\Sigma_t=D_tR_tD_t$ & covariance, standard deviations, correlation & --- \\
+$\lambda_k$, $N^{\text{eff}}_t$ & eigenvalues of $R_t$, effective number of modes & $1\le N^{\text{eff}}\le N$ \\
+$\kappa$, $\sigma_\JJ$ & relaxation rate and diffusion coefficient of $\JJ$ & --- \\
+$\eta$ & radius of a stress scenario & nats \\
+$N$ & number of assets & --- \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section{From order flow to a Gaussian price: the volume bridge}
+\label{sec:bridge}
+
+\subsection{The price as accumulated order flow}
+
+Over $[t,t+\Delta]$ let the market execute $M$ trades, trade $k$ carrying signed
+volume $\epsilon_k v_k$ with $\epsilon_k\in\{-1,+1\}$ the sign (buyer- or
+seller-initiated) and $v_k>0$ the size. Write $V=\sum_k v_k$ for total volume
+and $Q=\sum_k \epsilon_k v_k$ for net signed order flow.
+
+\begin{assumption}[Linear impact]\label{as:impact}
+The log-price responds linearly to net signed order flow,
+$\Delta X_{t,\Delta} = X_{t+\Delta}-X_t = \lambda\,Q$, with $\lambda>0$ constant
+over the interval.
+\end{assumption}
+
+This is Kyle's \citeyearpar{kyle1985} equilibrium: the market maker, unable to
+distinguish informed from uninformed flow, sets a linear pricing rule and
+$\lambda$ is the inverse depth. It is the definition of ``price as a function of
+traded volume'' that the rest of the section needs, and it is the weakest link
+in the chain; Section~\ref{sec:bridge-caveats} says what happens when it fails.
+
+\begin{assumption}[Exchangeable signs and a volume-proportional variance]
+\label{as:signs}
+Conditional on $V$ and on the information available at $t$, the market's belief
+about $Q$ is constrained only by its first two moments, with
+$\mathbb{E}[Q\mid V] = m$ and $\mathrm{Var}(Q\mid V) = \varsigma^2 V$.
+\end{assumption}
+
+The variance form is what one gets when trade signs are exchangeable with
+bounded correlation and sizes have a stable mean: for independent signs,
+$\mathrm{Var}(Q)=\sum_k v_k^2 \approx \bar v V$. The economic content is that
+\emph{volume, not time, is the natural measure of how much can happen}.
+
+\subsection{Maximum entropy in volume time}
+
+\begin{proposition}[Maximum entropy under first and second moments]
+\label{prop:maxent}
+Among absolutely continuous distributions on $\mathbb{R}^N$ with mean $\mu$ and
+covariance $\Sigma\succ0$, the Gaussian $\mathcal N(\mu,\Sigma)$ uniquely
+maximises differential entropy, and
+$h^{\max}(\Sigma)=\tfrac12\log\left((2\pi e)^N\det\Sigma\right)$.
+\end{proposition}
+
+\begin{proof}
+Let $q=\mathcal N(\mu,\Sigma)$ and let $p$ have the same first two moments and
+finite differential entropy. Since $\log q$ is an exact quadratic, its
+expectation depends only on those moments, so
+$\mathbb{E}_p[\log q]=\mathbb{E}_q[\log q]=-h(q)$. Non-negativity of relative
+entropy gives
+$0\le \KL{p}{q} = -h(p)+h(q)$, hence $h(p)\le h(q)$, with equality iff $p=q$
+almost everywhere. The argument requires no differentiability of $p$ and no
+prior existence of a maximiser.
+\end{proof}
+
+The variational route -- a Lagrangian in the normalisation, mean and covariance
+constraints, whose first-order condition makes $\log p$ quadratic -- explains
+\emph{why} the maximiser is Gaussian, but the divergence argument is what
+establishes optimality and uniqueness.
+
+Applying Proposition~\ref{prop:maxent} to Assumption~\ref{as:signs} in one
+dimension and mapping through Assumption~\ref{as:impact}:
+
+\begin{equation}
+\label{eq:mdh}
+\Delta X_{t,\Delta}\ \big|\ V \ \sim\ \mathcal{N}\!\left(\lambda m,\ \lambda^2\varsigma^2 V\right).
+\end{equation}
+
+Equation~\eqref{eq:mdh} is the bridge. Three things about it deserve emphasis.
+
+First, \emph{the conditioning variable is volume, not time}. Maximum entropy
+does not deliver a variance; it delivers the least-committal distribution given
+one. Assumption~\ref{as:signs} supplies the variance from an observable, and
+that observable is traded volume. Equation~\eqref{eq:mdh} is the
+mixture-of-distributions hypothesis of \citet{clark1973} and
+\citet{tauchen1983}, obtained here as a maximum-entropy statement rather than
+posited; \citet{ane2000} show empirically that returns measured in trade time
+are close to Gaussian even though calendar-time returns are not, which is the
+prediction \eqref{eq:mdh} makes.
+
+Second, \emph{Gaussianity is conditional}. Unconditionally,
+$\Delta X$ is a scale mixture of normals over the random volume $V$, hence
+leptokurtic even when \eqref{eq:mdh} holds exactly. This is the
+\citet{mandelbrot1967} subordination mechanism, and it means fat tails are not
+by themselves evidence against maximum entropy.
+
+Third, the multivariate extension is immediate: with $N$ assets,
+$\Delta \mathbf{X}\mid V \sim \mathcal N(\boldsymbol\mu V, \Sigma V)$, and
+Proposition~\ref{prop:maxent} applies as stated.
+
+\subsection{From Gaussian increments to Brownian motion and to GBM}
+
+Let $\theta_t=\int_0^t v_s\,ds$ be the cumulative volume clock. Equation
+\eqref{eq:mdh} gives the one-increment distribution; a process needs more.
+
+\begin{assumption}[Temporal consistency]\label{as:time}
+In the volume clock, increments over disjoint intervals are independent, sample
+paths are continuous, and the covariance of an increment is proportional to
+elapsed volume.
+\end{assumption}
+
+Under Assumption~\ref{as:time} with constant coefficients there is a matrix $B$
+with $BB^{\!\top}=\Sigma$ such that $X_\theta = X_0 + \mu\theta + BW_\theta$ in
+volume time, so in calendar time
+\begin{equation}
+\label{eq:subordination}
+X_t = X_0 + \mu\,\theta_t + B\,W_{\theta_t},
+\end{equation}
+a Brownian motion \emph{subordinated} to the volume clock. If trading intensity
+is constant, $\theta_t=\bar v\,t$ and \eqref{eq:subordination} is ordinary
+Brownian motion in calendar time; exponentiating and applying Itô,
+\begin{equation}
+\frac{dS_{i,t}}{S_{i,t}} = \left(a_{i,t}+\tfrac12\sigma_{i,t}^2\right)dt + \sigma_{i,t}\,dW_{i,t},
+\end{equation}
+so the drift of the price is not the drift of the log-price -- the same
+second-order correction that will reappear in Section~\ref{sec:channels} when we
+differentiate $\log\det R_t$.
+
+It is worth being precise about what Assumption~\ref{as:time} does. By Monroe's
+\citeyearpar{monroe1978} theorem, \emph{every} continuous local martingale is a
+time-changed Brownian motion, so subordination alone has no empirical content.
+The content is in the clock: \eqref{eq:mdh} says the right clock is volume, and
+Assumption~\ref{as:time} says the market has no memory in that clock. Maximum
+entropy is what selects Brownian motion from the class Monroe's theorem allows.
+
+\subsection{The contrapositive}
+\label{sec:contrapositive}
+
+Proposition~\ref{prop:maxent} runs both ways. Write $q_t$ for the Gaussian with
+the conditional mean and covariance of $p_t$. Then
+
+\begin{equation}
+\label{eq:deficit}
+\DD_t \;\equiv\; h(q_t) - h(p_t) \;=\; \KL{p_t}{q_t} \;\ge\; 0,
+\end{equation}
+with equality if and only if $p_t$ is Gaussian. So: \emph{prices are non-Gaussian
+exactly to the extent that their conditional distribution is not
+entropy-maximal}, and $\DD_t$ measures the extent. In the language of
+Section~\ref{sec:bridge}, a positive $\DD_t$ means constraints beyond the first
+two moments are binding -- that somebody knows something the second moment does
+not encode.
+
+Two sources produce a positive deficit, and separating them matters. A random
+volume clock produces a scale mixture, which is symmetric and leptokurtic.
+Binding directional information produces asymmetry. Section~\ref{sec:channels}
+splits $\DD$ along exactly this line.
+
+\subsection{Where the bridge is weak}
+\label{sec:bridge-caveats}
+
+Assumption~\ref{as:impact} is linear; the empirical impact of a metaorder is
+closer to square-root in size, which makes the mapping from flow to price
+concave and the induced return distribution thinner-tailed than the flow.
+Assumption~\ref{as:signs} treats signs as exchangeable; order flow is in fact
+strongly autocorrelated, which inflates $\mathrm{Var}(Q)$ above $\varsigma^2 V$
+and makes the volume clock an imperfect variance proxy. Neither failure changes
+the \emph{form} of the argument -- maximum entropy given a variance budget is
+still Gaussian -- but both mean the volume clock is an approximation to the
+information clock rather than the thing itself. We use volume-time reasoning to
+motivate the framework and calendar-time estimation throughout the empirical
+work, so no result below depends on \eqref{eq:mdh} holding exactly.
+
+\section{Three channels of entropy}
+\label{sec:channels}
+
+\subsection{Scale and dependence}
+
+Write $\Sigma_t = D_tR_tD_t$ with $D_t=\mathrm{diag}(\sigma_{1,t},\dots,\sigma_{N,t})$.
+Then $\det\Sigma_t = \left(\prod_i\sigma_{i,t}^2\right)\det R_t$ and
+\begin{equation}
+\label{eq:ceiling}
+h(q_t) \;=\; \underbrace{\tfrac{N}{2}\log(2\pi e)}_{\text{constant}}
+\;+\; \underbrace{\sum_i \log\sigma_{i,t}}_{H^{vol}_t}
+\;+\; \underbrace{\tfrac12\log\det R_t}_{H^{dep}_t}.
+\end{equation}
+By Hadamard's inequality $H^{dep}_t\le 0$, with equality iff $R_t=I$:
+\emph{correlation always destroys entropy}, and $-H^{dep}_t$ is precisely the
+Gaussian multi-information (total correlation) of the return vector. A useful
+reading of the same quantity is spectral: with $\lambda_k$ the eigenvalues of
+$R_t$ and $\tilde\lambda_k=\lambda_k/N$, the participation number
+$N^{\text{eff}}_t=\exp\!\left(-\sum_k\tilde\lambda_k\log\tilde\lambda_k\right)$
+is the effective number of independent risk modes; it equals $N$ for $R=I$ and
+falls toward $1$ as one collective mode absorbs the variance.
+
+Equation~\eqref{eq:ceiling} is the ceiling, not the entropy. It is what the
+covariance matrix alone implies, and Proposition~\ref{prop:maxent} says the
+truth sits below it.
+
+\subsection{Shape: the entropy deficit and what it is made of}
+
+Subtracting \eqref{eq:deficit} from \eqref{eq:ceiling} gives the paper's
+decomposition, three channels and a constant:
+\begin{equation}
+\label{eq:three}
+h(p_t) \;=\; \tfrac{N}{2}\log(2\pi e) \;+\; \underbrace{H^{vol}_t}_{\text{scale}} \;+\; \underbrace{H^{dep}_t}_{\text{dependence}} \;-\; \underbrace{\DD_t}_{\text{shape}}.
+\end{equation}
+
+The shape channel is skewness and fat tails, and the Edgeworth expansion says so
+explicitly: for a standardised variable with skewness $S$ and excess kurtosis
+$K$ near Gaussianity,
+\begin{equation}
+\label{eq:edgeworth}
+J \;\approx\; \frac{S^2}{12} + \frac{K^2}{48}.
+\end{equation}
+Equation~\eqref{eq:edgeworth} is the answer to the question ``where would an
+entropy jump be visible?'': in the third and fourth moments, additively, with an
+asymmetry channel and a tail channel. It is also the source of the sign problem
+that Section~\ref{sec:dynamics} has to solve, because $S$ enters squared --
+\emph{negentropy cannot tell a crash from a melt-up}. As an estimator
+\eqref{eq:edgeworth} is unusable on daily returns; Section~\ref{sec:program}
+documents how badly and what we use instead.
+
+\subsection{The structural index}
+
+The scale channel is a nuisance for our purposes: it dominates the level of
+\eqref{eq:three} numerically, it moves with volatility, and a change in units
+changes it. The other two channels are scale-free. Combining them, and using the
+exact chain rule
+$\KL{p}{\prod_i q_i} = \sum_i \KL{p_i}{q_i} + I(x)$ with $I$ the
+multi-information:
+
+\begin{definition}[Structural information index]
+\label{def:J}
+\begin{equation}
+\JJ_t \;\equiv\; \DD_t \;-\; H^{dep}_t \;=\; \KL{p_t}{\textstyle\prod_i q_{i,t}} \;\ge\; 0 ,
+\end{equation}
+the divergence of the conditional joint return distribution from a product of
+Gaussian marginals with the same scales.
+\end{definition}
+
+$\JJ$ is zero if and only if returns are independent and Gaussian; it rises when
+assets couple, when marginals fatten, or when they skew. It is measured in nats,
+it is invariant to the level of volatility, and it is additive across its two
+channels, so one can always ask how much of a move came from dependence and how
+much from shape. It is the state variable of Section~\ref{sec:dynamics}.
+
+
+\section{Information dynamics: one theorem, two postulates}
+\label{sec:dynamics}
+
+\subsection{Downward jumps are a theorem}
+
+Two distinct statements underpin the downward half of the postulated dynamics.
+Conflating them is an easy mistake, and earlier versions of this work made it;
+we therefore separate them explicitly.
+
+Recall first the definition of the \emph{mutual information} between the return
+vector $X$ and a signal $Y$:
+\begin{equation}
+\label{eq:mi}
+I(X;Y) \;=\; \KL{p_{XY}}{p_X\otimes p_Y}
+\;=\; \iint p(x,y)\,\log\frac{p(x,y)}{p(x)p(y)}\,dx\,dy ,
+\end{equation}
+that is, the divergence of the joint law from the product of the marginals: how
+far the joint law is from independence. It is non-negative, symmetric, zero if
+and only if $X\perp Y$, and, unlike $h$, invariant under invertible
+reparametrisation. For a scalar Gaussian pair with correlation $\rho$,
+$I=-\tfrac12\log(1-\rho^2)$.
+
+\begin{proposition}[Fall in average conditional entropy]
+\label{prop:conditioning}
+Let $X$ be the return vector and $Y$ a signal. Then
+\begin{equation*}
+\mathbb{E}_Y\!\left[h(X\mid Y)\right] \;=\; h(X) - I(X;Y) \;\le\; h(X),
+\end{equation*}
+with equality if and only if $X\perp Y$.
+\end{proposition}
+
+\begin{proposition}[Monotonicity of the ceiling under constraint]
+\label{prop:constraint}
+Let $\mathcal{C}\subseteq\mathcal{C}'$ be two constraint sets and
+$\mathcal{Q}(\cdot)$ the set of laws that satisfy them. Then
+$\mathcal{Q}(\mathcal{C}')\subseteq\mathcal{Q}(\mathcal{C})$ and hence
+\begin{equation*}
+\sup_{p\,\in\,\mathcal{Q}(\mathcal{C}')} h(p) \;\le\; \sup_{p\,\in\,\mathcal{Q}(\mathcal{C})} h(p).
+\end{equation*}
+\end{proposition}
+
+Both results are classical \citep{cover2006} and they are not equivalent; the
+detailed proof and a worked Gaussian example are in Appendix~\ref{app:mi}. Their
+scopes differ along two axes.
+
+Proposition~\ref{prop:conditioning} \emph{quantifies} the fall (exactly
+$I(X;Y)$ nats) but only \emph{on average} over realisations of the signal. For a
+particular $y$, $h(X\mid Y=y)$ can exceed $h(X)$: a sufficiently confusing signal
+leaves the market more uncertain than before. One should therefore expect a jump
+component that is mainly, not exclusively, one-sided, which is what
+Section~\ref{sec:program} reports.
+
+Proposition~\ref{prop:constraint}, by contrast, holds \emph{for every
+realisation}, but it concerns the maximum-entropy \emph{ceiling}, not the actual
+entropy, and it quantifies nothing: it says that the ceiling cannot rise, not by
+how much it falls.
+
+What the two say together, and what motivates everything that follows: the fall
+is \emph{discontinuous}, because the signal arrives at a point in time, and its
+expected size in nats is the information content of the news, an amplitude
+measured on a scale that depends on neither the asset, the currency nor the
+units.
+
+\paragraph{An honesty caveat.} Neither proposition is used to compute anything in
+the empirical part. We measure $\JJ$, not $h(X)-\mathbb{E}_Y[h(X\mid Y)]$:
+estimating a differential entropy in dimension~20 on a 252-day window is out of
+reach (Appendix~\ref{app:units}). The link between the theorem and the
+statistics reported later is a line of reasoning, not an estimated identity, and
+the reader should treat it as such.
+
+\subsection{Two postulates}
+
+\begin{postulate}[Relaxation]
+\label{p:relax}
+In the absence of new information, the structural index decays towards a
+long-run level at a constant rate:
+$d\JJ_t = -\kappa\left(\JJ_t-\bar\JJ\right)dt + \sigma_\JJ\,dW_t$ with $\kappa>0$.
+\end{postulate}
+
+The economics behind P\ref{p:relax} is that a constraint goes stale. The news is
+priced in, disagreement re-forms, positions disperse, and the cross-section
+recovers the freedom the shock took away. Nothing in information theory delivers
+this; it is the substantive assumption of the paper, and $\kappa$ is the object
+to be estimated.
+
+\paragraph{Why an Ornstein--Uhlenbeck process and not something else?} The choice
+is not one of convenience: it is \emph{forced} once three minimal requirements
+are imposed, and it is the only process that meets all three.
+
+\begin{enumerate}
+\item \emph{Markov.} The future of $\JJ$ depends on the past only through its
+current level. This is the parsimony requirement: postulate no memory beyond
+what the current state already holds.
+\item \emph{Stationary.} $\JJ$ has a finite long-run level and variance. Without
+this the index drifts, it is not a state variable, and the regime comparisons of
+Section~\ref{sec:program} are meaningless.
+\item \emph{Gaussian noise.} Between two information arrivals we claim to know
+nothing about the noise beyond its variance: this is the maximum-entropy
+principle applied to the noise itself, exactly as it was applied to returns in
+Section~\ref{sec:bridge}.
+\end{enumerate}
+
+\citet{doob1942}'s theorem states that \textbf{the Ornstein--Uhlenbeck process is
+the only continuous-time process that is at once Markov, Gaussian and
+stationary}. The three requirements therefore leave no latitude on the diffusive
+part: it is determined. The jump term is added precisely to \emph{break}
+Gaussianity where the framework says it fails, namely at information arrivals.
+The structure of \eqref{eq:ou} is thus an imposed skeleton plus a deliberately
+non-Gaussian component, which is exactly the class introduced by
+\citet{bns2001}.
+
+\paragraph{What remains arbitrary.} Three things, which must be stated rather
+than presented as if they followed from the theorem. The rate $\kappa$ is
+assumed \emph{constant}: nothing rules out a crisis being absorbed faster, or
+slower, than ordinary news, and the data used here cannot tell. The pull-back is
+\emph{linear} in the deviation from the long-run level, whereas a pull-back that
+accelerates far from the mean would be just as plausible. Finally, $\JJ$ is
+non-negative by construction, whereas an Ornstein--Uhlenbeck process with a
+Brownian term can turn negative: the \citet{bns2001} specification avoids this
+by dropping the Brownian term and driving the process with a subordinator with
+positive jumps, which guarantees a stationary law supported on $\mathbb{R}^+$.
+Empirically the issue does not arise ($\JJ$ stays between $2.17$ and
+$21.13$~nats on the main panel and between $0.42$ and $1.69$ on the replication
+panel, far from the boundary), but formally one should either drop
+$\sigma_\JJ$ or write the process on $\log\JJ$.
+
+Nor is the postulate innocent as a matter of measurement: an estimator with
+memory will manufacture decay even with no economic relaxation at all, which is
+why Section~\ref{sec:program} measures the decay that a memoryless world already
+produces.
+
+\begin{postulate}[Asymmetry of the constraint]
+\label{p:sign}
+The constraint imposed by information is one-sided in the direction of losses,
+so that an entropy jump comes with negative skewness of the market factor.
+\end{postulate}
+
+\paragraph{Why this postulate is logically necessary.} The index $\JJ$ is an
+\emph{even} function of skewness: flipping the sign of skewness leaves its value
+unchanged. The reason is immediate. The shape channel is
+$\Dun(z)=\KL{p_z}{\varphi}$, and the normal law $\varphi$ is symmetric; so
+replacing $z$ by $-z$ leaves the reference law unchanged, and the divergence too:
+\begin{equation}
+\label{eq:even}
+\Dun(-z)=\Dun(z),\qquad\text{and therefore}\qquad \JJ(-x)=\JJ(x).
+\end{equation}
+The Edgeworth expansion \eqref{eq:edgeworth} makes it visible at a glance:
+skewness $S$ enters squared.
+
+The consequence is structural, not anecdotal. \textbf{A distribution with a long
+left tail (a crash) and its mirror image with a long right tail (a melt-up) have
+exactly the same $\JJ$.} The index measures the \emph{size} of the information,
+never its direction. No refinement of the estimator will change this: it is a
+property of the object measured. If the paper is to say anything about direction,
+it must therefore add an external ingredient. P\ref{p:sign} is that ingredient,
+and it is the smallest possible: a single statement, about the sign, added to a
+framework that by construction produces none.
+
+\paragraph{What it rests on.} Not on a mechanism we would assert, but on an
+established empirical regularity: the \emph{leverage effect} in the sense of
+\citet{black1976}, namely that negative returns are followed by larger rises in
+volatility than positive returns of the same size. It is one of the most robust
+stylised facts in empirical finance \citep{christie1982,engle1993,nelson1991}.
+Translated into the language of this paper: for an equal quantity of
+information, the market's response is larger on the way down than on the way up,
+so a jump in $\JJ$ comes with negative market skewness.
+
+We deliberately abstain from choosing among the competing causal explanations of
+this effect (financial leverage proper, volatility feedback, or asymmetric
+withdrawal of liquidity on the sell side). The postulate depends on none of them:
+it asserts only the asymmetry, not its cause. It is separately testable (H5) and
+separately refutable, and Section~\ref{sec:program} concludes that it is not
+established.
+
+\subsection{The resulting dynamics}
+
+Proposition~\ref{prop:conditioning} together with P\ref{p:relax} gives a
+non-Gaussian Ornstein--Uhlenbeck process with one-sided jumps, of the class
+introduced by \citet{bns2001} for stochastic volatility:
+\begin{equation}
+\label{eq:ou}
+d\JJ_t \;=\; -\kappa\left(\JJ_t-\bar\JJ\right)dt \;+\; \sigma_\JJ\,dW_t \;+\; \int_{z>0} z\,\mathcal{P}(dt,dz).
+\end{equation}
+The integral term needs careful reading, because its notation is compact.
+
+\paragraph{What $\mathcal{P}$ is not.} It is neither a Gaussian law nor a
+function. The letter $\mathcal N$ is reserved in this document for the normal
+law, so the jump measure carries a distinct symbol.
+
+\paragraph{What $\mathcal{P}$ is.} A \emph{random counting measure}, known as a
+Poisson random measure. One can picture it as a random scatter of points in the
+(date, size) plane: each point is an information event, its abscissa is the date
+it occurs and its ordinate the size of the jump it causes. Formally,
+$\mathcal{P}(dt,dz)$ equals $1$ if there is a jump in the time interval
+$[t,t+dt)$ whose size falls in $[z,z+dz)$, and $0$ otherwise. The integral
+$\int_{z>0} z\,\mathcal{P}(dt,dz)$ then reads simply: ``if there is a jump at
+date $t$, add its size $z$ to $\JJ$; otherwise add nothing''. It is a compact
+way of writing $\sum_{j} z_j$, the sum of the jumps that occurred.
+
+\paragraph{What characterises it.} Two ingredients, combined in its
+\emph{intensity measure} $\nu(dz)\,dt$, the expected number of jumps of size
+between $z$ and $z+dz$ during $dt$: an \emph{arrival rate}
+$\lambda=\nu(\mathbb{R}^+)$, in jumps per unit time, and a \emph{size
+distribution} $\nu(dz)/\lambda$. On the main panel, v1 estimates
+$\lambda\approx5$ jumps per year, a mean size of $0.62$~nat and a maximum of
+$3.21$~nats.
+
+\paragraph{What $z$ is.} The size of an individual jump, in nats. Conceptually, it
+is the mutual information of the news that caused it, in the sense of
+Proposition~\ref{prop:conditioning}. Operationally, it is the change in $\JJ$
+picked up by the four-sigma filter of Section~\ref{sec:program}. The two coincide
+only approximately, and the paper does not claim to identify them.
+
+\paragraph{Why the integral runs over $z>0$ only.} Because $\JJ$ measures an
+entropy \emph{deficit} and, by Proposition~\ref{prop:conditioning}, information
+can only increase that deficit in expectation. Within this framework nothing
+creates a \emph{sudden increase} in entropy: entropy is restored only by the slow
+relaxation of the first term, never by a jump. Hence one-sided jumps.
+
+Two caveats, however. Proposition~\ref{prop:conditioning} is a statement
+\emph{on average}: a particularly confusing realisation can raise entropy, so a
+faithful specification would allow a small probability of negative jumps rather
+than forbid them. And the Poisson measure assumes independent arrivals, whereas
+the event study of v1 shows clear clustering of jumps; a self-exciting
+Hawkes-type process would be more faithful.
+
+Note finally that the diffusion coefficient is written $\sigma_\JJ$ rather than
+$\eta$, the latter being reserved for the radius of stress scenarios
+(Section~\ref{sec:stress}). Read on entropy itself rather than on $\JJ$, the sign
+flips: entropy falls by jumps and recovers by diffusion. The observable
+predictions are sharp, and they are what Section~\ref{sec:program} tests: the
+distribution of $\Delta\JJ$ is right-skewed; large moves are up and small moves
+down; and after a positive jump the index decays with half-life $\ln 2/\kappa$.
+
+\subsection{Why fat tails, correlation and jumps arrive together}
+
+The framework yields a prediction that no volatility or correlation model
+produces on its own. It follows in four steps, without technical vocabulary.
+
+\begin{enumerate}
+\item Important news concerns \emph{all} assets at once: the same information
+constrains each of them.
+\item If the news is bad, all assets therefore fall \emph{on the same day}.
+\item That day also appears, taken in isolation, in each asset's own history: for
+that asset it is an unusually large loss.
+\item Accumulating such days distorts each asset's return distribution: the loss
+side lengthens and thickens more than the gain side.
+\end{enumerate}
+
+Step 2 is what the dependence channel measures: assets move together, measured
+correlation rises, $-H^{dep}$ rises. Step 4 is what the shape channel measures:
+extreme losses more numerous and larger than extreme gains, that is higher
+kurtosis and negative skewness, so $\DD$ rises. The two channels rise together
+because they describe the same day seen from two places: the cross-section for
+one, each asset's distribution for the other.
+
+In calm markets, notable moves are asset-specific: they do not align the
+cross-section and so have no reason to lift both channels at the same time.
+
+The testable form is a \emph{regime-dependent coupling}: the correlation between
+$-\Delta H^{dep}$ and $\Delta\DD$ should be close to zero in calm markets and
+strongly positive under stress. This is H6, and it is the paper's answer to the
+question ``does the link between fat tails, correlation and entropy jumps
+require an additional postulate?'': no. Given
+Proposition~\ref{prop:conditioning}, the coupling follows from the common nature
+of the news. Only the \emph{sign} requires P\ref{p:sign}.
+
+\section{The H1--H8 empirical programme and what the nulls leave of it}
+\label{sec:program}
+
+This section summarises, without reproducing them, the estimators and tests of
+arXiv~v1. It serves one purpose: to explain why, of all the theory in
+Sections~\ref{sec:bridge} to~\ref{sec:dynamics}, only the dependence channel
+makes it into the main paper.
+
+\subsection{The eight hypotheses}
+
+\begin{description}
+\item[H1 (regime signature).] Under stress, $H^{dep}$ falls, $\DD$ rises, and so
+$\JJ$ rises.
+\item[H2 (partial compensation).] $\Delta H^{dep}_t=-\beta\,\Delta H^{vol}_t+u_t$
+with $\beta>0$, and $\beta_{\text{stress}}>\beta_{\text{calm}}$.
+\item[H3 (jump asymmetry).] Changes in $\JJ$ are one-sided, beyond what the same
+estimator produces on data with no temporal structure.
+\item[H4 (relaxation).] $\JJ$ mean-reverts with a half-life longer than the
+estimator's own memory.
+\item[H5 (skewness signature).] Positive jumps in $\JJ$ coincide with negative
+skewness of the market factor (Postulate~P\ref{p:sign}).
+\item[H6 (channel coupling).] Dependence and shape are weakly coupled in calm
+markets and strongly coupled under stress.
+\item[H7 (predictive power).] Today's entropy improves, out of sample, the
+forecast of 21-day risk relative to volatility.
+\item[H8 (composition of the crisis budget).] Grouped into episodes, jumps have
+the dependence channel as their dominant contributor more often than a
+memoryless resampling does.
+\end{description}
+
+\paragraph{Estimation, in one sentence.} Rolling 252-day windows,
+\citet{ledoit2004} shrinkage covariance, marginal deficit via the
+\citet{hyvarinen1998} approximation rather than the Edgeworth
+expansion~\eqref{eq:edgeworth} (unusable on daily returns), stress regime
+defined by a volatility threshold computed on the past only, jumps detected by a
+four-sigma filter on $\Delta\JJ$.
+
+\subsection{Why a calibrated null is indispensable}
+
+The theoretical point that governs the whole reading of the results is the
+following. $\JJ$ is a \emph{convex, non-negative} functional of second- to
+fourth-order moments estimated over a window. When a fat-tailed observation
+enters the window, the estimated moments jump, and the convex functional jumps
+\emph{up} whatever the sign of the observation. As the observation ages
+(exponential weighting) or leaves the window, the functional comes down
+gradually. The measuring device therefore manufactures, on its own, the
+sawtooth predicted by Proposition~\ref{prop:conditioning} and
+Postulate~P\ref{p:relax}. An i.i.d.\ Gaussian simulation with no events at all
+already yields an apparent half-life of 35~days and 37~positive jumps against
+none negative under the four-sigma filter.
+
+Hence two nulls, built by resampling the observed return matrix and running the
+identical pipeline two hundred times: the \emph{i.i.d.} null (rows drawn
+independently; marginal fat tails and cross-sectional dependence kept, all
+chronology destroyed) and the 21-day \emph{block} null (which also keeps
+volatility clustering). A statistic that clears both is evidence; one that
+clears only one is not identified.
+
+\subsection{The verdict}
+
+\begin{table}[htbp]
+\centering
+\small
+\begin{tabular}{@{}llrrrl@{}}
+\toprule
+& Statistic & Data & i.i.d. & block-21 & Verdict \\
+\midrule
+H1 & regime gap $H^{dep}$ & $-0.99$ & $-0.21$ & $-0.51$ & \textbf{clears both} \\
+H1 & regime gap $\JJ$ & $1.93$ & $2.14$ & $1.97$ & fails both \\
+H1 & regime gap $\DD$ & $0.27$ & $1.25$ & $0.65$ & wrong-signed \\
+H2 & $\beta$ (stress) & $0.20$ & $0.05$ & $0.11$ & fails both \\
+H3 & positive jumps & $158$ & $148.5$ & $133.2$ & block only \\
+H3 & skewness of $\Delta\JJ$ & $12.26$ & $14.80$ & $12.97$ & wrong-signed \\
+H4 & half-life (days) & $120.8$ & $92.1$ & $162.8$ & between the two \\
+H4 & range of $\JJ$ & $18.95$ & $10.05$ & $13.77$ & \textbf{clears both} \\
+H5 & $\mathrm{corr}(\Delta\JJ,\Delta S_{mkt})$ & $-0.24$ & $-0.04$ & $-0.07$ & fails both \\
+H6 & coupling gap & $0.59$ & $0.77$ & $0.67$ & wrong-signed \\
+H7 & out-of-sample gain & \multicolumn{3}{c}{none on two panels} & rejected \\
+H8 & share of dependence-led episodes & $46\%$ & $19$--$33\%$ & n.i. & i.i.d.\ only \\
+\bottomrule
+\end{tabular}
+\caption{Verdicts against the nulls (means over two hundred replications),
+main panel of twenty S\&P~500 stocks, 1990--2022. Source:
+\texttt{paper/tables/tab\_placebo\_sp500.tex} and the H7--H8 sections of v1.
+n.i.: not identified, at every block length tested between 5 and 126~days.}
+\label{tab:program}
+\end{table}
+
+Two statistics clear both nulls on the main panel, and only one replicates on
+Kenneth French's 48 industry portfolios: the regime gap of the dependence
+channel ($-3.65$~nats against $-0.56$ and $-2.46$). Phase~A then hardened it: it
+holds in devolatilised (Forbes--Rigobon) and rank-based form, the latter being
+the strongest against the block null ($p=0.03$ on the S\&P~500, $0.01$ on the
+industries), whereas the \citet{kritzman2011} absorption ratio fails the block
+null on both panels.
+
+\subsection{What the verdict says about the theory}
+
+One must separate what the verdict touches from what it does not.
+
+\paragraph{What is untouched.} The statements of Sections~\ref{sec:bridge}
+and~\ref{sec:channels} are identities and theorems. So is
+Proposition~\ref{prop:conditioning}. No empirical result can refute them; it can
+only show that the available estimators do not let us see them at work.
+
+\paragraph{What is touched.} The two postulates. P\ref{p:relax} is supported only
+by amplitude (the range of $\JJ$), not by a relaxation rate: the half-life lies
+between the two nulls and its level depends on the null chosen. P\ref{p:sign} is
+not established (H5). Channel coupling (H6), which Section~\ref{sec:dynamics}
+derived from the common nature of news, is reproduced and even exceeded by
+resampled data.
+
+\paragraph{Why the dependence channel survives.} A plausible explanation,
+consistent with Phase~A, lies in the form of the estimator.
+$\tfrac12\log\det R=\tfrac12\sum_k\log\lambda_k$ weighs the whole spectrum of the
+correlation matrix, including the small eigenvalues, which collapse when the
+cross-section couples onto a few collective modes. A single large isolated return
+barely moves those small eigenvalues. The shape channel $\DD$, by contrast,
+reacts strongly to a single extreme observation, which is exactly the signature
+the null reproduces. Concentration measures (absorption ratio, first-eigenvalue
+share) look only at the top of the spectrum, where the block null catches up
+with them.
+
+\paragraph{Consequence for the main paper.} The indicator keeps the one
+identified channel and drops $\DD$, and hence $\JJ$. The theory of
+Sections~\ref{sec:channels} and~\ref{sec:dynamics} remains the justification of
+\emph{why} this channel measures shared information (the Gaussian
+multi-information, equation~\eqref{eq:ceiling} and Appendix~\ref{app:gauss}),
+but the postulated dynamics is not used.
+
+\section{The geometry of Kullback--Leibler-ball scenarios}
+\label{sec:stress}
+
+The main paper keeps the simplest use of this geometry: pricing a published
+scenario in nats, which for a pure mean shift is half the squared Mahalanobis
+distance. This section gives the full construction of which that use is a
+special case, with the proofs that v1 only stated, and a new result on lifting a
+portfolio scenario to full dimension.
+
+\subsection{Divergence between two Gaussians}
+
+\begin{proposition}[Closed form]
+\label{prop:klgauss}
+For $p_1=\mathcal N(\mu_1,\Sigma_1)$ and $p_0=\mathcal N(\mu_0,\Sigma_0)$ on
+$\mathbb R^N$, with $\delta=\mu_1-\mu_0$,
+\begin{equation}
+\label{eq:klgauss}
+\KL{p_1}{p_0}=\tfrac12\Big[\underbrace{\delta^\top\Sigma_0^{-1}\delta}_{\text{shift}}
++\underbrace{\operatorname{tr}(\Sigma_0^{-1}\Sigma_1)-N-\log\det(\Sigma_0^{-1}\Sigma_1)}_{\text{deformation}}\Big].
+\end{equation}
+\end{proposition}
+
+\begin{proof}
+$\KL{p_1}{p_0}=\mathbb E_{p_1}[\log p_1-\log p_0]$. Both logarithms are
+quadratic; the trace trick of Appendix~\ref{app:gauss} gives
+$\mathbb E_{p_1}[(X-\mu_1)^\top\Sigma_1^{-1}(X-\mu_1)]=N$ and
+$\mathbb E_{p_1}[(X-\mu_0)^\top\Sigma_0^{-1}(X-\mu_0)]
+=\operatorname{tr}(\Sigma_0^{-1}\Sigma_1)+\delta^\top\Sigma_0^{-1}\delta$.
+Collect with the $\log\det$ terms.
+\end{proof}
+
+The shift term is half the squared Mahalanobis distance: this is the unit in
+which the main paper audits published scenarios. The deformation term is
+non-negative and zero if and only if $\Sigma_1=\Sigma_0$; writing $\nu_k$ for
+the eigenvalues of $\Sigma_0^{-1}\Sigma_1$, it equals
+$\tfrac12\sum_k(\nu_k-1-\log\nu_k)$, a sum of non-negative terms, one per
+eigendirection.
+
+\subsection{The projected ball and the exchange rate}
+
+\begin{definition}[Entropy-ball scenario]
+Given today's conditional law $p_0$ and a severity $\eta>0$, the severity-$\eta$
+scenario for a risk functional $\rho$ is
+\begin{equation}
+\label{eq:ball}
+p^\star_\eta=\arg\max_{p\,:\,\KL{p}{p_0}\le\eta}\rho(p).
+\end{equation}
+\end{definition}
+
+For a linear portfolio $w^\top r$ with mean $m_0$ and standard deviation $s_0$
+under $p_0$, set $u=(m-m_0)/s_0$ and $v=s/s_0$. By
+Proposition~\ref{prop:klgauss} in one dimension,
+\begin{equation}
+\label{eq:g}
+g(u,v)=\tfrac12\left(u^2+v^2-1-2\log v\right).
+\end{equation}
+
+\begin{proposition}[Solution of the projected ball]
+\label{prop:ballsol}
+For $\rho=-m+c\,s$ with $c\ge0$ (Gaussian VaR and expected shortfall are of this
+form), the maximum of $\rho$ subject to $g(u,v)\le\eta$ is attained on the
+boundary $g=\eta$ at a point satisfying
+\begin{equation*}
+u=-t,\qquad v-v^{-1}=c\,t,\qquad t>0 .
+\end{equation*}
+For $c=0$: $v=1$ and $u=-\sqrt{2\eta}$. \emph{A purely directional scenario of
+$\eta$~nats is a move of $\sqrt{2\eta}$~sigmas}; one nat buys
+$\sqrt2\approx1.41$~sigma, and $k$~sigmas cost $k^2/2$~nats.
+\end{proposition}
+
+\begin{proof}
+$g$ is convex on $\mathbb R\times(0,\infty)$ (the sum of $u^2/2$ and
+$(v^2-1-2\log v)/2$, whose second derivative is $1+v^{-2}>0$) and the objective
+$s_0(-u+cv)$ is linear, so the Karush--Kuhn--Tucker conditions are sufficient.
+The objective has no interior maximum, so the constraint binds. The Lagrangian
+gives $-1=\lambda u$ and $c=\lambda(v-v^{-1})$ with $\lambda>0$; setting
+$t=1/\lambda$ yields the stated system, and $t$ is pinned down by
+$g(-t,v(t))=\eta$. For $c=0$, $v-v^{-1}=0$ forces $v=1$ and $g=u^2/2=\eta$.
+\end{proof}
+
+\subsection{From the portfolio to full dimension}
+
+The ball~\eqref{eq:ball} is solved on the portfolio's law, but a stress test must
+say how each asset moves. Two facts settle the question.
+
+\begin{proposition}[Data processing]
+\label{prop:dpi}
+For any law $p$ on $\mathbb R^N$, with $p^w$ and $p_0^w$ the laws of $w^\top r$
+under $p$ and $p_0$,
+$\KL{p^w}{p_0^w}\le\KL{p}{p_0}$.
+\end{proposition}
+
+This is the data-processing inequality \citep{cover2006} applied to the map
+$r\mapsto w^\top r$. The \emph{ambient} price of a scenario (in full dimension)
+is therefore always at least its \emph{portfolio} price (in projection). The
+classical-bundle table of v1 bears this out line by line ($9.97$ against
+$7.24$~nats for the standard bundle).
+
+\begin{proposition}[Minimal lift]
+\label{prop:lift}
+Let $p_0=\mathcal N(\mu_0,\Sigma_0)$, $m_0=w^\top\mu_0$, $s_0^2=w^\top\Sigma_0w$,
+and a target $(m,s)$ with $s>0$. Among Gaussians $\mathcal N(\mu_1,\Sigma_1)$
+with $w^\top\mu_1=m$ and $w^\top\Sigma_1w=s^2$, the divergence $\KL{p_1}{p_0}$
+is minimised by
+\begin{equation}
+\label{eq:lift}
+\mu_1=\mu_0+u\,s_0\,\beta,\qquad
+\Sigma_1=\Sigma_0+(v^2-1)\,s_0^2\,\beta\beta^\top,
+\qquad\beta=\frac{\Sigma_0w}{s_0^2},
+\end{equation}
+and the minimum equals exactly $g(u,v)$, the portfolio price.
+\end{proposition}
+
+\begin{proof}
+By Proposition~\ref{prop:dpi}, every candidate costs at least the price of its
+projection, which is $g(u,v)$ since the projection of a Gaussian is Gaussian
+with mean $m$ and standard deviation $s$. It therefore suffices to check that
+\eqref{eq:lift} attains this bound. We have $w^\top\beta=1$, so
+$w^\top\mu_1=m_0+us_0=m$ and $w^\top\Sigma_1w=s_0^2+(v^2-1)s_0^2=s^2$. In
+\eqref{eq:klgauss}: $\delta^\top\Sigma_0^{-1}\delta=u^2s_0^2\,\beta^\top\Sigma_0^{-1}\beta=u^2$;
+$\operatorname{tr}(\Sigma_0^{-1}\Sigma_1)=N+(v^2-1)s_0^2\,\beta^\top\Sigma_0^{-1}\beta=N+v^2-1$;
+and by the matrix determinant lemma,
+$\det(\Sigma_0^{-1}\Sigma_1)=1+(v^2-1)s_0^2\,\beta^\top\Sigma_0^{-1}\beta=v^2$.
+Hence $\KL{p_1}{p_0}=\tfrac12(u^2+v^2-1-2\log v)=g(u,v)$. The matrix $\Sigma_1$ is
+positive definite for every $v>0$.
+\end{proof}
+
+\paragraph{Asset-by-asset reading.} The vector $\beta$ collects the assets'
+betas on the portfolio, $\beta_i=\operatorname{Cov}(r_i,w^\top r)/s_0^2$. Write
+$r=\beta f+e$ with $f=w^\top r$ and $e$ uncorrelated with $f$ under $p_0$. The
+scenario~\eqref{eq:lift} multiplies the standard deviation of the portfolio
+factor $f$ by $v$, shifts its mean by $u$~sigmas, and leaves the law of $e$
+unchanged. Each asset's variance rises by $(v^2-1)s_0^2\beta_i^2$ and its mean
+moves by $us_0\beta_i$: high-beta assets take the shock, and the correlations
+among them rise. It is a one-factor scenario, and it is the least informative of
+all scenarios that reach the target severity.
+
+\begin{remark}[Correction to v1]
+arXiv~v1 identified this minimum through its first-order conditions,
+$\Sigma_1^{-1}=\Sigma_0^{-1}-\lambda ww^\top$, and judged it ``not interpretable
+asset by asset''. By the Sherman--Morrison formula, this rank-one perturbation of
+the precision matrix \emph{is}~\eqref{eq:lift}, a rank-one perturbation of the
+covariance along $\Sigma_0w$, and it reads as above. Since v1 never uses it, no
+number depends on it.
+\end{remark}
+
+\begin{corollary}[Cost of uniform dilation]
+\label{cor:uniform}
+Uniform dilation $\Sigma_1=v^2\Sigma_0$, the v1 default, has a deformation
+component equal to $N\cdot\tfrac12(v^2-1-2\log v)$, that is $N$~times that of the
+minimal lift.
+\end{corollary}
+
+\begin{proof}
+Every eigenvalue of $\Sigma_0^{-1}\Sigma_1$ equals $v^2$; apply the spectral form
+of the deformation term.
+\end{proof}
+
+For the ten-year scenario on the main panel ($v=1.63$, $N=20$), the variance
+component is $0.34$~nat at the minimum and $20\times0.34\approx6.8$ under uniform
+dilation, which is the figure in the v1 composition table. The corollary
+explains the v1 finding that the compositions calibrated on H1 ($2.88$~nats) and
+refined by H8 ($0.71$) cost \emph{less} than the default: the default deforms
+every eigendirection equally, whereas a composition that concentrates the shock
+on the common mode moves towards the one-factor scenario~\eqref{eq:lift}, whose
+total cost is $0.41$~nat including the mean shift. That uniform dilation costs
+$N$~times the minimum in variance is a general result; that the calibrated
+compositions fall between the two remains a finding on these panels, but it
+becomes expected rather than surprising.
+
+\subsection{Composing a given severity}
+
+\begin{proposition}[One severity, many compositions]
+\label{prop:composition}
+If $w^\top\Sigma_aw=w^\top\Sigma_bw=s^2$, then for every $\alpha\in[0,1]$,
+$\Sigma_\alpha=(1-\alpha)\Sigma_a+\alpha\Sigma_b$ satisfies
+$w^\top\Sigma_\alpha w=s^2$.
+\end{proposition}
+
+\begin{proof}
+$w^\top\Sigma w$ is linear in $\Sigma$.
+\end{proof}
+
+Portfolio severity therefore does not constrain the composition. The ambient
+price, for its part, is convex in $\Sigma_1$ (the $-\log\det$ term is convex and
+the rest is linear), so along a mixture it is bounded by the mixture of prices,
+which guarantees that an intermediate composition never costs more than the
+dearer of its two endpoints.
+
+\paragraph{A physical ceiling on correlation.} With marginal volatilities fixed,
+$w^\top\Sigma w$ is maximised over valid correlation matrices at
+$\rho_{ij}=1$, where it equals $(\sum_iw_i\sigma_i)^2$. On the main panel this
+ceiling is only about $1.5$~times today's volatility: beyond the five-year rung,
+no rise in correlation alone suffices, and some rise in volatilities is
+unavoidable.
+
+\subsection{Calibrating the radius, and the limit of that calibration}
+
+The radius is read off the information flow of the projection,
+$I^{(h)}_t=\KL{p^w_t}{p^w_{t-h}}$, whose quantiles (on non-overlapping 21-day
+blocks) convert a return period into a radius. Reading the radius off the
+$N$-dimensional flow overstates it by an order of magnitude, by
+Proposition~\ref{prop:dpi}. Calibrated this way, the v1 ladder gives a ten-year
+volatility multiplier of $1.63$, while the ten-year quantile of the realised
+one-month volatility rise is $3.2$. The ladder is a coherent, reproducible rule;
+its return periods are not validated. This is one of the reasons the main paper
+keeps the audit (pricing a given scenario) and drops generation (building a
+scenario with a given return period).
+
+\subsection{Reverse stress testing}
+
+Asking for the cheapest scenario that produces a given loss $L$ inverts the ball.
+In the projected Gaussian setting, Proposition~\ref{prop:ballsol} reads
+backwards. In the non-parametric setting, the solution is the exponential
+tilting of the sample \citep{csiszar1975}, whose effective sample size collapses
+as the radius grows: at $9$~nats it is $1.0$ on the main panel, meaning that the
+tilted law is nothing but the worst observed day. Any implementation should
+report this effective size and switch to the Gaussian ball as soon as it drops
+below a few dozen.
+
+\section{The bridge to the main paper: block decomposition}
+\label{sec:blocks}
+
+This section connects the theory above to the indicator of the main paper. It
+establishes the identity behind the ``contagion map'' and shows where the
+dependence channel sits within the structural index.
+
+\subsection{The identity}
+
+Partition the $N$ series into $B$ blocks (for instance the CISS segments: money
+market, bonds, equities, financial intermediaries, foreign exchange), and write
+$R_{bb}$ for the diagonal blocks of the correlation matrix $R$ and
+$R_D=\operatorname{diag}(R_{11},\dots,R_{BB})$.
+
+\begin{proposition}[Within/between-block decomposition]
+\label{prop:blocks}
+\begin{equation}
+\label{eq:blocks}
+\underbrace{-\tfrac12\log\det R}_{\text{total dependence}}
+\;=\;\sum_{b=1}^{B}\underbrace{\left(-\tfrac12\log\det R_{bb}\right)}_{\text{within block }b}
+\;+\;\underbrace{\left(-\tfrac12\log\det\big(R_D^{-1/2}RR_D^{-1/2}\big)\right)}_{\text{between blocks}} ,
+\end{equation}
+and each of the $B+1$ terms is non-negative. The between-block term is the
+Gaussian multi-information among blocks,
+$\KL{\mathcal N(0,R)}{\bigotimes_b\mathcal N(0,R_{bb})}$; it is zero if and only
+if the blocks are pairwise uncorrelated.
+\end{proposition}
+
+\begin{proof}
+$R=R_D^{1/2}\,\big(R_D^{-1/2}RR_D^{-1/2}\big)\,R_D^{1/2}$ and the determinant is
+multiplicative, so $\log\det R=\log\det R_D+\log\det(R_D^{-1/2}RR_D^{-1/2})$,
+with $\log\det R_D=\sum_b\log\det R_{bb}$. Each $R_{bb}$ is a correlation matrix,
+so $-\tfrac12\log\det R_{bb}\ge0$ by Hadamard's inequality
+(Appendix~\ref{app:gauss}). The matrix $\tilde R=R_D^{-1/2}RR_D^{-1/2}$ has
+identity diagonal blocks, hence a unit diagonal, and Hadamard applies again.
+Finally Proposition~\ref{prop:klgauss} with $\mu_1=\mu_0$, $\Sigma_1=R$,
+$\Sigma_0=R_D$ gives
+$\tfrac12[\operatorname{tr}(R_D^{-1}R)-N-\log\det(R_D^{-1}R)]$, and
+$\operatorname{tr}(R_D^{-1}R)=\sum_b\operatorname{tr}(I)=N$.
+\end{proof}
+
+\paragraph{Two blocks: canonical correlations.} For $B=2$, writing
+$C=R_{11}^{-1/2}R_{12}R_{22}^{-1/2}$ and $\rho_1,\dots,\rho_k$ for its singular
+values (the canonical correlations between the two blocks),
+$\det\tilde R=\det(I-CC^\top)=\prod_j(1-\rho_j^2)$ and the between-block term
+equals $-\tfrac12\sum_j\log(1-\rho_j^2)$. This is the Gaussian mutual
+information between the two segments, the sum of the information carried by each
+canonical pair. For $B>2$, identity~\eqref{eq:blocks} can be applied in nested
+fashion and lets one attribute contagion to pairs or groups of segments by the
+chain rule.
+
+\subsection{Where the dependence channel sits in the structural index}
+
+The chain rule of Appendix~\ref{app:index} writes $\JJ=\sum_i\Dun(x_i)+I(x)$.
+Replacing the multi-information $I(x)$ by its Gaussian part $-H^{dep}$ and
+applying~\eqref{eq:blocks}:
+\begin{equation}
+\label{eq:jblocks}
+\JJ\;\approx\;\underbrace{\sum_i\Dun(x_i)}_{\text{shape}}
+\;+\;\underbrace{\sum_b\left(-\tfrac12\log\det R_{bb}\right)}_{\text{within}}
+\;+\;\underbrace{\left(-\tfrac12\log\det\tilde R\right)}_{\text{between}} .
+\end{equation}
+The main paper keeps the last two terms and drops the first, which is the one
+the null reproduces (Section~\ref{sec:program}). The entropic CISS is thus the
+structural index stripped of its shape channel, and its decomposition is exact,
+with no approximation, because it concerns only the Gaussian part.
+
+\subsection{Three properties useful for the indicator}
+
+\paragraph{Scale invariance.} The terms of~\eqref{eq:blocks} depend only on
+$R$: they are invariant to any series-by-series rescaling, which allows markets
+with very different volatilities to be aggregated without ad hoc weighting. The
+\citet{forbes2002} devolatilisation therefore acts not on the formula but on the
+bias of the \emph{estimator} of $R$ under heteroskedasticity.
+
+\paragraph{Rank version.} Replacing $R$ by the correlation of normal scores
+$\Phi^{-1}(\hat F_i(x_i))$ estimates the multi-information of a Gaussian copula.
+The quantity becomes invariant to any monotone transformation of the marginals,
+which explains its robustness to tails observed in Phase~A.
+
+\paragraph{Normalisation in $N$.} For a constant correlation $\rho$,
+$\det R=(1-\rho)^{N-1}\big(1+(N-1)\rho\big)$, so $-H^{dep}$ grows roughly linearly
+in $N$. Dividing by $N-1$, or reporting the equivalent constant correlation
+$\rho^\star$ that gives the same determinant, makes the indicator comparable
+across panels. For small $\rho^\star$,
+$-H^{dep}\approx\tfrac14N(N-1)\rho^{\star2}$.
+
+\section{Monitoring indicators and insurance solvency}
+\label{sec:monitoring}
+
+\paragraph{Two indicators from v1.} The jump/diffusion split delivered two daily
+quantities: the standardised positive-jump component of $\JJ$ (how much
+information arrived today) and $\JJ_t$ relative to its rolling maximum (how much
+has not yet been absorbed). Neither improves the volatility forecast (H7), and
+both rest on statistics the null does not identify. They are not carried over.
+
+\paragraph{Insurance.} Three links remain valid in principle. An entropy-ball
+scenario produces a complete stressed law, a natural object for the ORSA. The
+decomposition of classical bundles bears on the Solvency~II standard formula,
+whose diversification credit rests on a fixed correlation matrix. And entropic
+risk measures are coherent \citep{ahmadijavid2012,artzner1999}. Nothing has been
+tested on liabilities, however, and the short, low-frequency panels typical of
+insurance data would strain every estimator used here.
+
+\section{Open questions}
+\label{sec:open}
+
+\begin{enumerate}
+\item \textbf{Self-exciting arrivals.} The jump clustering seen in the v1 event
+study contradicts the Poisson measure in~\eqref{eq:ou}. A Hawkes process is the
+next specification.
+\item \textbf{Positivity.} $\JJ\ge0$ whereas an Ornstein--Uhlenbeck process with
+a Brownian term can turn negative. One should either drop $\sigma_\JJ$ (the
+pure form of \citealt{bns2001}) or model $\log\JJ$.
+\item \textbf{Non-linear tail dependence.} $\JJ$ and the dependence channel see
+only the Gaussian part of the multi-information. Estimating the full copula
+multi-information (for example by nearest neighbours on ranks) would measure
+what is missing, at the price of a much higher estimation variance.
+\item \textbf{Tail of the information flow.} Beyond about twenty years, the
+quantiles of $I^{(h)}$ are extrapolated. A generalised Pareto fit would be the
+disciplined correction.
+\item \textbf{Minimal lift and published scenarios.}
+Proposition~\ref{prop:lift} provides a yardstick: for any published scenario,
+the ratio of its ambient price to the minimal price $g(u,v)$ of its projection
+measures how much information it spends outside the direction that matters to
+the portfolio. This extends the audit of the main paper directly.
+\end{enumerate}
+
+\appendix
+
+\section{Units, invariance, and what can be computed}
+\label{app:units}
+
+\paragraph{The nat.} Entropy $H=-\sum_i p_i\log p_i$ is defined only once the
+base of the logarithm is chosen, and that choice \emph{is} the choice of unit.
+With $\log_2$ one gets bits (shannons), with $\log_{10}$ dits, and with the
+natural logarithm \emph{nats}. One nat is the information delivered by an
+observation that divides the space of possibilities by $e\approx2.718$, where a
+bit divides it by two. The conversion is $1~\text{nat}=1/\log 2\approx1.4427$~bit.
+This document uses the natural logarithm throughout: entropies, deficits,
+divergences, scenario radii and the structural index are in nats.
+
+Three operational readings, from the most useful to the most abstract. First the
+exchange rate established in Section~\ref{sec:stress}: a purely directional
+scenario of $\eta$ nats is a move of $\sqrt{2\eta}$ sigmas, so $k$~sigmas cost
+$k^2/2$ nats. Next, coding: $\KL{p}{q}$ nats is the expected excess code length
+when data with law $p$ are encoded with a code optimal for $q$. Finally,
+hypothesis testing: a divergence of one nat per observation means that the
+likelihood ratio in favour of $p$ grows on average by a factor $e$ with each
+observation.
+
+\paragraph{$h$ depends on units, divergences do not.} The differential entropy
+of a continuous variable satisfies, for any invertible affine transformation,
+\begin{equation}
+\label{eq:h-scaling}
+h(aX+b) \;=\; h(X) + \log|a| ,
+\qquad\text{and in dimension } N,\quad h(AX+b)=h(X)+\log|\det A| .
+\end{equation}
+Expressing returns in percent rather than decimals therefore adds $N\log 100$ to
+$h$: the \emph{level} of $h$, and hence that of $H^{vol}$ and $H^{cov}$, has no
+interpretable absolute value. By contrast $\KL{p}{q}$, $I(X;Y)$, $\DD$ and $\JJ$
+are invariant under any invertible change of variable, the Jacobians cancelling
+between numerator and denominator of the logarithm. \emph{A figure in nats is
+comparable across datasets only if it is a divergence.} This is the structural
+reason the paper builds a scale-free index.
+
+\paragraph{How is $h(X)$ computed?} In the Gaussian case, in closed form
+(Appendix~\ref{app:gauss}). In general, it cannot be without knowing $p$.
+Non-parametric estimators exist (\citet{vasicek1976} spacings,
+Kozachenko--Leonenko nearest neighbours, kernel methods) but all degrade quickly
+beyond three or four dimensions. Estimating a differential entropy in
+dimension~20 on a 252-day window is out of reach.
+
+The paper therefore \emph{never} computes $h(p)$. It computes $h(q)$ in closed
+form from $\widehat\Sigma$, and the deficit $\DD$ through an approximation of
+the \emph{difference} of marginal entropies. A difference of entropies is
+dimensionless and estimable; a bare differential entropy is not. The whole
+architecture (decompose rather than estimate directly) follows from this
+constraint.
+
+\section{Gaussian entropy: proof of equation~\eqref{eq:ceiling}}
+\label{app:gauss}
+
+\begin{proof}[Step A: entropy of a multivariate Gaussian]
+For $q=\mathcal N(\mu,\Sigma)$ on $\mathbb{R}^N$,
+\[
+\log q(x) = -\tfrac12\left[N\log 2\pi + \log\det\Sigma + (x-\mu)'\Sigma^{-1}(x-\mu)\right],
+\]
+so
+\[
+h(q) = -\mathbb{E}_q[\log q] = \tfrac12 N\log 2\pi + \tfrac12\log\det\Sigma
++ \tfrac12\,\mathbb{E}\!\left[(X-\mu)'\Sigma^{-1}(X-\mu)\right].
+\]
+The last expectation follows from the trace trick: a scalar equals its trace,
+and the trace is cyclic, hence
+\[
+\mathbb{E}\!\left[(X-\mu)'\Sigma^{-1}(X-\mu)\right]
+= \mathbb{E}\!\left[\operatorname{tr}\!\left(\Sigma^{-1}(X-\mu)(X-\mu)'\right)\right]
+= \operatorname{tr}(\Sigma^{-1}\Sigma) = \operatorname{tr}(I_N) = N .
+\]
+Collecting terms, $h(q)=\tfrac12\left[N\log2\pi+\log\det\Sigma+N\right]
+=\tfrac12\log\!\left((2\pi e)^N\det\Sigma\right)$.
+\end{proof}
+
+\begin{proof}[Step B: factorising the determinant]
+With $\Sigma=DRD$, $D=\operatorname{diag}(\sigma_1,\dots,\sigma_N)$ and $R$ the
+correlation matrix, multiplicativity of the determinant gives
+$\det\Sigma=\det(D)\det(R)\det(D)=\left(\prod_i\sigma_i\right)^2\det R$.
+\end{proof}
+
+\begin{proof}[Step C: substitution]
+$\tfrac12\log\det\Sigma
+=\tfrac12\log\!\left[\left(\prod_i\sigma_i\right)^2\det R\right]
+=\sum_i\log\sigma_i+\tfrac12\log\det R$, hence
+$h(q)=\tfrac N2\log(2\pi e)+\sum_i\log\sigma_i+\tfrac12\log\det R$, which is
+equation~\eqref{eq:ceiling}.
+\end{proof}
+
+\paragraph{Sign of the dependence channel.} Hadamard's inequality gives
+$\det R\le\prod_i R_{ii}=1$ for a positive semi-definite matrix. A more telling
+proof goes through the spectrum: $\det R=\prod_k\lambda_k$ with
+$\sum_k\lambda_k=\operatorname{tr}R=N$, and the arithmetic--geometric mean
+inequality gives $\prod_k\lambda_k\le\left(\sum_k\lambda_k/N\right)^N=1$, with
+equality if and only if every eigenvalue equals~1, that is $R=I$. Hence
+$H^{dep}\le0$: \emph{correlation always destroys entropy}.
+
+In the bivariate case, $\det R=1-\rho^2$ and $H^{dep}=\tfrac12\log(1-\rho^2)$;
+for $\rho=0.9$ this is $-0.83$~nat. Note that $-H^{dep}$ is then exactly the
+mutual information between the two assets: correlation is shared information,
+hence destroyed entropy.
+
+\paragraph{Reading note on the tables.} The $H^{cov}$ columns of the v1 results
+tables report $H^{vol}+H^{dep}$ and \textbf{omit the constant}
+$\tfrac N2\log(2\pi e)$, which equals $28.38$~nats for $N=20$. This constant
+offset is harmless since only differences between regimes and changes over time
+are interpreted, but it explains why the reported levels are negative.
+
+\section{The entropy deficit: why $\DD=h(q)-h(p)$}
+\label{app:deficit}
+
+The Kullback--Leibler divergence between a law $p$ and a reference law $q$ is
+$\KL{p}{q}=\int p\log(p/q)$, non-negative and zero if and only if $p=q$ almost
+everywhere. It is neither symmetric nor equipped with a triangle inequality: it
+is not a distance, hence the word divergence.
+
+\begin{proposition}
+\label{prop:deficit}
+If $q=\mathcal N(\mu,\Sigma)$ has \emph{the first two moments of $p$}, then
+$\KL{p}{q}=h(q)-h(p)$.
+\end{proposition}
+
+\begin{proof}
+$\KL{p}{q}=-h(p)-\mathbb{E}_p[\log q(X)]$. Now $\log q$ is exactly quadratic in
+$x$, so its expectation depends only on the mean and covariance of the law under
+which it is evaluated. Since $p$ and $q$ share these two moments,
+$\mathbb{E}_p\!\left[(X-\mu)'\Sigma^{-1}(X-\mu)\right]=\operatorname{tr}(\Sigma^{-1}\Sigma)=N
+=\mathbb{E}_q[\cdot]$, hence $\mathbb{E}_p[\log q]=\mathbb{E}_q[\log q]=-h(q)$ and
+so $\KL{p}{q}=h(q)-h(p)$.
+\end{proof}
+
+The moment-matching assumption is essential: without it the identity fails. This
+is the whole content of Proposition~\ref{prop:maxent}, read as a measurement
+rather than an existence theorem. Economically, $\DD$ is the price in nats of the
+lie ``the market is Gaussian'': the apparent uncertainty that the Gaussian
+description overstates, because the true law is more concentrated than its
+covariance alone suggests.
+
+\section{The structural index is a divergence}
+\label{app:index}
+
+\begin{proposition}
+\label{prop:index}
+With $q_i=\mathcal N(\mu_i,\sigma_i^2)$ the Gaussian marginals with the same
+scales as $p$,
+\[
+\KL{p}{\textstyle\prod_i q_i} \;=\; \DD - H^{dep} \;=\; \JJ .
+\]
+\end{proposition}
+
+\begin{proof}
+By definition,
+\[
+\begin{aligned}
+\KL{p}{\textstyle\prod_i q_i} &= -h(p) - \mathbb{E}_p\!\left[\textstyle\sum_i\log q_i(X_i)\right]
+= -h(p) + \sum_i\left[\tfrac12\log(2\pi\sigma_i^2)+\tfrac12\right]\\
+&= -h(p) + \sum_i\log\sigma_i + \tfrac N2\log(2\pi e),
+\end{aligned}
+\]
+using $\mathbb{E}_p[(X_i-\mu_i)^2]=\sigma_i^2$, true by construction. Substituting
+equation~\eqref{eq:three}, namely
+$h(p)=\tfrac N2\log(2\pi e)+\sum_i\log\sigma_i+H^{dep}-\DD$, the scale terms and
+the constant cancel and $\DD-H^{dep}$ remains.
+\end{proof}
+
+This is an exact identity, not an approximation, and it is what justifies
+Definition~\ref{def:J}. Removing the scale channel from \eqref{eq:three} might
+look like a fudge; the object that remains turns out to be a proper
+Kullback--Leibler divergence, and so inherits three properties for free: it is
+non-negative; it is zero if and only if returns are independent \emph{and}
+Gaussian, which provides a well-defined rather than arbitrary reference point;
+and it is invariant to asset-by-asset changes of units, since $p$ and
+$\prod_i q_i$ transform in the same way.
+
+It is useful to set this identity beside the general chain rule
+$\KL{p}{\prod_i q_i}=\sum_i\KL{p_i}{q_i}+I(x)$, where
+$I(x)=\KL{p}{\prod_i p_i}$ is the multi-information. The first term is the sum of
+marginal deficits $\sum_i\Dun(x_i)$, the second the total dependence. The
+estimator used in v1 estimates the first term with the \citet{hyvarinen1998}
+approximation and replaces the second with its linear part $-H^{dep}$;
+non-linear tail dependence is therefore omitted from $\JJ$ and measured
+separately through a co-exceedance rate.
+
+\section{Mutual information: the two propositions and an example}
+\label{app:mi}
+
+\paragraph{Proof of Proposition~\ref{prop:conditioning}.} By definition of
+conditional entropy, $\mathbb{E}_Y[h(X\mid Y)]=h(X,Y)-h(Y)$, and by
+\eqref{eq:mi}, $I(X;Y)=h(X)+h(Y)-h(X,Y)$. Adding the two,
+$\mathbb{E}_Y[h(X\mid Y)]=h(X)-I(X;Y)$. Non-negativity of $I$ follows from that of
+the Kullback--Leibler divergence, of which it is a special case, with equality if
+and only if $p_{XY}=p_X\otimes p_Y$.
+
+\paragraph{Proof of Proposition~\ref{prop:constraint}.} Immediate: an extra
+constraint can only shrink the feasible set, and the supremum of a functional
+over a smaller set cannot increase.
+
+\paragraph{Why the two are not equivalent.} The first quantifies but holds only
+on average; the second holds realisation by realisation but concerns the ceiling
+and quantifies nothing. A discrete counterexample suffices to show that a
+particular realisation can \emph{raise} entropy. Let $X$ be binary with
+$\mathbb{P}(X=a)=0.99$, so $H(X)=0.056$~nat. Let a signal $Y$, with probability
+$0.98$, remove all doubt ($H(X\mid Y=0)=0$), and with probability $0.02$ lead to
+$\mathbb{P}(X=a\mid Y=1)=1/2$, so $H(X\mid Y=1)=\log 2=0.693$~nat, twelve times the
+prior entropy. The average is nonetheless
+$0.98\times0+0.02\times0.693=0.014$~nat, well below $0.056$, and
+$I(X;Y)=0.042$~nat. This is exactly why the paper predicts a jump component that
+is \emph{mainly}, not exclusively, one-sided.
+
+\paragraph{Worked Gaussian example.} Let $X\sim\mathcal N(0,\sigma^2)$ be
+tomorrow's return and $Y=X+\varepsilon$ a noisy signal,
+$\varepsilon\sim\mathcal N(0,\sigma_\varepsilon^2)$ independent. Then
+\begin{equation}
+\label{eq:mi-gauss}
+I(X;Y)=\tfrac12\log\!\left(1+\frac{\sigma^2}{\sigma_\varepsilon^2}\right),
+\qquad
+\operatorname{Var}(X\mid Y)=\frac{\sigma^2\sigma_\varepsilon^2}{\sigma^2+\sigma_\varepsilon^2},
+\end{equation}
+the posterior variance not depending on the realisation $y$. With
+$\sigma=1\%$ a day:
+
+\begin{center}
+\small
+\begin{tabular}{@{}lrrrr@{}}
+\toprule
+Signal quality & $\sigma_\varepsilon$ & $I(X;Y)$ (nats) & posterior vol. & $\sqrt{2\eta}$ equivalent \\
+\midrule
+sharp    & $0.5\%$ & $0.805$ & $0.45\%$ & $1.27\sigma$ \\
+moderate & $1.0\%$ & $0.347$ & $0.71\%$ & $0.83\sigma$ \\
+vague    & $3.0\%$ & $0.053$ & $0.95\%$ & $0.32\sigma$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+A factor of fifteen separates the size of the entropy jump caused by decisive
+news from that caused by a rumour. The last column translates each jump onto the
+severity scale of Section~\ref{sec:stress}: it is the directional move a
+scenario of the same radius would produce.
+
+\begin{thebibliography}{99}
+\small
+
+\bibitem[Ahmadi-Javid(2012)]{ahmadijavid2012} Ahmadi-Javid, A. (2012). Entropic Value-at-Risk: A New Coherent Risk Measure. \textit{Journal of Optimization Theory and Applications}, 155(3), 1105--1123.
+
+\bibitem[Almog \& Shmueli(2019)]{almog2019} Almog, A., \& Shmueli, E. (2019). Structural Entropy: Monitoring Correlation-Based Networks Over Time With Application To Financial Markets. \textit{Scientific Reports}, 9, 10832.
+
+\bibitem[Ané \& Geman(2000)]{ane2000} Ané, T., \& Geman, H. (2000). Order Flow, Transaction Clock, and Normality of Asset Returns. \textit{Journal of Finance}, 55(5), 2259--2284.
+
+\bibitem[Artzner et al.(1999)]{artzner1999} Artzner, P., Delbaen, F., Eber, J.-M., \& Heath, D. (1999). Coherent Measures of Risk. \textit{Mathematical Finance}, 9(3), 203--228.
+
+\bibitem[Barndorff-Nielsen \& Shephard(2001)]{bns2001} Barndorff-Nielsen, O. E., \& Shephard, N. (2001). Non-Gaussian Ornstein--Uhlenbeck-based Models and Some of Their Uses in Financial Economics. \textit{Journal of the Royal Statistical Society B}, 63(2), 167--241.
+
+\bibitem[Barndorff-Nielsen \& Shephard(2004)]{bns2004} Barndorff-Nielsen, O. E., \& Shephard, N. (2004). Power and Bipower Variation with Stochastic Volatility and Jumps. \textit{Journal of Financial Econometrics}, 2(1), 1--37.
+
+\bibitem[Black(1976)]{black1976} Black, F. (1976). Studies of Stock Price Volatility Changes. \textit{Proceedings of the Business and Economic Statistics Section, American Statistical Association}, 177--181.
+
+\bibitem[Christie(1982)]{christie1982} Christie, A. A. (1982). The Stochastic Behavior of Common Stock Variances: Value, Leverage and Interest Rate Effects. \textit{Journal of Financial Economics}, 10(4), 407--432.
+
+\bibitem[Doob(1942)]{doob1942} Doob, J. L. (1942). The Brownian Movement and Stochastic Equations. \textit{Annals of Mathematics}, 43(2), 351--369.
+
+\bibitem[Engle \& Ng(1993)]{engle1993} Engle, R. F., \& Ng, V. K. (1993). Measuring and Testing the Impact of News on Volatility. \textit{Journal of Finance}, 48(5), 1749--1778.
+
+\bibitem[Nelson(1991)]{nelson1991} Nelson, D. B. (1991). Conditional Heteroskedasticity in Asset Returns: A New Approach. \textit{Econometrica}, 59(2), 347--370.
+
+\bibitem[Bollerslev \& Ghysels(1996)]{bollerslev1996} Bollerslev, T., \& Ghysels, E. (1996). Periodic Autoregressive Conditional Heteroscedasticity. \textit{Journal of Business \& Economic Statistics}, 14(2), 139--151.
+
+\bibitem[Breuer \& Csiszár(2013)]{breuer2013} Breuer, T., \& Csiszár, I. (2013). Systematic Stress Tests with Entropic Plausibility Constraints. \textit{Journal of Banking \& Finance}, 37(5), 1552--1559.
+
+\bibitem[Caraiani(2018)]{caraiani2018} Caraiani, P. (2018). Modeling the Comovement of Entropy between Financial Markets. \textit{Entropy}, 20(6), 417.
+
+\bibitem[Clark(1973)]{clark1973} Clark, P. K. (1973). A Subordinated Stochastic Process Model with Finite Variance for Speculative Prices. \textit{Econometrica}, 41(1), 135--155.
+
+\bibitem[Cover \& Thomas(2006)]{cover2006} Cover, T. M., \& Thomas, J. A. (2006). \textit{Elements of Information Theory}, 2nd ed. Wiley.
+
+\bibitem[Csiszár(1975)]{csiszar1975} Csiszár, I. (1975). $I$-Divergence Geometry of Probability Distributions and Minimization Problems. \textit{Annals of Probability}, 3(1), 146--158.
+
+\bibitem[Diebold \& Mariano(1995)]{dm1995} Diebold, F. X., \& Mariano, R. S. (1995). Comparing Predictive Accuracy. \textit{Journal of Business \& Economic Statistics}, 13(3), 253--263.
+
+\bibitem[Engle(2002)]{engle2002} Engle, R. (2002). Dynamic Conditional Correlation. \textit{Journal of Business \& Economic Statistics}, 20(3), 339--350.
+
+\bibitem[Forbes \& Rigobon(2002)]{forbes2002} Forbes, K. J., \& Rigobon, R. (2002). No Contagion, Only Interdependence: Measuring Stock Market Comovements. \textit{Journal of Finance}, 57(5), 2223--2261.
+
+\bibitem[Holló, Kremer \& Lo Duca(2012)]{hollo2012} Holló, D., Kremer, M., \& Lo Duca, M. (2012). CISS -- A Composite Indicator of Systemic Stress in the Financial System. \textit{ECB Working Paper} No.~1426.
+
+\bibitem[Kritzman et al.(2011)]{kritzman2011} Kritzman, M., Li, Y., Page, S., \& Rigobon, R. (2011). Principal Components as a Measure of Systemic Risk. \textit{Journal of Portfolio Management}, 37(4), 112--126.
+
+\bibitem[Glasserman \& Xu(2014)]{glasserman2014} Glasserman, P., \& Xu, X. (2014). Robust Risk Measurement and Model Risk. \textit{Quantitative Finance}, 14(1), 29--58.
+
+\bibitem[Hyvärinen(1998)]{hyvarinen1998} Hyvärinen, A. (1998). New Approximations of Differential Entropy for Independent Component Analysis and Projection Pursuit. \textit{Advances in Neural Information Processing Systems}, 10, 273--279. (Constants as in Hyvärinen \& Oja, 2000, \textit{Neural Networks} 13, 411--430.)
+
+\bibitem[Jaynes(1957)]{jaynes1957} Jaynes, E. T. (1957). Information Theory and Statistical Mechanics. \textit{Physical Review}, 106, 620--630.
+
+\bibitem[Kyle(1985)]{kyle1985} Kyle, A. S. (1985). Continuous Auctions and Insider Trading. \textit{Econometrica}, 53(6), 1315--1335.
+
+\bibitem[Ledoit \& Wolf(2004)]{ledoit2004} Ledoit, O., \& Wolf, M. (2004). A Well-Conditioned Estimator for Large-Dimensional Covariance Matrices. \textit{Journal of Multivariate Analysis}, 88(2), 365--411.
+
+\bibitem[Mandelbrot \& Taylor(1967)]{mandelbrot1967} Mandelbrot, B., \& Taylor, H. M. (1967). On the Distribution of Stock Price Differences. \textit{Operations Research}, 15(6), 1057--1062.
+
+\bibitem[Monroe(1978)]{monroe1978} Monroe, I. (1978). Processes That Can Be Embedded in Brownian Motion. \textit{Annals of Probability}, 6(1), 42--56.
+
+\bibitem[Papla \& Siedlecki(2024)]{papla2024} Papla, D., \& Siedlecki, R. (2024). Entropy as a Tool for the Analysis of Stock Market Efficiency During Periods of Crisis. \textit{Entropy}, 26(12), 1079.
+
+\bibitem[Politis \& Romano(1994)]{politis1994} Politis, D. N., \& Romano, J. P. (1994). The Stationary Bootstrap. \textit{Journal of the American Statistical Association}, 89(428), 1303--1313.
+
+\bibitem[Tauchen \& Pitts(1983)]{tauchen1983} Tauchen, G. E., \& Pitts, M. (1983). The Price Variability--Volume Relationship on Speculative Markets. \textit{Econometrica}, 51(2), 485--505.
+
+\bibitem[Vasicek(1976)]{vasicek1976} Vasicek, O. (1976). A Test for Normality Based on Sample Entropy. \textit{Journal of the Royal Statistical Society B}, 38(1), 54--59.
+
+\bibitem[Zhou, Cai \& Tong(2013)]{zhou2013} Zhou, R., Cai, R., \& Tong, G. (2013). Applications of Entropy in Finance: A Review. \textit{Entropy}, 15(11), 4909--4931.
+
+\end{thebibliography}
+
+\end{document}

@@ -1,0 +1,532 @@
+\section{Du flux d'ordres au prix gaussien : le pont volume}
+\label{sec:bridge}
+
+\subsection{Le prix comme flux d'ordres accumulé}
+
+Sur $[t,t+\Delta]$, soit $M$ le nombre de transactions exécutées, la transaction
+$k$ portant le volume signé $\epsilon_k v_k$ avec $\epsilon_k\in\{-1,+1\}$ le
+sens (à l'initiative de l'acheteur ou du vendeur) et $v_k>0$ la taille. Notons
+$V=\sum_k v_k$ le volume total et $Q=\sum_k \epsilon_k v_k$ le flux d'ordres
+signé net.
+
+\begin{assumption}[Impact linéaire]\label{as:impact}
+Le log-prix répond linéairement au flux d'ordres signé net,
+$\Delta X_{t,\Delta} = X_{t+\Delta}-X_t = \lambda\,Q$, avec $\lambda>0$ constant
+sur l'intervalle.
+\end{assumption}
+
+C'est l'équilibre de \citet{kyle1985} : le teneur de marché, incapable de
+distinguer le flux informé du flux non informé, fixe une règle de prix linéaire
+et $\lambda$ est l'inverse de la profondeur. C'est la définition du \og prix
+comme fonction du volume échangé \fg{} dont a besoin le reste de la section, et
+c'est le maillon le plus faible de la chaîne ; la
+section~\ref{sec:bridge-caveats} dit ce qui se passe quand il cède.
+
+\begin{assumption}[Signes échangeables et variance proportionnelle au volume]
+\label{as:signs}
+Conditionnellement à $V$ et à l'information disponible en $t$, la croyance du
+marché sur $Q$ n'est contrainte que par ses deux premiers moments, avec
+$\mathbb{E}[Q\mid V] = m$ et $\mathrm{Var}(Q\mid V) = \varsigma^2 V$.
+\end{assumption}
+
+La forme de la variance est celle qu'on obtient lorsque les signes des
+transactions sont échangeables à corrélation bornée et que les tailles ont une
+moyenne stable : pour des signes indépendants,
+$\mathrm{Var}(Q)=\sum_k v_k^2 \approx \bar v V$. Le contenu économique est que
+\emph{le volume, et non le temps, est la mesure naturelle de ce qui peut se
+produire}.
+
+\subsection{Maximum d'entropie en temps-volume}
+
+\begin{proposition}[Maximum d'entropie sous contraintes de moments d'ordre un et deux]
+\label{prop:maxent}
+Parmi les distributions absolument continues sur $\mathbb{R}^N$ de moyenne $\mu$
+et de covariance $\Sigma\succ0$, la gaussienne $\mathcal N(\mu,\Sigma)$ maximise
+de façon unique l'entropie différentielle, et
+$h^{\max}(\Sigma)=\tfrac12\log\left((2\pi e)^N\det\Sigma\right)$.
+\end{proposition}
+
+\begin{proof}
+Soit $q=\mathcal N(\mu,\Sigma)$ et soit $p$ de mêmes deux premiers moments et
+d'entropie différentielle finie. Comme $\log q$ est exactement quadratique, son
+espérance ne dépend que de ces moments, donc
+$\mathbb{E}_p[\log q]=\mathbb{E}_q[\log q]=-h(q)$. La positivité de l'entropie
+relative donne $0\le \KL{p}{q} = -h(p)+h(q)$, d'où $h(p)\le h(q)$, avec égalité
+si et seulement si $p=q$ presque partout. L'argument n'exige aucune
+différentiabilité de $p$ ni l'existence préalable d'un maximiseur.
+\end{proof}
+
+La voie variationnelle --- un lagrangien sur les contraintes de normalisation, de
+moyenne et de covariance, dont la condition du premier ordre rend $\log p$
+quadratique --- explique \emph{pourquoi} le maximiseur est gaussien, mais c'est
+l'argument par la divergence qui établit l'optimalité et l'unicité.
+
+En appliquant la proposition~\ref{prop:maxent} à
+l'hypothèse~\ref{as:signs} en dimension un, puis en transportant par
+l'hypothèse~\ref{as:impact} :
+
+\begin{equation}
+\label{eq:mdh}
+\Delta X_{t,\Delta}\ \big|\ V \ \sim\ \mathcal{N}\!\left(\lambda m,\ \lambda^2\varsigma^2 V\right).
+\end{equation}
+
+L'équation~\eqref{eq:mdh} est le pont. Trois points méritent d'être soulignés.
+
+D'abord, \emph{la variable de conditionnement est le volume, pas le temps}. Le
+maximum d'entropie ne délivre pas une variance ; il délivre la distribution la
+moins engageante étant donné une variance. L'hypothèse~\ref{as:signs} fournit
+cette variance à partir d'un observable, et cet observable est le volume échangé.
+L'équation~\eqref{eq:mdh} est l'hypothèse de mélange de distributions de
+\citet{clark1973} et \citet{tauchen1983}, obtenue ici comme un énoncé de maximum
+d'entropie plutôt que posée ; \citet{ane2000} montrent empiriquement que les
+rendements mesurés en temps-transaction sont proches du gaussien alors que les
+rendements en temps calendaire ne le sont pas, ce qui est la prédiction
+de~\eqref{eq:mdh}.
+
+Ensuite, \emph{la gaussianité est conditionnelle}. Inconditionnellement,
+$\Delta X$ est un mélange d'échelle de lois normales sur le volume aléatoire $V$,
+donc leptokurtique même si \eqref{eq:mdh} est exacte. C'est le mécanisme de
+subordination de \citet{mandelbrot1967}, et cela signifie que les queues épaisses
+ne constituent pas à elles seules une preuve contre le maximum d'entropie.
+
+Enfin, l'extension multivariée est immédiate : avec $N$ actifs,
+$\Delta \mathbf{X}\mid V \sim \mathcal N(\boldsymbol\mu V, \Sigma V)$, et la
+proposition~\ref{prop:maxent} s'applique telle quelle.
+
+\subsection{Des incréments gaussiens au mouvement brownien puis au MBG}
+
+Soit $\theta_t=\int_0^t v_s\,ds$ l'horloge de volume cumulé.
+L'équation~\eqref{eq:mdh} donne la loi d'un incrément ; un processus demande
+davantage.
+
+\begin{assumption}[Cohérence temporelle]\label{as:time}
+Dans l'horloge de volume, les incréments sur des intervalles disjoints sont
+indépendants, les trajectoires sont continues, et la covariance d'un incrément
+est proportionnelle au volume écoulé.
+\end{assumption}
+
+Sous l'hypothèse~\ref{as:time} à coefficients constants, il existe une matrice
+$B$ telle que $BB^{\!\top}=\Sigma$ et $X_\theta = X_0 + \mu\theta + BW_\theta$ en
+temps-volume, donc en temps calendaire
+\begin{equation}
+\label{eq:subordination}
+X_t = X_0 + \mu\,\theta_t + B\,W_{\theta_t},
+\end{equation}
+un mouvement brownien \emph{subordonné} à l'horloge de volume. Si l'intensité de
+négociation est constante, $\theta_t=\bar v\,t$ et \eqref{eq:subordination} est
+un mouvement brownien ordinaire en temps calendaire ; en exponentiant et en
+appliquant Itô,
+\begin{equation}
+\frac{dS_{i,t}}{S_{i,t}} = \left(a_{i,t}+\tfrac12\sigma_{i,t}^2\right)dt + \sigma_{i,t}\,dW_{i,t},
+\end{equation}
+de sorte que la dérive du prix n'est pas celle du log-prix --- la même correction
+du second ordre qui reparaîtra à la section~\ref{sec:channels} lorsqu'on
+différenciera $\log\det R_t$.
+
+Il vaut la peine d'être précis sur ce que fait l'hypothèse~\ref{as:time}. Par le
+théorème de \citet{monroe1978}, \emph{toute} martingale locale continue est un
+mouvement brownien changé de temps : la subordination seule n'a donc aucun
+contenu empirique. Le contenu est dans l'horloge : \eqref{eq:mdh} dit que la
+bonne horloge est le volume, et l'hypothèse~\ref{as:time} dit que le marché est
+sans mémoire dans cette horloge. C'est le maximum d'entropie qui sélectionne le
+mouvement brownien dans la classe qu'autorise le théorème de Monroe.
+
+\subsection{La contraposée}
+\label{sec:contrapositive}
+
+La proposition~\ref{prop:maxent} se lit dans les deux sens. Notons $q_t$ la
+gaussienne de mêmes moyenne et covariance conditionnelles que $p_t$. Alors
+
+\begin{equation}
+\label{eq:deficit}
+\DD_t \;\equiv\; h(q_t) - h(p_t) \;=\; \KL{p_t}{q_t} \;\ge\; 0,
+\end{equation}
+avec égalité si et seulement si $p_t$ est gaussienne. Donc : \emph{les prix sont
+non gaussiens exactement dans la mesure où leur distribution conditionnelle n'est
+pas d'entropie maximale}, et $\DD_t$ mesure cette mesure. Dans le langage de la
+section~\ref{sec:bridge}, un $\DD_t$ positif signifie que des contraintes
+au-delà des deux premiers moments sont actives --- que quelqu'un sait quelque
+chose que le moment d'ordre deux n'encode pas.
+
+Deux sources produisent un déficit positif, et les séparer importe. Une horloge
+de volume aléatoire produit un mélange d'échelle, symétrique et leptokurtique.
+Une information directionnelle contraignante produit de l'asymétrie. La
+section~\ref{sec:channels} scinde $\DD$ exactement selon cette ligne.
+
+\subsection{Où le pont est faible}
+\label{sec:bridge-caveats}
+
+L'hypothèse~\ref{as:impact} est linéaire ; l'impact empirique d'un métaordre est
+plus proche d'une racine carrée de la taille, ce qui rend concave l'application
+du flux au prix et la distribution de rendements induite moins épaisse en queue
+que le flux. L'hypothèse~\ref{as:signs} traite les signes comme échangeables ;
+le flux d'ordres est en réalité fortement autocorrélé, ce qui gonfle
+$\mathrm{Var}(Q)$ au-dessus de $\varsigma^2 V$ et fait de l'horloge de volume un
+substitut imparfait de la variance. Aucune de ces défaillances ne change la
+\emph{forme} de l'argument --- le maximum d'entropie sous budget de variance
+reste gaussien --- mais toutes deux signifient que l'horloge de volume est une
+approximation de l'horloge d'information plutôt que cette horloge même. Nous
+utilisons le raisonnement en temps-volume pour motiver le cadre et l'estimation
+en temps calendaire dans tout le travail empirique, de sorte qu'aucun résultat
+ci-dessous ne dépend de l'exactitude de \eqref{eq:mdh}.
+
+\section{Les trois canaux de l'entropie}
+\label{sec:channels}
+
+\subsection{Échelle et dépendance}
+
+Écrivons $\Sigma_t = D_tR_tD_t$ avec
+$D_t=\mathrm{diag}(\sigma_{1,t},\dots,\sigma_{N,t})$. Alors
+$\det\Sigma_t = \left(\prod_i\sigma_{i,t}^2\right)\det R_t$ et
+\begin{equation}
+\label{eq:ceiling}
+h(q_t) \;=\; \underbrace{\tfrac{N}{2}\log(2\pi e)}_{\text{constante}}
+\;+\; \underbrace{\sum_i \log\sigma_{i,t}}_{H^{vol}_t}
+\;+\; \underbrace{\tfrac12\log\det R_t}_{H^{dep}_t}.
+\end{equation}
+Par l'inégalité de Hadamard, $H^{dep}_t\le 0$, avec égalité si et seulement si
+$R_t=I$ : \emph{la corrélation détruit toujours de l'entropie}, et $-H^{dep}_t$
+est précisément la multi-information gaussienne (corrélation totale) du vecteur
+de rendements. Une lecture utile de la même quantité est spectrale : avec
+$\lambda_k$ les valeurs propres de $R_t$ et $\tilde\lambda_k=\lambda_k/N$, le
+nombre de participation
+$N^{\text{eff}}_t=\exp\!\left(-\sum_k\tilde\lambda_k\log\tilde\lambda_k\right)$
+est le nombre effectif de modes de risque indépendants ; il vaut $N$ pour $R=I$
+et tend vers $1$ lorsqu'un unique mode collectif absorbe la variance.
+
+L'équation~\eqref{eq:ceiling} est le plafond, pas l'entropie. C'est ce
+qu'implique la seule matrice de covariance, et la proposition~\ref{prop:maxent}
+dit que la vérité se situe en dessous.
+
+\subsection{Forme : le déficit d'entropie et sa composition}
+
+En soustrayant \eqref{eq:deficit} de \eqref{eq:ceiling} on obtient la
+décomposition de l'article, trois canaux et une constante :
+\begin{equation}
+\label{eq:three}
+h(p_t) \;=\; \tfrac{N}{2}\log(2\pi e) \;+\; \underbrace{H^{vol}_t}_{\text{échelle}} \;+\; \underbrace{H^{dep}_t}_{\text{dépendance}} \;-\; \underbrace{\DD_t}_{\text{forme}}.
+\end{equation}
+
+Le canal de forme, ce sont l'asymétrie et les queues épaisses, et le
+développement d'Edgeworth le dit explicitement : pour une variable standardisée
+d'asymétrie $S$ et de kurtosis excédentaire $K$ au voisinage de la gaussianité,
+\begin{equation}
+\label{eq:edgeworth}
+J \;\approx\; \frac{S^2}{12} + \frac{K^2}{48}.
+\end{equation}
+L'équation~\eqref{eq:edgeworth} répond à la question \og où un saut d'entropie
+serait-il visible ? \fg{} : dans les moments d'ordre trois et quatre, de manière
+additive, avec un canal d'asymétrie et un canal de queue. Elle est aussi la
+source du problème de signe que la section~\ref{sec:dynamics} doit résoudre, car
+$S$ y entre au carré --- \emph{la néguentropie ne distingue pas un krach d'une
+envolée}. Comme estimateur, \eqref{eq:edgeworth} est inutilisable sur des
+rendements quotidiens ; la section~\ref{sec:program} documente à quel point et
+ce que nous utilisons à la place.
+
+\subsection{L'indice structurel}
+
+Le canal d'échelle est une nuisance pour notre propos : il domine numériquement
+le niveau de \eqref{eq:three}, il bouge avec la volatilité, et un changement
+d'unités le modifie. Les deux autres canaux sont sans échelle. En les combinant,
+et en utilisant la règle de chaînage exacte
+$\KL{p}{\prod_i q_i} = \sum_i \KL{p_i}{q_i} + I(x)$ où $I$ est la
+multi-information :
+
+\begin{definition}[Indice d'information structurelle]
+\label{def:J}
+\begin{equation}
+\JJ_t \;\equiv\; \DD_t \;-\; H^{dep}_t \;=\; \KL{p_t}{\textstyle\prod_i q_{i,t}} \;\ge\; 0 ,
+\end{equation}
+la divergence de la loi jointe conditionnelle des rendements à un produit de
+marginales gaussiennes de mêmes échelles.
+\end{definition}
+
+$\JJ$ est nul si et seulement si les rendements sont indépendants et gaussiens ;
+il s'élève quand les actifs se couplent, quand les marginales s'épaississent ou
+quand elles s'asymétrisent. Il est mesuré en nats, il est invariant au niveau de
+volatilité, et il est additif sur ses deux canaux, de sorte qu'on peut toujours
+demander quelle part d'un mouvement vient de la dépendance et quelle part de la
+forme. C'est la variable d'état de la section~\ref{sec:dynamics}.
+
+\section{Dynamique de l'information : un théorème, deux postulats}
+\label{sec:dynamics}
+
+\subsection{Les sauts vers le bas sont un théorème}
+
+Deux énoncés distincts sous-tendent la moitié descendante de la dynamique
+postulée. Les confondre est une erreur facile, et les versions antérieures de ce
+travail la commettaient ; nous les séparons donc explicitement.
+
+Rappelons d'abord la définition de l'\emph{information mutuelle} entre le
+vecteur de rendements $X$ et un signal $Y$ :
+\begin{equation}
+\label{eq:mi}
+I(X;Y) \;=\; \KL{p_{XY}}{p_X\otimes p_Y}
+\;=\; \iint p(x,y)\,\log\frac{p(x,y)}{p(x)p(y)}\,dx\,dy ,
+\end{equation}
+c'est-à-dire la divergence de la loi jointe au produit des marginales : de
+combien la loi jointe s'écarte de l'indépendance. Elle est positive, symétrique,
+nulle si et seulement si $X\perp Y$, et --- contrairement à $h$ --- invariante par
+reparamétrisation inversible. Pour un couple gaussien scalaire de corrélation
+$\rho$, $I=-\tfrac12\log(1-\rho^2)$.
+
+\begin{proposition}[Chute de l'entropie conditionnelle moyenne]
+\label{prop:conditioning}
+Soit $X$ le vecteur de rendements et $Y$ un signal. Alors
+\begin{equation*}
+\mathbb{E}_Y\!\left[h(X\mid Y)\right] \;=\; h(X) - I(X;Y) \;\le\; h(X),
+\end{equation*}
+avec égalité si et seulement si $X\perp Y$.
+\end{proposition}
+
+\begin{proposition}[Monotonie du plafond sous contrainte]
+\label{prop:constraint}
+Soient $\mathcal{C}\subseteq\mathcal{C}'$ deux ensembles de contraintes et
+$\mathcal{Q}(\cdot)$ l'ensemble des lois qui les satisfont. Alors
+$\mathcal{Q}(\mathcal{C}')\subseteq\mathcal{Q}(\mathcal{C})$ et donc
+\begin{equation*}
+\sup_{p\,\in\,\mathcal{Q}(\mathcal{C}')} h(p) \;\le\; \sup_{p\,\in\,\mathcal{Q}(\mathcal{C})} h(p).
+\end{equation*}
+\end{proposition}
+
+Les deux résultats sont classiques \citep{cover2006} et ne sont pas
+équivalents ; la démonstration détaillée et un exemple gaussien chiffré figurent
+en annexe~\ref{app:mi}. Leurs portées diffèrent sur deux axes.
+
+La proposition~\ref{prop:conditioning} \emph{quantifie} la baisse --- exactement
+$I(X;Y)$ nats --- mais seulement \emph{en moyenne} sur les réalisations du
+signal. Pour un $y$ particulier, $h(X\mid Y=y)$ peut excéder $h(X)$ : un signal
+suffisamment déroutant laisse le marché plus incertain qu'avant. Il faut donc
+s'attendre à une composante de saut principalement, et non exclusivement,
+unilatérale --- ce que trouve la section~\ref{sec:program}.
+
+La proposition~\ref{prop:constraint} vaut au contraire \emph{pour chaque
+réalisation}, mais porte sur le \emph{plafond} de maximum d'entropie et non sur
+l'entropie réelle, et elle ne quantifie rien : elle dit que le plafond ne peut
+pas monter, pas de combien il descend.
+
+Ce que les deux disent ensemble, et qui motive tout ce qui suit : la chute est
+\emph{discontinue}, car le signal arrive en un point du temps, et sa taille
+espérée en nats est le contenu informationnel de la nouvelle --- une amplitude
+mesurée sur une échelle qui ne dépend ni de l'actif, ni de la devise, ni des
+unités.
+
+\paragraph{Une réserve d'honnêteté.} Aucune de ces deux propositions n'est
+utilisée pour calculer quoi que ce soit dans la partie empirique. Nous mesurons
+$\JJ$, et non $h(X)-\mathbb{E}_Y[h(X\mid Y)]$ : estimer une entropie
+différentielle en dimension~20 sur une fenêtre de 252~jours est hors de portée
+(annexe~\ref{app:units}). Le lien entre le théorème et les statistiques
+rapportées plus loin est un raisonnement, pas une identité estimée, et le
+lecteur doit le tenir pour tel.
+
+\subsection{Deux postulats}
+
+\begin{postulate}[Relaxation]
+\label{p:relax}
+En l'absence d'information nouvelle, l'indice structurel décroît vers un niveau
+de long terme à taux constant :
+$d\JJ_t = -\kappa\left(\JJ_t-\bar\JJ\right)dt + \sigma_\JJ\,dW_t$ avec $\kappa>0$.
+\end{postulate}
+
+L'économie derrière P\ref{p:relax} est qu'une contrainte s'évente. La nouvelle
+est intégrée aux prix, le désaccord se reforme, les positions se dispersent, et
+la coupe transversale recouvre la liberté que le choc lui avait retirée. Rien
+dans la théorie de l'information ne délivre cela ; c'est l'hypothèse substantielle
+de l'article, et $\kappa$ est l'objet à estimer.
+
+\paragraph{Pourquoi un processus d'Ornstein--Uhlenbeck et pas autre chose ?}
+Le choix n'est pas un choix de commodité : il est \emph{forcé} dès qu'on impose
+trois exigences minimales, et il est le seul à les satisfaire toutes les trois.
+
+\begin{enumerate}
+\item \emph{Markov.} L'avenir de $\JJ$ ne dépend du passé qu'à travers son
+niveau présent. C'est l'exigence de parcimonie : ne postuler aucune mémoire
+au-delà de ce que l'état courant contient déjà.
+\item \emph{Stationnaire.} $\JJ$ possède un niveau de long terme et une variance
+finis. Sans cela l'indice dérive, il n'est pas une variable d'état, et les
+comparaisons de régime de la section~\ref{sec:program} n'ont pas de sens.
+\item \emph{Bruit gaussien.} Entre deux arrivées d'information, on ne prétend
+rien savoir du bruit au-delà de sa variance --- c'est le principe de maximum
+d'entropie appliqué au bruit lui-même, exactement comme il l'a été aux
+rendements en section~\ref{sec:bridge}.
+\end{enumerate}
+
+Le théorème de \citet{doob1942} énonce que \textbf{le processus d'Ornstein--Uhlenbeck
+est l'unique processus à la fois markovien, gaussien et stationnaire} en temps
+continu. Les trois exigences ne laissent donc aucune latitude sur la partie
+diffusive : elle est déterminée. Le terme de saut, lui, est ajouté précisément
+pour \emph{briser} la gaussianité là où le cadre affirme qu'elle ne tient pas,
+c'est-à-dire aux arrivées d'information. La structure de \eqref{eq:ou} est ainsi
+un squelette imposé plus une composante délibérément non gaussienne, ce qui est
+exactement la classe introduite par \citet{bns2001}.
+
+\paragraph{Ce qui, en revanche, reste arbitraire.} Trois choses, qu'il faut
+énoncer plutôt que laisser croire qu'elles découlent du théorème. Le taux
+$\kappa$ est supposé \emph{constant} : rien n'interdit qu'une crise soit
+absorbée plus vite, ou plus lentement, qu'une nouvelle ordinaire, et les données
+employées ici ne permettent pas de trancher. Le rappel est \emph{linéaire} en
+l'écart au niveau de long terme, alors qu'un rappel accéléré loin de la moyenne
+serait tout aussi plausible. Enfin, $\JJ$ est positif par construction alors
+qu'un Ornstein--Uhlenbeck muni d'un terme brownien peut devenir négatif : la
+spécification de \citet{bns2001} évite cet écueil en supprimant le terme
+brownien et en pilotant le processus par un subordinateur à sauts positifs, ce
+qui garantit une loi stationnaire portée par $\mathbb{R}^+$. Empiriquement la
+question ne se pose pas --- $\JJ$ reste compris entre $2{,}17$ et $21{,}13$~nats
+sur le panel principal et entre $0{,}42$ et $1{,}69$ sur le panel de
+réplication, donc très loin de la frontière --- mais formellement il faudrait
+soit supprimer $\sigma_\JJ$, soit écrire le processus sur $\log\JJ$.
+
+Le postulat n'est enfin pas anodin sur le plan de la mesure : un estimateur doté
+de mémoire fabriquera une décroissance même en l'absence de toute relaxation
+économique, aussi la section~\ref{sec:program} mesure-t-elle la décroissance
+qu'un monde sans mémoire produirait déjà.
+
+\begin{postulate}[Asymétrie de la contrainte]
+\label{p:sign}
+La contrainte qu'impose l'information est unilatérale dans la direction des
+pertes, de sorte qu'un saut d'entropie s'accompagne d'une asymétrie négative du
+facteur de marché.
+\end{postulate}
+
+\paragraph{Pourquoi ce postulat est logiquement nécessaire.} L'indice $\JJ$ est
+une fonction \emph{paire} de l'asymétrie : changer le signe de l'asymétrie ne
+change pas sa valeur. La raison est immédiate. Le canal de forme est
+$\Dun(z)=\KL{p_z}{\varphi}$, et la loi normale $\varphi$ est symétrique ; donc
+si l'on remplace $z$ par $-z$, la loi de référence est inchangée et la
+divergence l'est aussi :
+\begin{equation}
+\label{eq:even}
+\Dun(-z)=\Dun(z),\qquad\text{et par conséquent}\qquad \JJ(-x)=\JJ(x).
+\end{equation}
+Le développement d'Edgeworth \eqref{eq:edgeworth} le rend visible à l'\oe il :
+l'asymétrie $S$ y entre au carré.
+
+La conséquence est structurelle et non anecdotique. \textbf{Une distribution à
+longue queue à gauche --- un krach --- et son image en miroir à longue queue à
+droite --- une envolée --- ont exactement le même $\JJ$.} L'indice mesure la
+\emph{taille} de l'information, jamais son sens. Aucun raffinement de
+l'estimateur n'y changera quoi que ce soit : c'est une propriété de l'objet
+mesuré. Si l'article veut dire quoi que ce soit sur la direction, il doit donc
+ajouter un ingrédient extérieur. P\ref{p:sign} est cet ingrédient, et c'est le
+plus petit possible : une seule affirmation, sur le signe, ajoutée à un cadre
+qui par construction n'en produit aucune.
+
+\paragraph{Sur quoi il s'appuie.} Non pas sur un mécanisme que nous
+affirmerions, mais sur une régularité empirique établie : l'\emph{effet de
+levier} au sens de \citet{black1976}, c'est-à-dire le fait que les rendements
+négatifs sont suivis de hausses de volatilité plus fortes que les rendements
+positifs de même amplitude. C'est l'un des faits stylisés les plus robustes de
+la finance empirique \citep{christie1982,engle1993,nelson1991}. Traduit dans le
+langage de cet article : à quantité d'information égale, la réponse du marché
+est plus ample vers le bas que vers le haut, donc un saut de $\JJ$ arrive
+accompagné d'une asymétrie de marché négative.
+
+Nous nous abstenons délibérément de choisir entre les explications causales
+concurrentes de cet effet --- levier financier à proprement parler, rétroaction
+de la volatilité, ou retrait asymétrique de la liquidité du côté vendeur. Le
+postulat ne dépend d'aucune d'entre elles : il n'affirme que l'asymétrie, pas sa
+cause. Il est testable séparément (H5) et réfutable séparément, et la
+section~\ref{sec:program} conclut d'ailleurs qu'il n'est pas établi.
+
+\subsection{La dynamique qui en résulte}
+
+La proposition~\ref{prop:conditioning} jointe à P\ref{p:relax} donne un processus
+d'Ornstein--Uhlenbeck non gaussien à sauts unilatéraux, de la classe introduite
+par \citet{bns2001} pour la volatilité stochastique :
+\begin{equation}
+\label{eq:ou}
+d\JJ_t \;=\; -\kappa\left(\JJ_t-\bar\JJ\right)dt \;+\; \sigma_\JJ\,dW_t \;+\; \int_{z>0} z\,\mathcal{P}(dt,dz),
+\end{equation}
+Le terme intégral demande d'être lu avec soin, car sa notation est compacte.
+
+\paragraph{Ce que $\mathcal{P}$ n'est pas.} Ce n'est ni une loi gaussienne, ni
+une fonction. La lettre $\mathcal N$ est réservée dans cet article à la loi
+normale, et la mesure de saut porte donc un symbole distinct.
+
+\paragraph{Ce que $\mathcal{P}$ est.} Une \emph{mesure aléatoire de comptage},
+dite mesure aléatoire de Poisson. On peut se la représenter comme un semis
+aléatoire de points dans le plan $(\text{date},\ \text{taille})$ : chaque point
+est un événement informationnel, son abscisse est la date à laquelle il survient
+et son ordonnée la taille du saut qu'il provoque. Formellement,
+$\mathcal{P}(dt,dz)$ vaut $1$ s'il existe un saut dans l'intervalle de temps
+$[t,t+dt)$ dont la taille tombe dans $[z,z+dz)$, et $0$ sinon. L'intégrale
+$\int_{z>0} z\,\mathcal{P}(dt,dz)$ se lit alors simplement : \og s'il y a un
+saut à la date $t$, ajouter sa taille $z$ à $\JJ$ ; sinon n'ajouter rien \fg{}.
+C'est une écriture condensée de $\sum_{j} z_j$, la somme des sauts survenus.
+
+\paragraph{Ce qui la caractérise.} Deux ingrédients, réunis dans sa
+\emph{mesure d'intensité} $\nu(dz)\,dt$, qui est le nombre espéré de sauts de
+taille comprise entre $z$ et $z+dz$ pendant $dt$ : d'une part une
+\emph{fréquence d'arrivée} $\lambda=\nu(\mathbb{R}^+)$, en nombre de sauts par
+unité de temps, d'autre part une \emph{loi des tailles} $\nu(dz)/\lambda$. Sur
+le panel principal, la section~\ref{sec:program} estime $\lambda\approx5$ sauts
+par an, une taille moyenne de $0{,}62$~nat et un maximum de $3{,}21$~nats.
+
+\paragraph{Ce qu'est $z$.} La taille d'un saut individuel, exprimée en nats.
+Conceptuellement, c'est l'information mutuelle de la nouvelle qui l'a provoqué,
+au sens de la proposition~\ref{prop:conditioning}. Opérationnellement, c'est la
+variation de $\JJ$ détectée par le filtre à quatre sigmas de la
+section~\ref{sec:program}. Les deux ne coïncident qu'approximativement, et le
+papier ne prétend pas les identifier.
+
+\paragraph{Pourquoi l'intégrale ne porte que sur $z>0$.} Parce que
+$\JJ$ mesure un \emph{déficit} d'entropie et que, par la
+proposition~\ref{prop:conditioning}, l'information ne peut qu'accroître ce
+déficit en espérance. Dans ce cadre, rien ne crée d'\emph{augmentation soudaine}
+d'entropie : l'entropie n'est restituée que par la relaxation lente du premier
+terme, jamais par un saut. D'où des sauts unilatéraux.
+
+Deux réserves, toutefois. La proposition~\ref{prop:conditioning} est un énoncé
+\emph{en moyenne} : une réalisation particulièrement déroutante peut accroître
+l'entropie, donc une spécification fidèle autoriserait une petite probabilité de
+sauts négatifs plutôt que de les interdire. Et la mesure de Poisson suppose des
+arrivées indépendantes, alors que l'étude d'événement de la
+section~\ref{sec:program} montre un regroupement net des sauts ; un processus
+auto-excitant de type Hawkes serait plus fidèle.
+
+Notons enfin que le coefficient de diffusion est noté $\sigma_\JJ$ et non
+$\eta$, cette dernière lettre étant réservée au rayon des scénarios de stress
+(section~\ref{sec:stress}). Lu sur l'entropie elle-même plutôt que sur
+$\JJ$, le signe s'inverse : l'entropie chute par sauts et remonte par diffusion.
+Les prédictions observables sont nettes, et ce sont elles que teste la
+section~\ref{sec:program} : la loi de $\Delta\JJ$ est asymétrique à droite ;
+les grands mouvements sont à la hausse et les petits à la baisse ; et après un
+saut positif l'indice décroît avec une demi-vie $\ln 2/\kappa$.
+
+\subsection{Pourquoi queues épaisses, corrélation et sauts arrivent ensemble}
+
+Le cadre produit une prédiction qu'aucun modèle de volatilité ni de corrélation
+ne produit seul. Elle se déduit en quatre pas, sans vocabulaire technique.
+
+\begin{enumerate}
+\item Une nouvelle importante concerne \emph{tous} les actifs à la fois : c'est
+la même information qui contraint chacun d'eux.
+\item Si la nouvelle est mauvaise, tous les actifs baissent donc \emph{le même
+jour}.
+\item Or ce jour-là apparaît aussi, pris isolément, dans l'historique de chaque
+actif : c'est pour lui une journée de perte inhabituellement grande.
+\item Accumuler de telles journées déforme la distribution des rendements de
+chaque actif : le côté des pertes s'allonge et s'alourdit davantage que le côté
+des gains.
+\end{enumerate}
+
+Le pas 2 est ce que mesure le canal de dépendance : les actifs bougent ensemble,
+la corrélation mesurée monte, $-H^{dep}$ monte. Le pas 4 est ce que mesure le
+canal de forme : des pertes extrêmes plus nombreuses et plus grandes que les
+gains extrêmes, c'est-à-dire un kurtosis plus élevé et une asymétrie négative,
+donc $\DD$ monte. Les deux canaux montent ensemble parce qu'ils décrivent le
+même jour vu de deux endroits différents --- la coupe transversale pour l'un, la
+distribution de chaque actif pour l'autre.
+
+En marché calme, les mouvements marquants sont propres à chaque actif : ils
+n'alignent pas la coupe transversale et n'ont donc aucune raison de faire monter
+les deux canaux en même temps.
+
+La forme testable est un \emph{couplage dépendant du régime} : la corrélation
+entre $-\Delta H^{dep}$ et $\Delta\DD$ devrait être proche de zéro en marché
+calme et fortement positive sous stress. C'est H6, et c'est là que se trouve la
+réponse de l'article à la question \og le lien entre queues épaisses, corrélation
+et sauts d'entropie exige-t-il un postulat supplémentaire ? \fg{} : non. Étant
+donné la proposition~\ref{prop:conditioning}, le couplage découle du caractère
+commun de la nouvelle. Seul le \emph{signe} exige P\ref{p:sign}.
+

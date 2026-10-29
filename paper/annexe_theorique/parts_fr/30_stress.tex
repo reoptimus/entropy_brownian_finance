@@ -1,0 +1,227 @@
+
+\section{Géométrie des scénarios en boule de Kullback--Leibler}
+\label{sec:stress}
+
+Le papier principal retient l'usage le plus simple de cette géométrie : tarifer
+en nats un scénario publié, ce qui pour un pur déplacement de moyenne revient à
+la moitié du carré de la distance de Mahalanobis. Cette section donne la
+construction complète dont cet usage est un cas particulier, avec les
+démonstrations que la v1 se contentait d'énoncer, et un résultat nouveau sur le
+relèvement d'un scénario de portefeuille à la dimension pleine.
+
+\subsection{Divergence entre deux gaussiennes}
+
+\begin{proposition}[Forme fermée]
+\label{prop:klgauss}
+Pour $p_1=\mathcal N(\mu_1,\Sigma_1)$ et $p_0=\mathcal N(\mu_0,\Sigma_0)$ sur
+$\mathbb R^N$, avec $\delta=\mu_1-\mu_0$,
+\begin{equation}
+\label{eq:klgauss}
+\KL{p_1}{p_0}=\tfrac12\Big[\underbrace{\delta^\top\Sigma_0^{-1}\delta}_{\text{déplacement}}
++\underbrace{\operatorname{tr}(\Sigma_0^{-1}\Sigma_1)-N-\log\det(\Sigma_0^{-1}\Sigma_1)}_{\text{déformation}}\Big].
+\end{equation}
+\end{proposition}
+
+\begin{proof}
+$\KL{p_1}{p_0}=\mathbb E_{p_1}[\log p_1-\log p_0]$. Les deux logarithmes sont
+quadratiques ; l'astuce de la trace de l'annexe~\ref{app:gauss} donne
+$\mathbb E_{p_1}[(X-\mu_1)^\top\Sigma_1^{-1}(X-\mu_1)]=N$ et
+$\mathbb E_{p_1}[(X-\mu_0)^\top\Sigma_0^{-1}(X-\mu_0)]
+=\operatorname{tr}(\Sigma_0^{-1}\Sigma_1)+\delta^\top\Sigma_0^{-1}\delta$. On
+regroupe avec les termes en $\log\det$.
+\end{proof}
+
+Le terme de déplacement est la moitié du carré de la distance de Mahalanobis :
+c'est l'unité dans laquelle le papier principal audite les scénarios
+publiés. Le terme de déformation est positif et nul si et seulement si
+$\Sigma_1=\Sigma_0$ ; en écrivant $\nu_k$ les valeurs propres de
+$\Sigma_0^{-1}\Sigma_1$, il vaut $\tfrac12\sum_k(\nu_k-1-\log\nu_k)$, une somme de
+termes positifs, un par direction propre.
+
+\subsection{La boule projetée et le taux de change}
+
+\begin{definition}[Scénario en boule d'entropie]
+Étant donné la loi conditionnelle d'aujourd'hui $p_0$ et une sévérité $\eta>0$,
+le scénario de sévérité $\eta$ pour une fonctionnelle de risque $\rho$ est
+\begin{equation}
+\label{eq:ball}
+p^\star_\eta=\arg\max_{p\,:\,\KL{p}{p_0}\le\eta}\rho(p).
+\end{equation}
+\end{definition}
+
+Pour un portefeuille linéaire $w^\top r$ de moyenne $m_0$ et d'écart type $s_0$
+sous $p_0$, posons $u=(m-m_0)/s_0$ et $v=s/s_0$. Par la
+proposition~\ref{prop:klgauss} en dimension un,
+\begin{equation}
+\label{eq:g}
+g(u,v)=\tfrac12\left(u^2+v^2-1-2\log v\right).
+\end{equation}
+
+\begin{proposition}[Solution de la boule projetée]
+\label{prop:ballsol}
+Pour $\rho=-m+c\,s$ avec $c\ge0$ (VaR et expected shortfall gaussiennes sont de
+cette forme), le maximum de $\rho$ sous $g(u,v)\le\eta$ est atteint sur la
+frontière $g=\eta$ en un point vérifiant
+\begin{equation*}
+u=-t,\qquad v-v^{-1}=c\,t,\qquad t>0 .
+\end{equation*}
+Pour $c=0$ : $v=1$ et $u=-\sqrt{2\eta}$. \emph{Un scénario purement
+directionnel de $\eta$~nats est un mouvement de $\sqrt{2\eta}$~sigmas} ; un
+nat achète $\sqrt2\approx1{,}41$~sigma, et $k$~sigmas coûtent $k^2/2$~nats.
+\end{proposition}
+
+\begin{proof}
+$g$ est convexe sur $\mathbb R\times(0,\infty)$ (somme de $u^2/2$ et de
+$(v^2-1-2\log v)/2$, de dérivée seconde $1+v^{-2}>0$) et l'objectif
+$s_0(-u+cv)$ est linéaire : les conditions de Karush--Kuhn--Tucker sont
+suffisantes. L'objectif n'a pas de maximum intérieur, donc la contrainte est
+saturée. Le lagrangien donne $-1=\lambda u$ et $c=\lambda(v-v^{-1})$ avec
+$\lambda>0$ ; en posant $t=1/\lambda$ on obtient le système annoncé, et $t$ est
+fixé par $g(-t,v(t))=\eta$. Pour $c=0$, $v-v^{-1}=0$ impose $v=1$ et
+$g=u^2/2=\eta$.
+\end{proof}
+
+\subsection{Du portefeuille à la dimension pleine}
+
+La boule~\eqref{eq:ball} se résout sur la loi du portefeuille, mais un test de
+résistance doit dire comment chaque actif bouge. Deux faits règlent la
+question.
+
+\begin{proposition}[Traitement des données]
+\label{prop:dpi}
+Pour toute loi $p$ sur $\mathbb R^N$, et $p^w$, $p_0^w$ les lois de $w^\top r$
+sous $p$ et $p_0$,
+$\KL{p^w}{p_0^w}\le\KL{p}{p_0}$.
+\end{proposition}
+
+C'est l'inégalité de traitement des données \citep{cover2006} appliquée à
+l'application $r\mapsto w^\top r$. Le prix \emph{ambiant} d'un scénario (en
+dimension pleine) est donc toujours au moins son prix \emph{vu du portefeuille}
+(en projection). Le tableau des bundles classiques de la v1 le vérifie ligne à
+ligne ($9{,}97$ contre $7{,}24$~nats pour le bundle standard).
+
+\begin{proposition}[Relèvement minimal]
+\label{prop:lift}
+Soit $p_0=\mathcal N(\mu_0,\Sigma_0)$, $m_0=w^\top\mu_0$, $s_0^2=w^\top\Sigma_0w$,
+et une cible $(m,s)$ avec $s>0$. Parmi les gaussiennes
+$\mathcal N(\mu_1,\Sigma_1)$ telles que $w^\top\mu_1=m$ et
+$w^\top\Sigma_1w=s^2$, la divergence $\KL{p_1}{p_0}$ est minimale pour
+\begin{equation}
+\label{eq:lift}
+\mu_1=\mu_0+u\,s_0\,\beta,\qquad
+\Sigma_1=\Sigma_0+(v^2-1)\,s_0^2\,\beta\beta^\top,
+\qquad\beta=\frac{\Sigma_0w}{s_0^2},
+\end{equation}
+et ce minimum vaut exactement $g(u,v)$, le prix vu du portefeuille.
+\end{proposition}
+
+\begin{proof}
+Par la proposition~\ref{prop:dpi}, tout candidat coûte au moins le prix de sa
+projection, qui est $g(u,v)$ puisque la projection d'une gaussienne est
+gaussienne de moyenne $m$ et d'écart type $s$. Il suffit donc de vérifier que
+\eqref{eq:lift} atteint cette borne. On a $w^\top\beta=1$, donc
+$w^\top\mu_1=m_0+us_0=m$ et $w^\top\Sigma_1w=s_0^2+(v^2-1)s_0^2=s^2$. Dans
+\eqref{eq:klgauss} : $\delta^\top\Sigma_0^{-1}\delta=u^2s_0^2\,\beta^\top\Sigma_0^{-1}\beta=u^2$ ;
+$\operatorname{tr}(\Sigma_0^{-1}\Sigma_1)=N+(v^2-1)s_0^2\,\beta^\top\Sigma_0^{-1}\beta=N+v^2-1$ ;
+et par le lemme du déterminant matriciel,
+$\det(\Sigma_0^{-1}\Sigma_1)=1+(v^2-1)s_0^2\,\beta^\top\Sigma_0^{-1}\beta=v^2$.
+D'où $\KL{p_1}{p_0}=\tfrac12(u^2+v^2-1-2\log v)=g(u,v)$. La matrice $\Sigma_1$ est
+définie positive pour tout $v>0$.
+\end{proof}
+
+\paragraph{Lecture actif par actif.} Le vecteur $\beta$ est celui des bêtas des
+actifs sur le portefeuille, $\beta_i=\operatorname{Cov}(r_i,w^\top r)/s_0^2$.
+Écrivons $r=\beta f+e$ avec $f=w^\top r$ et $e$ non corrélé à $f$ sous $p_0$.
+Le scénario~\eqref{eq:lift} multiplie l'écart type du facteur portefeuille $f$
+par $v$, déplace sa moyenne de $u$~sigmas, et laisse la loi de $e$ inchangée.
+Chaque actif voit sa variance augmenter de $(v^2-1)s_0^2\beta_i^2$ et sa
+moyenne bouger de $us_0\beta_i$ : les actifs à fort bêta prennent le choc, et
+les corrélations entre eux montent. C'est un scénario à un facteur, et il est
+le moins informatif de tous ceux qui atteignent la sévérité visée.
+
+\begin{remark}[Correction de la v1]
+La version arXiv~v1 identifiait ce minimum par ses conditions du premier ordre,
+$\Sigma_1^{-1}=\Sigma_0^{-1}-\lambda ww^\top$, et le jugeait \og non
+interprétable actif par actif \fg{}. Par la formule de Sherman--Morrison, cette
+perturbation de rang un de la précision \emph{est}~\eqref{eq:lift}, une
+perturbation de rang un de la covariance le long de $\Sigma_0w$, et elle
+s'interprète comme ci-dessus. La v1 ne l'utilisant nulle part, aucun chiffre
+n'en dépend.
+\end{remark}
+
+\begin{corollary}[Coût de la dilatation uniforme]
+\label{cor:uniform}
+La dilatation uniforme $\Sigma_1=v^2\Sigma_0$, choix par défaut de la v1, a une
+composante de déformation égale à $N\cdot\tfrac12(v^2-1-2\log v)$, soit $N$~fois
+celle du relèvement minimal.
+\end{corollary}
+
+\begin{proof}
+Toutes les valeurs propres de $\Sigma_0^{-1}\Sigma_1$ valent $v^2$ ; on applique
+la forme spectrale du terme de déformation.
+\end{proof}
+
+Pour le scénario décennal du panel principal ($v=1{,}63$, $N=20$), la
+composante de variance vaut $0{,}34$~nat au minimum et $20\times0{,}34\approx6{,}8$
+sous la dilatation uniforme, ce qui est le chiffre du tableau de composition de
+la v1. Le corollaire explique le constat empirique de la v1 selon lequel les
+compositions calibrées sur H1 ($2{,}88$~nats) et raffinées par H8 ($0{,}71$)
+coûtent \emph{moins} que le défaut : le défaut déforme également toutes les
+directions propres, alors qu'une composition qui concentre le choc sur le mode
+commun se rapproche du scénario à un facteur~\eqref{eq:lift}, dont le coût total
+est $0{,}41$~nat avec le déplacement de moyenne. Que la dilatation uniforme
+coûte $N$~fois le minimum en variance est un résultat général ; que les
+compositions calibrées se placent entre les deux reste un constat sur ces
+panels, mais il devient attendu plutôt que surprenant.
+
+\subsection{Composer une sévérité donnée}
+
+\begin{proposition}[Une sévérité, plusieurs compositions]
+\label{prop:composition}
+Si $w^\top\Sigma_aw=w^\top\Sigma_bw=s^2$, alors pour tout $\alpha\in[0,1]$,
+$\Sigma_\alpha=(1-\alpha)\Sigma_a+\alpha\Sigma_b$ vérifie
+$w^\top\Sigma_\alpha w=s^2$.
+\end{proposition}
+
+\begin{proof}
+$w^\top\Sigma w$ est linéaire en $\Sigma$.
+\end{proof}
+
+La sévérité du portefeuille ne contraint donc pas la composition. Le prix
+ambiant, lui, est convexe en $\Sigma_1$ (le terme $-\log\det$ est convexe et le
+reste est linéaire), donc le long d'un mélange il est majoré par le mélange des
+prix, ce qui garantit qu'une composition intermédiaire ne coûte jamais plus que
+la plus chère de ses deux extrémités.
+
+\paragraph{Un plafond physique pour la corrélation.} À volatilités marginales
+fixées, $w^\top\Sigma w$ est maximal sur les matrices de corrélation valides pour
+$\rho_{ij}=1$, où il vaut $(\sum_iw_i\sigma_i)^2$. Sur le panel principal ce
+plafond ne vaut qu'environ $1{,}5$~fois la volatilité d'aujourd'hui : au-delà de
+l'échelon quinquennal, aucune hausse de corrélation seule ne suffit, et une part
+de hausse des volatilités est inévitable.
+
+\subsection{Calibrer le rayon, et la limite de cette calibration}
+
+Le rayon se lit sur le flux d'information de la projection,
+$I^{(h)}_t=\KL{p^w_t}{p^w_{t-h}}$, dont les quantiles (sur blocs non
+chevauchants de 21~jours) convertissent une période de retour en rayon. Lire le
+rayon sur le flux à $N$ dimensions le surestime d'un ordre de grandeur, par la
+proposition~\ref{prop:dpi}. Calibrée ainsi, l'échelle de la v1 donne un
+multiplicateur de volatilité décennal de $1{,}63$, quand le quantile décennal de
+la hausse de volatilité réalisée sur un mois vaut $3{,}2$. L'échelle est une
+règle cohérente et reproductible ; ses périodes de retour ne sont pas validées.
+C'est l'une des raisons pour lesquelles le papier principal garde l'audit
+(tarifer un scénario donné) et abandonne la génération (construire un scénario
+d'une période de retour donnée).
+
+\subsection{Le test de résistance inversé}
+
+Demander le scénario le moins coûteux qui produit une perte $L$ donnée inverse
+la boule. Dans le cadre gaussien projeté, la
+proposition~\ref{prop:ballsol} se lit à l'envers. Dans le cadre non
+paramétrique, la solution est l'inclinaison exponentielle de l'échantillon
+\citep{csiszar1975}, dont la taille d'échantillon effective s'effondre quand le
+rayon croît : à $9$~nats, elle vaut $1{,}0$ sur le panel principal, c'est-à-dire
+que la loi inclinée n'est plus que la pire journée observée. Toute
+implémentation devrait rapporter cette taille effective et basculer vers la
+boule gaussienne dès qu'elle tombe sous quelques dizaines.

@@ -1,0 +1,240 @@
+
+\appendix
+
+\section{Units, invariance, and what can be computed}
+\label{app:units}
+
+\paragraph{The nat.} Entropy $H=-\sum_i p_i\log p_i$ is defined only once the
+base of the logarithm is chosen, and that choice \emph{is} the choice of unit.
+With $\log_2$ one gets bits (shannons), with $\log_{10}$ dits, and with the
+natural logarithm \emph{nats}. One nat is the information delivered by an
+observation that divides the space of possibilities by $e\approx2.718$, where a
+bit divides it by two. The conversion is $1~\text{nat}=1/\log 2\approx1.4427$~bit.
+This document uses the natural logarithm throughout: entropies, deficits,
+divergences, scenario radii and the structural index are in nats.
+
+Three operational readings, from the most useful to the most abstract. First the
+exchange rate established in Section~\ref{sec:stress}: a purely directional
+scenario of $\eta$ nats is a move of $\sqrt{2\eta}$ sigmas, so $k$~sigmas cost
+$k^2/2$ nats. Next, coding: $\KL{p}{q}$ nats is the expected excess code length
+when data with law $p$ are encoded with a code optimal for $q$. Finally,
+hypothesis testing: a divergence of one nat per observation means that the
+likelihood ratio in favour of $p$ grows on average by a factor $e$ with each
+observation.
+
+\paragraph{$h$ depends on units, divergences do not.} The differential entropy
+of a continuous variable satisfies, for any invertible affine transformation,
+\begin{equation}
+\label{eq:h-scaling}
+h(aX+b) \;=\; h(X) + \log|a| ,
+\qquad\text{and in dimension } N,\quad h(AX+b)=h(X)+\log|\det A| .
+\end{equation}
+Expressing returns in percent rather than decimals therefore adds $N\log 100$ to
+$h$: the \emph{level} of $h$, and hence that of $H^{vol}$ and $H^{cov}$, has no
+interpretable absolute value. By contrast $\KL{p}{q}$, $I(X;Y)$, $\DD$ and $\JJ$
+are invariant under any invertible change of variable, the Jacobians cancelling
+between numerator and denominator of the logarithm. \emph{A figure in nats is
+comparable across datasets only if it is a divergence.} This is the structural
+reason the paper builds a scale-free index.
+
+\paragraph{How is $h(X)$ computed?} In the Gaussian case, in closed form
+(Appendix~\ref{app:gauss}). In general, it cannot be without knowing $p$.
+Non-parametric estimators exist (\citet{vasicek1976} spacings,
+Kozachenko--Leonenko nearest neighbours, kernel methods) but all degrade quickly
+beyond three or four dimensions. Estimating a differential entropy in
+dimension~20 on a 252-day window is out of reach.
+
+The paper therefore \emph{never} computes $h(p)$. It computes $h(q)$ in closed
+form from $\widehat\Sigma$, and the deficit $\DD$ through an approximation of
+the \emph{difference} of marginal entropies. A difference of entropies is
+dimensionless and estimable; a bare differential entropy is not. The whole
+architecture (decompose rather than estimate directly) follows from this
+constraint.
+
+\section{Gaussian entropy: proof of equation~\eqref{eq:ceiling}}
+\label{app:gauss}
+
+\begin{proof}[Step A: entropy of a multivariate Gaussian]
+For $q=\mathcal N(\mu,\Sigma)$ on $\mathbb{R}^N$,
+\[
+\log q(x) = -\tfrac12\left[N\log 2\pi + \log\det\Sigma + (x-\mu)'\Sigma^{-1}(x-\mu)\right],
+\]
+so
+\[
+h(q) = -\mathbb{E}_q[\log q] = \tfrac12 N\log 2\pi + \tfrac12\log\det\Sigma
++ \tfrac12\,\mathbb{E}\!\left[(X-\mu)'\Sigma^{-1}(X-\mu)\right].
+\]
+The last expectation follows from the trace trick: a scalar equals its trace,
+and the trace is cyclic, hence
+\[
+\mathbb{E}\!\left[(X-\mu)'\Sigma^{-1}(X-\mu)\right]
+= \mathbb{E}\!\left[\operatorname{tr}\!\left(\Sigma^{-1}(X-\mu)(X-\mu)'\right)\right]
+= \operatorname{tr}(\Sigma^{-1}\Sigma) = \operatorname{tr}(I_N) = N .
+\]
+Collecting terms, $h(q)=\tfrac12\left[N\log2\pi+\log\det\Sigma+N\right]
+=\tfrac12\log\!\left((2\pi e)^N\det\Sigma\right)$.
+\end{proof}
+
+\begin{proof}[Step B: factorising the determinant]
+With $\Sigma=DRD$, $D=\operatorname{diag}(\sigma_1,\dots,\sigma_N)$ and $R$ the
+correlation matrix, multiplicativity of the determinant gives
+$\det\Sigma=\det(D)\det(R)\det(D)=\left(\prod_i\sigma_i\right)^2\det R$.
+\end{proof}
+
+\begin{proof}[Step C: substitution]
+$\tfrac12\log\det\Sigma
+=\tfrac12\log\!\left[\left(\prod_i\sigma_i\right)^2\det R\right]
+=\sum_i\log\sigma_i+\tfrac12\log\det R$, hence
+$h(q)=\tfrac N2\log(2\pi e)+\sum_i\log\sigma_i+\tfrac12\log\det R$, which is
+equation~\eqref{eq:ceiling}.
+\end{proof}
+
+\paragraph{Sign of the dependence channel.} Hadamard's inequality gives
+$\det R\le\prod_i R_{ii}=1$ for a positive semi-definite matrix. A more telling
+proof goes through the spectrum: $\det R=\prod_k\lambda_k$ with
+$\sum_k\lambda_k=\operatorname{tr}R=N$, and the arithmetic--geometric mean
+inequality gives $\prod_k\lambda_k\le\left(\sum_k\lambda_k/N\right)^N=1$, with
+equality if and only if every eigenvalue equals~1, that is $R=I$. Hence
+$H^{dep}\le0$: \emph{correlation always destroys entropy}.
+
+In the bivariate case, $\det R=1-\rho^2$ and $H^{dep}=\tfrac12\log(1-\rho^2)$;
+for $\rho=0.9$ this is $-0.83$~nat. Note that $-H^{dep}$ is then exactly the
+mutual information between the two assets: correlation is shared information,
+hence destroyed entropy.
+
+\paragraph{Reading note on the tables.} The $H^{cov}$ columns of the v1 results
+tables report $H^{vol}+H^{dep}$ and \textbf{omit the constant}
+$\tfrac N2\log(2\pi e)$, which equals $28.38$~nats for $N=20$. This constant
+offset is harmless since only differences between regimes and changes over time
+are interpreted, but it explains why the reported levels are negative.
+
+\section{The entropy deficit: why $\DD=h(q)-h(p)$}
+\label{app:deficit}
+
+The Kullback--Leibler divergence between a law $p$ and a reference law $q$ is
+$\KL{p}{q}=\int p\log(p/q)$, non-negative and zero if and only if $p=q$ almost
+everywhere. It is neither symmetric nor equipped with a triangle inequality: it
+is not a distance, hence the word divergence.
+
+\begin{proposition}
+\label{prop:deficit}
+If $q=\mathcal N(\mu,\Sigma)$ has \emph{the first two moments of $p$}, then
+$\KL{p}{q}=h(q)-h(p)$.
+\end{proposition}
+
+\begin{proof}
+$\KL{p}{q}=-h(p)-\mathbb{E}_p[\log q(X)]$. Now $\log q$ is exactly quadratic in
+$x$, so its expectation depends only on the mean and covariance of the law under
+which it is evaluated. Since $p$ and $q$ share these two moments,
+$\mathbb{E}_p\!\left[(X-\mu)'\Sigma^{-1}(X-\mu)\right]=\operatorname{tr}(\Sigma^{-1}\Sigma)=N
+=\mathbb{E}_q[\cdot]$, hence $\mathbb{E}_p[\log q]=\mathbb{E}_q[\log q]=-h(q)$ and
+so $\KL{p}{q}=h(q)-h(p)$.
+\end{proof}
+
+The moment-matching assumption is essential: without it the identity fails. This
+is the whole content of Proposition~\ref{prop:maxent}, read as a measurement
+rather than an existence theorem. Economically, $\DD$ is the price in nats of the
+lie ``the market is Gaussian'': the apparent uncertainty that the Gaussian
+description overstates, because the true law is more concentrated than its
+covariance alone suggests.
+
+\section{The structural index is a divergence}
+\label{app:index}
+
+\begin{proposition}
+\label{prop:index}
+With $q_i=\mathcal N(\mu_i,\sigma_i^2)$ the Gaussian marginals with the same
+scales as $p$,
+\[
+\KL{p}{\textstyle\prod_i q_i} \;=\; \DD - H^{dep} \;=\; \JJ .
+\]
+\end{proposition}
+
+\begin{proof}
+By definition,
+\[
+\begin{aligned}
+\KL{p}{\textstyle\prod_i q_i} &= -h(p) - \mathbb{E}_p\!\left[\textstyle\sum_i\log q_i(X_i)\right]
+= -h(p) + \sum_i\left[\tfrac12\log(2\pi\sigma_i^2)+\tfrac12\right]\\
+&= -h(p) + \sum_i\log\sigma_i + \tfrac N2\log(2\pi e),
+\end{aligned}
+\]
+using $\mathbb{E}_p[(X_i-\mu_i)^2]=\sigma_i^2$, true by construction. Substituting
+equation~\eqref{eq:three}, namely
+$h(p)=\tfrac N2\log(2\pi e)+\sum_i\log\sigma_i+H^{dep}-\DD$, the scale terms and
+the constant cancel and $\DD-H^{dep}$ remains.
+\end{proof}
+
+This is an exact identity, not an approximation, and it is what justifies
+Definition~\ref{def:J}. Removing the scale channel from \eqref{eq:three} might
+look like a fudge; the object that remains turns out to be a proper
+Kullback--Leibler divergence, and so inherits three properties for free: it is
+non-negative; it is zero if and only if returns are independent \emph{and}
+Gaussian, which provides a well-defined rather than arbitrary reference point;
+and it is invariant to asset-by-asset changes of units, since $p$ and
+$\prod_i q_i$ transform in the same way.
+
+It is useful to set this identity beside the general chain rule
+$\KL{p}{\prod_i q_i}=\sum_i\KL{p_i}{q_i}+I(x)$, where
+$I(x)=\KL{p}{\prod_i p_i}$ is the multi-information. The first term is the sum of
+marginal deficits $\sum_i\Dun(x_i)$, the second the total dependence. The
+estimator used in v1 estimates the first term with the \citet{hyvarinen1998}
+approximation and replaces the second with its linear part $-H^{dep}$;
+non-linear tail dependence is therefore omitted from $\JJ$ and measured
+separately through a co-exceedance rate.
+
+\section{Mutual information: the two propositions and an example}
+\label{app:mi}
+
+\paragraph{Proof of Proposition~\ref{prop:conditioning}.} By definition of
+conditional entropy, $\mathbb{E}_Y[h(X\mid Y)]=h(X,Y)-h(Y)$, and by
+\eqref{eq:mi}, $I(X;Y)=h(X)+h(Y)-h(X,Y)$. Adding the two,
+$\mathbb{E}_Y[h(X\mid Y)]=h(X)-I(X;Y)$. Non-negativity of $I$ follows from that of
+the Kullback--Leibler divergence, of which it is a special case, with equality if
+and only if $p_{XY}=p_X\otimes p_Y$.
+
+\paragraph{Proof of Proposition~\ref{prop:constraint}.} Immediate: an extra
+constraint can only shrink the feasible set, and the supremum of a functional
+over a smaller set cannot increase.
+
+\paragraph{Why the two are not equivalent.} The first quantifies but holds only
+on average; the second holds realisation by realisation but concerns the ceiling
+and quantifies nothing. A discrete counterexample suffices to show that a
+particular realisation can \emph{raise} entropy. Let $X$ be binary with
+$\mathbb{P}(X=a)=0.99$, so $H(X)=0.056$~nat. Let a signal $Y$, with probability
+$0.98$, remove all doubt ($H(X\mid Y=0)=0$), and with probability $0.02$ lead to
+$\mathbb{P}(X=a\mid Y=1)=1/2$, so $H(X\mid Y=1)=\log 2=0.693$~nat, twelve times the
+prior entropy. The average is nonetheless
+$0.98\times0+0.02\times0.693=0.014$~nat, well below $0.056$, and
+$I(X;Y)=0.042$~nat. This is exactly why the paper predicts a jump component that
+is \emph{mainly}, not exclusively, one-sided.
+
+\paragraph{Worked Gaussian example.} Let $X\sim\mathcal N(0,\sigma^2)$ be
+tomorrow's return and $Y=X+\varepsilon$ a noisy signal,
+$\varepsilon\sim\mathcal N(0,\sigma_\varepsilon^2)$ independent. Then
+\begin{equation}
+\label{eq:mi-gauss}
+I(X;Y)=\tfrac12\log\!\left(1+\frac{\sigma^2}{\sigma_\varepsilon^2}\right),
+\qquad
+\operatorname{Var}(X\mid Y)=\frac{\sigma^2\sigma_\varepsilon^2}{\sigma^2+\sigma_\varepsilon^2},
+\end{equation}
+the posterior variance not depending on the realisation $y$. With
+$\sigma=1\%$ a day:
+
+\begin{center}
+\small
+\begin{tabular}{@{}lrrrr@{}}
+\toprule
+Signal quality & $\sigma_\varepsilon$ & $I(X;Y)$ (nats) & posterior vol. & $\sqrt{2\eta}$ equivalent \\
+\midrule
+sharp    & $0.5\%$ & $0.805$ & $0.45\%$ & $1.27\sigma$ \\
+moderate & $1.0\%$ & $0.347$ & $0.71\%$ & $0.83\sigma$ \\
+vague    & $3.0\%$ & $0.053$ & $0.95\%$ & $0.32\sigma$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+A factor of fifteen separates the size of the entropy jump caused by decisive
+news from that caused by a rumour. The last column translates each jump onto the
+severity scale of Section~\ref{sec:stress}: it is the directional move a
+scenario of the same radius would produce.

@@ -1,0 +1,128 @@
+
+\section{The bridge to the main paper: block decomposition}
+\label{sec:blocks}
+
+This section connects the theory above to the indicator of the main paper. It
+establishes the identity behind the ``contagion map'' and shows where the
+dependence channel sits within the structural index.
+
+\subsection{The identity}
+
+Partition the $N$ series into $B$ blocks (for instance the CISS segments: money
+market, bonds, equities, financial intermediaries, foreign exchange), and write
+$R_{bb}$ for the diagonal blocks of the correlation matrix $R$ and
+$R_D=\operatorname{diag}(R_{11},\dots,R_{BB})$.
+
+\begin{proposition}[Within/between-block decomposition]
+\label{prop:blocks}
+\begin{equation}
+\label{eq:blocks}
+\underbrace{-\tfrac12\log\det R}_{\text{total dependence}}
+\;=\;\sum_{b=1}^{B}\underbrace{\left(-\tfrac12\log\det R_{bb}\right)}_{\text{within block }b}
+\;+\;\underbrace{\left(-\tfrac12\log\det\big(R_D^{-1/2}RR_D^{-1/2}\big)\right)}_{\text{between blocks}} ,
+\end{equation}
+and each of the $B+1$ terms is non-negative. The between-block term is the
+Gaussian multi-information among blocks,
+$\KL{\mathcal N(0,R)}{\bigotimes_b\mathcal N(0,R_{bb})}$; it is zero if and only
+if the blocks are pairwise uncorrelated.
+\end{proposition}
+
+\begin{proof}
+$R=R_D^{1/2}\,\big(R_D^{-1/2}RR_D^{-1/2}\big)\,R_D^{1/2}$ and the determinant is
+multiplicative, so $\log\det R=\log\det R_D+\log\det(R_D^{-1/2}RR_D^{-1/2})$,
+with $\log\det R_D=\sum_b\log\det R_{bb}$. Each $R_{bb}$ is a correlation matrix,
+so $-\tfrac12\log\det R_{bb}\ge0$ by Hadamard's inequality
+(Appendix~\ref{app:gauss}). The matrix $\tilde R=R_D^{-1/2}RR_D^{-1/2}$ has
+identity diagonal blocks, hence a unit diagonal, and Hadamard applies again.
+Finally Proposition~\ref{prop:klgauss} with $\mu_1=\mu_0$, $\Sigma_1=R$,
+$\Sigma_0=R_D$ gives
+$\tfrac12[\operatorname{tr}(R_D^{-1}R)-N-\log\det(R_D^{-1}R)]$, and
+$\operatorname{tr}(R_D^{-1}R)=\sum_b\operatorname{tr}(I)=N$.
+\end{proof}
+
+\paragraph{Two blocks: canonical correlations.} For $B=2$, writing
+$C=R_{11}^{-1/2}R_{12}R_{22}^{-1/2}$ and $\rho_1,\dots,\rho_k$ for its singular
+values (the canonical correlations between the two blocks),
+$\det\tilde R=\det(I-CC^\top)=\prod_j(1-\rho_j^2)$ and the between-block term
+equals $-\tfrac12\sum_j\log(1-\rho_j^2)$. This is the Gaussian mutual
+information between the two segments, the sum of the information carried by each
+canonical pair. For $B>2$, identity~\eqref{eq:blocks} can be applied in nested
+fashion and lets one attribute contagion to pairs or groups of segments by the
+chain rule.
+
+\subsection{Where the dependence channel sits in the structural index}
+
+The chain rule of Appendix~\ref{app:index} writes $\JJ=\sum_i\Dun(x_i)+I(x)$.
+Replacing the multi-information $I(x)$ by its Gaussian part $-H^{dep}$ and
+applying~\eqref{eq:blocks}:
+\begin{equation}
+\label{eq:jblocks}
+\JJ\;\approx\;\underbrace{\sum_i\Dun(x_i)}_{\text{shape}}
+\;+\;\underbrace{\sum_b\left(-\tfrac12\log\det R_{bb}\right)}_{\text{within}}
+\;+\;\underbrace{\left(-\tfrac12\log\det\tilde R\right)}_{\text{between}} .
+\end{equation}
+The main paper keeps the last two terms and drops the first, which is the one
+the null reproduces (Section~\ref{sec:program}). The entropic CISS is thus the
+structural index stripped of its shape channel, and its decomposition is exact,
+with no approximation, because it concerns only the Gaussian part.
+
+\subsection{Three properties useful for the indicator}
+
+\paragraph{Scale invariance.} The terms of~\eqref{eq:blocks} depend only on
+$R$: they are invariant to any series-by-series rescaling, which allows markets
+with very different volatilities to be aggregated without ad hoc weighting. The
+\citet{forbes2002} devolatilisation therefore acts not on the formula but on the
+bias of the \emph{estimator} of $R$ under heteroskedasticity.
+
+\paragraph{Rank version.} Replacing $R$ by the correlation of normal scores
+$\Phi^{-1}(\hat F_i(x_i))$ estimates the multi-information of a Gaussian copula.
+The quantity becomes invariant to any monotone transformation of the marginals,
+which explains its robustness to tails observed in Phase~A.
+
+\paragraph{Normalisation in $N$.} For a constant correlation $\rho$,
+$\det R=(1-\rho)^{N-1}\big(1+(N-1)\rho\big)$, so $-H^{dep}$ grows roughly linearly
+in $N$. Dividing by $N-1$, or reporting the equivalent constant correlation
+$\rho^\star$ that gives the same determinant, makes the indicator comparable
+across panels. For small $\rho^\star$,
+$-H^{dep}\approx\tfrac14N(N-1)\rho^{\star2}$.
+
+\section{Monitoring indicators and insurance solvency}
+\label{sec:monitoring}
+
+\paragraph{Two indicators from v1.} The jump/diffusion split delivered two daily
+quantities: the standardised positive-jump component of $\JJ$ (how much
+information arrived today) and $\JJ_t$ relative to its rolling maximum (how much
+has not yet been absorbed). Neither improves the volatility forecast (H7), and
+both rest on statistics the null does not identify. They are not carried over.
+
+\paragraph{Insurance.} Three links remain valid in principle. An entropy-ball
+scenario produces a complete stressed law, a natural object for the ORSA. The
+decomposition of classical bundles bears on the Solvency~II standard formula,
+whose diversification credit rests on a fixed correlation matrix. And entropic
+risk measures are coherent \citep{ahmadijavid2012,artzner1999}. Nothing has been
+tested on liabilities, however, and the short, low-frequency panels typical of
+insurance data would strain every estimator used here.
+
+\section{Open questions}
+\label{sec:open}
+
+\begin{enumerate}
+\item \textbf{Self-exciting arrivals.} The jump clustering seen in the v1 event
+study contradicts the Poisson measure in~\eqref{eq:ou}. A Hawkes process is the
+next specification.
+\item \textbf{Positivity.} $\JJ\ge0$ whereas an Ornstein--Uhlenbeck process with
+a Brownian term can turn negative. One should either drop $\sigma_\JJ$ (the
+pure form of \citealt{bns2001}) or model $\log\JJ$.
+\item \textbf{Non-linear tail dependence.} $\JJ$ and the dependence channel see
+only the Gaussian part of the multi-information. Estimating the full copula
+multi-information (for example by nearest neighbours on ranks) would measure
+what is missing, at the price of a much higher estimation variance.
+\item \textbf{Tail of the information flow.} Beyond about twenty years, the
+quantiles of $I^{(h)}$ are extrapolated. A generalised Pareto fit would be the
+disciplined correction.
+\item \textbf{Minimal lift and published scenarios.}
+Proposition~\ref{prop:lift} provides a yardstick: for any published scenario,
+the ratio of its ambient price to the minimal price $g(u,v)$ of its projection
+measures how much information it spends outside the direction that matters to
+the portfolio. This extends the audit of the main paper directly.
+\end{enumerate}
