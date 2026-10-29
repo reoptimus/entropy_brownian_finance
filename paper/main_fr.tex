@@ -146,6 +146,18 @@ non un minimum prouvé de la divergence ambiante. Un gestionnaire qui suppose pa
 défaut une dilatation uniforme n'est donc pas prudent en le faisant : la
 composition ancrée sur l'historique est à la fois plus réaliste et moins
 implausible sur l'échelle d'information du marché.
+
+Une application pour les banques centrales est construite sur le seul résultat
+qui survit. La corrélation totale en rangs $-\tfrac12\log\det R$ survit à la
+dévolatilisation et franchit les deux témoins là où le ratio d'absorption
+échoue, et elle se décompose exactement en couplage à l'intérieur des segments de
+marché et entre eux. Sur un panel zone euro des cinq segments du CISS
+(2005--2026), le couplage entre segments monte sous stress au-delà des deux
+témoins, et le lien souverain--banques culmine en 2011. Le couplage total
+identifie les récessions CEPR un peu mieux que le CISS de la BCE (AUROC $0{,}85$
+contre $0{,}83$), mais ne lui ajoute rien dans une régression de
+Growth-at-Risk : c'est une carte coïncidente des segments que le stress relie,
+pas une prévision.
 \end{abstract}
 
 \tableofcontents
@@ -284,6 +296,16 @@ témoin, sert à calibrer cette répartition plutôt qu'à la deviner. La sévé
 scénario ne change pas ; sa composition, si, et son prix informationnel avec
 elle.
 
+\paragraph{Un CISS entropique (section~\ref{sec:cb}).}
+Le seul résultat de régime qui franchit les deux témoins, le couplage de la
+coupe transversale, devient un indicateur au format du CISS de la BCE. La
+corrélation totale $-\tfrac12\log\det R$ se décompose exactement en couplage à
+l'intérieur de chaque segment de marché et en information mutuelle entre
+segments : un seul nombre vient avec sa propre carte de contagion, en nats. Sur
+la zone euro, il montre que le stress relie les segments au-delà des deux
+témoins, et il est confronté au CISS, aux récessions CEPR, au Growth-at-Risk et à
+l'indice de stress de la Fed de St.~Louis.
+
 \paragraph{Un avertissement sur la mesure de tout ceci.}
 L'indice structurel est une fonctionnelle convexe positive de moments d'ordre
 deux, trois et quatre estimés. Le bruit d'estimation sur des données à queues
@@ -303,7 +325,7 @@ dérive la dynamique de saut-diffusion ; la section~\ref{sec:hypotheses} liste l
 hypothèses ; les sections~\ref{sec:data}--\ref{sec:results} donnent les données,
 les estimateurs et les résultats, dont le témoin placebo que les statistiques de
 saut et de relaxation doivent franchir, et sa huitième hypothèse sur la
-composition du budget de crise (section~\ref{sec:h8}) ; la
+composition du budget de crise (section~\ref{sec:h8}) ; la section~\ref{sec:cb} construit le CISS entropique ; la
 section~\ref{sec:stress} construit le test de résistance, dont une composition
 calibrée sur ce fait (section~\ref{sec:composition}) ; la
 section~\ref{sec:limits} est honnête sur ce que rien de tout ceci n'établit.
@@ -1866,6 +1888,296 @@ q5 (plus sévères) & $0{,}49$ & $0{,}02$ & $0{,}49$ \\
 \label{tab:severityq}
 \end{table}
 
+\section{Un CISS entropique pour les banques centrales}
+\label{sec:cb}
+
+Un seul résultat de régime de cet article franchit les deux témoins calibrés :
+sous stress, la coupe transversale se couple. Cette section en fait un
+indicateur au format que les banques centrales utilisent déjà. Le modèle est
+l'indicateur composite de stress systémique, le CISS \citep{hollo2012}. Comme le
+CISS, l'indicateur agrège les segments monétaire, obligataire, actions,
+intermédiaires financiers et change. À la différence du CISS, il dit en nats
+quelle part du couplage se trouve à l'intérieur de chaque segment et quelle part
+se trouve entre eux. Il est validé face aux mêmes témoins que plus haut, puis
+face aux indices officiels. Le code est dans \texttt{src/coupling.py},
+\texttt{src/blocks.py} et \texttt{scripts/euro\_ciss.py}.
+
+\subsection{Quelle mesure de dépendance}
+\label{sec:cb-measure}
+
+Notons $C(R)=-\tfrac12\log\det R\ge0$ la corrélation totale gaussienne de
+\citet{watanabe1960}, qui est l'opposé du canal de dépendance de la
+section~\ref{sec:channels}. Avant de construire dessus, nous vérifions trois
+façons dont le résultat pourrait être un artefact.
+\begin{itemize}
+\item Les corrélations montent mécaniquement quand les variances montent
+  \citep{forbes2002}. La version \emph{dévolatilisée} divise chaque rendement
+  par sa volatilité EWMA calculée sur le passé seul ($\lambda=0{,}94$) avant
+  d'estimer $R$.
+\item Quelques jours extrêmes pourraient porter le résultat. La version
+  \emph{en rangs} remplace chaque rendement par son score normal, ce qui rend
+  $C$ invariante aux lois marginales.
+\item Une mesure existante pourrait déjà capter la même chose. Nous comparons
+  au ratio d'absorption de \citet{kritzman2011} (part de variance dans les
+  $N/5$ premiers vecteurs propres) et à la part de la première valeur propre.
+\end{itemize}
+Toutes les versions utilisent l'estimateur de Ledoit--Wolf, une fenêtre de
+252~jours et le seuil de stress calculé sur le passé seul. Elles sont jugées sur
+l'écart stress moins calme face aux mêmes 200 rééchantillonnages i.i.d.\ et 200
+par blocs.
+
+\begin{table}[ht]
+\centering
+\small
+\begin{tabular}{lcccc}
+\toprule
+& \multicolumn{2}{c}{S\&P~500, 20 titres} & \multicolumn{2}{c}{FF49, 48 industries} \\
+Mesure & i.i.d. & blocs de 21 j & i.i.d. & blocs de 21 j \\
+\midrule
+$C$, brute & $6{,}2$ ($<0{,}005$) & $2{,}0$ ($0{,}030$) & $11{,}9$ ($<0{,}005$) & $1{,}8$ ($0{,}025$) \\
+$C$, dévolatilisée & $5{,}1$ ($<0{,}005$) & $2{,}0$ ($0{,}040$) & $7{,}9$ ($<0{,}005$) & $1{,}7$ ($0{,}040$) \\
+$C$, en rangs & $9{,}6$ ($<0{,}005$) & $\mathbf{2{,}3}$ ($\mathbf{0{,}030}$) & $12{,}7$ ($<0{,}005$) & $\mathbf{2{,}2}$ ($\mathbf{0{,}010}$) \\
+Ratio d'absorption & $0{,}7$ ($0{,}215$) & $-0{,}5$ ($0{,}695$) & $6{,}9$ ($<0{,}005$) & $0{,}4$ ($0{,}375$) \\
+Part de la 1\textsuperscript{re} valeur propre & $5{,}3$ ($<0{,}005$) & $1{,}8$ ($0{,}040$) & $6{,}7$ ($<0{,}005$) & $0{,}2$ ($0{,}445$) \\
+\bottomrule
+\end{tabular}
+\caption{Écart stress moins calme de chaque mesure de dépendance face aux deux
+témoins : score $z$ face à la distribution du témoin et, entre parenthèses, la
+part des 200 rééchantillonnages au moins aussi extrêmes du côté prédit.
+Source : \texttt{paper/tables/coupling\_null\_200rep\_summary.csv}.}
+\label{tab:cb-measures}
+\end{table}
+
+Le tableau~\ref{tab:cb-measures} apporte trois réponses.
+\begin{itemize}
+\item \emph{Volatilité.} Le couplage survit à la dévolatilisation. Il est
+  environ $30\,\%$ plus faible, mais il franchit toujours les deux témoins sur
+  les deux panels.
+\item \emph{Jours extrêmes.} La version en rangs est la plus forte face au
+  témoin par blocs sur les deux panels. C'est la seule qui survivrait à une
+  correction de Bonferroni pour cinq mesures, sur FF49.
+\item \emph{Mesures existantes.} Le ratio d'absorption échoue face au témoin
+  par blocs sur les deux panels. La part de la première valeur propre passe sur
+  les titres mais pas sur les industries. Explication probable : $\log\det R$
+  pèse tout le spectre, y compris les petites valeurs propres qui s'effondrent
+  quand la coupe transversale se couple, alors que les mesures de concentration
+  ne regardent que le haut du spectre.
+\end{itemize}
+La suite utilise la version en rangs.
+
+\subsection{Une décomposition exacte par blocs}
+\label{sec:cb-blocks}
+
+Répartissons les variables en blocs $B_1,\dots,B_K$ : segments de marché,
+secteurs ou pays. Alors
+\begin{equation}
+\label{eq:blocks}
+C(R) \;=\; \sum_{k=1}^{K} C(R_{kk}) \;+\; I(B_1;\dots;B_K),
+\qquad
+I(B_1;\dots;B_K) = -\tfrac12\log\det R + \tfrac12\sum_k \log\det R_{kk} \;\ge\; 0,
+\end{equation}
+où $R_{kk}$ est la matrice de corrélation à l'intérieur du bloc $k$. Le terme
+entre blocs $I$ est la multi-information de la copule gaussienne. Il est nul
+exactement quand les segments évoluent indépendamment les uns des autres, quoi
+qu'il se passe à l'intérieur de chacun : c'est la part systémique. Pour deux
+blocs $A$ et $B$, l'information mutuelle
+$I(A;B)=\tfrac12\bigl(\log\det R_{AA}+\log\det R_{BB}-\log\det R_{A\cup B}\bigr)$
+donne une carte de contagion dans la même unité. Tout dans \eqref{eq:blocks}
+est invariant à un changement d'échelle de chaque variable, si bien que
+rendements, variations de taux et taux de change peuvent figurer dans une même
+matrice.
+
+Premier essai, avec des blocs sectoriels. Sur les titres du S\&P~500, le terme
+entre secteurs monte sous stress au-delà des deux témoins ($p=0{,}015$ face au
+témoin par blocs), de même que sa part dans le total ($p=0{,}025$). Sur les
+portefeuilles FF49, la hausse reste à l'intérieur des macro-secteurs
+($p=0{,}275$ pour le terme entre blocs), parce que l'agrégation en portefeuilles
+absorbe déjà une bonne part du facteur commun.
+
+\subsection{Le panel zone euro}
+\label{sec:cb-data}
+
+Le panel est quotidien, de janvier 2005 à octobre 2026 : 5\,690~jours et 28
+séries réparties dans les cinq segments du CISS.
+\begin{itemize}
+\item \emph{Marché monétaire :} le taux au jour le jour (EONIA, puis
+  \texteuro{}STR à partir d'octobre 2019 ; le jour du raccord est écarté).
+\item \emph{Obligations :} taux AAA de la BCE à 2, 5 et 10~ans, taux toutes
+  notations à 2 et 10~ans, et écart à 10~ans toutes notations moins AAA.
+\item \emph{Actions :} DAX, CAC~40, FTSE~MIB, IBEX~35 et AEX.
+\item \emph{Intermédiaires financiers :} neuf banques et trois assureurs.
+\item \emph{Change :} l'euro face au dollar, à la livre, au yen et au franc
+  suisse.
+\end{itemize}
+Les taux entrent en variations quotidiennes, les prix en rendements
+logarithmiques.
+
+Le segment monétaire du CISS utilise l'écart Euribor 3~mois moins taux au jour
+le jour. L'Euribor n'était pas disponible sur le portail de données de la BCE au
+moment de la rédaction. Nous avons d'abord pris comme substitut le taux AAA
+2~ans moins le taux au jour le jour. Cet écart partage le taux à 2~ans avec le
+bloc obligataire, ce qui lie les deux blocs par construction. Sous stress, leur
+information mutuelle \emph{baisse} ($-0{,}14$~nat, hors des deux témoins), et
+cet artefact suffit à masquer la hausse du couplage entre segments. Les
+résultats ci-dessous gardent donc le taux au jour le jour seul dans le bloc
+monétaire. La variante avec substitut figure dans les fichiers de réplication.
+
+\subsection{Résultats}
+\label{sec:cb-results}
+
+\begin{table}[ht]
+\centering
+\small
+\begin{tabular}{lccc}
+\toprule
+Composante & Écart (nats) & $p$, i.i.d. & $p$, blocs de 21 j \\
+\midrule
+Couplage total $C$ & $+1{,}61$ & $<0{,}005$ & $<0{,}005$ \\
+\textbf{Entre segments $I$} & $+0{,}19$ & $<0{,}005$ & $\mathbf{<0{,}005}$ \\
+Part entre segments $I/C$ & $-0{,}005$ & \multicolumn{2}{c}{à contre-sens} \\
+Intra actions & $+0{,}46$ & $<0{,}005$ & $<0{,}005$ \\
+Intra intermédiaires & $+0{,}48$ & $<0{,}005$ & $0{,}045$ \\
+Intra obligations & $+0{,}34$ & $<0{,}005$ & $<0{,}005$ \\
+Intra change & $+0{,}14$ & $<0{,}005$ & $<0{,}005$ \\
+Obligations -- change & $+0{,}055$ & $<0{,}005$ & $<0{,}005$ \\
+Actions -- change & $+0{,}046$ & $<0{,}005$ & $<0{,}005$ \\
+Actions -- intermédiaires & $+0{,}096$ & $<0{,}005$ & $0{,}025$ \\
+Intermédiaires -- change & $+0{,}040$ & $<0{,}005$ & $0{,}045$ \\
+Obligations -- intermédiaires & $+0{,}040$ & $<0{,}005$ & $0{,}050$ \\
+Obligations -- actions & $+0{,}029$ & $<0{,}005$ & $0{,}055$ \\
+Monétaire -- autres segments & $\approx 0$ & n.s. & n.s. \\
+\bottomrule
+\end{tabular}
+\caption{Zone euro, stress moins calme, face à 200 + 200 rééchantillonnages. Le
+stress est le décile supérieur de la volatilité à 21~jours du bloc actions
+équipondéré, seuil calculé sur le passé seul. Source :
+\texttt{paper/tables/euro\_null\_200rep\_summary\_overnight\_only.csv}.}
+\label{tab:cb-euro}
+\end{table}
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=0.9\linewidth]{figures/euro_ciss_entropique_overnight_only.png}
+\caption{Le CISS entropique zone euro. En haut : couplage total et CISS de la
+BCE, centrés réduits. Au milieu : couplage entre les cinq segments, en nats, et
+sa part dans le total. En bas : information mutuelle entre paires de segments.}
+\label{fig:cb-euro}
+\end{figure}
+
+Le tableau~\ref{tab:cb-euro} et la figure~\ref{fig:cb-euro} appellent trois
+lectures.
+\begin{itemize}
+\item \emph{Le stress relie les segments entre eux.} Le couplage entre segments
+  monte au-delà des deux témoins, comme entre secteurs sur le S\&P~500. Toutes
+  les paires hors marché monétaire montent ; les liens avec le change et entre
+  actions et intermédiaires sont les plus nets. La part entre segments baisse
+  légèrement, parce que chaque segment se resserre aussi en interne, et plus
+  vite.
+\item \emph{Le lien souverain--banques ressort.} L'information mutuelle entre
+  obligations et intermédiaires, et entre obligations et actions, culmine fin
+  2011, au plus fort de la crise des dettes souveraines : $0{,}46$ et
+  $0{,}35$~nat, contre $0{,}10$ et $0{,}05$ fin 2006. Le CISS agrégé ne peut pas
+  montrer quels segments un épisode de stress relie.
+\item \emph{Le marché monétaire ne se couple pas} aux autres segments en données
+  quotidiennes. Le taux au jour le jour bouge avec les décisions de politique
+  monétaire, pas avec le stress de marché. Il faut un écart de terme non garanti
+  pour que ce segment porte le stress de financement des banques
+  (section~\ref{sec:cb-next}).
+\end{itemize}
+
+\paragraph{Face aux indicateurs officiels.} Le tableau~\ref{tab:cb-official}
+confronte l'indicateur au CISS de la BCE, aux dates de récession du CEPR et à une
+régression de Growth-at-Risk dans l'esprit de \citet{adrian2019}.
+\begin{itemize}
+\item \emph{Récessions.} Le couplage total identifie les récessions CEPR un peu
+  mieux que le CISS, et mieux que la volatilité.
+\item \emph{Le CISS.} Le couplage total explique le CISS au-delà de ce
+  qu'explique déjà la volatilité.
+\item \emph{Croissance future.} Pour la queue basse de la croissance à quatre
+  trimestres, les deux mesures de couplage sont significatives seules. Aucune
+  n'apporte rien une fois le CISS et la croissance passée dans la régression.
+\end{itemize}
+L'indicateur est donc coïncident : un complément au CISS qui explique quels
+segments sont liés, pas un meilleur prédicteur. Avec trois récessions et
+79~trimestres, ces comparaisons restent indicatives.
+
+\begin{table}[ht]
+\centering
+\small
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{lcccc}
+\toprule
+& $C$ total & $I$ entre & Vol.\ 21 j & CISS BCE \\
+\midrule
+Corrélation avec le CISS (niveaux) & $0{,}58$ & $0{,}35$ & $0{,}74$ & $1$ \\
+AUROC, récessions CEPR & $\mathbf{0{,}85}$ & $0{,}75$ & $0{,}80$ & $0{,}83$ \\
+CISS sur indicateur et volatilité : $t$ (HAC) & $\mathbf{6{,}7}$ & $1{,}7$ & & \\
+GaR, $\tau=0{,}10$, seul : coef.\ ($p$) & $-1{,}25$ ($0{,}04$) & $-1{,}57$ ($<0{,}001$) & $-0{,}04$ ($0{,}98$) & $-2{,}56$ ($<0{,}001$) \\
+GaR, $\tau=0{,}10$, avec CISS et croissance passée : $p$ & $0{,}78$ & $0{,}81$ & & $<0{,}001$ \\
+\bottomrule
+\end{tabular}}
+\caption{Zone euro face aux indicateurs officiels. Récessions CEPR :
+2008T1--2009T2, 2011T3--2013T1, 2019T4--2020T2. Régressions hebdomadaires
+standardisées, 1\,089~semaines. Growth-at-Risk : régression quantile de la
+croissance du PIB réel à quatre trimestres sur la moyenne trimestrielle de
+l'indicateur, 79~trimestres. Source :
+\texttt{paper/tables/euro\_ciss\_comparisons\_overnight\_only.json}.}
+\label{tab:cb-official}
+\end{table}
+
+\paragraph{Face à l'indice de stress de la Fed de St.~Louis, 1994--2026.} Sur
+les panels américains, la référence officielle est le STLFSI4
+\citep{kliesen2010}, hebdomadaire depuis fin 1993
+(tableau~\ref{tab:cb-stlfsi}).
+\begin{itemize}
+\item Seule, $C$ suit le STLFSI4 à peu près aussi bien que la part de la
+  première valeur propre, et bien mieux que le ratio d'absorption sur les
+  titres. Dans une régression jointe sur les titres, $C$ garde $t=5{,}9$ et le
+  ratio d'absorption passe à $-6{,}0$.
+\item Sur les vingt titres, le couplage ajoute à la volatilité pour expliquer le
+  STLFSI4 ($t\approx4$ à $5$), surtout avant 2015.
+\item Sur les 48 portefeuilles industriels, rien n'ajoute à la volatilité.
+\end{itemize}
+
+\begin{table}[ht]
+\centering
+\small
+\begin{tabular}{lcccc}
+\toprule
+& \multicolumn{2}{c}{S\&P~500 (1994--2022)} & \multicolumn{2}{c}{FF49 (1994--2026)} \\
+Mesure & $R^2$ seule & $t$ avec vol. & $R^2$ seule & $t$ avec vol. \\
+\midrule
+$C$, brute & $0{,}16$ & $\mathbf{4{,}2}$ & $0{,}10$ & $0{,}3$ \\
+$C$, dévolatilisée & $0{,}16$ & $\mathbf{4{,}8}$ & $0{,}09$ & $0{,}5$ \\
+$C$, en rangs & $0{,}16$ & $\mathbf{4{,}7}$ & $0{,}09$ & $-0{,}1$ \\
+Ratio d'absorption & $0{,}06$ & $4{,}2$ & $0{,}07$ & $-2{,}0$ \\
+Part de la 1\textsuperscript{re} valeur propre & $0{,}16$ & $4{,}6$ & $0{,}07$ & $-0{,}2$ \\
+Volatilité à 21~jours seule & $0{,}48$ & & $0{,}41$ & \\
+\bottomrule
+\end{tabular}
+\caption{STLFSI4 sur chaque mesure, régressions hebdomadaires standardisées,
+erreurs HAC (4~retards) ; 1\,514 et 1\,697~semaines. Source :
+\texttt{paper/tables/*\_coupling\_encompassing.csv}.}
+\label{tab:cb-stlfsi}
+\end{table}
+
+\subsection{Travaux en cours}
+\label{sec:cb-next}
+
+Trois étapes restent à franchir avant de proposer l'indicateur pour le suivi.
+\begin{itemize}
+\item \emph{Segment monétaire.} Ajouter l'Euribor 3~mois auprès de son
+  administrateur (EMMI) et reconstruire le segment avec l'écart Euribor moins
+  taux au jour le jour, comme dans le CISS.
+\item \emph{Étude d'événements.} Dater les épisodes de stress dans la base de
+  crises du Comité européen du risque systémique \citep{loduca2017} et mesurer
+  le comportement du terme entre segments et de la carte des paires autour de
+  ces épisodes, pays par pays.
+\item \emph{Tests d'englobement.} Confronter l'indicateur aux mesures de risque
+  systémique par établissement, SRISK \citep{brownlees2017} et $\Delta$CoVaR
+  \citep{adrian2016}.
+\end{itemize}
+
 \section{Tests de résistance par l'entropie}
 \label{sec:stress}
 
@@ -2335,6 +2647,12 @@ la composition calibrée sur H1/H8 coûte \emph{moins} de nats ambiants que le
 défaut (tableau~\ref{tab:composition}) est propre à la structure de
 corrélation de ce panel et ne doit pas être lu comme une loi générale.
 
+\paragraph{Le CISS entropique est coïncident et encore incomplet.} Il identifie
+les récessions à peu près aussi bien que le CISS mais ne lui ajoute rien pour la
+croissance future. Son segment monétaire ne contient que le taux au jour le jour
+tant que l'Euribor n'est pas ajouté, et les comparaisons reposent sur trois
+récessions de la zone euro et 79~trimestres.
+
 \section{Conclusion}
 
 La contribution théorique est une chaîne explicite sur ce qui, en chaque maillon,
@@ -2419,6 +2737,16 @@ de la boule KL, jamais un minimum prouvé de la divergence ambiante. Un
 gestionnaire de risque qui suppose par défaut une dilatation uniforme ne se
 protège donc pas par prudence en le faisant.
 
+
+L'application aux banques centrales garde le seul résultat qui survit et lui
+donne un format utilisable par une cellule de surveillance. La corrélation
+totale en rangs survit à la dévolatilisation et franchit les deux témoins là où
+le ratio d'absorption échoue. Sa décomposition exacte en termes intra et
+inter-segments fait d'un nombre une carte : sur la zone euro, le stress relie les
+cinq segments du CISS au-delà des deux témoins, et le lien souverain--banques
+ressort en 2011. L'indicateur est coïncident, un complément au CISS plutôt qu'un
+meilleur prédicteur ; l'Euribor, une étude d'événements sur la base de crises du
+CERS et des tests face à SRISK et $\Delta$CoVaR viennent ensuite.
 
 \appendix
 
@@ -2671,6 +2999,10 @@ mouvement directionnel qu'un scénario de même rayon produirait.
 \begin{thebibliography}{99}
 \small
 
+\bibitem[Adrian \& Brunnermeier(2016)]{adrian2016} Adrian, T., \& Brunnermeier, M. K. (2016). CoVaR. \textit{American Economic Review}, 106(7), 1705--1741.
+
+\bibitem[Adrian, Boyarchenko \& Giannone(2019)]{adrian2019} Adrian, T., Boyarchenko, N., \& Giannone, D. (2019). Vulnerable Growth. \textit{American Economic Review}, 109(4), 1263--1289.
+
 \bibitem[Ahmadi-Javid(2012)]{ahmadijavid2012} Ahmadi-Javid, A. (2012). Entropic Value-at-Risk: A New Coherent Risk Measure. \textit{Journal of Optimization Theory and Applications}, 155(3), 1105--1123.
 
 \bibitem[Almog \& Shmueli(2019)]{almog2019} Almog, A., \& Shmueli, E. (2019). Structural Entropy: Monitoring Correlation-Based Networks Over Time With Application To Financial Markets. \textit{Scientific Reports}, 9, 10832.
@@ -2685,19 +3017,15 @@ mouvement directionnel qu'un scénario de même rayon produirait.
 
 \bibitem[Black(1976)]{black1976} Black, F. (1976). Studies of Stock Price Volatility Changes. \textit{Proceedings of the Business and Economic Statistics Section, American Statistical Association}, 177--181.
 
-\bibitem[Christie(1982)]{christie1982} Christie, A. A. (1982). The Stochastic Behavior of Common Stock Variances: Value, Leverage and Interest Rate Effects. \textit{Journal of Financial Economics}, 10(4), 407--432.
-
-\bibitem[Doob(1942)]{doob1942} Doob, J. L. (1942). The Brownian Movement and Stochastic Equations. \textit{Annals of Mathematics}, 43(2), 351--369.
-
-\bibitem[Engle \& Ng(1993)]{engle1993} Engle, R. F., \& Ng, V. K. (1993). Measuring and Testing the Impact of News on Volatility. \textit{Journal of Finance}, 48(5), 1749--1778.
-
-\bibitem[Nelson(1991)]{nelson1991} Nelson, D. B. (1991). Conditional Heteroskedasticity in Asset Returns: A New Approach. \textit{Econometrica}, 59(2), 347--370.
-
 \bibitem[Bollerslev \& Ghysels(1996)]{bollerslev1996} Bollerslev, T., \& Ghysels, E. (1996). Periodic Autoregressive Conditional Heteroscedasticity. \textit{Journal of Business \& Economic Statistics}, 14(2), 139--151.
 
 \bibitem[Breuer \& Csiszár(2013)]{breuer2013} Breuer, T., \& Csiszár, I. (2013). Systematic Stress Tests with Entropic Plausibility Constraints. \textit{Journal of Banking \& Finance}, 37(5), 1552--1559.
 
+\bibitem[Brownlees \& Engle(2017)]{brownlees2017} Brownlees, C., \& Engle, R. F. (2017). SRISK: A Conditional Capital Shortfall Measure of Systemic Risk. \textit{Review of Financial Studies}, 30(1), 48--79.
+
 \bibitem[Caraiani(2018)]{caraiani2018} Caraiani, P. (2018). Modeling the Comovement of Entropy between Financial Markets. \textit{Entropy}, 20(6), 417.
+
+\bibitem[Christie(1982)]{christie1982} Christie, A. A. (1982). The Stochastic Behavior of Common Stock Variances: Value, Leverage and Interest Rate Effects. \textit{Journal of Financial Economics}, 10(4), 407--432.
 
 \bibitem[Clark(1973)]{clark1973} Clark, P. K. (1973). A Subordinated Stochastic Process Model with Finite Variance for Speculative Prices. \textit{Econometrica}, 41(1), 135--155.
 
@@ -2707,21 +3035,37 @@ mouvement directionnel qu'un scénario de même rayon produirait.
 
 \bibitem[Diebold \& Mariano(1995)]{dm1995} Diebold, F. X., \& Mariano, R. S. (1995). Comparing Predictive Accuracy. \textit{Journal of Business \& Economic Statistics}, 13(3), 253--263.
 
+\bibitem[Doob(1942)]{doob1942} Doob, J. L. (1942). The Brownian Movement and Stochastic Equations. \textit{Annals of Mathematics}, 43(2), 351--369.
+
+\bibitem[Engle \& Ng(1993)]{engle1993} Engle, R. F., \& Ng, V. K. (1993). Measuring and Testing the Impact of News on Volatility. \textit{Journal of Finance}, 48(5), 1749--1778.
+
 \bibitem[Engle(2002)]{engle2002} Engle, R. (2002). Dynamic Conditional Correlation. \textit{Journal of Business \& Economic Statistics}, 20(3), 339--350.
 
+\bibitem[Forbes \& Rigobon(2002)]{forbes2002} Forbes, K. J., \& Rigobon, R. (2002). No Contagion, Only Interdependence: Measuring Stock Market Comovements. \textit{Journal of Finance}, 57(5), 2223--2261.
+
 \bibitem[Glasserman \& Xu(2014)]{glasserman2014} Glasserman, P., \& Xu, X. (2014). Robust Risk Measurement and Model Risk. \textit{Quantitative Finance}, 14(1), 29--58.
+
+\bibitem[Holló, Kremer \& Lo Duca(2012)]{hollo2012} Holló, D., Kremer, M., \& Lo Duca, M. (2012). CISS -- A Composite Indicator of Systemic Stress in the Financial System. Document de travail de la BCE n\textsuperscript{o}~1426.
 
 \bibitem[Hyvärinen(1998)]{hyvarinen1998} Hyvärinen, A. (1998). New Approximations of Differential Entropy for Independent Component Analysis and Projection Pursuit. \textit{Advances in Neural Information Processing Systems}, 10, 273--279. (Constantes telles que dans Hyvärinen \& Oja, 2000, \textit{Neural Networks} 13, 411--430.)
 
 \bibitem[Jaynes(1957)]{jaynes1957} Jaynes, E. T. (1957). Information Theory and Statistical Mechanics. \textit{Physical Review}, 106, 620--630.
 
+\bibitem[Kliesen \& Smith(2010)]{kliesen2010} Kliesen, K. L., \& Smith, D. C. (2010). Measuring Financial Market Stress. Federal Reserve Bank of St.~Louis, \textit{Economic Synopses}, n\textsuperscript{o}~2.
+
+\bibitem[Kritzman et al.(2011)]{kritzman2011} Kritzman, M., Li, Y., Page, S., \& Rigobon, R. (2011). Principal Components as a Measure of Systemic Risk. \textit{Journal of Portfolio Management}, 37(4), 112--126.
+
 \bibitem[Kyle(1985)]{kyle1985} Kyle, A. S. (1985). Continuous Auctions and Insider Trading. \textit{Econometrica}, 53(6), 1315--1335.
 
 \bibitem[Ledoit \& Wolf(2004)]{ledoit2004} Ledoit, O., \& Wolf, M. (2004). A Well-Conditioned Estimator for Large-Dimensional Covariance Matrices. \textit{Journal of Multivariate Analysis}, 88(2), 365--411.
 
+\bibitem[Lo Duca et al.(2017)]{loduca2017} Lo Duca, M., Koban, A., Basten, M., Bengtsson, E., Klaus, B., Kusmierczyk, P., Lang, J. H., Detken, C., \& Peltonen, T. (2017). A New Database for Financial Crises in European Countries. Document hors-série de la BCE n\textsuperscript{o}~194.
+
 \bibitem[Mandelbrot \& Taylor(1967)]{mandelbrot1967} Mandelbrot, B., \& Taylor, H. M. (1967). On the Distribution of Stock Price Differences. \textit{Operations Research}, 15(6), 1057--1062.
 
 \bibitem[Monroe(1978)]{monroe1978} Monroe, I. (1978). Processes That Can Be Embedded in Brownian Motion. \textit{Annals of Probability}, 6(1), 42--56.
+
+\bibitem[Nelson(1991)]{nelson1991} Nelson, D. B. (1991). Conditional Heteroskedasticity in Asset Returns: A New Approach. \textit{Econometrica}, 59(2), 347--370.
 
 \bibitem[Papla \& Siedlecki(2024)]{papla2024} Papla, D., \& Siedlecki, R. (2024). Entropy as a Tool for the Analysis of Stock Market Efficiency During Periods of Crisis. \textit{Entropy}, 26(12), 1079.
 
@@ -2730,6 +3074,8 @@ mouvement directionnel qu'un scénario de même rayon produirait.
 \bibitem[Tauchen \& Pitts(1983)]{tauchen1983} Tauchen, G. E., \& Pitts, M. (1983). The Price Variability--Volume Relationship on Speculative Markets. \textit{Econometrica}, 51(2), 485--505.
 
 \bibitem[Vasicek(1976)]{vasicek1976} Vasicek, O. (1976). A Test for Normality Based on Sample Entropy. \textit{Journal of the Royal Statistical Society B}, 38(1), 54--59.
+
+\bibitem[Watanabe(1960)]{watanabe1960} Watanabe, S. (1960). Information Theoretical Analysis of Multivariate Correlation. \textit{IBM Journal of Research and Development}, 4(1), 66--82.
 
 \bibitem[Zhou, Cai \& Tong(2013)]{zhou2013} Zhou, R., Cai, R., \& Tong, G. (2013). Applications of Entropy in Finance: A Review. \textit{Entropy}, 15(11), 4909--4931.
 
