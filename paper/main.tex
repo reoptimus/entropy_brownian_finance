@@ -295,10 +295,10 @@ rises, hence $\JJ$ rises. \\
 H2 & \emph{Compensation.} When volatilities rise, dependence absorbs part of
 the entropy increase (slope $\beta>0$). \\
 H3 & \emph{One-sided jumps.} Large moves of $\JJ$ are increases, small ones
-decreases. \\
-H4 & \emph{Relaxation.} After a jump, $\JJ$ decays with a half-life longer than
+decreases: upward episodes are more numerous and larger than downward ones. \\
+H4 & \emph{Relaxation.} After an episode, $\JJ$ decays with a half-life longer than
 the estimator's own memory. \\
-H5 & \emph{Sign.} Jumps of $\JJ$ coincide with negative market skewness. \\
+H5 & \emph{Sign.} Jumps and upward episodes of $\JJ$ coincide with negative market skewness. \\
 H6 & \emph{Channel coupling.} Dependence and tails move independently in calm
 markets and together under stress. \\
 H7 & \emph{Forecasting.} Today's entropy improves, out of sample, the forecast
@@ -307,7 +307,9 @@ H8 & \emph{Crisis composition.} In crisis episodes, dependence is the dominant
 channel more often than in data without dynamics. \\
 \bottomrule
 \end{tabular}
-\caption{The eight hypotheses tested.}
+\caption{The eight hypotheses tested. H3, H4, H5 and H8 concern jumps: they
+are tested day by day and by \emph{episode}, an episode merging jumps less
+than 40 days apart.}
 \label{tab:hyp}
 \end{table}
 
@@ -375,6 +377,7 @@ and~\ref{tab:placebo-ff49}).
 \begin{table}[htbp]
 \centering
 \small
+\resizebox{\linewidth}{!}{%
 \begin{tabular}{@{}llll@{}}
 \toprule
 & Raw result (S\&P~500) & Verdict S\&P~500 & Verdict FF49 industries \\
@@ -383,16 +386,19 @@ H1 coupling & rise under stress $+0.99$ nat & \textbf{passes both} & \textbf{pas
 H1 index $\JJ$ & $+1.93$ nat & fails both & fails both \\
 H1 shape $\DD$ & $+0.27$ nat & null stronger & null stronger \\
 H2 compensation & $\beta=0.20$ under stress & fails both & i.i.d.\ only \\
-H3 one-sided jumps & 158 up, 9 down & null stronger & fails both \\
+H3 jumps, daily & 158 up, 9 down & null stronger & fails both \\
+H3 jumps, by episode & 65 up, 7 down & null stronger & not tested \\
 H3 largest episode & $15.8$ nats (COVID) & \textbf{passes both} & not tested \\
-H4 half-life & 121 days & not identified & not identified \\
+H4 half-life, daily & 121 days & not identified & not identified \\
+H4 half-life from peak & 18 days (74 for the 5 largest) & fails both & not tested \\
 H4 range of $\JJ$ & $18.95$ nats & \textbf{passes both} & i.i.d.\ only \\
-H5 sign & correlation $-0.24$ & fails ($p=0.08$--$0.10$) & fails both \\
+H5 sign, daily & correlation $-0.24$ & fails ($p=0.08$--$0.10$) & fails both \\
+H5 sign, by episode & skewness falls in $62\,\%$ & i.i.d.\ only & not tested \\
 H6 channel coupling & $0.04$ calm, $0.63$ stress & null stronger & null stronger \\
 H7 forecasting & gain $\le 3\,\%$, $p=0.23$ & rejected & --- \\
 H8 composition & dependence dominant $46\,\%$ & i.i.d.\ only & i.i.d.\ only \\
 \bottomrule
-\end{tabular}
+\end{tabular}}
 \caption{Verdicts against the two nulls (200 repetitions each). ``Null
 stronger'': resampled data produce a larger effect than the real data. For
 H7, the test is out of sample and covers the main and control panels.}
@@ -477,7 +483,10 @@ deviations of the null distribution; in parentheses, the share of the
 (figure~\ref{fig:index} in the appendix). But the i.i.d.\ null produces as
 many: 148 up and 3 down on average, with stronger asymmetry than the data. The
 sawtooth is what a fat-tailed law produces when passed through the estimator,
-whether or not information arrives in bursts.
+whether or not information arrives in bursts. Counting by episode changes
+nothing: 65 upward episodes against 7 downward, but the nulls are even more
+one-sided (31 up per down on average under the i.i.d.\ null, 21 under the
+block null, against 9 in the data).
 \item \emph{Shape under stress (H1, $\DD$).} Tails thicken under stress
 ($+0.27$~nat), but less than in the nulls ($+1.25$ and $+0.65$). A ``stress''
 window in a shuffled world contains isolated extreme days, which thicken the
@@ -485,10 +494,15 @@ measured tails more.
 \item \emph{Relaxation (H4).} The measured half-life, $121$~days, lies between
 that of the i.i.d.\ null ($92$) and that of the block null ($163$). It is
 therefore not identified: $121$~days cannot be read as an absorption time for
-shocks.
+shocks. Measured by episode, from the peak until the index is halfway back,
+relaxation takes 18 days at the median (74 for the five largest episodes), no
+longer than in the nulls (23 and 22 days; 68 and 107 for the five largest).
 \item \emph{Sign (H5).} Jumps of $\JJ$ do coincide with negative skewness
 (correlation $-0.24$), but the nulls produce the same effect in $8$ to
-$10\,\%$ of cases, above the $5\,\%$ threshold.
+$10\,\%$ of cases, above the $5\,\%$ threshold. By episode, market skewness
+falls between the start and the peak in $62\,\%$ of episodes, against
+$50\,\%$ under the i.i.d.\ null ($p=0.015$) but $53\,\%$ under the block
+null ($p=0.08$): the sign is still not established.
 \item \emph{Channel coupling (H6) and compensation (H2).} Dependence and tails
 move together under stress ($0.63$ against $0.04$ in calm markets), but the
 i.i.d.\ null couples them even more ($0.90$). A window containing a large
@@ -1073,7 +1087,7 @@ Block length (days) & null mean & 5--95\,\% & Verdict \\
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.8\linewidth]{figures/sp500_structural_index_jumps.png}
+\includegraphics[width=0.7\linewidth]{figures/sp500_structural_index_jumps.png}
 \caption{The structural index $\JJ_t$ on twenty S\&P~500 stocks, 1990--2022,
 with detected jumps (red: up, blue: down). The sawtooth is visible, but the
 i.i.d.\ null reproduces it.}
@@ -1119,7 +1133,8 @@ which is the Gaussian mutual information between blocks, non-negative by
 Fischer's inequality.
 
 \begin{thebibliography}{99}
-\small
+\footnotesize
+\setlength{\itemsep}{0pt}
 
 \bibitem[Adrian \& Brunnermeier(2016)]{adrian2016} Adrian, T., \& Brunnermeier, M. K. (2016). CoVaR. \textit{American Economic Review}, 106(7), 1705--1741.
 

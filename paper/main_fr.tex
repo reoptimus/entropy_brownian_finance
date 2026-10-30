@@ -315,10 +315,11 @@ forme monte, donc $\JJ$ monte. \\
 H2 & \emph{Compensation.} Quand les volatilités montent, la dépendance absorbe
 une partie de la hausse d'entropie (pente $\beta>0$). \\
 H3 & \emph{Sauts unilatéraux.} Les grands mouvements de $\JJ$ sont des hausses,
-les petits des baisses. \\
-H4 & \emph{Relaxation.} Après un saut, $\JJ$ redescend avec une demi-vie plus
+les petits des baisses : les épisodes de hausse sont plus nombreux et plus
+grands que les épisodes de baisse. \\
+H4 & \emph{Relaxation.} Après un épisode, $\JJ$ redescend avec une demi-vie plus
 longue que la mémoire de l'estimateur. \\
-H5 & \emph{Signe.} Les sauts de $\JJ$ coïncident avec une asymétrie de marché
+H5 & \emph{Signe.} Les sauts et les épisodes de hausse de $\JJ$ coïncident avec une asymétrie de marché
 négative. \\
 H6 & \emph{Couplage des canaux.} Dépendance et queues bougent indépendamment en
 marché calme et ensemble sous stress. \\
@@ -328,7 +329,9 @@ H8 & \emph{Composition des crises.} Dans les épisodes de crise, la dépendance
 est plus souvent le canal dominant que dans des données sans dynamique. \\
 \bottomrule
 \end{tabular}
-\caption{Les huit hypothèses testées.}
+\caption{Les huit hypothèses testées. H3, H4, H5 et H8 portent sur des
+sauts : elles sont testées jour par jour et par \emph{épisode}, un épisode
+réunissant les sauts distants de moins de 40~jours.}
 \label{tab:hyp}
 \end{table}
 
@@ -403,6 +406,7 @@ et~\ref{tab:placebo-ff49}).
 \begin{table}[htbp]
 \centering
 \small
+\resizebox{\linewidth}{!}{%
 \begin{tabular}{@{}llll@{}}
 \toprule
 & Résultat brut (S\&P~500) & Verdict S\&P~500 & Verdict secteurs FF49 \\
@@ -411,16 +415,19 @@ H1 couplage & hausse sous stress $+0{,}99$ nat & \textbf{franchit les deux} & \t
 H1 indice $\JJ$ & $+1{,}93$ nat & échoue aux deux & échoue aux deux \\
 H1 forme $\DD$ & $+0{,}27$ nat & témoin plus fort & témoin plus fort \\
 H2 compensation & $\beta=0{,}20$ sous stress & échoue aux deux & i.i.d.\ seulement \\
-H3 sauts unilatéraux & 158 hausses, 9 baisses & témoin plus fort & échoue aux deux \\
+H3 sauts, par jour & 158 hausses, 9 baisses & témoin plus fort & échoue aux deux \\
+H3 sauts, par épisode & 65 hausses, 7 baisses & témoin plus fort & non testé \\
 H3 plus grand épisode & $15{,}8$ nats (COVID) & \textbf{franchit les deux} & non testé \\
-H4 demi-vie & 121 jours & non identifiée & non identifiée \\
+H4 demi-vie, par jour & 121 jours & non identifiée & non identifiée \\
+H4 demi-vie depuis le pic & 18 jours (74 pour les 5 plus grands) & échoue aux deux & non testé \\
 H4 étendue de $\JJ$ & $18{,}95$ nats & \textbf{franchit les deux} & i.i.d.\ seulement \\
-H5 signe & corrélation $-0{,}24$ & échoue ($p=0{,}08$--$0{,}10$) & échoue aux deux \\
+H5 signe, par jour & corrélation $-0{,}24$ & échoue ($p=0{,}08$--$0{,}10$) & échoue aux deux \\
+H5 signe, par épisode & asymétrie en baisse dans $62\,\%$ & i.i.d.\ seulement & non testé \\
 H6 couplage des canaux & $0{,}04$ calme, $0{,}63$ stress & témoin plus fort & témoin plus fort \\
 H7 prévision & gain $\le 3\,\%$, $p=0{,}23$ & rejetée & --- \\
 H8 composition & dépendance dominante $46\,\%$ & i.i.d.\ seulement & i.i.d.\ seulement \\
 \bottomrule
-\end{tabular}
+\end{tabular}}
 \caption{Verdicts face aux deux témoins (200 répétitions chacun). \og Témoin
 plus fort \fg{} : les données rééchantillonnées produisent un effet plus
 grand que les données réelles. Pour H7, le test est hors échantillon et
@@ -512,6 +519,10 @@ de scie (figure~\ref{fig:index} en annexe). Mais le témoin i.i.d.\ en produit
 autant : 148 hausses et 3 baisses en moyenne, avec une asymétrie plus forte que
 dans les données. La dent de scie est ce que produit une loi à queues épaisses
 passée dans l'estimateur, que l'information arrive par paquets ou non.
+Compter par épisode ne change rien : 65~épisodes de hausse contre 7 de
+baisse, mais les témoins sont encore plus unilatéraux (31 hausses par baisse
+en moyenne pour le témoin i.i.d., 21 pour le témoin par blocs, contre 9 dans
+les données).
 \item \emph{La forme sous stress (H1, $\DD$).} Les queues s'épaississent sous
 stress ($+0{,}27$~nat), mais moins que dans les témoins ($+1{,}25$ et
 $+0{,}65$). Une fenêtre \og de stress \fg{} d'un monde mélangé contient des
@@ -519,10 +530,17 @@ journées extrêmes isolées, qui épaississent davantage les queues mesurées.
 \item \emph{La relaxation (H4).} La demi-vie mesurée, $121$~jours, se situe
 entre celle du témoin i.i.d.\ ($92$) et celle du témoin par blocs ($163$). Elle
 n'est donc pas identifiée : on ne peut pas lire $121$~jours comme un temps
-d'absorption des chocs.
+d'absorption des chocs. Mesurée par épisode, depuis le pic jusqu'au retour
+à mi-chemin, la relaxation prend 18~jours en médiane (74 pour les cinq plus
+grands épisodes), soit pas plus longtemps que dans les témoins (23 et 22~jours ;
+68 et 107 pour les cinq plus grands).
 \item \emph{Le signe (H5).} Les sauts de $\JJ$ coïncident bien avec une
 asymétrie négative (corrélation $-0{,}24$), mais les témoins produisent le
-même effet dans $8$ à $10\,\%$ des cas, au-dessus du seuil de $5\,\%$.
+même effet dans $8$ à $10\,\%$ des cas, au-dessus du seuil de $5\,\%$. Par
+épisode, l'asymétrie du marché baisse entre le début et le pic dans $62\,\%$
+des épisodes, contre $50\,\%$ pour le témoin i.i.d.\ ($p=0{,}015$) mais
+$53\,\%$ pour le témoin par blocs ($p=0{,}08$) : le signe n'est toujours pas
+établi.
 \item \emph{Le couplage des canaux (H6) et la compensation (H2).} Dépendance et
 queues bougent ensemble sous stress ($0{,}63$ contre $0{,}04$ en calme), mais le
 témoin i.i.d.\ les couple encore plus ($0{,}90$). Une fenêtre qui contient une
@@ -1135,7 +1153,7 @@ dépendance ($0{,}46$) face au témoin par blocs selon la longueur des blocs.}
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.8\linewidth]{figures/sp500_structural_index_jumps.png}
+\includegraphics[width=0.7\linewidth]{figures/sp500_structural_index_jumps.png}
 \caption{L'indice structurel $\JJ_t$ sur vingt actions du S\&P~500,
 1990--2022, avec les sauts détectés (rouge : hausses, bleu : baisses). La dent
 de scie est visible, mais le témoin i.i.d.\ la reproduit.}
@@ -1181,7 +1199,8 @@ par l'inégalité de Fischer.
 
 \renewcommand{\refname}{Références}
 \begin{thebibliography}{99}
-\small
+\footnotesize
+\setlength{\itemsep}{0pt}
 
 \bibitem[Adrian \& Brunnermeier(2016)]{adrian2016} Adrian, T., \& Brunnermeier, M. K. (2016). CoVaR. \textit{American Economic Review}, 106(7), 1705--1741.
 

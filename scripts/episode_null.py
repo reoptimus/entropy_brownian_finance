@@ -33,6 +33,38 @@ from src.empirical import DATA_READERS, rolling_measures
 from src.jumps import detect_jumps, episode_channel_budget, group_jump_episodes
 
 
+def _down_amplitudes(J: pd.Series, episodes: list[tuple], pre: int,
+                     post_search: int) -> np.ndarray:
+    """Fall of J from just before each down-episode to its trough."""
+    pos = {d: i for i, d in enumerate(J.index)}
+    out = []
+    for start, end, _ in episodes:
+        i0 = max(0, pos[start] - pre)
+        i1 = min(len(J) - 1, pos[end] + post_search)
+        out.append(float(J.iloc[i0] - J.iloc[pos[start]:i1 + 1].min()))
+    return np.array(out)
+
+
+def _episode_half_lives(J: pd.Series, budget: pd.DataFrame,
+                        horizon: int = 500) -> np.ndarray:
+    """Days from each episode's peak until J has given back half its rise.
+
+    Measured from the peak, not from each daily jump, so a crisis made of
+    nine flagged days (COVID) yields one relaxation, not nine overlapping ones.
+    NaN when the index never gets halfway back within ``horizon`` days.
+    """
+    pos = {d: i for i, d in enumerate(J.index)}
+    out = []
+    for _, r in budget.iterrows():
+        if r['dJ'] <= 0:
+            continue
+        target = J.loc[r['peak']] - 0.5 * r['dJ']
+        after = J.iloc[pos[r['peak']] + 1:pos[r['peak']] + 1 + horizon]
+        hit = np.flatnonzero(after.to_numpy() <= target)
+        out.append(float(hit[0] + 1) if len(hit) else np.nan)
+    return np.array(out)
+
+
 def typology_of(ent: pd.DataFrame, threshold: float, scale_window: int,
                 gap: int, pre: int, post_search: int) -> dict:
     jumps = detect_jumps(ent['J'], threshold, scale_window)
@@ -40,6 +72,14 @@ def typology_of(ent: pd.DataFrame, threshold: float, scale_window: int,
     budget = episode_channel_budget(ent, episodes, pre=pre, post_search=post_search)
     if budget.empty:
         return {'n_episodes': 0}
+
+    down_eps = group_jump_episodes(jumps, gap=gap, direction='down')
+    down_amp = _down_amplitudes(ent['J'], down_eps, pre, post_search)
+    hl = _episode_half_lives(ent['J'], budget)
+    hl_top5 = _episode_half_lives(ent['J'], budget.nlargest(5, 'dJ'))
+    skew = ent['skew_market']
+    dskew = np.array([skew.loc[r['peak']] - skew.loc[r['base_date']]
+                      for _, r in budget.iterrows()])
 
     dom = budget['dominant_channel']
     top = budget.loc[budget['dJ'].idxmax()]
@@ -64,6 +104,19 @@ def typology_of(ent: pd.DataFrame, threshold: float, scale_window: int,
         'mean_episode_dJ': float(budget['dJ'].mean()),
         'max_episode_dJ': float(budget['dJ'].max()),
         'top5_mean_episode_dJ': float(budget['dJ'].nlargest(5).mean()),
+        # H3 by episode: up-episodes against down-episodes, by count and size.
+        'n_down_episodes': int(len(down_eps)),
+        'up_down_episode_ratio': float(len(budget) / max(len(down_eps), 1)),
+        'up_share_of_episode_amplitude': float(
+            budget['dJ'].clip(lower=0).sum()
+            / (budget['dJ'].clip(lower=0).sum() + down_amp.clip(min=0).sum())),
+        # H4 by episode: relaxation measured from each episode's peak.
+        'median_episode_half_life': float(np.nanmedian(hl)) if np.isfinite(hl).any() else np.nan,
+        'median_half_life_top5': float(np.nanmedian(hl_top5)) if np.isfinite(hl_top5).any() else np.nan,
+        'share_episodes_half_recovered': float(np.isfinite(hl).mean()) if len(hl) else np.nan,
+        # H5 by episode: market skewness from just before the episode to its peak.
+        'mean_episode_dskew': float(dskew.mean()),
+        'share_episodes_dskew_negative': float((dskew < 0).mean()),
     }
 
 
