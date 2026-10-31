@@ -693,6 +693,29 @@ existing scenario without replacing it: each scenario receives a cost in nats,
 comparable across exercises and asset classes, and one can check that it does
 not buy its severity through a needlessly improbable route.
 
+\subsection{Example: the EBA 2025 adverse scenario in nats}
+\label{sec:eba}
+
+We apply the measure to the adverse scenario of the 2025 EU-wide stress test,
+designed by the ESRB and published by the EBA \citep{eba2025}. Its first year,
+the most severe, cuts EU stock prices by $50\%$, raises long-term rates by
+$110$~basis points in Germany and $168$ for the EU, and leaves the euro's
+exchange rates unchanged. Read as a shift of the mean of one-year changes,
+this shock costs $\tfrac12\Delta^\top\Sigma^{-1}\Delta$ nats, where $\Sigma$
+is the historical covariance of the same variables in the euro-area panel
+(full calculation and table~\ref{tab:eba} in appendix~\ref{app:eba}).
+
+The scenario costs $10.5$~nats, the equivalent of a $4.6$-standard-deviation
+shock on a single factor. It is therefore \emph{severe but plausible} in a
+precise sense: as improbable as 2008 ($11.2$~nats) or 2022 ($11.9$) as they
+actually unfolded, less than the worst observed year ($14.4$, March 2008 to
+March 2009), far more than 2011 ($3.1$). It uses dependence well: taken one by
+one, the five indices and two rates would cost $31.9$~nats, but national
+indices move almost as a single factor (average correlation $0.87$). Finally,
+the choice of $\Sigma$ is a choice of severity: with a crisis-period
+covariance (2008--2012), the same scenario costs only $8.4$~nats. The measure
+makes that choice explicit.
+
 \subsection{Composing a scenario: volatility or correlation?}
 \label{sec:composition}
 
@@ -1004,6 +1027,103 @@ describe the same day seen from two places. In calm markets, large moves are
 asset-specific and couple nothing. This is H6. The null shows, however, that
 this coincidence is also produced mechanically by estimation.
 
+\section{Computing the cost in nats of the EBA 2025 adverse scenario}
+\label{app:eba}
+
+Code: scripts/eba\_nats.py; results: paper/tables/eba\_nats.csv.
+
+\paragraph{1. The shocks.} We take the adverse macro-financial scenario
+\citep{eba2025} for 2025, as a deviation from the baseline (annual averages):
+EU stock prices $-50\%$, the baseline assuming them unchanged (table~4.1.7 of
+the document); long-term rates for Germany $3.50\%$ against $2.40\%$ and for
+the EU $4.80\%$ against $3.12\%$ (table~4.1.6); euro exchange rates against
+the dollar, pound, yen and Swiss franc unchanged (table~4.1.10). Each shock is
+mapped to the matching series of the euro-area panel (section~\ref{sec:cb}),
+giving an eleven-component vector $\Delta$:
+\begin{center}
+\small
+\resizebox{\textwidth}{!}{\begin{tabular}{@{}llrrr@{}}
+\toprule
+EBA shock & Panel series & $\Delta_i$ & $\sigma_i$ (1 year) & cost alone (nats) \\
+\midrule
+EU stocks $-50\%$ & DAX, CAC~40, FTSE~MIB, IBEX~35, AEX & $\ln0.5=-0.693$ & $19$--$23\%$ & $4.4$--$6.5$ \\
+German long rate & ECB AAA 10-year yield & $+1.10$~pt & $0.65$~pt & $1.4$ \\
+EU long rate & ECB all-ratings 10-year yield & $+1.68$~pt & $0.68$~pt & $3.0$ \\
+FX unchanged & EUR/USD, GBP, JPY, CHF & $0$ & $7$--$11\%$ & $0$ \\
+\bottomrule
+\end{tabular}}
+\end{center}
+Equities enter as log returns, rates as level changes; the document does not
+state the maturity of long-term rates, which we take as ten years. GDP,
+unemployment, real estate and inflation, which are not market prices, are not
+used.
+
+\paragraph{2. The reference.} $p_0=\mathcal N(0,\Sigma)$, where $\Sigma$ is the
+covariance of one-year changes of the eleven series, estimated on daily
+changes from 6~September 2004 to 31~December 2024 (the data available to the
+designer) and multiplied by 252.
+
+\paragraph{3. The formula.} The scenario fixes means, not volatilities or
+correlations. We read it as a pure mean shift, hence
+(appendix~\ref{app:preuves}) $\KL{p_{\text{scenario}}}{p_0}=\tfrac12
+\Delta^\top\Sigma^{-1}\Delta$. This is the \emph{minimum} cost compatible with
+the scenario: among all distributions with mean $\Delta$, the shifted Gaussian
+is closest to $p_0$. Variables the scenario does not fix (two- and five-year
+yields, banks, etc.) are left free; completing them with their conditional
+expectation is cheapest, and the cost then depends only on the shocked block
+$S$: $\tfrac12\Delta_S^\top\Sigma_{SS}^{-1}\Delta_S$. The cost of a single
+variable is $\tfrac12(\Delta_i/\sigma_i)^2$; for the DAX ($\sigma=20.3\%$),
+the shock is $3.4$ standard deviations and costs $5.8$~nats. $\eta$~nats read
+as $\sqrt{2\eta}$ standard deviations.
+
+\begin{table}[t]
+\centering
+\small
+\begin{tabular}{@{}lrr@{}}
+\toprule
+Cost in nats & equities and rates & with FX held fixed \\
+\midrule
+\textbf{EBA 2025 adverse scenario, first year} & $\mathbf{10.5}$ & $\mathbf{11.1}$ \\
+\quad equities only / rates only & $6.8$ / $3.1$ & \\
+\quad sum of variable-by-variable costs & $31.9$ & \\
+\midrule
+\emph{Observed years:} 2011 / 2008 / 2022 & $3.1$ / $11.2$ / $11.9$ & $3.1$ / $18.2$ / $13.2$ \\
+\quad worst rolling year (March 2008--March 2009) & $14.4$ & $19.5$ \\
+\bottomrule
+\end{tabular}
+\caption{Cost in nats of the EBA 2025 adverse scenario and of observed years,
+on five equity indices, two ten-year yields and four exchange rates, annual
+covariance estimated on 2004--2024.}
+\label{tab:eba}
+\end{table}
+
+\paragraph{4. Reading.} The variable-by-variable costs sum to $31.9$~nats, the
+joint cost is $10.5$: a common shock to highly correlated indices follows the
+most probable direction of the data. Equities alone ($6.8$) plus rates alone
+($3.1$) leave $0.5$~nat of interaction (falling equities with rising rates go
+against the historical correlation, $+0.13$). Holding FX fixed adds
+$0.7$~nat.
+
+\paragraph{5. Observed years.} Same calculation, same $\Sigma$, on the realised
+changes of the eleven series (31~December to 31~December; worst 252-day window
+ending 17~March 2009). The median year costs $4.1$~nats. The scenario combines
+the equity fall of 2008 (when rates fell) and the rate rise of 2022 (nearly
+$3$~points).
+
+\paragraph{6. Variants} (equities and rates / with FX fixed). Covariance of
+overlapping annual changes: $12.8$ / $18.7$; sample to 2026: $10.6$ /
+$11.3$; crisis covariance 2008--2012: $8.4$ / $9.0$. At the end of the
+three-year horizon (2027: $-42\%$, $+87$ and $+112$~bp, three-year
+covariance), the cost falls to $2.1$ / $2.2$: the severity is concentrated in
+the first year.
+
+\paragraph{7. Limits.} Shocks are annual averages; the EU equity fall is
+applied to each national index; the Gaussian reference has no fat tails, which
+tends to overstate the cost. The ECB's instantaneous market-risk scenario is
+not priced (detailed tables not accessible), but the same formula applies.
+These costs (eleven series, one year) are not directly comparable to
+table~\ref{tab:ladder} (equity portfolio, 21~days).
+
 \section{Empirical details}
 \label{app:details}
 
@@ -1087,7 +1207,7 @@ Block length (days) & null mean & 5--95\,\% & Verdict \\
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.7\linewidth]{figures/sp500_structural_index_jumps.png}
+\includegraphics[width=0.6\linewidth]{figures/sp500_structural_index_jumps.png}
 \caption{The structural index $\JJ_t$ on twenty S\&P~500 stocks, 1990--2022,
 with detected jumps (red: up, blue: down). The sawtooth is visible, but the
 i.i.d.\ null reproduces it.}
@@ -1171,6 +1291,8 @@ Fischer's inequality.
 \bibitem[Forbes \& Rigobon(2002)]{forbes2002} Forbes, K. J., \& Rigobon, R. (2002). No Contagion, Only Interdependence: Measuring Stock Market Comovements. \textit{Journal of Finance}, 57(5), 2223--2261.
 
 \bibitem[Glasserman \& Xu(2014)]{glasserman2014} Glasserman, P., \& Xu, X. (2014). Robust Risk Measurement and Model Risk. \textit{Quantitative Finance}, 14(1), 29--58.
+
+\bibitem[EBA(2025)]{eba2025} European Banking Authority (2025). \textit{2025 EU-wide stress test: Macro-financial scenario}, designed by the European Systemic Risk Board, January 2025.
 
 \bibitem[Holló, Kremer \& Lo Duca(2012)]{hollo2012} Holló, D., Kremer, M., \& Lo Duca, M. (2012). CISS -- A Composite Indicator of Systemic Stress in the Financial System. ECB Working Paper No.~1426.
 

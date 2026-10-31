@@ -740,6 +740,29 @@ comparable d'un exercice à l'autre et d'une classe d'actifs à l'autre, et l'on
 peut vérifier qu'il n'achète pas sa sévérité par une voie inutilement
 improbable.
 
+\subsection{Exemple : le scénario adverse de l'EBA 2025 en nats}
+\label{sec:eba}
+
+Appliquons la mesure au scénario adverse du test de résistance européen de
+2025, conçu par le CERS et publié par l'EBA \citep{eba2025}. Sa première
+année, la plus sévère, fait baisser les actions de l'UE de $50\,\%$, monter
+les taux longs de $110$~points de base en Allemagne et de $168$ pour l'UE, et
+laisse les changes de l'euro inchangés. Lu comme un déplacement de la moyenne
+des variations à un an, ce choc coûte $\tfrac12\Delta^\top\Sigma^{-1}\Delta$
+nats, $\Sigma$ étant la covariance historique des mêmes variables sur le panel
+zone euro (calcul détaillé et tableau~\ref{tab:eba} en annexe~\ref{app:eba}).
+
+Le scénario coûte $10{,}5$~nats, soit un choc de $4{,}6$~écarts-types sur un
+seul facteur. Il est donc \emph{sévère mais plausible} au sens propre : aussi
+improbable que 2008 ($11{,}2$~nats) ou 2022 ($11{,}9$) tels qu'ils se sont
+produits, moins que la pire année observée ($14{,}4$, de mars 2008 à mars
+2009), bien plus que 2011 ($3{,}1$). Il utilise bien la dépendance : pris un par un, les cinq
+indices et les deux taux coûteraient $31{,}9$~nats, mais les indices nationaux
+bougent presque comme un seul facteur (corrélation moyenne $0{,}87$). Enfin,
+le choix de $\Sigma$ est un choix de sévérité : avec une covariance de crise
+(2008--2012), le même scénario ne coûte que $8{,}4$~nats. La mesure rend ce
+choix explicite.
+
 \subsection{Composer un scénario : volatilité ou corrélation ?}
 \label{sec:composition}
 
@@ -1066,6 +1089,104 @@ jour vu de deux endroits. En marché calme, les gros mouvements sont propres à
 chaque actif et ne couplent rien. C'est H6. Le témoin montre toutefois que
 cette coïncidence est aussi produite mécaniquement par l'estimation.
 
+\section{Calcul du coût en nats du scénario adverse EBA 2025}
+\label{app:eba}
+
+Code : scripts/eba\_nats.py ; résultats : paper/tables/eba\_nats.csv.
+
+\paragraph{1. Les chocs.} Nous prenons le scénario macro-financier adverse
+\citep{eba2025} pour 2025, en écart au scénario de référence (moyennes
+annuelles) : actions de l'UE $-50\,\%$, le scénario de référence les
+supposant inchangées (tableau~4.1.7 du document) ; taux longs allemand
+$3{,}50\,\%$ contre $2{,}40\,\%$ et UE $4{,}80\,\%$ contre $3{,}12\,\%$
+(tableau~4.1.6) ; changes de l'euro contre dollar, livre, yen et franc suisse
+inchangés (tableau~4.1.10). Chaque choc est porté sur la série correspondante
+du panel zone euro (section~\ref{sec:cb}), ce qui donne un vecteur $\Delta$ à
+onze composantes :
+\begin{center}
+\small
+\resizebox{\textwidth}{!}{\begin{tabular}{@{}llrrr@{}}
+\toprule
+Choc EBA & Série du panel & $\Delta_i$ & $\sigma_i$ (1 an) & coût seul (nats) \\
+\midrule
+actions UE $-50\,\%$ & DAX, CAC~40, FTSE~MIB, IBEX~35, AEX & $\ln0{,}5=-0{,}693$ & $19$--$23\,\%$ & $4{,}4$--$6{,}5$ \\
+taux long Allemagne & taux AAA à 10~ans (BCE) & $+1{,}10$~pt & $0{,}65$~pt & $1{,}4$ \\
+taux long UE & taux toutes notations à 10~ans (BCE) & $+1{,}68$~pt & $0{,}68$~pt & $3{,}0$ \\
+changes inchangés & EUR/USD, GBP, JPY, CHF & $0$ & $7$--$11\,\%$ & $0$ \\
+\bottomrule
+\end{tabular}}
+\end{center}
+Actions en rendement logarithmique, taux en variation de niveau ; maturité
+des taux longs non précisée par le document, prise à dix ans. PIB, chômage,
+immobilier et inflation, qui ne sont pas des prix de marché, ne sont pas
+utilisés.
+
+\paragraph{2. La référence.} $p_0=\mathcal N(0,\Sigma)$, où $\Sigma$ est la
+covariance des variations à un an des onze séries, estimée sur les variations
+quotidiennes du 6~septembre 2004 au 31~décembre 2024 (les données dont
+disposait le concepteur) et multipliée par 252.
+
+\paragraph{3. La formule.} Le scénario fixe des moyennes, pas des volatilités
+ni des corrélations. Nous le lisons comme un pur déplacement de moyenne, d'où
+(annexe~\ref{app:preuves}) $\KL{p_{\text{scénario}}}{p_0}=\tfrac12\Delta^\top
+\Sigma^{-1}\Delta$. C'est le coût \emph{minimal} compatible avec le scénario :
+parmi toutes les distributions de moyenne $\Delta$, la gaussienne déplacée est
+la plus proche de $p_0$. Les variables non fixées (taux à deux et cinq ans,
+banques, etc.) sont laissées libres ; les compléter par leur espérance
+conditionnelle est le moins coûteux, et le coût ne dépend alors que du bloc
+choqué $S$ : $\tfrac12\Delta_S^\top\Sigma_{SS}^{-1}\Delta_S$. Le coût d'une
+variable seule est $\tfrac12(\Delta_i/\sigma_i)^2$ ; pour le DAX
+($\sigma=20{,}3\,\%$), le choc vaut $3{,}4$~écarts-types et coûte
+$5{,}8$~nats. On relit $\eta$~nats en $\sqrt{2\eta}$~écarts-types.
+
+\begin{table}[t]
+\centering
+\small
+\begin{tabular}{@{}lrr@{}}
+\toprule
+Coût en nats & actions et taux & avec changes figés \\
+\midrule
+\textbf{Scénario adverse EBA 2025, 1\textsuperscript{re} année} & $\mathbf{10{,}5}$ & $\mathbf{11{,}1}$ \\
+\quad actions seules / taux seuls & $6{,}8$ / $3{,}1$ & \\
+\quad somme des coûts variable par variable & $31{,}9$ & \\
+\midrule
+\emph{Années observées :} 2011 / 2008 / 2022 & $3{,}1$ / $11{,}2$ / $11{,}9$ & $3{,}1$ / $18{,}2$ / $13{,}2$ \\
+\quad pire année glissante (mars 2008--mars 2009) & $14{,}4$ & $19{,}5$ \\
+\bottomrule
+\end{tabular}
+\caption{Coût en nats du scénario adverse EBA 2025 et des années observées,
+sur cinq indices actions, deux taux à dix ans et quatre changes, covariance
+annuelle estimée sur 2004--2024.}
+\label{tab:eba}
+\end{table}
+
+\paragraph{4. Lecture.} La somme des coûts variable par variable fait
+$31{,}9$~nats, le coût conjoint $10{,}5$ : un choc commun à des indices très
+corrélés suit la direction la plus probable des données. Actions seules
+($6{,}8$) plus taux seuls ($3{,}1$) laissent $0{,}5$~nat d'interaction (une
+baisse des actions avec hausse des taux va contre la corrélation historique,
+$+0{,}13$). Figer les changes ajoute $0{,}7$~nat.
+
+\paragraph{5. Années observées.} Même calcul, même $\Sigma$, sur les
+variations réalisées des onze séries (du 31~décembre au 31~décembre ; pire
+fenêtre de 252~jours close le 17~mars 2009). L'année médiane coûte
+$4{,}1$~nats. Le scénario combine la baisse des actions de 2008 (où les taux
+ont baissé) et la hausse des taux de 2022 (près de $3$~points).
+
+\paragraph{6. Variantes} (actions et taux / avec changes figés). Covariance
+des variations annuelles glissantes : $12{,}8$ / $18{,}7$ ; échantillon
+jusqu'en 2026 : $10{,}6$ / $11{,}3$ ; covariance de crise 2008--2012 :
+$8{,}4$ / $9{,}0$. À la fin de l'horizon de trois ans (2027 : $-42\,\%$,
+$+87$ et $+112$~pb, covariance à trois ans), le coût tombe à $2{,}1$ /
+$2{,}2$ : la sévérité est concentrée sur la première année.
+
+\paragraph{7. Limites.} Chocs en moyennes annuelles ; baisse des actions UE
+appliquée à chaque indice ; référence gaussienne sans queues épaisses, qui
+surestime plutôt le coût. Le scénario de risque de marché instantané de la BCE
+n'est pas chiffré (tableaux détaillés non accessibles), mais la même formule
+s'y applique. Ces coûts (onze séries, un an) ne se comparent pas directement
+au tableau~\ref{tab:ladder} (portefeuille d'actions, 21~jours).
+
 \section{Détails empiriques}
 \label{app:details}
 
@@ -1153,7 +1274,7 @@ dépendance ($0{,}46$) face au témoin par blocs selon la longueur des blocs.}
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.7\linewidth]{figures/sp500_structural_index_jumps.png}
+\includegraphics[width=0.6\linewidth]{figures/sp500_structural_index_jumps.png}
 \caption{L'indice structurel $\JJ_t$ sur vingt actions du S\&P~500,
 1990--2022, avec les sauts détectés (rouge : hausses, bleu : baisses). La dent
 de scie est visible, mais le témoin i.i.d.\ la reproduit.}
@@ -1237,6 +1358,8 @@ par l'inégalité de Fischer.
 \bibitem[Forbes \& Rigobon(2002)]{forbes2002} Forbes, K. J., \& Rigobon, R. (2002). No Contagion, Only Interdependence: Measuring Stock Market Comovements. \textit{Journal of Finance}, 57(5), 2223--2261.
 
 \bibitem[Glasserman \& Xu(2014)]{glasserman2014} Glasserman, P., \& Xu, X. (2014). Robust Risk Measurement and Model Risk. \textit{Quantitative Finance}, 14(1), 29--58.
+
+\bibitem[EBA(2025)]{eba2025} Autorité bancaire européenne (2025). \textit{2025 EU-wide stress test: Macro-financial scenario}, conçu par le Comité européen du risque systémique, janvier 2025.
 
 \bibitem[Holló, Kremer \& Lo Duca(2012)]{hollo2012} Holló, D., Kremer, M., \& Lo Duca, M. (2012). CISS -- A Composite Indicator of Systemic Stress in the Financial System. Document de travail de la BCE n\textsuperscript{o}~1426.
 
