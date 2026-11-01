@@ -43,10 +43,14 @@ Kenneth French et à un panel zone euro couvrant les cinq segments de
 l'indicateur de stress systémique de la BCE (CISS). Trois résultats en
 ressortent. \textbf{(1)} Un test de robustesse simple, qui refait tous les
 calculs sur des données dont on a mélangé l'ordre chronologique, élimine la
-plupart des signaux de crise que l'entropie semble montrer : ce sont des
-artefacts de l'estimation. Un seul fait survit sur tous les panels : en
-période de stress, les marchés se couplent, c'est-à-dire que le nombre de
-sources de risque indépendantes diminue. \textbf{(2)} Mesurés en nats, les
+plupart des signaux de crise que l'entropie semble montrer : les sauts
+unilatéraux, l'épaississement des queues et le lien entre queues et
+corrélations sont des artefacts de l'estimation. Le fait le plus solide,
+commun à tous les panels, est qu'en période de stress les marchés se couplent,
+c'est-à-dire que le nombre de sources de risque indépendantes diminue ; les
+crises sont en outre plus souvent dominées par ce couplage, et l'indice
+parcourt une plus grande amplitude et persiste plus longtemps que ne
+l'explique la mécanique de l'estimation. \textbf{(2)} Mesurés en nats, les
 scénarios classiques qui choquent séparément les volatilités, les
 corrélations et les niveaux paient leur perte extrême de $15$ à $33\,\%$ plus
 cher que nécessaire, et la répartition du choc entre volatilité et
@@ -115,8 +119,9 @@ et~\ref{sec:resultats}). Une mesure d'entropie estimée sur des données réelle
 monte brutalement et redescend lentement même quand aucune information
 n'arrive : c'est un effet mécanique de l'estimation. Nous jugeons donc chaque
 résultat face à des \emph{témoins placebo}, c'est-à-dire face aux mêmes
-calculs faits sur des données rééchantillonnées. Un seul résultat survit
-partout : sous stress, les marchés se couplent.
+calculs faits sur des données rééchantillonnées. Le résultat le plus
+solide, présent sur tous les panels, est que sous stress les marchés se
+couplent.
 \item \emph{Une unité de sévérité pour les scénarios} (section~\ref{sec:stress}).
 Un scénario de sévérité $\eta$ est la pire distribution située à moins de
 $\eta$~nats de la distribution actuelle. Le rayon $\eta$ se calibre sur la
@@ -134,8 +139,8 @@ moments estimés (variances, corrélations, asymétrie, kurtosis). Sur des donn�
 à queues épaisses, le bruit d'estimation pousse un tel indice \emph{vers le
 haut} brutalement et le laisse redescendre \emph{lentement}. C'est exactement la
 dent de scie que prédit la théorie. Le résultat est inconfortable et, nous le
-pensons, la chose la plus utile de l'article : la plupart des signaux qui
-paraissent écrasants ne survivent pas au témoin. Quiconque construit un
+pensons, la chose la plus utile de l'article : une bonne partie des signaux
+qui paraissent écrasants ne survivent pas au témoin. Quiconque construit un
 indicateur de crise à partir de moments estimés devrait faire tourner ce témoin
 avant de croire son propre graphique.
 
@@ -216,11 +221,9 @@ date}. Le seuil n'utilise jamais l'information future.
 
 \item[Témoin placebo.] Les mêmes calculs, refaits sur des données dont on a
 mélangé l'ordre chronologique. Le témoin \emph{i.i.d.} tire les jours un par
-un : il garde les queues épaisses et la corrélation entre actifs, et détruit
-toute dynamique. Le témoin \emph{par blocs} tire des blocs de 21~jours : il
-garde en plus le regroupement des journées agitées, et ne détruit que la
-dynamique de plus long terme. Chaque témoin est répété 200~fois. Un résultat
-\emph{franchit} un témoin si au plus $5\,\%$ des 200~répétitions produisent un
+un : il garde les queues épaisses et la corrélation entre actifs de chaque
+journée, et détruit toute dynamique. Il est répété 200~fois. Un résultat
+\emph{franchit} le témoin si au plus $5\,\%$ des 200~répétitions produisent un
 résultat aussi fort que les données réelles.
 
 \item[Flux d'information.] $I^{(h)}_t=\KL{p_t}{p_{t-h}}$ : de combien de nats
@@ -386,15 +389,22 @@ seul effet de la mémoire de l'estimateur. Sans aucun événement, le détecteur
 trouve $37$~sauts positifs et aucun saut négatif.
 
 Un résultat n'est donc une preuve que s'il dépasse ce que produisent des
-données sans dynamique. D'où les deux témoins définis à la
-section~\ref{sec:concepts}. Ils appliquent exactement la même chaîne, y compris
-la définition du régime de stress. Ils répondent à deux questions
-différentes. Le témoin i.i.d. demande : au-delà du fait que les périodes
-agitées contiennent de grosses journées, la mesure détecte-t-elle quelque
-chose ? Le témoin par blocs pose la question plus dure : au-delà du simple
-regroupement des journées agitées, détecte-t-elle une dynamique propre aux
-crises ? Un résultat qui franchit les deux est établi. Un résultat qui n'en
-franchit qu'un n'est pas identifié.
+données sans dynamique. D'où le témoin i.i.d.\ défini à la
+section~\ref{sec:concepts}. Il applique exactement la même chaîne, y compris
+la définition du régime de stress, et répond à la question : au-delà du fait
+que les périodes agitées contiennent de grosses journées, la mesure
+détecte-t-elle une dynamique ? Un résultat qui franchit ce témoin est établi.
+
+\paragraph{Pourquoi pas un témoin par blocs.} On pourrait aussi tirer des blocs
+de 21~jours consécutifs. Un tel témoin conserve le regroupement des journées
+agitées et toute la dynamique de moins d'un mois, et ne détruit que celle de
+plus long terme. Or une crise de marché se joue précisément à cette échelle :
+la COVID a fait monter l'indice de 16~nats en trois semaines, et une crise
+typique tient en quelques semaines de journées agitées qui se suivent. Un
+témoin qui conserve ces semaines conserve le phénomène que l'on cherche à
+mesurer, et le compter comme \og bruit \fg{} reviendrait à exiger que la
+mesure détecte autre chose que les crises elles-mêmes. Nous ne l'utilisons
+donc pas comme critère.
 
 \section{Résultats : ce qui survit au témoin}
 \label{sec:resultats}
@@ -411,47 +421,55 @@ et~\ref{tab:placebo-ff49}).
 \toprule
 & Résultat brut (S\&P~500) & Verdict S\&P~500 & Verdict secteurs FF49 \\
 \midrule
-H1 couplage & hausse sous stress $+0{,}99$ nat & \textbf{franchit les deux} & \textbf{franchit les deux} \\
-H1 indice $\JJ$ & $+1{,}93$ nat & échoue aux deux & échoue aux deux \\
+H1 couplage & hausse sous stress $+0{,}99$ nat & \textbf{franchit} & \textbf{franchit} \\
+H1 indice $\JJ$ & $+1{,}93$ nat & échoue & témoin plus fort \\
 H1 forme $\DD$ & $+0{,}27$ nat & témoin plus fort & témoin plus fort \\
-H2 compensation & $\beta=0{,}20$ sous stress & échoue aux deux & i.i.d.\ seulement \\
-H3 sauts, par jour & 158 hausses, 9 baisses & témoin plus fort & échoue aux deux \\
+H2 compensation & $\beta=0{,}20$ sous stress & échoue & \textbf{franchit} \\
+H3 sauts, par jour & 158 hausses, 9 baisses & témoin plus fort & échoue \\
 H3 sauts, par épisode & 65 hausses, 7 baisses & témoin plus fort & non testé \\
-H3 plus grand épisode & $15{,}8$ nats (COVID) & \textbf{franchit les deux} & non testé \\
-H4 demi-vie, par jour & 121 jours & non identifiée & non identifiée \\
-H4 demi-vie depuis le pic & 18 jours (74 pour les 5 plus grands) & échoue aux deux & non testé \\
-H4 étendue de $\JJ$ & $18{,}95$ nats & \textbf{franchit les deux} & i.i.d.\ seulement \\
-H5 signe, par jour & corrélation $-0{,}24$ & échoue ($p=0{,}08$--$0{,}10$) & échoue aux deux \\
-H5 signe, par épisode & asymétrie en baisse dans $62\,\%$ & i.i.d.\ seulement & non testé \\
+H3 plus grand épisode & $15{,}8$ nats (COVID) & \textbf{franchit} & non testé \\
+H4 demi-vie, par jour & 121 jours & \textbf{franchit} & \textbf{franchit} \\
+H4 demi-vie depuis le pic & 18 jours (74 pour les 5 plus grands) & échoue & non testé \\
+H4 étendue de $\JJ$ & $18{,}95$ nats & \textbf{franchit} & \textbf{franchit} \\
+H5 signe, par jour & corrélation $-0{,}24$ & échoue ($p=0{,}10$) & échoue \\
+H5 signe, par épisode & asymétrie en baisse dans $62\,\%$ & \textbf{franchit} & non testé \\
 H6 couplage des canaux & $0{,}04$ calme, $0{,}63$ stress & témoin plus fort & témoin plus fort \\
 H7 prévision & gain $\le 3\,\%$, $p=0{,}23$ & rejetée & --- \\
-H8 composition & dépendance dominante $46\,\%$ & i.i.d.\ seulement & i.i.d.\ seulement \\
+H8 composition & dépendance dominante $46\,\%$ & \textbf{franchit} & \textbf{franchit} \\
 \bottomrule
 \end{tabular}}
-\caption{Verdicts face aux deux témoins (200 répétitions chacun). \og Témoin
+\caption{Verdicts face au témoin i.i.d.\ (200 répétitions). \og Témoin
 plus fort \fg{} : les données rééchantillonnées produisent un effet plus
 grand que les données réelles. Pour H7, le test est hors échantillon et
 porte sur le panel principal et le panel de contrôle.}
 \label{tab:verdicts}
 \end{table}
 
-\subsection{Le fait qui survit : sous stress, les marchés se couplent}
+\subsection{Le fait central : sous stress, les marchés se couplent}
 
 Sous stress, le couplage des vingt actions monte de $0{,}99$~nat. Le témoin
-i.i.d.\ ne produit que $0{,}21$~nat (aucune des 200~répétitions n'atteint la
-valeur observée), le témoin par blocs $0{,}51$~nat ($p=0{,}03$). Concrètement,
-le nombre effectif de sources de risque indépendantes tombe de $13{,}1$ à
-$11{,}4$ sur $20$. Le même résultat se retrouve sur les 48~secteurs de French :
-$3{,}65$~nats contre $0{,}56$ et $2{,}46$ ($p=0{,}025$). C'est le seul résultat
-commun aux deux panels. Sa force relative est comparable sur actions
-individuelles et sur secteurs, ce qui écarte un artefact d'agrégation.
+i.i.d.\ ne produit que $0{,}21$~nat, et aucune des 200~répétitions n'atteint la
+valeur observée. Concrètement, le nombre effectif de sources de risque
+indépendantes tombe de $13{,}1$ à $11{,}4$ sur $20$. Le même résultat se
+retrouve sur les 48~secteurs de French : $3{,}65$~nats contre $0{,}56$, là
+encore sans qu'aucune répétition ne l'atteigne. C'est le résultat le plus
+fort de l'article, à six écarts-types du témoin sur les actions et à douze
+sur les secteurs. Sa présence sur actions individuelles comme sur secteurs
+écarte un artefact d'agrégation.
 
-Le second résultat qui franchit les deux témoins sur le panel principal est
-l'\emph{étendue} de $\JJ$ : l'indice parcourt $18{,}95$~nats sur l'échantillon,
-contre $10{,}05$ et $13{,}77$ dans les témoins ($p=0{,}035$ face aux blocs).
-Les marchés réels déplacent l'indice plus loin que tout rééchantillonnage des
-mêmes rendements. Ce résultat ne se réplique toutefois pas face au témoin par
-blocs sur les secteurs.
+\paragraph{Amplitude et persistance de l'indice.} Les marchés réels déplacent
+aussi l'indice plus loin et plus longtemps que tout rééchantillonnage des
+mêmes rendements. L'\emph{étendue} de $\JJ$ atteint $18{,}95$~nats sur le panel
+principal, contre $10{,}05$ dans le témoin, et $54{,}5$ contre $36{,}9$ sur les
+secteurs ; aucune répétition ne l'atteint sur l'un ou l'autre panel. La
+\emph{demi-vie} de $\JJ$ mesurée jour par jour vaut $121$~jours, contre $92$
+dans le témoin, et $190$ contre $101$ sur les secteurs, là encore au-delà de
+toutes les répétitions. Une fois retirée la mémoire mécanique de l'estimateur,
+il reste donc une persistance propre aux données : l'indice met plus longtemps
+à revenir à son niveau normal qu'un monde sans dynamique ne le permet. C'est
+ce que prédit le postulat de relaxation. Nous verrons plus bas que cette
+persistance tient à l'enchaînement des journées agitées, pas à une
+relaxation plus lente après chaque pic.
 
 \paragraph{Un saut n'est pas un événement.} Le détecteur juge les
 variations \emph{quotidiennes} de $\JJ$. Une crise qui dure plusieurs semaines
@@ -460,14 +478,15 @@ produit donc plusieurs sauts : la crise COVID en donne neuf entre le
 que le plus grand saut d'un seul jour ne fait que $3{,}2$~nats. Nous comptons
 donc aussi par \emph{épisode}, en fusionnant les sauts distants de moins de
 40~jours : les 158~sauts du panel principal forment 65~épisodes. Mesuré ainsi,
-le plus grand choc ($15{,}8$~nats, la COVID) dépasse ce que produisent les
-deux témoins : $8{,}1$~nats en moyenne pour le témoin i.i.d.\ (aucune des
-200~répétitions ne l'atteint) et $11{,}7$ pour le témoin par blocs ($p=0{,}04$).
-Ce résultat rejoint celui de l'étendue de $\JJ$ et repose sur un seul
-épisode. Le regroupement des sauts ($2{,}4$ par épisode), lui, est reproduit
-par le témoin par blocs : c'est le simple regroupement des journées agitées.
-Et l'épisode moyen ($1{,}4$~nat) est plus petit que dans les deux témoins :
-la plupart des épisodes réels sont modestes, seuls quelques-uns sont
+le plus grand choc ($15{,}8$~nats, la COVID) dépasse nettement le témoin :
+$8{,}1$~nats en moyenne, et aucune des 200~répétitions ne l'atteint. Ce
+résultat rejoint celui de l'étendue de $\JJ$ et repose sur un seul épisode.
+Les sauts se regroupent aussi davantage que dans le témoin ($2{,}4$ par
+épisode contre $2{,}0$, $p=0{,}015$) : les journées agitées se suivent, ce qui
+est la signature même d'une crise qui dure. Les cinq plus grands épisodes
+($7{,}9$~nats en moyenne contre $6{,}3$, $p=0{,}025$) franchissent également le
+témoin. En revanche, l'épisode moyen ($1{,}4$~nat) est plus petit que dans le
+témoin : la plupart des épisodes réels sont modestes, seuls quelques-uns sont
 exceptionnels.
 
 \paragraph{Le couplage n'est pas un simple effet de volatilité.} Trois
@@ -478,35 +497,38 @@ habituelles.
 les variances montent \citep{forbes2002}. Nous divisons donc chaque rendement
 par sa volatilité récente avant de calculer les corrélations
 (\og dévolatilisation \fg). Le couplage baisse d'environ $30\,\%$ mais franchit
-toujours les deux témoins sur les deux panels.
+toujours le témoin, à plus de cinq écarts-types, sur les deux panels.
 \item \emph{Journées extrêmes.} Nous remplaçons chaque rendement par son rang,
 converti en score gaussien, ce qui rend la mesure insensible aux valeurs
-extrêmes. Cette version \og en rangs \fg{} est la plus robuste des trois.
+extrêmes. Cette version \og en rangs \fg{} est la plus forte des trois
+($9{,}6$ et $12{,}7$ écarts-types).
 \item \emph{Mesures existantes.} Le ratio d'absorption de \citet{kritzman2011},
 qui mesure la part de variance expliquée par les premiers facteurs, échoue au
-témoin par blocs sur les deux panels. La raison probable est que $\log\det R$
-tient compte de tout le spectre de la matrice de corrélation, y compris des
-petites valeurs propres qui s'effondrent quand les actifs se couplent.
+témoin sur les vingt actions ($p=0{,}215$) et ne le franchit que sur les
+secteurs. La part de la première valeur propre franchit le témoin sur les
+deux panels, mais avec un écart plus faible que le couplage. La raison
+probable est que $\log\det R$ tient compte de tout le spectre de la matrice
+de corrélation, y compris des petites valeurs propres qui s'effondrent quand
+les actifs se couplent.
 \end{itemize}
 
 \begin{table}[htbp]
 \centering
 \small
-\begin{tabular}{@{}lcccc@{}}
+\begin{tabular}{@{}lcc@{}}
 \toprule
-& \multicolumn{2}{c}{S\&P~500, 20 titres} & \multicolumn{2}{c}{FF49, 48 secteurs} \\
-Mesure & i.i.d. & blocs & i.i.d. & blocs \\
+Mesure & S\&P~500, 20 titres & FF49, 48 secteurs \\
 \midrule
-Couplage $C$, brut & $6{,}2$ ($<0{,}005$) & $2{,}0$ ($0{,}030$) & $11{,}9$ ($<0{,}005$) & $1{,}8$ ($0{,}025$) \\
-Couplage $C$, dévolatilisé & $5{,}1$ ($<0{,}005$) & $2{,}0$ ($0{,}040$) & $7{,}9$ ($<0{,}005$) & $1{,}7$ ($0{,}040$) \\
-Couplage $C$, en rangs & $9{,}6$ ($<0{,}005$) & $\mathbf{2{,}3}$ ($\mathbf{0{,}030}$) & $12{,}7$ ($<0{,}005$) & $\mathbf{2{,}2}$ ($\mathbf{0{,}010}$) \\
-Ratio d'absorption & $0{,}7$ ($0{,}215$) & $-0{,}5$ ($0{,}695$) & $6{,}9$ ($<0{,}005$) & $0{,}4$ ($0{,}375$) \\
-Part de la 1\textsuperscript{re} valeur propre & $5{,}3$ ($<0{,}005$) & $1{,}8$ ($0{,}040$) & $6{,}7$ ($<0{,}005$) & $0{,}2$ ($0{,}445$) \\
+Couplage $C$, brut & $6{,}2$ ($<0{,}005$) & $11{,}9$ ($<0{,}005$) \\
+Couplage $C$, dévolatilisé & $5{,}1$ ($<0{,}005$) & $7{,}9$ ($<0{,}005$) \\
+Couplage $C$, en rangs & $\mathbf{9{,}6}$ ($\mathbf{<0{,}005}$) & $\mathbf{12{,}7}$ ($\mathbf{<0{,}005}$) \\
+Ratio d'absorption & $0{,}7$ ($0{,}215$) & $6{,}9$ ($<0{,}005$) \\
+Part de la 1\textsuperscript{re} valeur propre & $5{,}3$ ($<0{,}005$) & $6{,}7$ ($<0{,}005$) \\
 \bottomrule
 \end{tabular}
 \caption{Hausse stress moins calme de chaque mesure de dépendance, exprimée
-en écarts-types de la distribution du témoin ; entre parenthèses, la part des
-200~répétitions au moins aussi extrêmes.}
+en écarts-types de la distribution du témoin i.i.d. ; entre parenthèses, la
+part des 200~répétitions au moins aussi extrêmes.}
 \label{tab:cb-measures}
 \end{table}
 
@@ -520,33 +542,34 @@ autant : 148 hausses et 3 baisses en moyenne, avec une asymétrie plus forte que
 dans les données. La dent de scie est ce que produit une loi à queues épaisses
 passée dans l'estimateur, que l'information arrive par paquets ou non.
 Compter par épisode ne change rien : 65~épisodes de hausse contre 7 de
-baisse, mais les témoins sont encore plus unilatéraux (31 hausses par baisse
-en moyenne pour le témoin i.i.d., 21 pour le témoin par blocs, contre 9 dans
-les données).
+baisse, mais le témoin est encore plus unilatéral (31 hausses par baisse
+en moyenne, contre 9 dans les données).
 \item \emph{La forme sous stress (H1, $\DD$).} Les queues s'épaississent sous
-stress ($+0{,}27$~nat), mais moins que dans les témoins ($+1{,}25$ et
-$+0{,}65$). Une fenêtre \og de stress \fg{} d'un monde mélangé contient des
-journées extrêmes isolées, qui épaississent davantage les queues mesurées.
-\item \emph{La relaxation (H4).} La demi-vie mesurée, $121$~jours, se situe
-entre celle du témoin i.i.d.\ ($92$) et celle du témoin par blocs ($163$). Elle
-n'est donc pas identifiée : on ne peut pas lire $121$~jours comme un temps
-d'absorption des chocs. Mesurée par épisode, depuis le pic jusqu'au retour
-à mi-chemin, la relaxation prend 18~jours en médiane (74 pour les cinq plus
-grands épisodes), soit pas plus longtemps que dans les témoins (23 et 22~jours ;
-68 et 107 pour les cinq plus grands).
-\item \emph{Le signe (H5).} Les sauts de $\JJ$ coïncident bien avec une
-asymétrie négative (corrélation $-0{,}24$), mais les témoins produisent le
-même effet dans $8$ à $10\,\%$ des cas, au-dessus du seuil de $5\,\%$. Par
-épisode, l'asymétrie du marché baisse entre le début et le pic dans $62\,\%$
-des épisodes, contre $50\,\%$ pour le témoin i.i.d.\ ($p=0{,}015$) mais
-$53\,\%$ pour le témoin par blocs ($p=0{,}08$) : le signe n'est toujours pas
-établi.
-\item \emph{Le couplage des canaux (H6) et la compensation (H2).} Dépendance et
-queues bougent ensemble sous stress ($0{,}63$ contre $0{,}04$ en calme), mais le
-témoin i.i.d.\ les couple encore plus ($0{,}90$). Une fenêtre qui contient une
-grosse journée commune montre à la fois plus de corrélation et des queues plus
-épaisses, réelle ou mélangée. Le même mécanisme produit la pente de
-compensation de H2.
+stress ($+0{,}27$~nat), mais moins que dans le témoin ($+1{,}25$). Une
+fenêtre \og de stress \fg{} d'un monde mélangé contient des journées extrêmes
+isolées, qui épaississent davantage les queues mesurées.
+\item \emph{La relaxation après chaque pic (H4, par épisode).} La persistance
+globale de $\JJ$ dépasse le témoin (section précédente), mais épisode par
+épisode, depuis le pic jusqu'au retour à mi-chemin, la relaxation prend
+18~jours en médiane (74 pour les cinq plus grands épisodes), soit pas plus
+longtemps que dans le témoin (23~jours ; 68 pour les cinq plus grands). La
+persistance vient donc de l'enchaînement des journées agitées, pas d'une
+absorption plus lente de chaque choc.
+\item \emph{Le signe jour par jour (H5).} Les sauts de $\JJ$ coïncident bien
+avec une asymétrie négative (corrélation $-0{,}24$), mais le témoin produit le
+même effet dans $10\,\%$ des cas, au-dessus du seuil de $5\,\%$. Par
+épisode, en revanche, l'asymétrie du marché baisse entre le début et le pic
+dans $62\,\%$ des épisodes, contre $50\,\%$ dans le témoin ($p=0{,}015$) : le
+signe est établi à l'échelle des épisodes, pas à celle des journées.
+\item \emph{Le couplage des canaux (H6).} Dépendance et queues bougent
+ensemble sous stress ($0{,}63$ contre $0{,}04$ en calme), mais le témoin les
+couple encore plus ($0{,}90$). Une fenêtre qui contient une grosse journée
+commune montre à la fois plus de corrélation et des queues plus épaisses,
+réelle ou mélangée.
+\item \emph{La compensation (H2).} La pente de compensation ($\beta=0{,}20$)
+ne dépasse pas le témoin sur les vingt actions ($p=0{,}40$) ; elle le dépasse
+sur les secteurs ($0{,}23$ contre $0{,}08$, $p=0{,}03$), où le couplage pèse
+davantage. Le résultat n'est donc pas commun aux deux panels.
 \end{itemize}
 
 \subsection{L'entropie décrit, elle ne prévoit pas (H7)}
@@ -572,21 +595,23 @@ chaque crise. Nous regroupons les sauts distants de moins de 40~jours en
 épisode entre dépendance, asymétrie et queues. L'asymétrie ne domine presque
 jamais (1~épisode sur 139). Le partage entre dépendance et queues varie : la
 dépendance domine $46\,\%$ des 65~épisodes du panel principal, contre $26\,\%$
-en moyenne sous le témoin i.i.d.\ (intervalle $18$--$33\,\%$) ; $79\,\%$ des
-61~épisodes sectoriels, contre $43\,\%$.
+en moyenne sous le témoin (intervalle $18$--$33\,\%$, aucune répétition ne
+l'atteint) ; $79\,\%$ des 61~épisodes sectoriels, contre $43\,\%$. Le plus
+grand épisode de chaque panel donne aussi plus de poids à la dépendance que
+dans le témoin ($45\,\%$ contre $33\,\%$, $p=0{,}015$, sur les actions).
 
-Face au témoin par blocs, en revanche, ce résultat n'est pas identifié dès que les
-blocs atteignent 21~jours
-(tableau~\ref{tab:blocksens} en annexe). Nous n'en tirons donc pas de
-conclusion sur la nature des crises. Nous l'utilisons pour une seule fin, plus
-modeste : calibrer la composition d'un scénario de stress
-(section~\ref{sec:composition}), ce qui exige seulement que la composition
-observée soit plus structurée que celle d'un monde sans mémoire. La taille d'un
-épisode ne prédit pas sa composition (corrélation de rang $0{,}05$).
+Le résultat rejoint celui du couplage : quand les journées agitées
+s'enchaînent, ce qui distingue une vraie crise d'un amas de grosses journées
+tirées au hasard, c'est que les actifs se mettent à bouger ensemble. Il
+fonde la calibration de la composition d'un scénario de stress
+(section~\ref{sec:composition}). La taille d'un épisode ne prédit pas sa
+composition (corrélation de rang $0{,}05$).
 
 \paragraph{Ce qu'il faut retenir.} Ce qui distingue une vraie crise d'une série
 de grosses journées, ce n'est pas l'épaississement des queues de chaque actif ;
-c'est que les actifs se couplent. Pour un concepteur de scénarios, cela
+c'est que les actifs se couplent, que les crises sont plus souvent dominées
+par ce couplage, et que l'indice va plus loin et reste haut plus longtemps
+que ne le permet un monde sans dynamique. Pour un concepteur de scénarios, cela
 signifie que la structure de dépendance d'un scénario mérite autant
 d'attention que le niveau des chocs, et que tout indicateur de crise fondé sur
 des moments estimés doit être confronté à un témoin avant usage.
@@ -871,20 +896,20 @@ l'instant que le taux au jour le jour.
 \small
 \begin{tabular}{@{}lccc@{}}
 \toprule
-Composante & Hausse sous stress (nats) & $p$, i.i.d. & $p$, blocs \\
+Composante & Hausse sous stress (nats) & Témoin (moy.) & $p$ \\
 \midrule
-Couplage total & $+1{,}61$ & $<0{,}005$ & $<0{,}005$ \\
-\textbf{Entre segments} & $\mathbf{+0{,}19}$ & $<0{,}005$ & $\mathbf{<0{,}005}$ \\
-À l'intérieur : actions / intermédiaires & $+0{,}46$ / $+0{,}48$ & $<0{,}005$ & $<0{,}005$ / $0{,}045$ \\
-À l'intérieur : obligations / change & $+0{,}34$ / $+0{,}14$ & $<0{,}005$ & $<0{,}005$ \\
-Actions -- intermédiaires & $+0{,}096$ & $<0{,}005$ & $0{,}025$ \\
-Obligations -- change & $+0{,}055$ & $<0{,}005$ & $<0{,}005$ \\
-Obligations -- intermédiaires & $+0{,}040$ & $<0{,}005$ & $0{,}050$ \\
-Marché monétaire -- autres segments & $\approx 0$ & n.s. & n.s. \\
+Couplage total & $+1{,}61$ & $+0{,}21$ & $<0{,}005$ \\
+\textbf{Entre segments} & $\mathbf{+0{,}19}$ & $+0{,}02$ & $\mathbf{<0{,}005}$ \\
+À l'intérieur : actions / intermédiaires & $+0{,}46$ / $+0{,}48$ & $+0{,}05$ / $+0{,}14$ & $<0{,}005$ \\
+À l'intérieur : obligations / change & $+0{,}34$ / $+0{,}14$ & $0{,}00$ / $0{,}00$ & $<0{,}005$ \\
+Actions -- intermédiaires & $+0{,}096$ & $+0{,}011$ & $<0{,}005$ \\
+Obligations -- change & $+0{,}055$ & $+0{,}004$ & $<0{,}005$ \\
+Obligations -- intermédiaires & $+0{,}040$ & $+0{,}003$ & $<0{,}005$ \\
+Marché monétaire -- autres segments & $\approx 0$ & $\approx 0$ & n.s. \\
 \bottomrule
 \end{tabular}
-\caption{Zone euro : hausse stress moins calme face aux deux témoins (200
-répétitions chacun). Le stress est le décile supérieur de la volatilité du bloc
+\caption{Zone euro : hausse stress moins calme face au témoin i.i.d.\ (200
+répétitions). Le stress est le décile supérieur de la volatilité du bloc
 actions, seuil calculé sur le passé seulement.}
 \label{tab:cb-euro}
 \end{table}
@@ -901,7 +926,8 @@ Zones grises : récessions CEPR.}
 
 Trois lectures (tableau~\ref{tab:cb-euro} et figure~\ref{fig:cb-euro}).
 \begin{itemize}
-\item \emph{Le stress relie les segments entre eux}, au-delà des deux témoins.
+\item \emph{Le stress relie les segments entre eux}, bien au-delà du témoin
+(la hausse entre segments est neuf fois celle du témoin).
 Toutes les paires hors marché monétaire montent ; les liens entre actions et
 intermédiaires et avec le change sont les plus nets.
 \item \emph{Le lien entre dettes souveraines et banques ressort.}
@@ -981,16 +1007,20 @@ de crise fondé sur des moments estimés.
 \subsection{Limites}
 
 \begin{itemize}
-\item \emph{Peu de résultats survivent.} Seul le couplage sous stress franchit
-les deux témoins sur tous les panels. Les sauts, la relaxation et le signe ne
-sont pas établis.
+\item \emph{Une partie seulement des prédictions survit.} Le couplage sous
+stress, la composition des crises, l'amplitude et la persistance de l'indice
+franchissent le témoin sur les deux panels. Les sauts unilatéraux,
+l'épaississement des queues, le lien entre queues et corrélations et le signe
+jour par jour ne sont pas établis.
+\item \emph{Un seul témoin.} Le témoin i.i.d.\ détruit toute dynamique. Il ne
+dit pas si la dynamique détectée dépasse celle que produit le simple
+regroupement de la volatilité à l'échelle du mois ; nous la comptons comme
+une partie du phénomène que la mesure doit capturer
+(section~\ref{sec:placebo}).
 \item \emph{Les périodes de retour ne sont pas validées.} L'échelle de
 sévérité est environ deux fois trop douce face à l'histoire
 (tableau~\ref{tab:ladder}). Seules les comparaisons relatives (surcoût,
 composition) résistent à ce défaut.
-\item \emph{H8 n'est retenue que face au témoin i.i.d.} Elle sert uniquement à
-calibrer une composition et ne doit pas être utilisée pour distinguer des
-types de crise.
 \item \emph{Rien ici ne prévoit.} Les mesures sont diagnostiques.
 \item \emph{La forme est estimée actif par actif.} La dépendance non linéaire
 dans les queues est omise de $\JJ$, qui sous-estime donc la vraie divergence,
@@ -1211,7 +1241,7 @@ comparées sur des dates espacées de 21~jours, avec le test de
 \paragraph{Résultats bruts du régime de stress (S\&P~500).} Sous stress
 ($1\,076$ dates contre $6\,481$), l'échelle monte de $5{,}97$~nats, la
 dépendance baisse de $0{,}99$, la forme monte de $0{,}27$ ($p=0{,}16$), $\JJ$
-monte de $1{,}94$ ($p<0{,}001$, mais sans franchir les témoins). La corrélation
+monte de $1{,}94$ ($p<0{,}001$, mais sans franchir le témoin). La corrélation
 moyenne passe de $0{,}26$ à $0{,}32$, le nombre effectif de modes de $13{,}1$
 à $11{,}4$. L'asymétrie du marché ne change pas significativement entre
 régimes : la signature d'asymétrie est une propriété des sauts, pas du régime.
@@ -1222,16 +1252,17 @@ L'indice partage environ un cinquième de sa variance avec la volatilité
 \centering
 \footnotesize
 \resizebox{\linewidth}{!}{%
-\begin{tabular}{@{}llrrrrrl@{}}
+\begin{tabular}{@{}llrrrrl@{}}
 \toprule
-& & & \multicolumn{2}{c}{témoin i.i.d.} & \multicolumn{2}{c}{témoin blocs-21} & \\
-\cmidrule(lr){4-5}\cmidrule(lr){6-7}
-& Statistique & Obs. & moy. & 5--95\,\% & moy. & 5--95\,\% & Verdict \\
+& & & \multicolumn{3}{c}{témoin i.i.d.} & \\
+\cmidrule(lr){4-6}
+& Statistique & Obs. & moy. & 5--95\,\% & $p$ & Verdict \\
 \midrule
 \input{tables/tab_placebo_sp500.tex}
 \end{tabular}}
-\caption{S\&P~500 : statistiques observées face aux deux témoins, 200
-répétitions chacun. \og À contre-sens \fg{} : le témoin dépasse les données.
+\caption{S\&P~500 : statistiques observées face au témoin i.i.d., 200
+répétitions. $p$ : part des répétitions au moins aussi extrêmes dans le sens
+prédit. \og À contre-sens \fg{} : le témoin dépasse les données.
 Écarts : stress moins calme.}
 \label{tab:placebo}
 \end{table}
@@ -1240,36 +1271,17 @@ répétitions chacun. \og À contre-sens \fg{} : le témoin dépasse les donnée
 \centering
 \footnotesize
 \resizebox{\linewidth}{!}{%
-\begin{tabular}{@{}llrrrrrl@{}}
+\begin{tabular}{@{}llrrrrl@{}}
 \toprule
-& & & \multicolumn{2}{c}{témoin i.i.d.} & \multicolumn{2}{c}{témoin blocs-21} & \\
-\cmidrule(lr){4-5}\cmidrule(lr){6-7}
-& Statistique & Obs. & moy. & 5--95\,\% & moy. & 5--95\,\% & Verdict \\
+& & & \multicolumn{3}{c}{témoin i.i.d.} & \\
+\cmidrule(lr){4-6}
+& Statistique & Obs. & moy. & 5--95\,\% & $p$ & Verdict \\
 \midrule
 \input{tables/tab_placebo_ff49.tex}
 \end{tabular}}
 \caption{Secteurs FF49, 1990--2026 : mêmes conventions que le
 tableau~\ref{tab:placebo}.}
 \label{tab:placebo-ff49}
-\end{table}
-
-\begin{table}[htbp]
-\centering
-\small
-\begin{tabular}{@{}rrrl@{}}
-\toprule
-Longueur de bloc (jours) & moy.\ témoin & 5--95\,\% & Verdict \\
-\midrule
-1 (i.i.d.) & $0{,}26$ & $0{,}18$--$0{,}33$ & franchit \\
-5 & $0{,}31$ & $0{,}23$--$0{,}41$ & franchit \\
-10 & $0{,}35$ & $0{,}27$--$0{,}45$ & marginal ($p=0{,}08$) \\
-21 & $0{,}43$ & $0{,}33$--$0{,}54$ & échoue \\
-42 / 63 / 126 & $0{,}49$ / $0{,}51$ / $0{,}47$ & $0{,}40$--$0{,}60$ & échoue \\
-\bottomrule
-\end{tabular}
-\caption{H8 sur le S\&P~500 : part observée d'épisodes dominés par la
-dépendance ($0{,}46$) face au témoin par blocs selon la longueur des blocs.}
-\label{tab:blocksens}
 \end{table}
 
 \begin{figure}[htbp]

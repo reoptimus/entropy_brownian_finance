@@ -1,5 +1,5 @@
 
-\section{The H1--H8 empirical programme and what the nulls leave of it}
+\section{The H1--H8 empirical programme and what the null leaves of it}
 \label{sec:program}
 
 This section summarises, without reproducing them, the estimators and tests of
@@ -50,12 +50,13 @@ Postulate~P\ref{p:relax}. An i.i.d.\ Gaussian simulation with no events at all
 already yields an apparent half-life of 35~days and 37~positive jumps against
 none negative under the four-sigma filter.
 
-Hence two nulls, built by resampling the observed return matrix and running the
+Hence a null, built by resampling the observed return matrix and running the
 identical pipeline two hundred times: the \emph{i.i.d.} null (rows drawn
 independently; marginal fat tails and cross-sectional dependence kept, all
-chronology destroyed) and the 21-day \emph{block} null (which also keeps
-volatility clustering). A statistic that clears both is evidence; one that
-clears only one is not identified.
+chronology destroyed). A statistic that clears it is evidence. We do not use a
+21-day block null: it would keep volatility clustering and the within-month
+dynamics of crises, that is, precisely the few-week effects the theory sets out
+to describe.
 
 \subsection{The verdict}
 
@@ -64,36 +65,38 @@ clears only one is not identified.
 \small
 \begin{tabular}{@{}llrrrl@{}}
 \toprule
-& Statistic & Data & i.i.d. & block-21 & Verdict \\
+& Statistic & Data & i.i.d. & $p$ & Verdict \\
 \midrule
-H1 & regime gap $H^{dep}$ & $-0.99$ & $-0.21$ & $-0.51$ & \textbf{clears both} \\
-H1 & regime gap $\JJ$ & $1.93$ & $2.14$ & $1.97$ & fails both \\
-H1 & regime gap $\DD$ & $0.27$ & $1.25$ & $0.65$ & wrong-signed \\
-H2 & $\beta$ (stress) & $0.20$ & $0.05$ & $0.11$ & fails both \\
-H3 & positive jumps & $158$ & $148.5$ & $133.2$ & block only \\
-H3 & skewness of $\Delta\JJ$ & $12.26$ & $14.80$ & $12.97$ & wrong-signed \\
-H4 & half-life (days) & $120.8$ & $92.1$ & $162.8$ & between the two \\
-H4 & range of $\JJ$ & $18.95$ & $10.05$ & $13.77$ & \textbf{clears both} \\
-H5 & $\mathrm{corr}(\Delta\JJ,\Delta S_{mkt})$ & $-0.24$ & $-0.04$ & $-0.07$ & fails both \\
-H6 & coupling gap & $0.59$ & $0.77$ & $0.67$ & wrong-signed \\
+H1 & regime gap $H^{dep}$ & $-0.99$ & $-0.21$ & $<0.005$ & \textbf{clears} \\
+H1 & regime gap $\JJ$ & $1.93$ & $2.14$ & $0.67$ & fails \\
+H1 & regime gap $\DD$ & $0.27$ & $1.25$ & $1.00$ & wrong-signed \\
+H2 & $\beta$ (stress) & $0.20$ & $0.05$ & $0.40$ & fails \\
+H3 & positive jumps & $158$ & $148.5$ & $0.14$ & fails \\
+H3 & skewness of $\Delta\JJ$ & $12.26$ & $14.80$ & $0.95$ & wrong-signed \\
+H4 & half-life (days) & $120.8$ & $92.1$ & $<0.005$ & \textbf{clears} \\
+H4 & range of $\JJ$ & $18.95$ & $10.05$ & $<0.005$ & \textbf{clears} \\
+H5 & $\mathrm{corr}(\Delta\JJ,\Delta S_{mkt})$ & $-0.24$ & $-0.04$ & $0.10$ & fails \\
+H5 & share of episodes with falling skewness & $62\%$ & $50\%$ & $0.015$ & \textbf{clears} \\
+H6 & coupling gap & $0.59$ & $0.77$ & $0.99$ & wrong-signed \\
 H7 & out-of-sample gain & \multicolumn{3}{c}{none on two panels} & rejected \\
-H8 & share of dependence-led episodes & $46\%$ & $19$--$33\%$ & n.i. & i.i.d.\ only \\
+H8 & share of dependence-led episodes & $46\%$ & $26\%$ & $<0.005$ & \textbf{clears} \\
 \bottomrule
 \end{tabular}
-\caption{Verdicts against the nulls (means over two hundred replications),
+\caption{Verdicts against the i.i.d.\ null (means over two hundred replications),
 main panel of twenty S\&P~500 stocks, 1990--2022. Source:
-\texttt{paper/tables/tab\_placebo\_sp500.tex} and the H7--H8 sections of v1.
-n.i.: not identified, at every block length tested between 5 and 126~days.}
+\texttt{paper/tables/tab\_placebo\_sp500.tex}, \texttt{sp500\_episode\_null\_200rep.csv}
+and the H7--H8 sections of v1.}
 \label{tab:program}
 \end{table}
 
-Two statistics clear both nulls on the main panel, and only one replicates on
-Kenneth French's 48 industry portfolios: the regime gap of the dependence
-channel ($-3.65$~nats against $-0.56$ and $-2.46$). Phase~A then hardened it: it
-holds in devolatilised (Forbes--Rigobon) and rank-based form, the latter being
-the strongest against the block null ($p=0.03$ on the S\&P~500, $0.01$ on the
-industries), whereas the \citet{kritzman2011} absorption ratio fails the block
-null on both panels.
+Four statistics clear the null on the main panel as well as on Kenneth
+French's 48 industry portfolios: the regime gap of the dependence channel
+($-3.65$~nats against $-0.56$ on industries), the range and the half-life of
+$\JJ$, and the share of dependence-led episodes. The strongest is the
+dependence channel. Phase~A hardened it: it holds in devolatilised
+(Forbes--Rigobon) and rank-based form, the latter being the strongest ($9.6$
+and $12.7$ standard deviations from the null), whereas the
+\citet{kritzman2011} absorption ratio fails the null on the twenty stocks.
 
 \subsection{What the verdict says about the theory}
 
@@ -104,10 +107,13 @@ and~\ref{sec:channels} are identities and theorems. So is
 Proposition~\ref{prop:conditioning}. No empirical result can refute them; it can
 only show that the available estimators do not let us see them at work.
 
-\paragraph{What is touched.} The two postulates. P\ref{p:relax} is supported only
-by amplitude (the range of $\JJ$), not by a relaxation rate: the half-life lies
-between the two nulls and its level depends on the null chosen. P\ref{p:sign} is
-not established (H5). Channel coupling (H6), which Section~\ref{sec:dynamics}
+\paragraph{What is touched.} The two postulates, in part. P\ref{p:relax} is
+supported by amplitude (the range of $\JJ$) and by persistence: the half-life of
+$\JJ$ ($121$~days) exceeds the mechanical memory of the estimator ($92$~days in
+the null). Episode by episode, however, relaxation from the peak is no slower
+than in the null: persistence comes from turbulent days following one another
+rather than from slow absorption of each shock. P\ref{p:sign} is established
+only at the scale of episodes (H5), not day by day. Channel coupling (H6), which Section~\ref{sec:dynamics}
 derived from the common nature of news, is reproduced and even exceeded by
 resampled data.
 
@@ -119,11 +125,12 @@ cross-section couples onto a few collective modes. A single large isolated retur
 barely moves those small eigenvalues. The shape channel $\DD$, by contrast,
 reacts strongly to a single extreme observation, which is exactly the signature
 the null reproduces. Concentration measures (absorption ratio, first-eigenvalue
-share) look only at the top of the spectrum, where the block null catches up
-with them.
+share) look only at the top of the spectrum, where the gap to the null is
+smaller.
 
-\paragraph{Consequence for the main paper.} The indicator keeps the one
-identified channel and drops $\DD$, and hence $\JJ$. The theory of
+\paragraph{Consequence for the main paper.} The indicator keeps the most
+strongly identified channel, dependence, and drops $\DD$, which fails the null,
+and hence $\JJ$. The theory of
 Sections~\ref{sec:channels} and~\ref{sec:dynamics} remains the justification of
 \emph{why} this channel measures shared information (the Gaussian
 multi-information, equation~\eqref{eq:ceiling} and Appendix~\ref{app:gauss}),

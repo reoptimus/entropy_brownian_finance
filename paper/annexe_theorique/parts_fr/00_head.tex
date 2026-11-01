@@ -42,7 +42,7 @@ temps-volume au mouvement brownien géométrique, la décomposition de l'entropi
 en trois canaux et l'indice structurel $\JJ=\KL{p}{\prod_i q_i}$, la dynamique
 de saut et diffusion (un théorème, deux postulats, la structure
 d'Ornstein--Uhlenbeck imposée par le théorème de Doob), le programme empirique
-H1--H8 avec son verdict face aux témoins calibrés, et la géométrie complète des
+H1--H8 avec son verdict face au témoin calibré, et la géométrie complète des
 scénarios en boule de Kullback--Leibler. Deux résultats sont nouveaux par
 rapport à la version arXiv~v1. Le premier est une identité de décomposition par
 blocs du canal de dépendance, qui relie ce document au papier principal. Le
@@ -59,19 +59,22 @@ plus en variance. Ce second point corrige une remarque de la v1.
 \addcontentsline{toc}{section}{Avant-propos}
 
 \paragraph{L'articulation avec le papier principal.} L'évaluation d'octobre 2026
-a conclu qu'un seul résultat de la version arXiv~v1 franchit les deux témoins
-calibrés sur les deux panels : l'écart de régime du canal de dépendance
+a conclu que le résultat le plus solide de la version arXiv~v1, présent sur
+les deux panels, est l'écart de régime du canal de dépendance
 $H^{dep}=\tfrac12\log\det R$. La phase~A l'a confirmé sous trois formes (brute,
 dévolatilisée à la Forbes--Rigobon, en rangs) et a montré que le ratio
 d'absorption de \citet{kritzman2011}, mesure de référence de la même famille,
-échoue au témoin par blocs. Le papier principal se reconstruit donc autour d'un
+échoue au témoin i.i.d.\ sur les vingt actions. Le seul témoin retenu est le
+témoin i.i.d. : un témoin par blocs de 21~jours conserverait la dynamique
+intra-mensuelle des crises, qui fait partie de ce que la mesure doit
+capturer. Le papier principal se reconstruit donc autour d'un
 \og CISS entropique \fg{} au sens de \citet{hollo2012} : canal de dépendance d'un
 panel multi-marchés, décomposition intra/inter-blocs, validation à la manière
 des banques centrales, et audit des scénarios publiés en nats.
 
 Tout le reste sort du corps du texte. Ce n'est pas parce que c'est faux : les
 résultats mathématiques restent exacts. C'est parce que ces éléments ne sont
-pas nécessaires à l'indicateur, ou parce qu'ils ne survivent pas aux témoins et
+pas nécessaires à l'indicateur, ou parce qu'ils ne survivent pas au témoin et
 ne peuvent donc pas fonder un outil de surveillance. Les rassembler ici a deux
 usages. Un rapporteur qui demande d'où vient le canal de dépendance, et pourquoi
 c'est lui et pas l'indice structurel complet, trouve la réponse. Un lecteur qui
@@ -94,12 +97,12 @@ franchissent ou non). Le tableau~\ref{tab:statut} en donne la carte.
 Maximum d'entropie gaussien & théorème & --- & \ref{sec:bridge} \\
 Pont volume (MDH, brownien subordonné) & argument sous hypothèses & non testé ici & \ref{sec:bridge} \\
 Décomposition en trois canaux & identité exacte & --- & \ref{sec:channels} \\
-Indice structurel $\JJ$ comme divergence & identité exacte & étendue franchit les deux témoins & \ref{sec:channels} \\
+Indice structurel $\JJ$ comme divergence & identité exacte & étendue franchit le témoin & \ref{sec:channels} \\
 Sauts d'entropie vers le bas & théorème (en moyenne) & non estimable directement & \ref{sec:dynamics} \\
-Relaxation (P1) & postulat & demi-vie non identifiée & \ref{sec:dynamics} \\
-Contrainte unilatérale (P2) & postulat & non établie (H5) & \ref{sec:dynamics} \\
+Relaxation (P1) & postulat & persistance établie, pas par épisode & \ref{sec:dynamics} \\
+Contrainte unilatérale (P2) & postulat & par épisode seulement (H5) & \ref{sec:dynamics} \\
 Couplage queues--corrélation & conséquence & non identifié (H6) & \ref{sec:dynamics} \\
-Canal de dépendance sous stress & constat & \textbf{franchit les deux témoins} & \ref{sec:program}, \ref{sec:blocks} \\
+Canal de dépendance sous stress & constat & \textbf{franchit le témoin} & \ref{sec:program}, \ref{sec:blocks} \\
 Boule KL, $1$~nat $=\sqrt2\,\sigma$ & théorème & --- & \ref{sec:stress} \\
 Relèvement minimal (rang un) & théorème (nouveau) & --- & \ref{sec:stress} \\
 Calibration du rayon sur le flux & règle & trop douce face à l'histoire & \ref{sec:stress} \\
@@ -115,6 +118,6 @@ Décomposition par blocs & identité (nouvelle ici) & objet du papier principal 
 des retouches de renvois, le texte de la version française de référence
 (\texttt{paper/main\_fr.tex}). Les sections~\ref{sec:program} à
 \ref{sec:open} sont rédigées pour ce document. Tous les chiffres cités
-proviennent du même code (\texttt{python -m src.run\_empirical}, témoins à
+proviennent du même code (\texttt{python -m src.run\_empirical}, témoin à
 deux cents réplications, phase~A) ; aucun n'a été recalculé pour cette annexe.
 
