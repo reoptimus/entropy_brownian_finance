@@ -40,9 +40,12 @@ scale to 33~years of returns on twenty US stocks, to Kenneth French's
 the ECB's Composite Indicator of Systemic Stress (CISS). Three results stand
 out. \textbf{(1)} A simple robustness test, which reruns every computation on
 data whose time order has been shuffled, removes most of the crisis signals
-that entropy appears to show: they are artefacts of estimation. One fact
-survives on every panel: under stress, markets couple, meaning that the number
-of independent sources of risk falls. \textbf{(2)} Measured in nats, classical
+that entropy appears to show: one-sided jumps, thickening tails and the link
+between tails and correlations are artefacts of estimation. The most robust
+fact, common to every panel, is that under stress markets couple, meaning that
+the number of independent sources of risk falls; crises are also more often
+dominated by this coupling, and the index travels further and persists longer
+than the mechanics of estimation can explain. \textbf{(2)} Measured in nats, classical
 scenarios that shock volatilities, correlations and levels separately pay
 $15$ to $33\,\%$ too much for their tail loss, and the split of the shock
 between volatility and correlation can be calibrated on history instead of
@@ -104,8 +107,9 @@ measures the market's distance from maximal ignorance.
 and~\ref{sec:resultats}). An entropy measure estimated on real data jumps up
 and decays slowly even when no information arrives: this is a mechanical
 effect of estimation. We therefore judge every result against \emph{placebo
-nulls}, that is, against the same computations run on resampled data. Only
-one result survives everywhere: under stress, markets couple.
+nulls}, that is, against the same computations run on resampled data. The
+most robust result, present on every panel, is that under stress markets
+couple.
 \item \emph{A severity unit for scenarios} (section~\ref{sec:stress}). A
 scenario of severity $\eta$ is the worst distribution within $\eta$~nats of
 the current distribution. The radius $\eta$ is calibrated on how fast the
@@ -121,8 +125,8 @@ which directly informs the correlation structure of a scenario.
 moments (variances, correlations, skewness, kurtosis). On fat-tailed data,
 estimation noise pushes such an index \emph{up} abruptly and lets it come down
 \emph{slowly}. That is exactly the sawtooth the theory predicts. The result is
-uncomfortable and, we think, the most useful thing in the paper: most of the
-signals that look overwhelming do not survive the null. Anyone building a
+uncomfortable and, we think, the most useful thing in the paper: a good part
+of the signals that look overwhelming do not survive the null. Anyone building a
 crisis indicator from estimated moments should run this null before believing
 their own chart.
 
@@ -201,10 +205,8 @@ never uses future information.
 
 \item[Placebo null.] The same computations, rerun on data whose time order
 has been shuffled. The \emph{i.i.d.} null draws days one by one: it keeps fat
-tails and cross-asset correlation, and destroys all dynamics. The
-\emph{block} null draws 21-day blocks: it also keeps the clustering of
-turbulent days, and destroys only longer-run dynamics. Each null is repeated
-200~times. A result \emph{passes} a null if at most $5\,\%$ of the
+tails and each day's cross-asset correlation, and destroys all dynamics. It is
+repeated 200~times. A result \emph{passes} the null if at most $5\,\%$ of the
 200~repetitions produce a result as strong as the real data.
 
 \item[Information flow.] $I^{(h)}_t=\KL{p_t}{p_{t-h}}$: by how many nats the
@@ -359,13 +361,21 @@ half-life of $35$~days, through estimator memory alone. With no event at all,
 the detector finds $37$ positive jumps and no negative one.
 
 A result is therefore evidence only if it exceeds what data without dynamics
-produce. Hence the two nulls defined in section~\ref{sec:concepts}. They run
-exactly the same pipeline, including the definition of the stress regime. They
-answer two different questions. The i.i.d.\ null asks: beyond the fact that
-turbulent periods contain large days, does the measure detect anything? The
-block null asks the harder question: beyond the mere clustering of turbulent
-days, does it detect dynamics specific to crises? A result that passes both is
-established. A result that passes only one is not identified.
+produce. Hence the i.i.d.\ null defined in section~\ref{sec:concepts}. It runs
+exactly the same pipeline, including the definition of the stress regime, and
+answers the question: beyond the fact that turbulent periods contain large
+days, does the measure detect any dynamics? A result that passes this null is
+established.
+
+\paragraph{Why not a block null.} One could also draw blocks of 21
+consecutive days. Such a null keeps the clustering of turbulent days and all
+dynamics shorter than a month, and destroys only longer-run dynamics. But a
+market crisis plays out precisely on that scale: COVID raised the index by
+16~nats in three weeks, and a typical crisis is a few weeks of turbulent days
+in a row. A null that keeps those weeks keeps the very phenomenon we want to
+measure, and counting it as ``noise'' would amount to requiring the measure to
+detect something other than crises themselves. We therefore do not use it as
+a criterion.
 
 \section{Results: what survives the null}
 \label{sec:resultats}
@@ -382,45 +392,52 @@ and~\ref{tab:placebo-ff49}).
 \toprule
 & Raw result (S\&P~500) & Verdict S\&P~500 & Verdict FF49 industries \\
 \midrule
-H1 coupling & rise under stress $+0.99$ nat & \textbf{passes both} & \textbf{passes both} \\
-H1 index $\JJ$ & $+1.93$ nat & fails both & fails both \\
+H1 coupling & rise under stress $+0.99$ nat & \textbf{passes} & \textbf{passes} \\
+H1 index $\JJ$ & $+1.93$ nat & fails & null stronger \\
 H1 shape $\DD$ & $+0.27$ nat & null stronger & null stronger \\
-H2 compensation & $\beta=0.20$ under stress & fails both & i.i.d.\ only \\
-H3 jumps, daily & 158 up, 9 down & null stronger & fails both \\
+H2 compensation & $\beta=0.20$ under stress & fails & \textbf{passes} \\
+H3 jumps, daily & 158 up, 9 down & null stronger & fails \\
 H3 jumps, by episode & 65 up, 7 down & null stronger & not tested \\
-H3 largest episode & $15.8$ nats (COVID) & \textbf{passes both} & not tested \\
-H4 half-life, daily & 121 days & not identified & not identified \\
-H4 half-life from peak & 18 days (74 for the 5 largest) & fails both & not tested \\
-H4 range of $\JJ$ & $18.95$ nats & \textbf{passes both} & i.i.d.\ only \\
-H5 sign, daily & correlation $-0.24$ & fails ($p=0.08$--$0.10$) & fails both \\
-H5 sign, by episode & skewness falls in $62\,\%$ & i.i.d.\ only & not tested \\
+H3 largest episode & $15.8$ nats (COVID) & \textbf{passes} & not tested \\
+H4 half-life, daily & 121 days & \textbf{passes} & \textbf{passes} \\
+H4 half-life from peak & 18 days (74 for the 5 largest) & fails & not tested \\
+H4 range of $\JJ$ & $18.95$ nats & \textbf{passes} & \textbf{passes} \\
+H5 sign, daily & correlation $-0.24$ & fails ($p=0.10$) & fails \\
+H5 sign, by episode & skewness falls in $62\,\%$ & \textbf{passes} & not tested \\
 H6 channel coupling & $0.04$ calm, $0.63$ stress & null stronger & null stronger \\
 H7 forecasting & gain $\le 3\,\%$, $p=0.23$ & rejected & --- \\
-H8 composition & dependence dominant $46\,\%$ & i.i.d.\ only & i.i.d.\ only \\
+H8 composition & dependence dominant $46\,\%$ & \textbf{passes} & \textbf{passes} \\
 \bottomrule
 \end{tabular}}
-\caption{Verdicts against the two nulls (200 repetitions each). ``Null
+\caption{Verdicts against the i.i.d.\ null (200 repetitions). ``Null
 stronger'': resampled data produce a larger effect than the real data. For
 H7, the test is out of sample and covers the main and control panels.}
 \label{tab:verdicts}
 \end{table}
 
-\subsection{The fact that survives: under stress, markets couple}
+\subsection{The central fact: under stress, markets couple}
 
 Under stress, coupling among the twenty stocks rises by $0.99$~nat. The i.i.d.\
-null produces only $0.21$~nat (none of the 200 repetitions reaches the
-observed value), the block null $0.51$~nat ($p=0.03$). Concretely, the
-effective number of independent risk sources falls from $13.1$ to $11.4$ out
-of $20$. The same result holds on French's 48 industries: $3.65$~nats against
-$0.56$ and $2.46$ ($p=0.025$). It is the only result common to both panels. Its
-relative strength is similar on individual stocks and on industries, which
-rules out an aggregation artefact.
+null produces only $0.21$~nat, and none of the 200 repetitions reaches the
+observed value. Concretely, the effective number of independent risk sources
+falls from $13.1$ to $11.4$ out of $20$. The same result holds on French's
+48 industries: $3.65$~nats against $0.56$, again with no repetition reaching
+it. It is the strongest result in the paper, six standard deviations from the
+null on stocks and twelve on industries. Its presence on individual stocks as
+well as on industries rules out an aggregation artefact.
 
-The second result that passes both nulls on the main panel is the
-\emph{range} of $\JJ$: the index travels $18.95$~nats over the sample,
-against $10.05$ and $13.77$ in the nulls ($p=0.035$ against blocks). Real
-markets move the index further than any resampling of the same returns. This
-result does not, however, replicate against the block null on industries.
+\paragraph{Amplitude and persistence of the index.} Real markets also move
+the index further and for longer than any resampling of the same returns. The
+\emph{range} of $\JJ$ reaches $18.95$~nats on the main panel, against $10.05$
+in the null, and $54.5$ against $36.9$ on industries; no repetition reaches it
+on either panel. The daily \emph{half-life} of $\JJ$ is $121$~days, against
+$92$ in the null, and $190$ against $101$ on industries, again beyond every
+repetition. Once the mechanical memory of the estimator is removed, a
+persistence specific to the data remains: the index takes longer to return to
+its normal level than a world without dynamics allows. This is what the
+relaxation postulate predicts. We show below that this persistence comes from
+turbulent days following one another, not from slower relaxation after each
+peak.
 
 \paragraph{A jump is not an event.} The detector judges \emph{daily} changes
 in $\JJ$. A crisis lasting several weeks therefore produces several jumps:
@@ -428,13 +445,14 @@ the COVID crisis yields nine between 24 February and 16 March 2020, while the
 index rises by 16~nats, whereas the largest single-day jump is only
 $3.2$~nats. We therefore also count by \emph{episode}, merging jumps less than
 40 days apart: the 158 jumps of the main panel form 65 episodes. Measured this
-way, the largest shock ($15.8$~nats, COVID) exceeds what both nulls produce:
-$8.1$~nats on average under the i.i.d.\ null (none of the 200 repetitions
-reaches it) and $11.7$ under the block null ($p=0.04$). This result echoes the
-range of $\JJ$ and rests on a single episode. The clustering of jumps ($2.4$
-per episode), by contrast, is reproduced by the block null: it is simply the
-clustering of turbulent days. And the average episode ($1.4$~nat) is smaller
-than in both nulls: most real episodes are modest, only a few are
+way, the largest shock ($15.8$~nats, COVID) clearly exceeds the null:
+$8.1$~nats on average, and none of the 200 repetitions reaches it. This
+result echoes the range of $\JJ$ and rests on a single episode. Jumps also
+cluster more than in the null ($2.4$ per episode against $2.0$, $p=0.015$):
+turbulent days follow one another, which is the very signature of a crisis
+that lasts. The five largest episodes ($7.9$~nats on average against $6.3$,
+$p=0.025$) also pass the null. The average episode ($1.4$~nat), by contrast,
+is smaller than in the null: most real episodes are modest, only a few are
 exceptional.
 
 \paragraph{Coupling is not just a volatility effect.} Three checks, in
@@ -443,13 +461,17 @@ table~\ref{tab:cb-measures}, rule out the usual objections.
 \item \emph{Volatility.} Measured correlations rise mechanically when variances
 rise \citep{forbes2002}. We therefore divide each return by its recent
 volatility before computing correlations (``devolatilisation''). Coupling falls
-by about $30\,\%$ but still passes both nulls on both panels.
+by about $30\,\%$ but still passes the null, by more than five standard
+deviations, on both panels.
 \item \emph{Extreme days.} We replace each return by its rank, converted to a
 Gaussian score, which makes the measure insensitive to extreme values. This
-``rank'' version is the most robust of the three.
+``rank'' version is the strongest of the three ($9.6$ and $12.7$ standard
+deviations).
 \item \emph{Existing measures.} The absorption ratio of \citet{kritzman2011},
 which measures the share of variance explained by the first factors, fails the
-block null on both panels. The likely reason is that $\log\det R$ accounts for
+null on the twenty stocks ($p=0.215$) and passes it only on industries. The
+first-eigenvalue share passes the null on both panels, but with a smaller gap
+than coupling. The likely reason is that $\log\det R$ accounts for
 the whole spectrum of the correlation matrix, including the small eigenvalues
 that collapse when assets couple.
 \end{itemize}
@@ -457,20 +479,19 @@ that collapse when assets couple.
 \begin{table}[htbp]
 \centering
 \small
-\begin{tabular}{@{}lcccc@{}}
+\begin{tabular}{@{}lcc@{}}
 \toprule
-& \multicolumn{2}{c}{S\&P~500, 20 stocks} & \multicolumn{2}{c}{FF49, 48 industries} \\
-Measure & i.i.d. & blocks & i.i.d. & blocks \\
+Measure & S\&P~500, 20 stocks & FF49, 48 industries \\
 \midrule
-Coupling $C$, raw & $6.2$ ($<0.005$) & $2.0$ ($0.030$) & $11.9$ ($<0.005$) & $1.8$ ($0.025$) \\
-Coupling $C$, devolatilised & $5.1$ ($<0.005$) & $2.0$ ($0.040$) & $7.9$ ($<0.005$) & $1.7$ ($0.040$) \\
-Coupling $C$, ranks & $9.6$ ($<0.005$) & $\mathbf{2.3}$ ($\mathbf{0.030}$) & $12.7$ ($<0.005$) & $\mathbf{2.2}$ ($\mathbf{0.010}$) \\
-Absorption ratio & $0.7$ ($0.215$) & $-0.5$ ($0.695$) & $6.9$ ($<0.005$) & $0.4$ ($0.375$) \\
-First-eigenvalue share & $5.3$ ($<0.005$) & $1.8$ ($0.040$) & $6.7$ ($<0.005$) & $0.2$ ($0.445$) \\
+Coupling $C$, raw & $6.2$ ($<0.005$) & $11.9$ ($<0.005$) \\
+Coupling $C$, devolatilised & $5.1$ ($<0.005$) & $7.9$ ($<0.005$) \\
+Coupling $C$, ranks & $\mathbf{9.6}$ ($\mathbf{<0.005}$) & $\mathbf{12.7}$ ($\mathbf{<0.005}$) \\
+Absorption ratio & $0.7$ ($0.215$) & $6.9$ ($<0.005$) \\
+First-eigenvalue share & $5.3$ ($<0.005$) & $6.7$ ($<0.005$) \\
 \bottomrule
 \end{tabular}
 \caption{Stress-minus-calm rise of each dependence measure, in standard
-deviations of the null distribution; in parentheses, the share of the
+deviations of the i.i.d.\ null distribution; in parentheses, the share of the
 200 repetitions at least as extreme.}
 \label{tab:cb-measures}
 \end{table}
@@ -484,30 +505,33 @@ deviations of the null distribution; in parentheses, the share of the
 many: 148 up and 3 down on average, with stronger asymmetry than the data. The
 sawtooth is what a fat-tailed law produces when passed through the estimator,
 whether or not information arrives in bursts. Counting by episode changes
-nothing: 65 upward episodes against 7 downward, but the nulls are even more
-one-sided (31 up per down on average under the i.i.d.\ null, 21 under the
-block null, against 9 in the data).
+nothing: 65 upward episodes against 7 downward, but the null is even more
+one-sided (31 up per down on average, against 9 in the data).
 \item \emph{Shape under stress (H1, $\DD$).} Tails thicken under stress
-($+0.27$~nat), but less than in the nulls ($+1.25$ and $+0.65$). A ``stress''
-window in a shuffled world contains isolated extreme days, which thicken the
-measured tails more.
-\item \emph{Relaxation (H4).} The measured half-life, $121$~days, lies between
-that of the i.i.d.\ null ($92$) and that of the block null ($163$). It is
-therefore not identified: $121$~days cannot be read as an absorption time for
-shocks. Measured by episode, from the peak until the index is halfway back,
-relaxation takes 18 days at the median (74 for the five largest episodes), no
-longer than in the nulls (23 and 22 days; 68 and 107 for the five largest).
-\item \emph{Sign (H5).} Jumps of $\JJ$ do coincide with negative skewness
-(correlation $-0.24$), but the nulls produce the same effect in $8$ to
-$10\,\%$ of cases, above the $5\,\%$ threshold. By episode, market skewness
-falls between the start and the peak in $62\,\%$ of episodes, against
-$50\,\%$ under the i.i.d.\ null ($p=0.015$) but $53\,\%$ under the block
-null ($p=0.08$): the sign is still not established.
-\item \emph{Channel coupling (H6) and compensation (H2).} Dependence and tails
-move together under stress ($0.63$ against $0.04$ in calm markets), but the
-i.i.d.\ null couples them even more ($0.90$). A window containing a large
-common day shows both higher correlation and thicker tails, real or shuffled.
-The same mechanism produces the compensation slope of H2.
+($+0.27$~nat), but less than in the null ($+1.25$). A ``stress'' window in a
+shuffled world contains isolated extreme days, which thicken the measured
+tails more.
+\item \emph{Relaxation after each peak (H4, by episode).} The overall
+persistence of $\JJ$ exceeds the null (previous section), but episode by
+episode, from the peak until the index is halfway back, relaxation takes
+18 days at the median (74 for the five largest episodes), no longer than in
+the null (23 days; 68 for the five largest). Persistence therefore comes from
+turbulent days following one another, not from slower absorption of each
+shock.
+\item \emph{Daily sign (H5).} Jumps of $\JJ$ do coincide with negative
+skewness (correlation $-0.24$), but the null produces the same effect in
+$10\,\%$ of cases, above the $5\,\%$ threshold. By episode, however, market
+skewness falls between the start and the peak in $62\,\%$ of episodes,
+against $50\,\%$ in the null ($p=0.015$): the sign is established at the
+scale of episodes, not of days.
+\item \emph{Channel coupling (H6).} Dependence and tails move together under
+stress ($0.63$ against $0.04$ in calm markets), but the null couples them even
+more ($0.90$). A window containing a large common day shows both higher
+correlation and thicker tails, real or shuffled.
+\item \emph{Compensation (H2).} The compensation slope ($\beta=0.20$) does not
+exceed the null on the twenty stocks ($p=0.40$); it does on industries
+($0.23$ against $0.08$, $p=0.03$), where coupling weighs more. The result is
+therefore not common to both panels.
 \end{itemize}
 
 \subsection{Entropy describes, it does not forecast (H7)}
@@ -530,20 +554,23 @@ crisis. We merge jumps less than 40 days apart into \emph{episodes}, and split
 the rise of $\JJ$ in each episode exactly into dependence, skewness and tails.
 Skewness almost never dominates (1 episode out of 139). The split between
 dependence and tails varies: dependence dominates $46\,\%$ of the 65 episodes
-on the main panel, against $26\,\%$ on average under the i.i.d.\ null (range
-$18$--$33\,\%$); $79\,\%$ of the 61 industry episodes, against $43\,\%$.
+on the main panel, against $26\,\%$ on average under the null (range
+$18$--$33\,\%$, no repetition reaches it); $79\,\%$ of the 61 industry
+episodes, against $43\,\%$. The largest episode of each panel also gives more
+weight to dependence than in the null ($45\,\%$ against $33\,\%$, $p=0.015$,
+on stocks).
 
-Against the block null, however, this result is not identified once blocks
-reach 21~days (table~\ref{tab:blocksens} in the appendix). We therefore draw
-no conclusion about the nature of crises. We use it for one purpose only, a
-more modest one: calibrating the composition of a stress scenario
-(section~\ref{sec:composition}), which only requires the observed composition
-to be more structured than that of a memoryless world. The size of an episode
+The result echoes that on coupling: when turbulent days follow one another,
+what distinguishes a real crisis from a random cluster of large days is that
+assets start moving together. It underpins the calibration of the
+composition of a stress scenario (section~\ref{sec:composition}). The size of an episode
 does not predict its composition (rank correlation $0.05$).
 
 \paragraph{The takeaway.} What distinguishes a real crisis from a series of
 large days is not the thickening of each asset's tails; it is that assets
-couple. For a scenario designer, this means that the dependence structure of a
+couple, that crises are more often dominated by this coupling, and that the
+index goes further and stays high longer than a world without dynamics
+allows. For a scenario designer, this means that the dependence structure of a
 scenario deserves as much attention as the level of the shocks, and that any
 crisis indicator based on estimated moments should be confronted with a null
 before use.
@@ -821,20 +848,20 @@ contains the overnight rate only.
 \small
 \begin{tabular}{@{}lccc@{}}
 \toprule
-Component & Rise under stress (nats) & $p$, i.i.d. & $p$, blocks \\
+Component & Rise under stress (nats) & Null (mean) & $p$ \\
 \midrule
-Total coupling & $+1.61$ & $<0.005$ & $<0.005$ \\
-\textbf{Between segments} & $\mathbf{+0.19}$ & $<0.005$ & $\mathbf{<0.005}$ \\
-Within: equities / intermediaries & $+0.46$ / $+0.48$ & $<0.005$ & $<0.005$ / $0.045$ \\
-Within: bonds / FX & $+0.34$ / $+0.14$ & $<0.005$ & $<0.005$ \\
-Equities -- intermediaries & $+0.096$ & $<0.005$ & $0.025$ \\
-Bonds -- FX & $+0.055$ & $<0.005$ & $<0.005$ \\
-Bonds -- intermediaries & $+0.040$ & $<0.005$ & $0.050$ \\
-Money market -- other segments & $\approx 0$ & n.s. & n.s. \\
+Total coupling & $+1.61$ & $+0.21$ & $<0.005$ \\
+\textbf{Between segments} & $\mathbf{+0.19}$ & $+0.02$ & $\mathbf{<0.005}$ \\
+Within: equities / intermediaries & $+0.46$ / $+0.48$ & $+0.05$ / $+0.14$ & $<0.005$ \\
+Within: bonds / FX & $+0.34$ / $+0.14$ & $0.00$ / $0.00$ & $<0.005$ \\
+Equities -- intermediaries & $+0.096$ & $+0.011$ & $<0.005$ \\
+Bonds -- FX & $+0.055$ & $+0.004$ & $<0.005$ \\
+Bonds -- intermediaries & $+0.040$ & $+0.003$ & $<0.005$ \\
+Money market -- other segments & $\approx 0$ & $\approx 0$ & n.s. \\
 \bottomrule
 \end{tabular}
-\caption{Euro area: stress-minus-calm rise against the two nulls (200
-repetitions each). Stress is the top decile of the equity block's volatility,
+\caption{Euro area: stress-minus-calm rise against the i.i.d.\ null (200
+repetitions). Stress is the top decile of the equity block's volatility,
 threshold computed on the past only.}
 \label{tab:cb-euro}
 \end{table}
@@ -851,7 +878,8 @@ areas: CEPR recessions.}
 
 Three readings (table~\ref{tab:cb-euro} and figure~\ref{fig:cb-euro}).
 \begin{itemize}
-\item \emph{Stress ties segments together}, beyond both nulls. Every pair
+\item \emph{Stress ties segments together}, well beyond the null (the
+between-segment rise is nine times that of the null). Every pair
 outside the money market rises; the links between equities and intermediaries
 and with FX are the clearest.
 \item \emph{The sovereign--bank link stands out.} Mutual information between
@@ -930,13 +958,17 @@ estimated moments.
 \subsection{Limitations}
 
 \begin{itemize}
-\item \emph{Few results survive.} Only coupling under stress passes both nulls
-on every panel. Jumps, relaxation and sign are not established.
+\item \emph{Only part of the predictions survives.} Coupling under stress,
+the composition of crises, and the amplitude and persistence of the index
+pass the null on both panels. One-sided jumps, thickening tails, the link
+between tails and correlations and the daily sign are not established.
+\item \emph{A single null.} The i.i.d.\ null destroys all dynamics. It does not
+say whether the dynamics detected exceed those produced by mere volatility
+clustering at the monthly scale; we count those as part of the phenomenon
+the measure must capture (section~\ref{sec:placebo}).
 \item \emph{Return periods are not validated.} The severity ladder is about
 twice too mild compared with history (table~\ref{tab:ladder}). Only relative
 comparisons (overpayment, composition) withstand this flaw.
-\item \emph{H8 is retained only against the i.i.d.\ null.} It serves only to
-calibrate a composition and should not be used to tell crisis types apart.
 \item \emph{Nothing here forecasts.} The measures are diagnostic.
 \item \emph{Shape is estimated asset by asset.} Non-linear tail dependence is
 left out of $\JJ$, which therefore understates the true divergence, especially
@@ -1146,7 +1178,7 @@ the \citet{dm1995} test.
 \paragraph{Raw stress-regime results (S\&P~500).} Under stress ($1,076$ dates
 against $6,481$), scale rises by $5.97$~nats, dependence falls by $0.99$, shape
 rises by $0.27$ ($p=0.16$), $\JJ$ rises by $1.94$ ($p<0.001$, but without
-passing the nulls). Average correlation goes from $0.26$ to $0.32$, the
+passing the null). Average correlation goes from $0.26$ to $0.32$, the
 effective number of modes from $13.1$ to $11.4$. Market skewness does not
 change significantly between regimes: the skewness signature is a property of
 jumps, not of the regime. The index shares about a fifth of its variance with
@@ -1156,16 +1188,17 @@ volatility ($r=0.46$), and the shape channel is orthogonal to it ($r=0.08$).
 \centering
 \footnotesize
 \resizebox{\linewidth}{!}{%
-\begin{tabular}{@{}llrrrrrl@{}}
+\begin{tabular}{@{}llrrrrl@{}}
 \toprule
-& & & \multicolumn{2}{c}{i.i.d.\ null} & \multicolumn{2}{c}{21-day block null} & \\
-\cmidrule(lr){4-5}\cmidrule(lr){6-7}
-& Statistic & Obs. & mean & 5--95\,\% & mean & 5--95\,\% & Verdict \\
+& & & \multicolumn{3}{c}{i.i.d.\ null} & \\
+\cmidrule(lr){4-6}
+& Statistic & Obs. & mean & 5--95\,\% & $p$ & Verdict \\
 \midrule
 \input{tables/tab_placebo_sp500_en.tex}
 \end{tabular}}
-\caption{S\&P~500: observed statistics against the two nulls, 200 repetitions
-each. ``Wrong side'': the null exceeds the data. Gaps: stress minus calm.}
+\caption{S\&P~500: observed statistics against the i.i.d.\ null, 200
+repetitions. $p$: share of repetitions at least as extreme in the predicted
+direction. ``Wrong side'': the null exceeds the data. Gaps: stress minus calm.}
 \label{tab:placebo}
 \end{table}
 
@@ -1173,36 +1206,17 @@ each. ``Wrong side'': the null exceeds the data. Gaps: stress minus calm.}
 \centering
 \footnotesize
 \resizebox{\linewidth}{!}{%
-\begin{tabular}{@{}llrrrrrl@{}}
+\begin{tabular}{@{}llrrrrl@{}}
 \toprule
-& & & \multicolumn{2}{c}{i.i.d.\ null} & \multicolumn{2}{c}{21-day block null} & \\
-\cmidrule(lr){4-5}\cmidrule(lr){6-7}
-& Statistic & Obs. & mean & 5--95\,\% & mean & 5--95\,\% & Verdict \\
+& & & \multicolumn{3}{c}{i.i.d.\ null} & \\
+\cmidrule(lr){4-6}
+& Statistic & Obs. & mean & 5--95\,\% & $p$ & Verdict \\
 \midrule
 \input{tables/tab_placebo_ff49_en.tex}
 \end{tabular}}
 \caption{FF49 industries, 1990--2026: same conventions as
 table~\ref{tab:placebo}.}
 \label{tab:placebo-ff49}
-\end{table}
-
-\begin{table}[htbp]
-\centering
-\small
-\begin{tabular}{@{}rrrl@{}}
-\toprule
-Block length (days) & null mean & 5--95\,\% & Verdict \\
-\midrule
-1 (i.i.d.) & $0.26$ & $0.18$--$0.33$ & passes \\
-5 & $0.31$ & $0.23$--$0.41$ & passes \\
-10 & $0.35$ & $0.27$--$0.45$ & marginal ($p=0.08$) \\
-21 & $0.43$ & $0.33$--$0.54$ & fails \\
-42 / 63 / 126 & $0.49$ / $0.51$ / $0.47$ & $0.40$--$0.60$ & fails \\
-\bottomrule
-\end{tabular}
-\caption{H8 on the S\&P~500: observed share of dependence-dominated episodes
-($0.46$) against the block null, by block length.}
-\label{tab:blocksens}
 \end{table}
 
 \begin{figure}[htbp]

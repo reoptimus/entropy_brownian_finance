@@ -40,7 +40,7 @@ to geometric Brownian motion, the decomposition of entropy into three channels
 and the structural index $\JJ=\KL{p}{\prod_i q_i}$, the jump-diffusion dynamics
 (one theorem, two postulates, and the Ornstein--Uhlenbeck structure forced by
 Doob's theorem), the empirical programme H1--H8 with its verdict against the
-calibrated nulls, and the full geometry of Kullback--Leibler-ball scenarios. Two
+calibrated null, and the full geometry of Kullback--Leibler-ball scenarios. Two
 results are new relative to arXiv~v1. The first is a block decomposition
 identity for the dependence channel, which links this document to the main
 paper. The second shows that the full-dimensional lift of a portfolio scenario
@@ -56,11 +56,13 @@ variance. The second point corrects a remark in v1.
 \addcontentsline{toc}{section}{Foreword}
 
 \paragraph{How it relates to the main paper.} The October 2026 assessment found
-that a single result of arXiv~v1 clears both calibrated nulls on both panels:
-the regime gap of the dependence channel $H^{dep}=\tfrac12\log\det R$. Phase~A
+that the most robust result of arXiv~v1, present on both panels, is the
+regime gap of the dependence channel $H^{dep}=\tfrac12\log\det R$. Phase~A
 confirmed it in three forms (raw, Forbes--Rigobon devolatilised, rank-based) and
 showed that the absorption ratio of \citet{kritzman2011}, the benchmark measure
-of the same family, fails the block null on both panels. The main paper is
+of the same family, fails the i.i.d.\ null on the twenty stocks. The only null
+retained is the i.i.d.\ null: a 21-day block null would keep the within-month
+dynamics of crises, which is part of what the measure must capture. The main paper is
 therefore rebuilt around an ``entropic CISS'' in the sense of
 \citet{hollo2012}: the dependence channel of a multi-market panel, its
 within/between-block decomposition, central-bank-style validation, and the
@@ -68,7 +70,7 @@ pricing of published scenarios in nats.
 
 Everything else leaves the body of the paper. Not because it is wrong: the
 mathematical results remain exact. It is because these elements are not needed
-for the indicator, or because they do not survive the nulls and therefore
+for the indicator, or because they do not survive the null and therefore
 cannot ground a surveillance tool. Collecting them here serves two purposes. A
 referee who asks where the dependence channel comes from, and why it is this
 channel rather than the full structural index, finds the answer. A reader who
@@ -91,12 +93,12 @@ Item & Status & Empirical verdict & Section \\
 Gaussian maximum entropy & theorem & --- & \ref{sec:bridge} \\
 Volume bridge (MDH, subordinated Brownian motion) & argument under assumptions & not tested here & \ref{sec:bridge} \\
 Three-channel decomposition & exact identity & --- & \ref{sec:channels} \\
-Structural index $\JJ$ as a divergence & exact identity & range clears both nulls & \ref{sec:channels} \\
+Structural index $\JJ$ as a divergence & exact identity & range clears the null & \ref{sec:channels} \\
 Downward entropy jumps & theorem (on average) & not directly estimable & \ref{sec:dynamics} \\
-Relaxation (P1) & postulate & half-life not identified & \ref{sec:dynamics} \\
-One-sided constraint (P2) & postulate & not established (H5) & \ref{sec:dynamics} \\
+Relaxation (P1) & postulate & persistence established, not by episode & \ref{sec:dynamics} \\
+One-sided constraint (P2) & postulate & by episode only (H5) & \ref{sec:dynamics} \\
 Tail--correlation coupling & consequence & not identified (H6) & \ref{sec:dynamics} \\
-Dependence channel under stress & finding & \textbf{clears both nulls} & \ref{sec:program}, \ref{sec:blocks} \\
+Dependence channel under stress & finding & \textbf{clears the null} & \ref{sec:program}, \ref{sec:blocks} \\
 KL ball, $1$~nat $=\sqrt2\,\sigma$ & theorem & --- & \ref{sec:stress} \\
 Minimal lift (rank one) & theorem (new) & --- & \ref{sec:stress} \\
 Radius calibrated on the flow & rule & too mild against history & \ref{sec:stress} \\
@@ -113,7 +115,7 @@ cross-references, the text of the reference French version
 (\texttt{paper/main\_fr.tex}), which supersedes \texttt{paper/main.tex} for
 the dynamics section and the appendices. Sections~\ref{sec:program} to
 \ref{sec:open} are written for this document. Every number quoted comes from the
-same code (\texttt{python -m src.run\_empirical}, two-hundred-replication nulls,
+same code (\texttt{python -m src.run\_empirical}, two-hundred-replication null,
 Phase~A); none was recomputed for this supplement.
 
 \section*{Notation}

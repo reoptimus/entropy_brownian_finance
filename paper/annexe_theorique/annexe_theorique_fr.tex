@@ -42,7 +42,7 @@ temps-volume au mouvement brownien géométrique, la décomposition de l'entropi
 en trois canaux et l'indice structurel $\JJ=\KL{p}{\prod_i q_i}$, la dynamique
 de saut et diffusion (un théorème, deux postulats, la structure
 d'Ornstein--Uhlenbeck imposée par le théorème de Doob), le programme empirique
-H1--H8 avec son verdict face aux témoins calibrés, et la géométrie complète des
+H1--H8 avec son verdict face au témoin calibré, et la géométrie complète des
 scénarios en boule de Kullback--Leibler. Deux résultats sont nouveaux par
 rapport à la version arXiv~v1. Le premier est une identité de décomposition par
 blocs du canal de dépendance, qui relie ce document au papier principal. Le
@@ -59,19 +59,22 @@ plus en variance. Ce second point corrige une remarque de la v1.
 \addcontentsline{toc}{section}{Avant-propos}
 
 \paragraph{L'articulation avec le papier principal.} L'évaluation d'octobre 2026
-a conclu qu'un seul résultat de la version arXiv~v1 franchit les deux témoins
-calibrés sur les deux panels : l'écart de régime du canal de dépendance
+a conclu que le résultat le plus solide de la version arXiv~v1, présent sur
+les deux panels, est l'écart de régime du canal de dépendance
 $H^{dep}=\tfrac12\log\det R$. La phase~A l'a confirmé sous trois formes (brute,
 dévolatilisée à la Forbes--Rigobon, en rangs) et a montré que le ratio
 d'absorption de \citet{kritzman2011}, mesure de référence de la même famille,
-échoue au témoin par blocs. Le papier principal se reconstruit donc autour d'un
+échoue au témoin i.i.d.\ sur les vingt actions. Le seul témoin retenu est le
+témoin i.i.d. : un témoin par blocs de 21~jours conserverait la dynamique
+intra-mensuelle des crises, qui fait partie de ce que la mesure doit
+capturer. Le papier principal se reconstruit donc autour d'un
 \og CISS entropique \fg{} au sens de \citet{hollo2012} : canal de dépendance d'un
 panel multi-marchés, décomposition intra/inter-blocs, validation à la manière
 des banques centrales, et audit des scénarios publiés en nats.
 
 Tout le reste sort du corps du texte. Ce n'est pas parce que c'est faux : les
 résultats mathématiques restent exacts. C'est parce que ces éléments ne sont
-pas nécessaires à l'indicateur, ou parce qu'ils ne survivent pas aux témoins et
+pas nécessaires à l'indicateur, ou parce qu'ils ne survivent pas au témoin et
 ne peuvent donc pas fonder un outil de surveillance. Les rassembler ici a deux
 usages. Un rapporteur qui demande d'où vient le canal de dépendance, et pourquoi
 c'est lui et pas l'indice structurel complet, trouve la réponse. Un lecteur qui
@@ -94,12 +97,12 @@ franchissent ou non). Le tableau~\ref{tab:statut} en donne la carte.
 Maximum d'entropie gaussien & théorème & --- & \ref{sec:bridge} \\
 Pont volume (MDH, brownien subordonné) & argument sous hypothèses & non testé ici & \ref{sec:bridge} \\
 Décomposition en trois canaux & identité exacte & --- & \ref{sec:channels} \\
-Indice structurel $\JJ$ comme divergence & identité exacte & étendue franchit les deux témoins & \ref{sec:channels} \\
+Indice structurel $\JJ$ comme divergence & identité exacte & étendue franchit le témoin & \ref{sec:channels} \\
 Sauts d'entropie vers le bas & théorème (en moyenne) & non estimable directement & \ref{sec:dynamics} \\
-Relaxation (P1) & postulat & demi-vie non identifiée & \ref{sec:dynamics} \\
-Contrainte unilatérale (P2) & postulat & non établie (H5) & \ref{sec:dynamics} \\
+Relaxation (P1) & postulat & persistance établie, pas par épisode & \ref{sec:dynamics} \\
+Contrainte unilatérale (P2) & postulat & par épisode seulement (H5) & \ref{sec:dynamics} \\
 Couplage queues--corrélation & conséquence & non identifié (H6) & \ref{sec:dynamics} \\
-Canal de dépendance sous stress & constat & \textbf{franchit les deux témoins} & \ref{sec:program}, \ref{sec:blocks} \\
+Canal de dépendance sous stress & constat & \textbf{franchit le témoin} & \ref{sec:program}, \ref{sec:blocks} \\
 Boule KL, $1$~nat $=\sqrt2\,\sigma$ & théorème & --- & \ref{sec:stress} \\
 Relèvement minimal (rang un) & théorème (nouveau) & --- & \ref{sec:stress} \\
 Calibration du rayon sur le flux & règle & trop douce face à l'histoire & \ref{sec:stress} \\
@@ -115,7 +118,7 @@ Décomposition par blocs & identité (nouvelle ici) & objet du papier principal 
 des retouches de renvois, le texte de la version française de référence
 (\texttt{paper/main\_fr.tex}). Les sections~\ref{sec:program} à
 \ref{sec:open} sont rédigées pour ce document. Tous les chiffres cités
-proviennent du même code (\texttt{python -m src.run\_empirical}, témoins à
+proviennent du même code (\texttt{python -m src.run\_empirical}, témoin à
 deux cents réplications, phase~A) ; aucun n'a été recalculé pour cette annexe.
 
 \section*{Notations}
@@ -690,7 +693,7 @@ donné la proposition~\ref{prop:conditioning}, le couplage découle du caractèr
 commun de la nouvelle. Seul le \emph{signe} exige P\ref{p:sign}.
 
 
-\section{Le programme empirique H1--H8 et ce que les témoins en laissent}
+\section{Le programme empirique H1--H8 et ce que le témoin en laisse}
 \label{sec:program}
 
 Cette section résume, sans les reproduire, les estimateurs et les tests de la
@@ -742,13 +745,14 @@ et le postulat~P\ref{p:relax}. Une simulation gaussienne i.i.d., sans aucun
 événement, produit déjà une demi-vie apparente de 35~jours et 37~sauts positifs
 contre aucun négatif au filtre à quatre sigmas.
 
-D'où deux témoins, construits en rééchantillonnant la matrice de rendements
+D'où un témoin, construit en rééchantillonnant la matrice de rendements
 observée et en faisant tourner la chaîne identique deux cents fois : le témoin
 \emph{i.i.d.} (lignes tirées indépendamment, queues marginales et dépendance
-transversale conservées, toute chronologie détruite) et le témoin \emph{par
-blocs} de 21~jours (qui conserve en outre le regroupement de volatilité). Une
-statistique qui franchit les deux est une preuve ; une statistique qui en
-franchit un seul n'est pas identifiée.
+transversale conservées, toute chronologie détruite). Une statistique qui le
+franchit est une preuve. Nous n'utilisons pas de témoin par blocs de
+21~jours : il conserverait le regroupement de volatilité et la dynamique
+intra-mensuelle des crises, c'est-à-dire précisément les effets à l'échelle de
+quelques semaines que la théorie cherche à décrire.
 
 \subsection{Le verdict}
 
@@ -757,37 +761,38 @@ franchit un seul n'est pas identifiée.
 \small
 \begin{tabular}{@{}llrrrl@{}}
 \toprule
-& Statistique & Données & i.i.d. & blocs-21 & Verdict \\
+& Statistique & Données & i.i.d. & $p$ & Verdict \\
 \midrule
-H1 & écart de régime $H^{dep}$ & $-0{,}99$ & $-0{,}21$ & $-0{,}51$ & \textbf{franchit les deux} \\
-H1 & écart de régime $\JJ$ & $1{,}93$ & $2{,}14$ & $1{,}97$ & échoue aux deux \\
-H1 & écart de régime $\DD$ & $0{,}27$ & $1{,}25$ & $0{,}65$ & à contre-sens \\
-H2 & $\beta$ (stress) & $0{,}20$ & $0{,}05$ & $0{,}11$ & échoue aux deux \\
-H3 & sauts positifs & $158$ & $148{,}5$ & $133{,}2$ & blocs seulement \\
-H3 & asymétrie de $\Delta\JJ$ & $12{,}26$ & $14{,}80$ & $12{,}97$ & à contre-sens \\
-H4 & demi-vie (jours) & $120{,}8$ & $92{,}1$ & $162{,}8$ & entre les deux \\
-H4 & étendue de $\JJ$ & $18{,}95$ & $10{,}05$ & $13{,}77$ & \textbf{franchit les deux} \\
-H5 & $\mathrm{corr}(\Delta\JJ,\Delta S_{mkt})$ & $-0{,}24$ & $-0{,}04$ & $-0{,}07$ & échoue aux deux \\
-H6 & écart de couplage & $0{,}59$ & $0{,}77$ & $0{,}67$ & à contre-sens \\
+H1 & écart de régime $H^{dep}$ & $-0{,}99$ & $-0{,}21$ & $<0{,}005$ & \textbf{franchit} \\
+H1 & écart de régime $\JJ$ & $1{,}93$ & $2{,}14$ & $0{,}67$ & échoue \\
+H1 & écart de régime $\DD$ & $0{,}27$ & $1{,}25$ & $1{,}00$ & à contre-sens \\
+H2 & $\beta$ (stress) & $0{,}20$ & $0{,}05$ & $0{,}40$ & échoue \\
+H3 & sauts positifs & $158$ & $148{,}5$ & $0{,}14$ & échoue \\
+H3 & asymétrie de $\Delta\JJ$ & $12{,}26$ & $14{,}80$ & $0{,}95$ & à contre-sens \\
+H4 & demi-vie (jours) & $120{,}8$ & $92{,}1$ & $<0{,}005$ & \textbf{franchit} \\
+H4 & étendue de $\JJ$ & $18{,}95$ & $10{,}05$ & $<0{,}005$ & \textbf{franchit} \\
+H5 & $\mathrm{corr}(\Delta\JJ,\Delta S_{mkt})$ & $-0{,}24$ & $-0{,}04$ & $0{,}10$ & échoue \\
+H5 & part d'épisodes à asymétrie en baisse & $62\,\%$ & $50\,\%$ & $0{,}015$ & \textbf{franchit} \\
+H6 & écart de couplage & $0{,}59$ & $0{,}77$ & $0{,}99$ & à contre-sens \\
 H7 & gain hors échantillon & \multicolumn{3}{c}{aucun sur deux panels} & rejetée \\
-H8 & part d'épisodes à dominante dépendance & $46\,\%$ & $19$--$33\,\%$ & n.i. & i.i.d.\ seulement \\
+H8 & part d'épisodes à dominante dépendance & $46\,\%$ & $26\,\%$ & $<0{,}005$ & \textbf{franchit} \\
 \bottomrule
 \end{tabular}
-\caption{Verdicts face aux témoins (moyennes de deux cents réplications),
+\caption{Verdicts face au témoin i.i.d.\ (moyennes de deux cents réplications),
 panel principal de vingt titres du S\&P~500, 1990--2022. Source :
-\texttt{paper/tables/tab\_placebo\_sp500.tex} et sections H7--H8 de la v1.
-n.i.\ : non identifié, à toute longueur de bloc testée entre 5 et 126~jours.}
+\texttt{paper/tables/tab\_placebo\_sp500.tex}, \texttt{sp500\_episode\_null\_200rep.csv}
+et sections H7--H8 de la v1.}
 \label{tab:program}
 \end{table}
 
-Deux statistiques franchissent les deux témoins sur le panel principal, et une
-seule se reproduit sur les 48~portefeuilles sectoriels de Kenneth French :
-l'écart de régime du canal de dépendance ($-3{,}65$~nats contre $-0{,}56$ et
-$-2{,}46$). La phase~A l'a ensuite durci : il tient en version dévolatilisée
-(Forbes--Rigobon) et en version en rangs, cette dernière étant la plus forte
-face au témoin par blocs ($p=0{,}03$ sur le S\&P~500, $0{,}01$ sur les secteurs),
-alors que le ratio d'absorption de \citet{kritzman2011} échoue au témoin par
-blocs sur les deux panels.
+Quatre statistiques franchissent le témoin sur le panel principal comme sur
+les 48~portefeuilles sectoriels de Kenneth French : l'écart de régime du canal
+de dépendance ($-3{,}65$~nats contre $-0{,}56$ sur les secteurs), l'étendue et
+la demi-vie de $\JJ$, et la part d'épisodes à dominante dépendance. Le plus fort
+est le canal de dépendance. La phase~A l'a durci : il tient en version
+dévolatilisée (Forbes--Rigobon) et en version en rangs, cette dernière étant la
+plus forte ($9{,}6$ et $12{,}7$ écarts-types du témoin), alors que le ratio
+d'absorption de \citet{kritzman2011} échoue au témoin sur les vingt actions.
 
 \subsection{Ce que le verdict dit de la théorie}
 
@@ -799,10 +804,14 @@ théorèmes. La proposition~\ref{prop:conditioning} aussi. Aucun résultat empir
 ne peut les réfuter ; il peut seulement montrer que les estimateurs disponibles
 ne permettent pas de les voir à l'\oe uvre.
 
-\paragraph{Ce qui est touché.} Les deux postulats. P\ref{p:relax} n'est soutenu
-que par l'amplitude (l'étendue de $\JJ$), pas par un taux de relaxation : la
-demi-vie se situe entre les deux témoins et son niveau dépend du témoin
-choisi. P\ref{p:sign} n'est pas établi (H5). Le couplage des canaux (H6), que la
+\paragraph{Ce qui est touché.} Les deux postulats, en partie. P\ref{p:relax}
+est soutenu par l'amplitude (l'étendue de $\JJ$) et par la persistance : la
+demi-vie de $\JJ$ ($121$~jours) dépasse la mémoire mécanique de l'estimateur
+($92$~jours dans le témoin). Épisode par épisode, en revanche, la relaxation
+depuis le pic n'est pas plus lente que dans le témoin : la persistance vient de
+l'enchaînement des journées agitées plutôt que d'une absorption lente de chaque
+choc. P\ref{p:sign} n'est établi qu'à l'échelle des épisodes (H5), pas jour par
+jour. Le couplage des canaux (H6), que la
 section~\ref{sec:dynamics} dérivait du caractère commun de la nouvelle, est
 reproduit et même dépassé par des données rééchantillonnées.
 
@@ -815,10 +824,11 @@ gros rendement isolé déplace peu ces petites valeurs propres. À l'inverse, le
 canal de forme $\DD$ réagit fortement à une seule observation extrême, ce qui
 est exactement la signature que reproduit le témoin. Les mesures de
 concentration (ratio d'absorption, part de la première valeur propre) ne
-regardent que le haut du spectre, où le témoin par blocs les rattrape.
+regardent que le haut du spectre, où l'écart au témoin est plus faible.
 
-\paragraph{Conséquence pour le papier principal.} L'indicateur retient le seul
-canal identifié, en abandonnant $\DD$ et donc $\JJ$. La théorie des
+\paragraph{Conséquence pour le papier principal.} L'indicateur retient le canal
+le plus fortement identifié, celui de dépendance, en abandonnant $\DD$, qui ne
+franchit pas le témoin, et donc $\JJ$. La théorie des
 sections~\ref{sec:channels} et~\ref{sec:dynamics} reste la justification de
 \emph{pourquoi} ce canal mesure une information partagée (la
 multi-information gaussienne, équation~\eqref{eq:ceiling} et annexe~\ref{app:gauss}),
