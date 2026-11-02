@@ -303,8 +303,8 @@ the estimator's own memory. \\
 H5 & \emph{Sign.} Jumps and upward episodes of $\JJ$ coincide with negative market skewness. \\
 H6 & \emph{Channel coupling.} Dependence and tails move independently in calm
 markets and together under stress. \\
-H7 & \emph{Forecasting.} Today's entropy improves, out of sample, the forecast
-of risk over the next 21~days beyond volatility. \\
+H7 & \emph{Forecasting.} Today's entropy improves, out of sample, the
+short-term forecast of risk beyond volatility. \\
 H8 & \emph{Crisis composition.} In crisis episodes, dependence is the dominant
 channel more often than in data without dynamics. \\
 \bottomrule
@@ -405,7 +405,8 @@ H4 range of $\JJ$ & $18.95$ nats & \textbf{passes} & \textbf{passes} \\
 H5 sign, daily & correlation $-0.24$ & fails ($p=0.10$) & fails \\
 H5 sign, by episode & skewness falls in $62\,\%$ & \textbf{passes} & not tested \\
 H6 channel coupling & $0.04$ calm, $0.63$ stress & null stronger & null stronger \\
-H7 forecasting & gain $\le 3\,\%$, $p=0.23$ & rejected & --- \\
+H7 forecasting, 5--10 days & gain of $3.5\,\%$ ($p=0.03$ at 5~days) & not robust to multiple testing & \textbf{passes} (gain $5\,\%$) \\
+H7 forecasting, 21--63 days & zero or negative gain & rejected & rejected \\
 H8 composition & dependence dominant $46\,\%$ & \textbf{passes} & \textbf{passes} \\
 \bottomrule
 \end{tabular}}
@@ -538,17 +539,48 @@ exceed the null on the twenty stocks ($p=0.40$); it does on industries
 therefore not common to both panels.
 \end{itemize}
 
-\subsection{Entropy describes, it does not forecast (H7)}
+\subsection{A weak short-term predictive power (H7)}
 
 The question is: does knowing today's entropy say anything about risk over the
-next three weeks that today's volatility does not already say? We compare a
-model using volatility only with a model that adds an entropy channel. Both are
+next few days that today's volatility does not already say? We compare a model
+using volatility only with a model that adds an entropy channel. Both are
 estimated on the past only, re-estimated each year, and compared on dates they
-have not seen. No channel improves the forecast of volatility, drawdown or
-worst loss: the best gain is $3.3\,\%$ in squared error, with $p=0.23$. In the
-estimation sample, by contrast, every coefficient looks highly significant
-($p<10^{-4}$): the classic trap of overlapping windows. Entropy measures are
-therefore \emph{diagnostic}, not predictive.
+have not seen, spaced by the forecast horizon so that forecast periods do not
+overlap (\citet{dm1995} test). We repeat the test at four horizons: 5, 10, 21
+and 63 trading days (table~\ref{tab:h7}).
+
+\begin{table}[htbp]
+\centering
+\small
+\begin{tabular}{@{}lrrrr@{}}
+\toprule
+Horizon (trading days) & 5 & 10 & 21 & 63 \\
+\midrule
+S\&P~500, 20 stocks & $-3.5\,\%$ ($0.03$) & $-3.5\,\%$ ($0.09$) & $-3.3\,\%$ ($0.23$) & $+1.0\,\%$ ($1.00$) \\
+FF49, 48 sectors & $\mathbf{-5.4\,\%}$ ($\mathbf{0.001}$) & $-5.2\,\%$ ($0.009$) & $-4.2\,\%$ ($0.09$) & $+4.2\,\%$ ($0.16$) \\
+\bottomrule
+\end{tabular}
+\caption{Change in the squared error of the realised-volatility forecast when
+the unhealed-shock indicator ($\JJ_t/\max_{252\,\text{d}}\JJ$) is added to
+volatility; negative = better forecast. In parentheses, Diebold--Mariano
+$p$-value. In bold: the only case that remains significant after a Bonferroni
+correction for the 15 tests of a horizon (5 indicators, 3 targets).}
+\label{tab:h7}
+\end{table}
+
+The result depends on the horizon. At 5 and 10 days, the unhealed-shock
+indicator, which measures the share of the last peak of $\JJ$ not yet
+reabsorbed, improves the forecast by $3$ to $5\,\%$ on both panels, and in the
+same direction for drawdown and worst loss. The gain shrinks at 21 days, where
+it is no longer significant, and reverses at 63 days: at long horizons, adding
+entropy worsens the forecast. The signal is therefore real but weak and short
+lived, consistent with an index that jumps and is reabsorbed within a few
+weeks. Two caveats limit its reach: only the FF49 case at 5 days survives the
+multiple-testing correction, and the 21-day horizon was fixed before the
+others. Finally, in the estimation sample every coefficient looks highly
+significant ($p<10^{-4}$): the trap of overlapping windows, which would
+suggest a much stronger predictive power. Entropy measures are first of all
+\emph{diagnostic}, with a modest short-term predictive contribution.
 
 \subsection{How crises split their intensity (H8)}
 \label{sec:h8}
@@ -973,7 +1005,9 @@ the measure must capture (section~\ref{sec:placebo}).
 \item \emph{Return periods are not validated.} The severity ladder is about
 twice too mild compared with history (table~\ref{tab:ladder}). Only relative
 comparisons (overpayment, composition) withstand this flaw.
-\item \emph{Nothing here forecasts.} The measures are diagnostic.
+\item \emph{A modest predictive power.} The measures are mainly diagnostic:
+their contribution to forecasting is $3$ to $5\,\%$ at 5--10~days, nil beyond,
+and survives multiple testing on one panel only.
 \item \emph{Shape is estimated asset by asset.} Non-linear tail dependence is
 left out of $\JJ$, which therefore understates the true divergence, especially
 under stress.
@@ -1176,7 +1210,7 @@ four times a local bipower-variation scale lagged by one day \citep{bns2004}.
 \paragraph{Inference.} Two consecutive rolling windows share 251 of their 252
 days. Regime comparisons therefore use a 252-day circular block bootstrap. The
 relaxation $p$-value follows the Dickey--Fuller distribution. Forecasts (H7)
-are re-estimated each year on the past, compared on dates 21 days apart, with
+are re-estimated each year on the past, compared on dates spaced by the forecast horizon, with
 the \citet{dm1995} test.
 
 \paragraph{Raw stress-regime results (S\&P~500).} Under stress ($1,076$ dates
