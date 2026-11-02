@@ -23,8 +23,8 @@
 
 \title{Mesurer la sévérité des scénarios de stress en nats :\\
 ce que l'entropie apporte aux concepteurs de tests de résistance}
-\author{Version de travail}
-\date{Octobre 2026}
+\author{Sébastien Gallet}
+\date{Novembre 2026}
 
 \begin{document}
 \maketitle
@@ -327,7 +327,7 @@ négative. \\
 H6 & \emph{Couplage des canaux.} Dépendance et queues bougent indépendamment en
 marché calme et ensemble sous stress. \\
 H7 & \emph{Prévision.} L'entropie d'aujourd'hui améliore, hors échantillon, la
-prévision du risque des 21~jours suivants au-delà de la volatilité. \\
+prévision du risque à court terme au-delà de la volatilité. \\
 H8 & \emph{Composition des crises.} Dans les épisodes de crise, la dépendance
 est plus souvent le canal dominant que dans des données sans dynamique. \\
 \bottomrule
@@ -434,7 +434,8 @@ H4 étendue de $\JJ$ & $18{,}95$ nats & \textbf{franchit} & \textbf{franchit} \\
 H5 signe, par jour & corrélation $-0{,}24$ & échoue ($p=0{,}10$) & échoue \\
 H5 signe, par épisode & asymétrie en baisse dans $62\,\%$ & \textbf{franchit} & non testé \\
 H6 couplage des canaux & $0{,}04$ calme, $0{,}63$ stress & témoin plus fort & témoin plus fort \\
-H7 prévision & gain $\le 3\,\%$, $p=0{,}23$ & rejetée & --- \\
+H7 prévision, 5--10 jours & gain de $3{,}5\,\%$ ($p=0{,}03$ à 5~jours) & non robuste aux tests multiples & \textbf{franchit} (gain $5\,\%$) \\
+H7 prévision, 21--63 jours & gain nul ou négatif & rejetée & rejetée \\
 H8 composition & dépendance dominante $46\,\%$ & \textbf{franchit} & \textbf{franchit} \\
 \bottomrule
 \end{tabular}}
@@ -526,9 +527,13 @@ Ratio d'absorption & $0{,}7$ ($0{,}215$) & $6{,}9$ ($<0{,}005$) \\
 Part de la 1\textsuperscript{re} valeur propre & $5{,}3$ ($<0{,}005$) & $6{,}7$ ($<0{,}005$) \\
 \bottomrule
 \end{tabular}
-\caption{Hausse stress moins calme de chaque mesure de dépendance, exprimée
-en écarts-types de la distribution du témoin i.i.d. ; entre parenthèses, la
-part des 200~répétitions au moins aussi extrêmes.}
+\caption{Quelle mesure de dépendance distingue le mieux le stress du calme ?
+Pour chaque mesure, on calcule sa hausse moyenne en période de stress par
+rapport aux périodes calmes, puis on la compare à la même hausse dans le
+témoin i.i.d. Le chiffre indique de combien d'écarts-types la hausse observée
+dépasse celle du témoin : plus il est grand, plus la mesure détecte le stress
+au-delà du hasard. Entre parenthèses, la $p$-valeur (part des 200~répétitions
+du témoin qui font au moins aussi bien).}
 \label{tab:cb-measures}
 \end{table}
 
@@ -572,19 +577,52 @@ sur les secteurs ($0{,}23$ contre $0{,}08$, $p=0{,}03$), où le couplage pèse
 davantage. Le résultat n'est donc pas commun aux deux panels.
 \end{itemize}
 
-\subsection{L'entropie décrit, elle ne prévoit pas (H7)}
+\subsection{Un faible pouvoir prédictif à court terme (H7)}
 
 La question posée est la suivante : connaître l'entropie aujourd'hui dit-il
-quelque chose sur le risque des trois prochaines semaines que la volatilité
+quelque chose sur le risque des prochains jours que la volatilité
 d'aujourd'hui ne dit pas déjà ? Nous comparons un modèle qui n'utilise que la
 volatilité à un modèle qui ajoute un canal d'entropie. Les deux sont estimés
 sur le passé seulement, réestimés chaque année, et comparés sur des dates
-qu'ils n'ont pas vues. Aucun canal n'améliore la prévision de la volatilité,
-du drawdown ou de la pire perte : le meilleur gain est de $3{,}3\,\%$ d'erreur
-quadratique, avec $p=0{,}23$. Dans l'échantillon d'estimation, en revanche,
-tous les coefficients paraissent hautement significatifs ($p<10^{-4}$) :
-c'est le piège classique des fenêtres qui se chevauchent. Les mesures
-d'entropie sont donc \emph{diagnostiques}, pas prédictives.
+qu'ils n'ont pas vues, espacées de l'horizon de prévision pour que les
+périodes prévues ne se chevauchent pas (test de \citet{dm1995}). Nous
+répétons le test à quatre horizons : 5, 10, 21 et 63~jours de bourse
+(tableau~\ref{tab:h7}).
+
+\begin{table}[htbp]
+\centering
+\small
+\begin{tabular}{@{}lrrrr@{}}
+\toprule
+Horizon (jours de bourse) & 5 & 10 & 21 & 63 \\
+\midrule
+S\&P~500, 20 titres & $-3{,}5\,\%$ ($0{,}03$) & $-3{,}5\,\%$ ($0{,}09$) & $-3{,}3\,\%$ ($0{,}23$) & $+1{,}0\,\%$ ($1{,}00$) \\
+FF49, 48 secteurs & $\mathbf{-5{,}4\,\%}$ ($\mathbf{0{,}001}$) & $-5{,}2\,\%$ ($0{,}009$) & $-4{,}2\,\%$ ($0{,}09$) & $+4{,}2\,\%$ ($0{,}16$) \\
+\bottomrule
+\end{tabular}
+\caption{Variation de l'erreur quadratique de prévision de la volatilité
+réalisée quand on ajoute l'indicateur de choc non résorbé
+($\JJ_t/\max_{252\,\text{j}}\JJ$) à la volatilité ; négatif = meilleure
+prévision. Entre parenthèses, $p$-valeur du test de Diebold--Mariano. En
+gras : seul cas qui reste significatif après correction de Bonferroni pour
+les 15~tests d'un horizon (5~indicateurs, 3~cibles).}
+\label{tab:h7}
+\end{table}
+
+Le résultat dépend de l'horizon. À 5 et 10~jours, l'indicateur de choc non
+résorbé, qui mesure la part du dernier pic de $\JJ$ pas encore résorbée,
+améliore la prévision de $3$ à $5\,\%$ sur les deux panels, et dans le même
+sens pour le drawdown et la pire perte. Le gain s'amenuise à 21~jours, où il
+n'est plus significatif, et s'inverse à 63~jours : à long terme, ajouter de
+l'entropie dégrade la prévision. Le signal est donc réel mais faible et de
+courte durée, cohérent avec un indice qui saute puis se résorbe en quelques
+semaines. Deux réserves en limitent la portée : seul le cas FF49 à 5~jours
+survit à la correction pour tests multiples, et l'horizon de 21~jours avait
+été fixé avant les autres. Dans l'échantillon d'estimation, enfin, tous les
+coefficients paraissent hautement significatifs ($p<10^{-4}$) : c'est le
+piège des fenêtres qui se chevauchent, qui ferait croire à un pouvoir
+prédictif bien plus fort. Les mesures d'entropie sont avant tout
+\emph{diagnostiques}, avec un apport prédictif modeste à court terme.
 
 \subsection{Comment les crises répartissent leur intensité (H8)}
 \label{sec:h8}
@@ -1021,7 +1059,9 @@ une partie du phénomène que la mesure doit capturer
 sévérité est environ deux fois trop douce face à l'histoire
 (tableau~\ref{tab:ladder}). Seules les comparaisons relatives (surcoût,
 composition) résistent à ce défaut.
-\item \emph{Rien ici ne prévoit.} Les mesures sont diagnostiques.
+\item \emph{Un pouvoir prédictif modeste.} Les mesures sont surtout
+diagnostiques : leur apport à la prévision est de $3$ à $5\,\%$ à 5--10~jours,
+nul au-delà, et ne survit aux tests multiples que sur un panel.
 \item \emph{La forme est estimée actif par actif.} La dépendance non linéaire
 dans les queues est omise de $\JJ$, qui sous-estime donc la vraie divergence,
 surtout sous stress.
@@ -1235,7 +1275,7 @@ bipuissance décalée d'un jour \citep{bns2004}.
 leurs 252~jours. Les comparaisons de régime utilisent donc un bootstrap par
 blocs circulaires de 252~jours. La $p$-valeur de la relaxation suit la loi de
 Dickey--Fuller. Les prévisions (H7) sont réestimées chaque année sur le passé,
-comparées sur des dates espacées de 21~jours, avec le test de
+comparées sur des dates espacées de l'horizon de prévision, avec le test de
 \citet{dm1995}.
 
 \paragraph{Résultats bruts du régime de stress (S\&P~500).} Sous stress
