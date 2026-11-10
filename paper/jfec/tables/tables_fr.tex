@@ -1,0 +1,182 @@
+\begin{table}[p]\centering\small
+\caption{Hypothèses testées}\label{tab:hyp}
+\begin{tabular}{@{}lp{0.8\linewidth}@{}}\toprule
+& Énoncé \\\midrule
+H1 & \emph{Signature de régime.} Sous stress, le couplage monte, le déficit de forme monte, donc $\JJ$ monte. \\
+H2 & \emph{Compensation.} Quand les volatilités montent, la dépendance absorbe une partie de la hausse d'entropie. \\
+H3 & \emph{Sauts unilatéraux.} Les grands mouvements de $\JJ$ sont des hausses ; les épisodes de hausse sont plus nombreux et plus grands. \\
+H4 & \emph{Relaxation.} Après un épisode, $\JJ$ décroît avec une demi-vie plus longue que la mémoire de l'estimateur. \\
+H5 & \emph{Signe.} Les sauts et les épisodes de hausse coïncident avec une asymétrie négative du marché. \\
+H6 & \emph{Co-mouvement des canaux.} Dépendance et queues bougent indépendamment en marché calme et ensemble sous stress. \\
+H7 & \emph{Prévision.} L'entropie améliore hors échantillon la prévision du risque à court terme au-delà de la volatilité. \\
+H8 & \emph{Composition des crises.} Dans les épisodes de crise, la dépendance est plus souvent le canal dominant que sans dynamique. \\
+\bottomrule\end{tabular}
+\par\medskip\begin{minipage}{0.95\linewidth}\footnotesize
+H3, H4, H5 et H8 portent sur les sauts de $\JJ$ ; elles sont testées jour par jour et par épisode (sauts distants de moins de 40 jours).
+\end{minipage}
+\end{table}
+
+\begin{table}[p]\centering\small
+\caption{Biais à distance finie du couplage empirique sous indépendance}\label{tab:bias}
+\begin{tabular}{@{}rrlrrr@{}}\toprule
+$N$ & Fenêtre $T$ & Loi & $b(N,T)$, eq.~\eqref{eq:bias} & Corrélation empirique & Ledoit--Wolf \\\midrule
+10 & 252 & Gaussienne & 0{,}091 & 0{,}091 (0{,}019) & 0{,}001 (0{,}003) \\
+10 & 252 & Student-$t_5$ & 0{,}091 & 0{,}091 (0{,}019) & 0{,}001 (0{,}003) \\
+20 & 252 & Gaussienne & 0{,}390 & 0{,}389 (0{,}039) & 0{,}002 (0{,}004) \\
+20 & 252 & Student-$t_5$ & 0{,}390 & 0{,}390 (0{,}040) & 0{,}002 (0{,}004) \\
+48 & 252 & Gaussienne & 2{,}409 & 2{,}418 (0{,}102) & 0{,}002 (0{,}004) \\
+48 & 252 & Student-$t_5$ & 2{,}409 & 2{,}404 (0{,}105) & 0{,}002 (0{,}004) \\
+20 & 504 & Gaussienne & 0{,}192 & 0{,}191 (0{,}019) & 0{,}001 (0{,}002) \\
+20 & 504 & Student-$t_5$ & 0{,}192 & 0{,}192 (0{,}020) & 0{,}001 (0{,}002) \\
+\bottomrule\end{tabular}
+\par\medskip\begin{minipage}{0.95\linewidth}\footnotesize
+Moyenne (écart-type) de $C(\hat R)=-\frac12\log\det\hat R$ en nats sur 2\,000 fenêtres simulées (500 pour $N=48$) d'actifs indépendants.
+Les tirages Student-$t_5$ sont indépendants entre actifs. La colonne Ledoit--Wolf applique le rétrécissement utilisé dans la partie empirique.
+\end{minipage}
+\end{table}
+
+\begin{table}[p]\centering\small
+\caption{Taille et puissance du test de couplage : Monte-Carlo}\label{tab:mc}
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{@{}llrrrrrrr@{}}\toprule
+& & Écart moyen & \multicolumn{3}{c}{Rejet à 5\%} & \multicolumn{3}{c}{Rejet à 1\%} \\
+\cmidrule(lr){4-6}\cmidrule(lr){7-9}
+Processus générateur & & (nats) & i.i.d. & CCC-FHS & les deux & i.i.d. & CCC-FHS & les deux \\\midrule
+Student-$t_5$ i.i.d., corrélation constante $0{,}30$ & taille & 0{,}11 & 0{,}030 & 0{,}040 & 0{,}025 & 0{,}005 & 0{,}000 & 0{,}000 \\
+GJR-GARCH(1,1), chocs $t_5$, corrélation constante $0{,}30$ & taille & 0{,}13 & 0{,}170 & 0{,}065 & 0{,}065 & 0{,}050 & 0{,}010 & 0{,}005 \\
+volatilité à régimes markoviens ($\times2{,}5$), corrélation constante & taille & 0{,}12 & 0{,}045 & 0{,}110 & 0{,}045 & 0{,}025 & 0{,}030 & 0{,}010 \\
+volatilité à régimes, corrélation $0{,}30\to0{,}50$ sous stress & puissance & 0{,}40 & 0{,}475 & 0{,}680 & 0{,}460 & 0{,}235 & 0{,}385 & 0{,}190 \\
+\bottomrule\end{tabular}}
+\par\medskip\begin{minipage}{0.95\linewidth}\footnotesize
+200 panels simulés par processus, $N=10$ actifs, $T=4\,000$ jours, fenêtres de 252 jours, stress = quantile à 90\,\% passé seulement
+de la volatilité à 21 jours du portefeuille équipondéré. Chaque test utilise 99 répétitions du témoin ; le témoin CCC-FHS réestime les
+GJR-GARCH models on each simulated panel. ``Both'': rejection by both nulls, the rule used in the paper. Écart moyen: stress-minus-calm coupling, positive when assets couple under stress.
+\end{minipage}
+\end{table}
+
+\begin{table}[p]\centering\small
+\caption{Couplage sous stress face à deux témoins placebo}\label{tab:coupling}
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{@{}lrrrrrrrrrr@{}}\toprule
+& \multicolumn{5}{c}{S\&P~500, 20 actions} & \multicolumn{5}{c}{48 secteurs} \\
+\cmidrule(lr){2-6}\cmidrule(lr){7-11}
+& & \multicolumn{2}{c}{témoin i.i.d.} & \multicolumn{2}{c}{témoin CCC-FHS} & & \multicolumn{2}{c}{témoin i.i.d.} & \multicolumn{2}{c}{témoin CCC-FHS} \\
+\cmidrule(lr){3-4}\cmidrule(lr){5-6}\cmidrule(lr){8-9}\cmidrule(lr){10-11}
+Mesure & Obs. & moy. & $p$ & moy. & $p$ & Obs. & moy. & $p$ & moy. & $p$ \\\midrule
+Couplage, brut & 0{,}99 & 0{,}21 & <0{,}005 & -0{,}06 & <0{,}005 & 3{,}65 & 0{,}56 & <0{,}005 & 0{,}83 & <0{,}005 \\
+Couplage, dévolatilisé & 0{,}69 & 0{,}27 & <0{,}005 & 0{,}27 & <0{,}005 & 2{,}58 & 0{,}73 & <0{,}005 & 1{,}43 & 0{,}010 \\
+Couplage, rangs & 0{,}80 & 0{,}18 & <0{,}005 & 0{,}24 & <0{,}005 & 3{,}15 & 0{,}54 & <0{,}005 & 1{,}18 & <0{,}005 \\
+Ratio d'absorption & 0{,}012 & 0{,}007 & 0{,}219 & 0{,}037 & 0{,}756 & 0{,}025 & 0{,}006 & <0{,}005 & 0{,}020 & 0{,}264 \\
+Part de la 1re valeur propre & 0{,}063 & 0{,}018 & <0{,}005 & -0{,}000 & <0{,}005 & 0{,}048 & 0{,}018 & <0{,}005 & 0{,}017 & <0{,}005 \\
+\midrule\multicolumn{11}{@{}l}{\emph{Écart au sein de l'année (effets fixes par année civile)}} \\
+Couplage, brut & 0{,}38 & 0{,}11 & <0{,}005 & -0{,}02 & <0{,}005 & 1{,}43 & 0{,}30 & <0{,}005 & 0{,}54 & <0{,}005 \\
+Couplage, dévolatilisé & 0{,}24 & 0{,}14 & <0{,}005 & 0{,}13 & 0{,}045 & 0{,}90 & 0{,}42 & <0{,}005 & 0{,}68 & 0{,}129 \\
+Couplage, rangs & 0{,}36 & 0{,}09 & <0{,}005 & 0{,}12 & <0{,}005 & 1{,}28 & 0{,}29 & <0{,}005 & 0{,}62 & <0{,}005 \\
+\bottomrule\end{tabular}}
+\par\medskip\begin{minipage}{0.95\linewidth}\footnotesize
+Écart stress moins calme de chaque mesure (couplage en nats, signé pour qu'une valeur positive signifie plus de couplage sous stress ;
+ratio d'absorption et part de la première valeur propre en parts de variance). Stress : quantile à 90\,\% passé seulement de la volatilité équipondérée à 21 jours.
+$p$ : $(1+k)/(1+B)$, $k$ étant le nombre des $B=200$ répétitions au moins aussi extrêmes dans le sens prédit ;
+$<0{,}005$ signifie qu'aucune répétition n'a atteint la valeur observée. Dévolatilisé : rendements divisés par leur volatilité RiskMetrics.
+Rangs : scores normaux. CCC-FHS : simulation historique filtrée GJR-GARCH à corrélation constante.
+\end{minipage}
+\end{table}
+
+\begin{table}[p]\centering\small
+\caption{Verdicts against the témoin i.i.d. with multiple-testing control}\label{tab:verdicts}
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{@{}lllrrrrrl@{}}\toprule
+& Statistique & Panel & Observé & Moy. témoin & $p$ & $z$ & $p$ de Holm & Verdict \\\midrule
+H1 & écart de couplage (nats) & actions & 0{,}99 & 0{,}21 & <0{,}005 & 6{,}2 & <0{,}001 & \textbf{passe} \\
+H1 & écart de couplage (nats) & secteurs & 3{,}65 & 0{,}56 & <0{,}005 & 11{,}9 & <0{,}001 & \textbf{passe} \\
+H1 & écart de l'indice $\JJ$ (nats) & actions & 1{,}93 & 2{,}14 & 0{,}667 & -0{,}6 & 1{,}000 & échoue \\
+H1 & écart de l'indice $\JJ$ (nats) & secteurs & 5{,}93 & 7{,}95 & 0{,}960 & -1{,}6 & 1{,}000 & témoin plus fort \\
+H1 & écart de forme $\DD$ (nats) & actions & 0{,}27 & 1{,}25 & 1{,}000 & -3{,}6 & 1{,}000 & témoin plus fort \\
+H1 & écart de forme $\DD$ (nats) & secteurs & 0{,}98 & 4{,}81 & 1{,}000 & -4{,}2 & 1{,}000 & témoin plus fort \\
+H2 & pente de compensation $\beta$ (stress) & actions & 0{,}20 & 0{,}05 & 0{,}398 & 0{,}6 & 1{,}000 & échoue \\
+H2 & pente de compensation $\beta$ (stress) & secteurs & 0{,}23 & 0{,}08 & 0{,}035 & 1{,}8 & 0{,}449 & échoue \\
+H3 & sauts vers le haut (nombre) & actions & 158 & 148 & 0{,}139 & 1{,}2 & 1{,}000 & échoue \\
+H3 & sauts vers le haut (nombre) & secteurs & 182 & 182 & 0{,}498 & 0{,}0 & 1{,}000 & échoue \\
+H3 & plus grand épisode (nats) & actions & 15{,}8 & 8{,}1 & <0{,}005 & 6{,}0 & <0{,}001 & \textbf{passe} \\
+H4 & demi-vie de $\JJ$ (jours) & actions & 121 & 92 & <0{,}005 & 4{,}4 & <0{,}001 & \textbf{passe} \\
+H4 & demi-vie de $\JJ$ (jours) & secteurs & 190 & 101 & <0{,}005 & 13{,}0 & <0{,}001 & \textbf{passe} \\
+H4 & étendue de $\JJ$ (nats) & actions & 19{,}0 & 10{,}1 & <0{,}005 & 6{,}4 & <0{,}001 & \textbf{passe} \\
+H4 & étendue de $\JJ$ (nats) & secteurs & 54{,}5 & 36{,}9 & <0{,}005 & 3{,}7 & 0{,}002 & \textbf{passe} \\
+H4 & demi-vie médiane depuis le pic (jours) & actions & 18 & 23 & 0{,}965 & -1{,}5 & 1{,}000 & témoin plus fort \\
+H5 & corr$(\Delta\JJ,\Delta S)$, quotidienne & actions & -0{,}24 & -0{,}03 & 0{,}104 & 1{,}3 & 1{,}000 & échoue \\
+H5 & corr$(\Delta\JJ,\Delta S)$, quotidienne & secteurs & -0{,}44 & -0{,}20 & 0{,}100 & 1{,}4 & 0{,}956 & échoue \\
+H5 & épisodes à asymétrie décroissante & actions & 0{,}62 & 0{,}51 & 0{,}020 & 2{,}6 & 0{,}061 & échoue \\
+H6 & écart de co-mouvement des canaux & actions & 0{,}59 & 0{,}77 & 0{,}990 & -2{,}9 & 1{,}000 & témoin plus fort \\
+H6 & écart de co-mouvement des canaux & secteurs & 0{,}41 & 0{,}64 & 1{,}000 & -3{,}0 & 1{,}000 & témoin plus fort \\
+H8 & épisodes dominés par la dépendance & actions & 0{,}46 & 0{,}26 & <0{,}005 & 4{,}3 & <0{,}001 & \textbf{passe} \\
+H8 & épisodes dominés par la dépendance & secteurs & 0{,}79 & 0{,}43 & <0{,}005 & 6{,}3 & <0{,}001 & \textbf{passe} \\
+\bottomrule\end{tabular}}
+\par\medskip\begin{minipage}{0.95\linewidth}\footnotesize
+200 replications of the témoin i.i.d.. $p$: exact rank $p$-value $(1+k)/201$, one-sided in the direction the hypothesis predicts (minimum $0{,}005$). $z$: distance to the null mean in null standard deviations, in the predicted direction. Holm $p$: the
+\citet{holm1979} sur les 23 tests of the table, applied to the Gaussienne-tail $p$-value implied by $z$, because with 200 replications no rank $p$-value can survive it. ``Passes'': rank $p\le0{,}05$ and Holm $p\le0{,}05$. ``Null stronger'': the null produces a larger effect
+que les données ($p>0{,}95$). Les statistiques par épisode ne sont calculées que sur le panel d'actions. L'écart de couplage est en nats, positif pour un couplage.
+\end{minipage}
+\end{table}
+
+\begin{table}[p]\centering\small
+\caption{Prévisions hors échantillon de la volatilité réalisée}\label{tab:h7}
+\begin{tabular}{@{}lrrrr@{}}\toprule
+Horizon (jours de bourse) & 5 & 10 & 21 & 63 \\\midrule
+S\&P~500, 20 actions & -3{,}5\% & -3{,}5\% & -3{,}3\% & +1{,}0\% \\
+\quad $p$ DM (bilatérale) & 0{,}029 & 0{,}085 & 0{,}226 & 0{,}999 \\
+\quad $p$ CW (unilatérale) & 0{,}000 & 0{,}001 & 0{,}020 & 0{,}047 \\
+48 secteurs & -5{,}4\% & -5{,}2\% & -4{,}2\% & +4{,}2\% \\
+\quad $p$ DM (bilatérale) & 0{,}001 & 0{,}009 & 0{,}090 & 0{,}161 \\
+\quad $p$ CW (unilatérale) & 0{,}000 & 0{,}000 & 0{,}012 & 0{,}585 \\
+\bottomrule\end{tabular}
+\par\medskip\begin{minipage}{0.95\linewidth}\footnotesize
+Variation de l'erreur quadratique moyenne de la prévision de volatilité réalisée quand l'indicateur de choc non cicatrisé
+$\JJ_t/\max_{252}\JJ$ est ajouté au log de la volatilité (négatif = meilleur). MCO sur fenêtre croissante réestimés chaque année ; dates d'évaluation
+espacées de l'horizon. DM : \citet{dm1995} ; CW : \citet{clarkwest2007}, le test pour modèles emboîtés.
+\end{minipage}
+\end{table}
+
+\begin{table}[p]\centering\small
+\caption{Coût en nats de scénarios de stress classiques}\label{tab:classical}
+\begin{tabular}{@{}lrrr@{}}\toprule
+Scénario classique & modéré & standard & sévère \\\midrule
+multiplicateur de volatilité & $1{,}5$ & $2{,}0$ & $3{,}0$ \\
+toutes les corrélations forcées à & $0{,}70$ & $0{,}90$ & $0{,}95$ \\
+choc directionnel & $-2\sigma$ & $-3\sigma$ & $-4\sigma$ \\\midrule
+ES$_{99}$ à un jour & $9{,}1\%$ & $13{,}7\%$ & $20{,}3\%$ \\
+coût total (20 actifs) & $6{,}80$ & $9{,}97$ & $20{,}19$ \\
+coût vu par le portefeuille & $2{,}75$ & $7{,}24$ & $16{,}22$ \\
+coût minimal pour la même ES$_{99}$ (Proposition~\ref{prop:lift}) & $\mathbf{1{,}85}$ & $\mathbf{5{,}47}$ & $\mathbf{13{,}74}$ \\
+rapport total / minimal & $3{,}7$ & $1{,}8$ & $1{,}5$ \\\midrule
+\multicolumn{4}{@{}l}{\emph{Coût de chaque composante seule}} \\
+\quad choc directionnel & $2{,}00$ & $4{,}50$ & $8{,}00$ \\
+\quad dilatation des volatilités & $4{,}39$ & $16{,}14$ & $58{,}03$ \\
+\quad corrélations forcées & $2{,}43$ & $8{,}10$ & $13{,}50$ \\
+\bottomrule\end{tabular}
+\par\medskip\begin{minipage}{0.95\linewidth}\footnotesize
+Equal-weight portfolio of the twenty stocks; current state: annual volatility 20\%, ES$_{99}$ à un jour 3{,}4\%. The full cost is the
+Gaussienne divergence \eqref{eq:klgauss} on the 20 assets; the coût vu par le portefeuille is the divergence of the portfolio's law.
+Le coût minimal est la divergence $g(u,v)$ du scénario de boule d'entropie de même ES$_{99}$, atteinte en pleine
+dimension par le relèvement de rang un \eqref{eq:lift}. Le plus grand flux d'information à 21 jours observé en 33 ans est d'environ 2 nats.
+\end{minipage}
+\end{table}
+
+\begin{table}[p]\centering\small
+\caption{Coût en nats du scénario adverse 2025 de l'ABE et des années observées}\label{tab:eba}
+\begin{tabular}{@{}lrr@{}}\toprule
+& Actions et taux & Changes fixés \\\midrule
+\textbf{Scénario adverse ABE 2025, année 1} & $\mathbf{10{,}5}$ & $\mathbf{11{,}1}$ \\
+\quad actions seules / taux seuls & $6{,}8$ / $3{,}1$ & \\
+\quad somme des coûts variable par variable & $31{,}9$ & \\
+\quad avec une covariance de crise 2008--2012 & $8{,}4$ & $9{,}0$ \\\midrule
+Année observée 2011 / 2008 / 2022 & $3{,}1$ / $11{,}2$ / $11{,}9$ & $3{,}1$ / $18{,}2$ / $13{,}2$ \\
+Pire année glissante (mars 2008--mars 2009) & $14{,}4$ & $19{,}5$ \\
+\bottomrule\end{tabular}
+\par\medskip\begin{minipage}{0.95\linewidth}\footnotesize
+Cinq indices actions (DAX, CAC~40, FTSE~MIB, IBEX~35, AEX), deux taux à dix ans de la zone euro (AAA et toutes notations) et quatre taux de change
+de l'euro ; covariance annuelle estimée sur les variations quotidiennes de septembre 2004 à décembre 2024. Coût
+$\frac12\Delta^\top\Sigma^{-1}\Delta$ des écarts de la première année au scénario central (actions $-50\,\%$, taux $+110$ et $+168$~pb,
+changes inchangés). Calculé avec \texttt{scripts/eba\_nats.py} sur le panel de la zone euro ; repris de la
+version banque centrale de ce travail.
+\end{minipage}
+\end{table}

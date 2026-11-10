@@ -55,5 +55,5 @@ if __name__ == '__main__':
         best = x.loc[x.groupby(['horizon', 'target'])['dm_pvalue'].idxmin()]
         with pd.option_context('display.width', 200):
             print(best[['panel', 'horizon', 'target', 'extra_regressor',
-                        'oos_mse_vs_vol_only_pct', 'dm_tstat', 'dm_pvalue', 'n_oos']]
+                        'oos_mse_vs_vol_only_pct', 'dm_tstat', 'dm_pvalue', 'cw_tstat', 'cw_pvalue', 'n_oos']]
                   .round(3).to_string(index=False))

@@ -1,0 +1,182 @@
+\begin{table}[p]\centering\small
+\caption{Hypotheses tested}\label{tab:hyp}
+\begin{tabular}{@{}lp{0.8\linewidth}@{}}\toprule
+& Statement \\\midrule
+H1 & \emph{Regime signature.} Under stress, coupling rises, the shape deficit rises, hence $\JJ$ rises. \\
+H2 & \emph{Compensation.} When volatilities rise, dependence absorbs part of the entropy increase. \\
+H3 & \emph{One-sided jumps.} Large moves of $\JJ$ are rises; rising episodes are more numerous and larger. \\
+H4 & \emph{Relaxation.} After an episode, $\JJ$ decays with a half-life longer than the estimator's memory. \\
+H5 & \emph{Sign.} Jumps and rising episodes coincide with negative market skewness. \\
+H6 & \emph{Channel co-movement.} Dependence and tails move independently in calm markets and together under stress. \\
+H7 & \emph{Forecasting.} Entropy improves out-of-sample short-term risk forecasts beyond volatility. \\
+H8 & \emph{Crisis composition.} In crisis episodes, dependence is the dominant channel more often than without dynamics. \\
+\bottomrule\end{tabular}
+\par\medskip\begin{minipage}{0.95\linewidth}\footnotesize
+H3, H4, H5 and H8 concern jumps of $\JJ$; they are tested day by day and by episode (jumps less than 40 days apart).
+\end{minipage}
+\end{table}
+
+\begin{table}[p]\centering\small
+\caption{Finite-sample bias of sample coupling under independence}\label{tab:bias}
+\begin{tabular}{@{}rrlrrr@{}}\toprule
+$N$ & Window $T$ & Law & $b(N,T)$, eq.~\eqref{eq:bias} & Sample correlation & Ledoit--Wolf \\\midrule
+10 & 252 & Gaussian & 0.091 & 0.091 (0.019) & 0.001 (0.003) \\
+10 & 252 & Student-$t_5$ & 0.091 & 0.091 (0.019) & 0.001 (0.003) \\
+20 & 252 & Gaussian & 0.390 & 0.389 (0.039) & 0.002 (0.004) \\
+20 & 252 & Student-$t_5$ & 0.390 & 0.390 (0.040) & 0.002 (0.004) \\
+48 & 252 & Gaussian & 2.409 & 2.418 (0.102) & 0.002 (0.004) \\
+48 & 252 & Student-$t_5$ & 2.409 & 2.404 (0.105) & 0.002 (0.004) \\
+20 & 504 & Gaussian & 0.192 & 0.191 (0.019) & 0.001 (0.002) \\
+20 & 504 & Student-$t_5$ & 0.192 & 0.192 (0.020) & 0.001 (0.002) \\
+\bottomrule\end{tabular}
+\par\medskip\begin{minipage}{0.95\linewidth}\footnotesize
+Mean (standard deviation) of $C(\hat R)=-\frac12\log\det\hat R$ in nats over 2,000 simulated windows (500 for $N=48$) of independent assets.
+Student-$t_5$ draws are independent across assets. The Ledoit--Wolf column applies the shrinkage used in the empirical work.
+\end{minipage}
+\end{table}
+
+\begin{table}[p]\centering\small
+\caption{Size and power of the coupling test: Monte Carlo}\label{tab:mc}
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{@{}llrrrrrrr@{}}\toprule
+& & Mean gap & \multicolumn{3}{c}{Rejection at 5\%} & \multicolumn{3}{c}{Rejection at 1\%} \\
+\cmidrule(lr){4-6}\cmidrule(lr){7-9}
+Data-generating process & & (nats) & i.i.d. & CCC-FHS & both & i.i.d. & CCC-FHS & both \\\midrule
+i.i.d.\ Student-$t_5$, constant correlation $0.30$ & size & 0.11 & 0.030 & 0.040 & 0.025 & 0.005 & 0.000 & 0.000 \\
+GJR-GARCH(1,1), $t_5$ shocks, constant correlation $0.30$ & size & 0.13 & 0.170 & 0.065 & 0.065 & 0.050 & 0.010 & 0.005 \\
+Markov-switching volatility ($\times2.5$), constant correlation & size & 0.12 & 0.045 & 0.110 & 0.045 & 0.025 & 0.030 & 0.010 \\
+Markov-switching volatility, correlation $0.30\to0.50$ in stress & power & 0.40 & 0.475 & 0.680 & 0.460 & 0.235 & 0.385 & 0.190 \\
+\bottomrule\end{tabular}}
+\par\medskip\begin{minipage}{0.95\linewidth}\footnotesize
+200 simulated panels per process, $N=10$ assets, $T=4{,}000$ days, 252-day windows, stress = past-only 90\% quantile
+of the 21-day volatility of the equal-weight portfolio. Each test uses 99 null replications; the CCC-FHS null re-estimates the
+GJR-GARCH models on each simulated panel. ``Both'': rejection by both nulls, the rule used in the paper. Mean gap: stress-minus-calm coupling, positive when assets couple under stress.
+\end{minipage}
+\end{table}
+
+\begin{table}[p]\centering\small
+\caption{Coupling under stress against two placebo nulls}\label{tab:coupling}
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{@{}lrrrrrrrrrr@{}}\toprule
+& \multicolumn{5}{c}{S\&P~500, 20 stocks} & \multicolumn{5}{c}{48 industries} \\
+\cmidrule(lr){2-6}\cmidrule(lr){7-11}
+& & \multicolumn{2}{c}{i.i.d.\ null} & \multicolumn{2}{c}{CCC-FHS null} & & \multicolumn{2}{c}{i.i.d.\ null} & \multicolumn{2}{c}{CCC-FHS null} \\
+\cmidrule(lr){3-4}\cmidrule(lr){5-6}\cmidrule(lr){8-9}\cmidrule(lr){10-11}
+Measure & Obs. & mean & $p$ & mean & $p$ & Obs. & mean & $p$ & mean & $p$ \\\midrule
+Coupling, raw & 0.99 & 0.21 & <0.005 & -0.06 & <0.005 & 3.65 & 0.56 & <0.005 & 0.83 & <0.005 \\
+Coupling, devolatilised & 0.69 & 0.27 & <0.005 & 0.27 & <0.005 & 2.58 & 0.73 & <0.005 & 1.43 & 0.010 \\
+Coupling, rank & 0.80 & 0.18 & <0.005 & 0.24 & <0.005 & 3.15 & 0.54 & <0.005 & 1.18 & <0.005 \\
+Absorption ratio & 0.012 & 0.007 & 0.219 & 0.037 & 0.756 & 0.025 & 0.006 & <0.005 & 0.020 & 0.264 \\
+First-eigenvalue share & 0.063 & 0.018 & <0.005 & -0.000 & <0.005 & 0.048 & 0.018 & <0.005 & 0.017 & <0.005 \\
+\midrule\multicolumn{11}{@{}l}{\emph{Within-year gap (calendar-year fixed effects)}} \\
+Coupling, raw & 0.38 & 0.11 & <0.005 & -0.02 & <0.005 & 1.43 & 0.30 & <0.005 & 0.54 & <0.005 \\
+Coupling, devolatilised & 0.24 & 0.14 & <0.005 & 0.13 & 0.045 & 0.90 & 0.42 & <0.005 & 0.68 & 0.129 \\
+Coupling, rank & 0.36 & 0.09 & <0.005 & 0.12 & <0.005 & 1.28 & 0.29 & <0.005 & 0.62 & <0.005 \\
+\bottomrule\end{tabular}}
+\par\medskip\begin{minipage}{0.95\linewidth}\footnotesize
+Stress-minus-calm gap of each measure (coupling in nats, signed so that a positive value means more coupling under stress;
+absorption ratio and first-eigenvalue share in variance shares). Stress: past-only 90\% quantile of 21-day equal-weight volatility.
+$p$: $(1+k)/(1+B)$ with $k$ the number of the $B=200$ replications at least as extreme in the predicted direction;
+$<0.005$ means no replication reached the observed value. Devolatilised: returns divided by their RiskMetrics volatility.
+Rank: normal scores. CCC-FHS: constant-correlation GJR-GARCH filtered historical simulation.
+\end{minipage}
+\end{table}
+
+\begin{table}[p]\centering\small
+\caption{Verdicts against the i.i.d.\ null with multiple-testing control}\label{tab:verdicts}
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{@{}lllrrrrrl@{}}\toprule
+& Statistic & Panel & Observed & Null mean & $p$ & $z$ & Holm $p$ & Verdict \\\midrule
+H1 & coupling gap (nats) & stocks & 0.99 & 0.21 & <0.005 & 6.2 & <0.001 & \textbf{passes} \\
+H1 & coupling gap (nats) & industries & 3.65 & 0.56 & <0.005 & 11.9 & <0.001 & \textbf{passes} \\
+H1 & index $\JJ$ gap (nats) & stocks & 1.93 & 2.14 & 0.667 & -0.6 & 1.000 & fails \\
+H1 & index $\JJ$ gap (nats) & industries & 5.93 & 7.95 & 0.960 & -1.6 & 1.000 & null stronger \\
+H1 & shape $\DD$ gap (nats) & stocks & 0.27 & 1.25 & 1.000 & -3.6 & 1.000 & null stronger \\
+H1 & shape $\DD$ gap (nats) & industries & 0.98 & 4.81 & 1.000 & -4.2 & 1.000 & null stronger \\
+H2 & compensation slope $\beta$ (stress) & stocks & 0.20 & 0.05 & 0.398 & 0.6 & 1.000 & fails \\
+H2 & compensation slope $\beta$ (stress) & industries & 0.23 & 0.08 & 0.035 & 1.8 & 0.449 & fails \\
+H3 & upward jumps (count) & stocks & 158 & 148 & 0.139 & 1.2 & 1.000 & fails \\
+H3 & upward jumps (count) & industries & 182 & 182 & 0.498 & 0.0 & 1.000 & fails \\
+H3 & largest episode (nats) & stocks & 15.8 & 8.1 & <0.005 & 6.0 & <0.001 & \textbf{passes} \\
+H4 & half-life of $\JJ$ (days) & stocks & 121 & 92 & <0.005 & 4.4 & <0.001 & \textbf{passes} \\
+H4 & half-life of $\JJ$ (days) & industries & 190 & 101 & <0.005 & 13.0 & <0.001 & \textbf{passes} \\
+H4 & range of $\JJ$ (nats) & stocks & 19.0 & 10.1 & <0.005 & 6.4 & <0.001 & \textbf{passes} \\
+H4 & range of $\JJ$ (nats) & industries & 54.5 & 36.9 & <0.005 & 3.7 & 0.002 & \textbf{passes} \\
+H4 & median half-life from peak (days) & stocks & 18 & 23 & 0.965 & -1.5 & 1.000 & null stronger \\
+H5 & corr$(\Delta\JJ,\Delta S)$, daily & stocks & -0.24 & -0.03 & 0.104 & 1.3 & 1.000 & fails \\
+H5 & corr$(\Delta\JJ,\Delta S)$, daily & industries & -0.44 & -0.20 & 0.100 & 1.4 & 0.956 & fails \\
+H5 & episodes with falling skewness & stocks & 0.62 & 0.51 & 0.020 & 2.6 & 0.061 & fails \\
+H6 & channel co-movement gap & stocks & 0.59 & 0.77 & 0.990 & -2.9 & 1.000 & null stronger \\
+H6 & channel co-movement gap & industries & 0.41 & 0.64 & 1.000 & -3.0 & 1.000 & null stronger \\
+H8 & episodes dominated by dependence & stocks & 0.46 & 0.26 & <0.005 & 4.3 & <0.001 & \textbf{passes} \\
+H8 & episodes dominated by dependence & industries & 0.79 & 0.43 & <0.005 & 6.3 & <0.001 & \textbf{passes} \\
+\bottomrule\end{tabular}}
+\par\medskip\begin{minipage}{0.95\linewidth}\footnotesize
+200 replications of the i.i.d.\ null. $p$: exact rank $p$-value $(1+k)/201$, one-sided in the direction the hypothesis predicts (minimum $0.005$). $z$: distance to the null mean in null standard deviations, in the predicted direction. Holm $p$: the
+\citet{holm1979} step-down adjustment over the 23 tests of the table, applied to the Gaussian-tail $p$-value implied by $z$, because with 200 replications no rank $p$-value can survive it. ``Passes'': rank $p\le0.05$ and Holm $p\le0.05$. ``Null stronger'': the null produces a larger effect
+than the data ($p>0.95$). Episode statistics are computed on the stock panel only. The coupling gap is in nats, positive for coupling.
+\end{minipage}
+\end{table}
+
+\begin{table}[p]\centering\small
+\caption{Out-of-sample forecasts of realised volatility}\label{tab:h7}
+\begin{tabular}{@{}lrrrr@{}}\toprule
+Horizon (trading days) & 5 & 10 & 21 & 63 \\\midrule
+S\&P~500, 20 stocks & -3.5\% & -3.5\% & -3.3\% & +1.0\% \\
+\quad DM $p$ (two-sided) & 0.029 & 0.085 & 0.226 & 0.999 \\
+\quad CW $p$ (one-sided) & 0.000 & 0.001 & 0.020 & 0.047 \\
+48 industries & -5.4\% & -5.2\% & -4.2\% & +4.2\% \\
+\quad DM $p$ (two-sided) & 0.001 & 0.009 & 0.090 & 0.161 \\
+\quad CW $p$ (one-sided) & 0.000 & 0.000 & 0.012 & 0.585 \\
+\bottomrule\end{tabular}
+\par\medskip\begin{minipage}{0.95\linewidth}\footnotesize
+Change in the mean squared error of the realised-volatility forecast when the unhealed-shock indicator
+$\JJ_t/\max_{252}\JJ$ is added to log volatility (negative = better). Expanding-window OLS refitted yearly; evaluation dates
+spaced by the horizon. DM: \citet{dm1995}; CW: \citet{clarkwest2007}, the test for nested models.
+\end{minipage}
+\end{table}
+
+\begin{table}[p]\centering\small
+\caption{Cost in nats of classical stress scenarios}\label{tab:classical}
+\begin{tabular}{@{}lrrr@{}}\toprule
+Classical scenario & moderate & standard & severe \\\midrule
+volatility multiplier & $1.5$ & $2.0$ & $3.0$ \\
+all correlations forced to & $0.70$ & $0.90$ & $0.95$ \\
+directional shock & $-2\sigma$ & $-3\sigma$ & $-4\sigma$ \\\midrule
+one-day ES$_{99}$ & $9.1\%$ & $13.7\%$ & $20.3\%$ \\
+full cost (20 assets) & $6.80$ & $9.97$ & $20.19$ \\
+cost seen by the portfolio & $2.75$ & $7.24$ & $16.22$ \\
+minimal cost for the same ES$_{99}$ (Proposition~\ref{prop:lift}) & $\mathbf{1.85}$ & $\mathbf{5.47}$ & $\mathbf{13.74}$ \\
+ratio full / minimal & $3.7$ & $1.8$ & $1.5$ \\\midrule
+\multicolumn{4}{@{}l}{\emph{Cost of each component alone}} \\
+\quad directional shock & $2.00$ & $4.50$ & $8.00$ \\
+\quad volatility dilation & $4.39$ & $16.14$ & $58.03$ \\
+\quad forced correlations & $2.43$ & $8.10$ & $13.50$ \\
+\bottomrule\end{tabular}
+\par\medskip\begin{minipage}{0.95\linewidth}\footnotesize
+Equal-weight portfolio of the twenty stocks; current state: annual volatility 20\%, one-day ES$_{99}$ 3.4\%. The full cost is the
+Gaussian divergence \eqref{eq:klgauss} on the 20 assets; the cost seen by the portfolio is the divergence of the portfolio's law.
+The minimal cost is the portfolio divergence $g(u,v)$ of the entropy-ball scenario with the same ES$_{99}$, attained in full
+dimension by the rank-one lift \eqref{eq:lift}. The largest 21-day information flow observed in 33 years is about 2 nats.
+\end{minipage}
+\end{table}
+
+\begin{table}[p]\centering\small
+\caption{Cost in nats of the EBA 2025 adverse scenario and of observed years}\label{tab:eba}
+\begin{tabular}{@{}lrr@{}}\toprule
+& Equities and rates & With FX fixed \\\midrule
+\textbf{EBA 2025 adverse scenario, year 1} & $\mathbf{10.5}$ & $\mathbf{11.1}$ \\
+\quad equities only / rates only & $6.8$ / $3.1$ & \\
+\quad sum of variable-by-variable costs & $31.9$ & \\
+\quad with a 2008--2012 crisis covariance & $8.4$ & $9.0$ \\\midrule
+Observed year 2011 / 2008 / 2022 & $3.1$ / $11.2$ / $11.9$ & $3.1$ / $18.2$ / $13.2$ \\
+Worst rolling year (March 2008--March 2009) & $14.4$ & $19.5$ \\
+\bottomrule\end{tabular}
+\par\medskip\begin{minipage}{0.95\linewidth}\footnotesize
+Five equity indices (DAX, CAC~40, FTSE~MIB, IBEX~35, AEX), two ten-year euro-area yields (AAA and all ratings) and four euro
+exchange rates; annual covariance estimated on daily changes from September 2004 to December 2024. Cost
+$\frac12\Delta^\top\Sigma^{-1}\Delta$ of the year-1 deviations from baseline (equities $-50\%$, rates $+110$ and $+168$~bp,
+FX unchanged). Computed with \texttt{scripts/eba\_nats.py} on the euro-area panel; carried over from the
+central-bank version of this work.
+\end{minipage}
+\end{table}

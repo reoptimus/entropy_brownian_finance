@@ -295,6 +295,26 @@ def _diebold_mariano(e1: np.ndarray, e2: np.ndarray, lags: int) -> tuple:
     return float(model.tvalues[0]), float(model.pvalues[0])
 
 
+def _clark_west(y: np.ndarray, f1: np.ndarray, f2: np.ndarray, lags: int) -> tuple:
+    """Clark--West (2007) test for nested models (H0: the larger model adds nothing).
+
+    ``f1`` is the forecast of the small (volatility-only) model, ``f2`` that of
+    the model with the extra regressor. The adjusted differential
+    ``(y-f1)^2 - [(y-f2)^2 - (f1-f2)^2]`` removes the noise the larger model
+    pays for estimating a coefficient that is zero under the null, which makes
+    the Diebold--Mariano test undersized for nested comparisons. One-sided
+    p-value, HAC standard error.
+    """
+    from scipy.stats import norm as _norm
+    d = (y - f1) ** 2 - ((y - f2) ** 2 - (f1 - f2) ** 2)
+    d = d[np.isfinite(d)]
+    if len(d) < 30:
+        return np.nan, np.nan
+    model = sm.OLS(d, np.ones(len(d))).fit(cov_type='HAC', cov_kwds={'maxlags': lags})
+    t = float(model.tvalues[0])
+    return t, float(1.0 - _norm.cdf(t))
+
+
 def h7_incremental_value(ent: pd.DataFrame,
                          targets=('future_rv', 'future_drawdown', 'future_worst_loss'),
                          extras=('J', 'd_total', 'h_dep', 'crisis', 'unhealed'),
@@ -322,6 +342,7 @@ def h7_incremental_value(ent: pd.DataFrame,
         if target not in ent.columns:
             continue
         base_errors = None
+        base_preds = None
         for extra in ('none',) + tuple(extras):
             if extra != 'none' and extra not in ent.columns:
                 continue
@@ -332,6 +353,8 @@ def h7_incremental_value(ent: pd.DataFrame,
             preds = _walk_forward_predict(d, target, cols, min_train,
                                           min(refit, max(63, len(d) // 8)))
             err = (d[target] - preds).dropna()
+            preds_eval = preds.dropna()
+            preds_eval = preds_eval[preds_eval.index.isin(eval_dates)]
             err = err[err.index.isin(eval_dates)]
             # Forward-looking targets overlap by construction: keep the lag at
             # least the target horizon (21 days) on top of the NW rule.
@@ -350,6 +373,9 @@ def h7_incremental_value(ent: pd.DataFrame,
             }
             if extra == 'none':
                 base_errors = err
+                base_preds = preds_eval
+                row['cw_tstat'] = np.nan
+                row['cw_pvalue'] = np.nan
                 row['dm_tstat'] = np.nan
                 row['dm_pvalue'] = np.nan
                 row['oos_mse_vs_vol_only_pct'] = 0.0
@@ -360,6 +386,13 @@ def h7_incremental_value(ent: pd.DataFrame,
                                         21 if hac_lags is None else hac_lags)
                 row['dm_tstat'] = t
                 row['dm_pvalue'] = p
+                cc = common.intersection(base_preds.index).intersection(preds_eval.index)
+                tc, pc = _clark_west(d[target].loc[cc].to_numpy(),
+                                     base_preds.loc[cc].to_numpy(),
+                                     preds_eval.loc[cc].to_numpy(),
+                                     21 if hac_lags is None else hac_lags)
+                row['cw_tstat'] = tc
+                row['cw_pvalue'] = pc
                 row['oos_mse_vs_vol_only_pct'] = float(
                     100.0 * (row['oos_mse'] / float(np.mean(base_errors.to_numpy() ** 2)) - 1.0))
             rows.append(row)
