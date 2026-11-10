@@ -1,0 +1,252 @@
+\section{Inference: why and how the placebo nulls work}
+\label{sec:temoin}
+
+This is the most important section for understanding the results of the
+journal version. It explains why estimated entropy measures are biased and
+move on their own, how a resampling null corrects for it, why a second,
+volatility-preserving null is needed for claims about dependence, and how the
+size and power of the test are checked.
+
+\subsection{The bias of a convex function of estimated moments}
+
+\begin{lemme}[Jensen applied to an estimator]
+If $\hat\theta$ is an (approximately) unbiased estimator of $\theta$ and $f$
+is convex, then $\E[f(\hat\theta)]\ge f(\theta)$.
+\end{lemme}
+
+\noindent $C=-\tfrac12\log\det R$ is a convex function of $R$ ($-\log\det$ is
+convex on positive definite matrices), and $\DD$ is non-negative and zero only
+at the Gaussian point. Both are therefore \textbf{biased upward}: estimation
+noise looks like information.
+
+\subsection{How large is the bias of coupling? (Proposition 3 of the paper)}
+
+Take $N$ \emph{independent} Gaussian assets, so the true coupling is $C=0$,
+and $T$ observations. The likelihood-ratio statistic for testing $H_0:R=I$
+(``sphericity'' of the correlation matrix) is
+\[
+\Lambda=-T\log\det\hat R .
+\]
+Classical asymptotic theory says that $-2\log(\text{likelihood ratio})$ is
+approximately $\chi^2$ with as many degrees of freedom as free parameters
+restricted by $H_0$. Here $H_0$ fixes the $N(N-1)/2$ off-diagonal
+correlations, so $\Lambda\approx\chi^2_{N(N-1)/2}$. Bartlett (1950) showed that
+replacing $T$ by $T'=T-1-(2N+5)/6$ makes the approximation much better in
+small samples. Since a $\chi^2_k$ variable has mean $k$,
+\[
+\E\bigl[-\log\det\hat R\bigr]\approx\frac{N(N-1)}{2T'}
+\quad\Longrightarrow\quad
+\E\bigl[C(\hat R)\bigr]\approx b(N,T)=\frac{N(N-1)}{4\bigl(T-1-(2N+5)/6\bigr)} .
+\]
+
+\begin{exemple}[The paper's panels]
+For $N=20$, $T=252$: $T'=251-7.5=243.5$ and $b=380/974=\BIASTWENTY$~nat. For
+$N=48$, $T=252$: $T'=251-16.8=234.2$ and $b=2256/936.8=\BIASFORTYEIGHT$~nats.
+The simulation of the paper (table~2) gives \BIASTWENTYMC~nat for $N=20$: the
+formula is accurate. The bias is as large as a third of the effect we want
+to measure on stocks ($0.99$ nat).
+\end{exemple}
+
+\begin{intuition}
+Why fourth moments barely matter: for two independent variables with finite
+fourth moments, $\sqrt T\hat\rho\to\N(0,1)$ whatever their marginal laws,
+because $\operatorname{Var}(XY)=\operatorname{Var}(X)\operatorname{Var}(Y)$
+when $X$ and $Y$ are independent. The bias formula only uses the variance of
+$\hat\rho$, so it holds for Student-$t_5$ data too (the simulation gives
+\BIASTWENTYT).
+\end{intuition}
+
+\paragraph{Two practical consequences.} (1) Coupling levels on panels of
+different size are not comparable: subtract $b(N,T)$ first. The
+bias-corrected effective number of modes is $N\exp\{-2[C(\hat R)-b]/N\}$.
+(2) A \emph{difference} between two windows of the same length (stress minus
+calm) has the bias removed to first order. This is why every test in the
+paper is on a gap, not on a level.
+
+\begin{piege}
+Shrinkage (Ledoit--Wolf) pulls $\hat R$ towards $I$ and therefore removes most
+of the bias (\BIASTWENTYLW~nat in the simulation). It does not remove the
+\emph{dynamic} artefact of the next subsection.
+\end{piege}
+
+\subsection{The mechanical sawtooth}
+
+When an extreme day enters the window, the estimated moments jump, and a
+convex function of these moments jumps \emph{upward whatever the sign of the
+day}. As the day ages (exponential weighting) or leaves the window, the index
+decays slowly.
+
+\paragraph{A short calculation.} Take a window of $T$ standardised returns
+whose sample correlation is exactly $I$ (independent assets), and add one day
+on which every asset moves by the same amount $a$ standard deviations. Ignoring
+the change in the means, the new second-moment matrix is $I+x\mathbf 1\mathbf
+1^\top$ with $x=a^2/T$, and the new correlation matrix is
+$R'=(I+x\mathbf 1\mathbf 1^\top)/(1+x)$. By the matrix determinant lemma,
+$\det(I+x\mathbf 1\mathbf 1^\top)=1+Nx$, so
+\[
+\Delta C=-\tfrac12\log\det R'=\tfrac12\bigl[N\log(1+x)-\log(1+Nx)\bigr]
+\approx\frac{N(N-1)}{4}\,x^2\quad(x\text{ small}).
+\]
+The first-order terms cancel and what remains is positive: a single common day
+raises coupling, whatever its sign. For $N=20$, $T=252$ and a 10-standard-deviation
+day ($x=0.40$), $\Delta C=\tfrac12[20\log1.40-\log8.94]=2.2$~nats. The day then
+leaves the estimate only at the rate at which the window forgets: with
+exponential weights of half-life 60 days, its weight halves every 60 days.
+
+On i.i.d.\ Gaussian data the paper's pipeline finds $37$ positive jumps of
+$\JJ$, no negative one, and an apparent half-life of $35$ days, with no event
+at all.
+
+\subsection{The resampling test and why its $p$-value is valid}
+
+\paragraph{Construction.} Let $S(X)$ be a statistic computed by the
+\emph{whole} pipeline on the $T\times N$ panel $X$ (rolling estimation, stress
+regime, jump detection, gap). A null is a way of generating panels $X^*$ that
+keep some features of $X$ and destroy others. We draw $B=200$ of them and
+compute $S(X^*_1),\dots,S(X^*_B)$.
+
+\paragraph{The $p$-value.} In the predicted direction,
+\[
+\hat p=\frac{1+\#\{b:\ S(X^*_b)\ge S(X)\}}{B+1}.
+\]
+If, under the null hypothesis, the observed panel is just one more draw from
+the same mechanism, then $S(X),S(X^*_1),\dots,S(X^*_B)$ are
+\emph{exchangeable}: the observed value is equally likely to have any rank
+among the $B+1$ values. The probability that it ranks in the top $k$ is
+$k/(B+1)$, so $P(\hat p\le\alpha)\le\alpha$ exactly, without any asymptotic
+argument. The ``$+1$'' is what makes this exact; with $B=200$ the smallest
+possible $p$-value is $1/201\approx0.005$.
+
+\begin{piege}
+Reporting $z=(S(X)-\bar S^*)/s_{S^*}$ (``six standard deviations above the
+null'') is a useful effect size, but it is not a $p$-value: the null
+distribution need not be normal. The paper reports $\hat p$ for inference and
+$z$ only as a description.
+\end{piege}
+
+\subsection{Null 1: i.i.d.\ resampling of days}
+
+Draw rows of $X$ with replacement. Each row (one day, $N$ returns) is intact,
+so the null keeps each asset's fat tails, each day's cross-sectional
+correlation and common extreme days. It destroys \emph{all} dynamics: there
+is no volatility clustering, no persistence, no crisis that lasts. It answers
+the question ``beyond the fact that turbulent periods contain big days, does
+the measure detect any dynamics?''
+
+\subsection{Null 2: constant-correlation GARCH (filtered historical simulation)}
+
+\paragraph{Why a second null.} Under the i.i.d.\ null, a ``stress'' period is
+a random cluster of big days. In real data, stress comes with volatility
+clustering: high-volatility days follow each other for weeks. Could
+volatility clustering alone, with correlations that never change, produce the
+coupling gap? Two mechanisms make this plausible. Forbes and Rigobon (2002)
+showed that measured correlation rises mechanically when the variance of a
+common factor rises. And our stress regime is defined by high volatility, so
+it selects precisely the windows where this happens.
+
+\paragraph{Construction.} For each asset $i$, fit a GJR-GARCH(1,1):
+\[
+r_{i,t}=\mu_i+\varepsilon_{i,t},\qquad \varepsilon_{i,t}=\sqrt{h_{i,t}}\,z_{i,t},\qquad
+h_{i,t}=\omega_i+\bigl(\alpha_i+\gamma_i\mathbf 1\{\varepsilon_{i,t-1}<0\}\bigr)\varepsilon_{i,t-1}^2+\beta_ih_{i,t-1}.
+\]
+The term $\gamma_i$ makes volatility react more to falls than to rises (the
+leverage effect). Estimate by maximising the Gaussian likelihood (quasi-MLE,
+consistent even if $z$ is not Gaussian). Compute the standardised residuals
+$\hat z_{i,t}=\hat\varepsilon_{i,t}/\sqrt{\hat h_{i,t}}$ and store them as a
+$T\times N$ matrix $\hat Z$.
+
+To simulate: draw rows of $\hat Z$ with replacement (as in null 1), then
+rebuild each asset's returns by running its own GARCH recursion forward with
+the drawn shocks. The result has three properties:
+\begin{enumerate}
+\item each asset keeps its own volatility clustering and leverage effect;
+\item all assets receive the shocks of the same historical day, so a common
+large day still hits everyone, and volatility bursts are common;
+\item the correlation of the shocks $z_t$ is the same every day: the
+\emph{conditional} correlation is constant (Bollerslev's CCC model).
+\end{enumerate}
+So volatility moves as in a GARCH world and correlations do not. A coupling
+gap beyond this null is a genuine dependence dynamic.
+
+\begin{intuition}
+Null 1 says: ``it is not just big days''. Null 2 says: ``it is not just
+volatility''. The 21-day block null that the earlier version rejected kept
+\emph{both} volatility and correlation dynamics over a month, i.e.\ the crisis
+itself. Null 2 keeps the volatility part only, which is exactly the
+counterfactual the coupling claim needs.
+\end{intuition}
+
+\subsection{A trend is not a stress effect: the within-year gap}
+
+Correlations between stocks rose over 1990--2022, and stress dates cluster in
+a few years (2008, 2020). If coupling simply trends up and stress dates happen
+to be late, the stress-minus-calm gap picks up the trend. The fix is a
+regression with year fixed effects:
+\[
+C_t=\theta\,\mathbf 1\{t\in\text{stress}\}+\sum_y\delta_y\mathbf 1\{t\in\text{year }y\}+u_t .
+\]
+By the Frisch--Waugh--Lovell theorem, $\hat\theta$ is the slope of the
+regression of the within-year demeaned $C_t$ on the within-year demeaned
+stress dummy: it compares stress and calm dates \emph{of the same year}. The
+paper finds that $\hat\theta$ is about \FESHRINK\ smaller than the raw gap, but
+still beyond both nulls.
+
+\subsection{Checking size and power by Monte Carlo}
+
+A test has the right \emph{size} if, when the null hypothesis is true, it
+rejects in about $5\%$ of samples at the $5\%$ level; its \emph{power} is the
+rejection rate when the hypothesis is false. To check both, simulate panels
+from known processes, apply the whole test to each, and count rejections:
+\begin{itemize}
+\item i.i.d.\ Student-$t$, constant correlation: no dynamics at all. Both
+nulls should reject about 5\%.
+\item GARCH with constant correlation: volatility clustering, no
+correlation dynamics. A good test of \emph{dependence} should still reject
+about 5\%. The i.i.d.\ null rejects \MCGARCHIID\ of the time, the GARCH null
+\MCGARCHFHS.
+\item Markov-switching volatility, constant correlation: same question with
+regime-type volatility.
+\item Markov-switching volatility \emph{and} correlation (0.30 calm, 0.50 in
+stress): the effect is real; rejection rates measure power
+(\MCPOWFHS\ for the GARCH null).
+\end{itemize}
+
+\subsection{Testing many hypotheses at once: Holm's procedure}
+
+The verdict table tests $m$ statistics. If each is tested at 5\%, the chance
+of at least one false rejection grows quickly with $m$. The Holm (1979)
+procedure controls this \emph{family-wise error rate}. Sort the $p$-values
+$p_{(1)}\le\dots\le p_{(m)}$; reject $H_{(1)}$ if $p_{(1)}\le\alpha/m$, then
+$H_{(2)}$ if $p_{(2)}\le\alpha/(m-1)$, and so on, stopping at the first
+failure. Equivalently, the adjusted $p$-value of the $k$-th smallest is
+$\max_{j\le k}\min\{1,(m-j+1)p_{(j)}\}$. Holm is always at least as powerful
+as Bonferroni (which uses $\alpha/m$ for all) and needs no assumption on the
+dependence between tests.
+
+\subsection{Comparing nested forecasts: Clark--West}
+
+H7 compares a small model (volatility only, forecast $f_1$) with a larger one
+that adds an entropy regressor (forecast $f_2$). Under the null that the extra
+regressor is useless, its true coefficient is zero, but the larger model
+\emph{estimates} it, which adds noise: $f_2$ has a slightly larger mean squared
+error even when the regressor is irrelevant. The Diebold--Mariano test on
+$d_t=(y_t-f_{1,t})^2-(y_t-f_{2,t})^2$ is therefore biased against the larger
+model and under-rejects. Clark and West (2007) add back the noise term:
+\[
+\tilde d_t=(y_t-f_{1,t})^2-\bigl[(y_t-f_{2,t})^2-(f_{1,t}-f_{2,t})^2\bigr],
+\]
+and test $\E[\tilde d_t]=0$ against $\E[\tilde d_t]>0$ with a HAC standard
+error. Why this works: if the extra regressor is useless, $f_2$ equals $f_1$
+plus pure estimation noise $\nu_t$ uncorrelated with the forecast error, so
+$\E[(y-f_2)^2]=\E[(y-f_1)^2]+\E[\nu^2]$. The DM differential then has mean
+$-\E[\nu^2]<0$, and $(f_1-f_2)^2=\nu^2$ is exactly the term that re-centres it
+at zero. The test is one-sided and approximately normal.
+
+\begin{papier}
+Verdicts (tables 4 and 5 of the journal version): coupling under stress
+passes both nulls on both panels, also within years; crisis composition (H8),
+the range and daily half-life of $\JJ$ and the largest episode pass the
+i.i.d.\ null. One-sided jumps, the shape deficit under stress, the
+tails--correlation link (H6) and the daily sign (H5) are produced just as
+strongly, or more, by the null.
+\end{papier}

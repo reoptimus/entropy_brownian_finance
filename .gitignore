@@ -21,3 +21,12 @@ calcul_local/resultats/
 calcul_local/resultats_test/
 data/zone_euro/
 data/external/
+
+# JFEC build artefacts
+paper/jfec/**/*.aux
+paper/jfec/**/*.log
+paper/jfec/**/*.out
+paper/jfec/**/*.bbl
+paper/jfec/**/*.blg
+paper/jfec/**/*.toc
+paper/jfec/**/*.ent

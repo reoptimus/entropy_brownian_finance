@@ -1,0 +1,1536 @@
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[english]{babel}
+\usepackage{lmodern}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{geometry,booktabs,enumitem}
+\usepackage[most]{tcolorbox}
+\usepackage[colorlinks=true,linkcolor=blue!50!black,urlcolor=blue!50!black,citecolor=black]{hyperref}
+\geometry{margin=2.6cm}
+\setlist{itemsep=2pt,topsep=4pt}
+\setlength{\parskip}{3pt}
+\setlength{\emergencystretch}{2em}
+
+\theoremstyle{plain}
+\newtheorem{proposition}{Proposition}[section]
+\newtheorem{lemme}[proposition]{Lemma}
+\theoremstyle{definition}
+\newtheorem{definition}[proposition]{Definition}
+\newtheorem{exemple}[proposition]{Example}
+\newtheorem{exercice}[proposition]{Exercise}
+\theoremstyle{remark}
+\newtheorem*{remarque}{Remark}
+
+\newcommand{\JJ}{\mathcal{J}}
+\newcommand{\DD}{\mathcal{D}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\N}{\mathcal{N}}
+\newcommand{\tr}{\operatorname{tr}}
+\newcommand{\KL}[2]{D_{KL}\!\left(#1\,\Vert\,#2\right)}
+% Numbers from the replication package (scripts/jfec_build.py)
+\newcommand{\BIASTWENTY}{0.39}
+\newcommand{\BIASFORTYEIGHT}{2.41}
+\newcommand{\BIASTWENTYMC}{0.39}
+\newcommand{\BIASTWENTYT}{0.39}
+\newcommand{\BIASTWENTYLW}{0.002}
+\newcommand{\FESHRINK}{61\%}
+\newcommand{\MCGARCHIID}{17\%}
+\newcommand{\MCGARCHFHS}{6.5\%}
+\newcommand{\MCPOWFHS}{68\%}
+
+
+\newtcolorbox{intuition}[1][]{colback=blue!3,colframe=blue!40!black,
+  fonttitle=\bfseries,title={In plain words},boxrule=0.5pt,arc=2pt,#1}
+\newtcolorbox{papier}[1][]{colback=orange!4,colframe=orange!60!black,
+  fonttitle=\bfseries,title={Where this is used in the paper},boxrule=0.5pt,arc=2pt,#1}
+\newtcolorbox{piege}[1][]{colback=red!3,colframe=red!50!black,
+  fonttitle=\bfseries,title={Common pitfall},boxrule=0.5pt,arc=2pt,#1}
+
+\title{The mathematics, step by step\\[4pt]
+\large Companion note to ``What Survives a Placebo? Entropy, Market Coupling
+and the Plausibility of Stress Scenarios''\\[2pt]
+\normalsize (version prepared for the \emph{Journal of Financial Econometrics})}
+\author{Sébastien Gallet}
+\date{November 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+\noindent This note works through all the mathematics of the journal version
+of the paper and of its online appendix, one step at a time. Compared with the
+note on the central-bank version, the section on inference is new: the bias of
+sample coupling (Bartlett's formula), why resampling $p$-values are exact, the
+volatility-preserving GARCH null, the within-year gap, the Monte Carlo check
+of size and power, Holm's multiple-testing procedure and the Clark--West test. It is written for a master's
+student who knows probability (expectation, density, multivariate normal) and
+linear algebra (determinant, trace, eigenvalues, positive definite matrices),
+but not necessarily information theory. Each result is stated, proved,
+illustrated with a numerical example, and linked to the exact place in the
+paper where it is used. Blue boxes give the intuition, orange boxes the link
+with the paper, red boxes the mistakes to avoid. Most sections end with a few
+solved exercises.
+\end{abstract}
+
+\tableofcontents
+
+%======================================================================
+\section*{The storyline on one page}
+\addcontentsline{toc}{section}{The storyline on one page}
+
+The paper rests on a chain of seven ideas. Each gets its own section in this
+note.
+
+\begin{enumerate}
+\item \textbf{Entropy measures the uncertainty} of a distribution, in nats
+(section~\ref{sec:entropie}).
+\item \textbf{The Kullback--Leibler divergence measures the gap between two
+distributions}, also in nats, and it does not depend on units
+(section~\ref{sec:kl}).
+\item \textbf{For a fixed mean and covariance, the Gaussian is the
+maximum-entropy distribution}: the ``most ignorant'' one. Any departure from
+the Gaussian is therefore information (section~\ref{sec:maxent}).
+\item \textbf{The entropy of a return vector splits exactly into three
+pieces}: scale (volatilities), dependence (correlations) and shape (tails and
+skewness). Dropping scale gives the structural index $\JJ$, which is itself a
+divergence (sections~\ref{sec:gauss} to~\ref{sec:canaux}).
+\item \textbf{Receiving information lowers uncertainty on average}
+(a theorem), and we postulate that it then rebuilds slowly: hence a sawtooth
+dynamic (section~\ref{sec:dynamique}; in the journal version these
+postulates are in the online appendix).
+\item \textbf{But the estimator produces this sawtooth by itself.} Placebo
+nulls are therefore needed: one without dynamics, one that keeps volatility
+dynamics but not correlation dynamics. Only the coupling of markets under
+stress survives both (section~\ref{sec:temoin}).
+\item \textbf{The nat becomes a unit of scenario severity}: $k$ standard
+deviations cost $k^2/2$ nats, any scenario can be priced and the cheapest one
+found (section~\ref{sec:scenarios}); and the coupling measure splits exactly
+by market segment, which gives the entropic CISS (section~\ref{sec:blocs}).
+\end{enumerate}
+
+\paragraph{Notation.} $\log$ is the natural logarithm. $X\in\R^N$ is a vector
+of returns with density $p$, mean $\mu$ and covariance $\Sigma$. We write
+$\Sigma=DRD$ with $D=\operatorname{diag}(\sigma_1,\dots,\sigma_N)$ the
+volatilities and $R$ the correlation matrix. $\N(\mu,\Sigma)$ is the normal
+distribution; $q$ always denotes a Gaussian reference.
+
+%======================================================================
+\section{Entropy and its unit, the nat}
+\label{sec:entropie}
+
+\subsection{The discrete case: counting questions}
+
+For a discrete variable taking values $x_i$ with probabilities $p_i$, the
+\emph{Shannon entropy} is
+\[
+H(p)=-\sum_i p_i\log p_i .
+\]
+A few values worth knowing: a fair coin has $H=\log 2\approx0.693$; a uniform
+distribution over $M$ values has $H=\log M$; a certain variable has $H=0$.
+Entropy is largest for the uniform distribution and zero for a distribution
+concentrated on one point.
+
+\begin{intuition}
+$H$ measures ``how much we do not know''. $-\log p_i$ is the \emph{surprise}
+of outcome $i$: a rare outcome is very surprising. Entropy is the average
+surprise.
+\end{intuition}
+
+\paragraph{The unit.} Choosing the base of the logarithm \emph{is} choosing
+the unit. With $\log_2$ we count in bits; with the natural logarithm, in
+\emph{nats}. Since $\log_2 x=\log x/\log 2$, $1~\text{nat}=1/\log2\approx1.443$
+bits. A bit is the information that halves the set of possibilities; a nat
+divides it by $e\approx2.718$. The whole paper is in nats.
+
+\subsection{The continuous case: differential entropy}
+
+For a density $p$ on $\R^N$, define
+\[
+h(p)=-\int p(x)\log p(x)\,dx = -\E_p[\log p(X)] .
+\]
+
+\begin{exemple}[Uniform and normal distributions in one dimension]
+\label{ex:unif-norm}
+The method is the same in both cases: write $\log p(x)$, then take the
+expectation of $-\log p(X)$.
+
+\medskip
+\noindent\textbf{Uniform on $[0,a]$.}
+\begin{enumerate}[label=\arabic*.]
+\item The density is $p(x)=1/a$ on $[0,a]$ and $0$ elsewhere.
+\item On $[0,a]$, $\log p(x)=\log(1/a)=-\log a$: a constant.
+\item The expectation of a constant is the constant itself, so
+$h=-\E[\log p(X)]=-(-\log a)=\log a$.
+\end{enumerate}
+Reading: the wider the interval, the larger the uncertainty. For $a=2$,
+$h=\log2\approx0.69$; for $a=1$, $h=0$; for $a=1/2$, $h=-\log2<0$ (more on
+this below).
+
+\medskip
+\noindent\textbf{Normal $\N(\mu,\sigma^2)$.}
+\begin{enumerate}[label=\arabic*.]
+\item The density is
+$p(x)=\dfrac{1}{\sqrt{2\pi\sigma^2}}\exp\!\Bigl(-\dfrac{(x-\mu)^2}{2\sigma^2}\Bigr)$.
+\item Take the logarithm. The log of a product is the sum of the logs, and
+$\log\exp(y)=y$:
+\[
+\log p(x)=\log\frac{1}{\sqrt{2\pi\sigma^2}}-\frac{(x-\mu)^2}{2\sigma^2}
+=-\tfrac12\log(2\pi\sigma^2)-\frac{(x-\mu)^2}{2\sigma^2}.
+\]
+(We used $\log(1/\sqrt{y})=-\tfrac12\log y$.)
+\item Change the sign:
+$-\log p(x)=\tfrac12\log(2\pi\sigma^2)+\dfrac{(x-\mu)^2}{2\sigma^2}$.
+\item Take the expectation for $X\sim\N(\mu,\sigma^2)$. The first term is a
+constant and stays as it is. In the second, the only random part is
+$(X-\mu)^2$, whose expectation is \emph{by definition} the variance:
+$\E[(X-\mu)^2]=\sigma^2$. Hence
+\[
+h=-\E[\log p(X)]=\tfrac12\log(2\pi\sigma^2)+\frac{\sigma^2}{2\sigma^2}
+=\tfrac12\log(2\pi\sigma^2)+\tfrac12 .
+\]
+\item Put the $\tfrac12$ inside the logarithm by writing
+$\tfrac12=\tfrac12\log e$ (since $\log e=1$), then
+$\tfrac12\log A+\tfrac12\log e=\tfrac12\log(Ae)$:
+\[
+\boxed{\,h=\tfrac12\log(2\pi e\,\sigma^2)=\tfrac12\log(2\pi e)+\log\sigma\,}
+\]
+\end{enumerate}
+Reading: the mean $\mu$ has disappeared (shifting a distribution does not
+change its uncertainty), and only the volatility $\sigma$ matters, through
+$\log\sigma$. Doubling volatility adds $\log2\approx0.69$ nat. Numerically,
+for $\sigma=1$, $h=\tfrac12\log(2\pi e)=\tfrac12\log(17.08)\approx1.419$ nats.
+\end{exemple}
+
+Two important differences from the discrete case show up at once. First, $h$
+can be negative: the uniform on $[0,1/2]$ has $h=-\log2<0$. Second, and this
+is what matters for the paper, \textbf{$h$ depends on units}.
+
+\begin{proposition}[Change of scale]
+\label{prop:echelle}
+For $a\neq0$, $h(aX+b)=h(X)+\log|a|$. In dimension $N$, for invertible $A$,
+$h(AX+b)=h(X)+\log|\det A|$.
+\end{proposition}
+
+\begin{proof}
+If $Y=AX+b$, the change-of-variables formula gives
+$p_Y(y)=p_X(x)/|\det A|$ with $x=A^{-1}(y-b)$. Hence
+$h(Y)=-\E[\log p_Y(Y)]=-\E[\log p_X(X)]+\log|\det A|=h(X)+\log|\det A|$.
+\end{proof}
+
+\begin{piege}
+Expressing returns in per cent rather than decimals multiplies each coordinate
+by $100$, and so adds $N\log100$ to $h$. The \emph{level} of $h$ therefore has
+no absolute meaning; only its changes, and above all the \emph{divergences} of
+the next section, do. This is why the paper builds all its indicators as
+divergences.
+\end{piege}
+
+\begin{exercice}
+Compute $h$ for $X\sim\N(0,\sigma^2)$ with $\sigma=1\,\%$, writing first
+$\sigma=0.01$ and then $\sigma=1$ (returns in per cent). Check that the gap is
+$\log100\approx4.61$.
+\end{exercice}
+\noindent\emph{Solution.} $h=\tfrac12\log(2\pi e)+\log\sigma$, that is
+$1.419-4.605=-3.186$, then $1.419$. The gap is $\log 100$.
+
+%======================================================================
+\section{The Kullback--Leibler divergence}
+\label{sec:kl}
+
+\begin{definition}
+For two densities $p$ and $q$ (with $q>0$ wherever $p>0$),
+\[
+\KL{p}{q}=\int p(x)\log\frac{p(x)}{q(x)}\,dx=\E_p\!\left[\log\frac{p(X)}{q(X)}\right].
+\]
+\end{definition}
+
+\begin{intuition}
+It is the extra surprise, on average, when you believe the world follows $q$
+while it actually follows $p$. Another reading: when testing $p$ against $q$,
+the log-likelihood ratio rises on average by $\KL{p}{q}$ per observation. A
+divergence of one nat means that each observation multiplies the evidence in
+favour of $p$ by $e$ on average.
+\end{intuition}
+
+\subsection{Three properties}
+
+\begin{proposition}[Gibbs' inequality]
+\label{prop:gibbs}
+$\KL{p}{q}\ge0$, with equality if and only if $p=q$ almost everywhere.
+\end{proposition}
+
+\paragraph{The tool: Jensen's inequality.} A function $\varphi$ is
+\emph{concave} if its graph always lies above its chords: for two points $a,b$
+and a weight $t\in[0,1]$, $\varphi(ta+(1-t)b)\ge t\varphi(a)+(1-t)\varphi(b)$.
+The logarithm is concave (its second derivative $-1/x^2$ is negative). Jensen
+extends this chord inequality to any average: for any random variable $Z>0$,
+\[
+\E[\log Z]\ \le\ \log\E[Z]
+\qquad\text{(``the mean of the logs is below the log of the mean'')}.
+\]
+Example: $Z$ equals $1$ or $4$ with probability $\tfrac12$. Then
+$\E[\log Z]=\tfrac12(0+\log4)=\log2\approx0.69$, whereas
+$\log\E[Z]=\log2.5\approx0.92$. Since the logarithm is \emph{strictly}
+concave, equality holds only if $Z$ is constant: if $Z$ always equals $c$,
+both sides equal $\log c$.
+
+\begin{proof}
+We proceed in four steps.
+
+\emph{Step 1: flip the fraction.} Since $\log(a/b)=-\log(b/a)$,
+\[
+-\KL{p}{q}=-\E_p\!\left[\log\frac{p(X)}{q(X)}\right]
+=\E_p\!\left[\log\frac{q(X)}{p(X)}\right].
+\]
+It is enough to show that this last number is $\le0$.
+
+\emph{Step 2: apply Jensen.} Let $Z=q(X)/p(X)$, where $X$ follows $p$. Jensen
+gives
+\[
+\E_p\!\left[\log\frac{q(X)}{p(X)}\right]\ \le\ \log\E_p\!\left[\frac{q(X)}{p(X)}\right].
+\]
+
+\emph{Step 3: compute the expectation on the right.} By definition of the
+expectation under $p$, we integrate against the density $p$, over the region
+where $p>0$ (elsewhere $X$ never falls):
+\[
+\E_p\!\left[\frac{q(X)}{p(X)}\right]
+=\int_{p>0}p(x)\,\frac{q(x)}{p(x)}\,dx
+=\int_{p>0}q(x)\,dx .
+\]
+The $p$'s cancel: what remains is the mass $q$ puts on the region where
+$p>0$. This is a probability, so it is $\le1$ (exactly $1$ if $q$ puts no mass
+outside this region).
+
+\emph{Step 4: conclude.} The logarithm is increasing, so
+$\log\int_{p>0}q\le\log1=0$. Chaining the steps,
+\[
+-\KL{p}{q}\ \le\ \log\int_{p>0}q\ \le\ 0,
+\qquad\text{that is}\qquad \KL{p}{q}\ge0 .
+\]
+
+\emph{Equality case.} If $\KL{p}{q}=0$, both inequalities are equalities.
+Equality in Jensen requires $Z=q/p$ to be constant, say $q(x)=c\,p(x)$
+wherever $p>0$. Equality in step 4 requires $\int_{p>0}q=1$, that is
+$c\int p=c=1$. Hence $q=p$. (``Almost everywhere'' only means that sets of
+probability zero, such as a few isolated points, can be ignored, since they
+change no integral.)
+\end{proof}
+
+\begin{exemple}[Check on a simple case]
+A biased coin $p=(0.9,\,0.1)$ compared with a fair coin $q=(0.5,\,0.5)$:
+\[
+\KL{p}{q}=0.9\log\frac{0.9}{0.5}+0.1\log\frac{0.1}{0.5}
+=0.9\times0.588+0.1\times(-1.609)=0.529-0.161=0.368 .
+\]
+One of the two terms is negative, but the weighted sum is positive: exactly
+what the proposition guarantees. The negative term is always ``dominated''
+because it carries the small weight $0.1$.
+\end{exemple}
+
+\begin{remarque}[A proof without Jensen]
+One can also use the elementary inequality $\log x\le x-1$ (the graph of the
+logarithm lies below its tangent at $x=1$, with equality only at $x=1$). With
+$x=q/p$: $\E_p[\log(q/p)]\le\E_p[q/p-1]=\int_{p>0}q-1\le0$. Same idea,
+written with a tangent instead of a chord.
+\end{remarque}
+
+\begin{proposition}[Invariance under change of variables]
+\label{prop:invariance}
+If $Y=\phi(X)$ with $\phi$ bijective and differentiable, and $p_Y,q_Y$ are the
+laws of $Y$ when $X\sim p$ or $X\sim q$, then $\KL{p_Y}{q_Y}=\KL{p}{q}$.
+\end{proposition}
+
+\begin{proof}
+$p_Y(y)=p(x)/|J_\phi(x)|$ and $q_Y(y)=q(x)/|J_\phi(x)|$ with the \emph{same}
+Jacobian. In the ratio $p_Y/q_Y$, the Jacobian cancels.
+\end{proof}
+
+\begin{papier}
+This is the property that lets equity returns, rate changes and exchange rates
+sit in the same matrix (entropic CISS), and nats be compared across markets.
+\end{papier}
+
+\paragraph{Not a distance.} In general $\KL{p}{q}\neq\KL{q}{p}$, and the
+triangle inequality fails: hence the word ``divergence''. For example, for two
+centred Gaussians with variances $\sigma_1^2$ and $\sigma_0^2$, we show
+(section~\ref{sec:scenarios}) that $\KL{p_1}{p_0}=\tfrac12(v^2-1-2\log v)$ with
+$v=\sigma_1/\sigma_0$. For $v=2$ this gives $0.807$, and for $v=1/2$, $0.318$.
+
+\subsection{The most useful case: two Gaussians with the same covariance}
+
+\begin{proposition}
+\label{prop:klmoy}
+If $p_1=\N(\mu_1,\Sigma)$ and $p_0=\N(\mu_0,\Sigma)$, then
+$\KL{p_1}{p_0}=\tfrac12\,\Delta^\top\Sigma^{-1}\Delta$ with
+$\Delta=\mu_1-\mu_0$.
+\end{proposition}
+
+\begin{proof}
+The normalising constants are identical and cancel. What remains is
+\[
+\log\frac{p_1(x)}{p_0(x)}=-\tfrac12(x-\mu_1)^\top\Sigma^{-1}(x-\mu_1)
++\tfrac12(x-\mu_0)^\top\Sigma^{-1}(x-\mu_0).
+\]
+Under $p_1$, write $x-\mu_0=(x-\mu_1)+\Delta$ and expand: the cross term
+$\Delta^\top\Sigma^{-1}(X-\mu_1)$ has zero expectation, and the two quadratic
+forms in $X-\mu_1$ cancel. What remains is $\tfrac12\Delta^\top\Sigma^{-1}\Delta$.
+\end{proof}
+
+The quantity $\sqrt{\Delta^\top\Sigma^{-1}\Delta}$ is the \emph{Mahalanobis
+distance}: the shift measured in standard deviations, taking correlations into
+account. In one dimension, $\Delta=k\sigma$ gives
+\[
+\boxed{\;k\text{ standard deviations cost }k^2/2\text{ nats, and }\eta\text{ nats
+buy }\sqrt{2\eta}\text{ standard deviations.}\;}
+\]
+A $3\sigma$ shock costs $4.5$ nats; one nat buys $\sqrt2\approx1.41$ standard
+deviations. This conversion rule runs through the whole paper.
+
+%======================================================================
+\section{Why the Gaussian is the zero point}
+\label{sec:maxent}
+
+\begin{proposition}[Maximum entropy]
+\label{prop:maxent}
+Among all densities on $\R^N$ with mean $\mu$ and covariance $\Sigma\succ0$,
+the Gaussian $q=\N(\mu,\Sigma)$ is the unique maximum-entropy density.
+\end{proposition}
+
+\paragraph{What needs to be shown.} Fix a mean and a covariance. Many
+distributions have them: a Gaussian, a suitably chosen uniform, a Laplace, a
+fat-tailed law\ldots{} The proposition says that among all of them, the
+Gaussian has the highest entropy. To show it, we compare an arbitrary $p$ with
+the Gaussian $q$ with the same moments, using the divergence $\KL{p}{q}$,
+which we already know is non-negative (Gibbs).
+
+\paragraph{Ingredient 1: the log of a Gaussian is a degree-two polynomial.}
+Start in one dimension. The density of $q=\N(\mu,\sigma^2)$ is
+$q(x)=\frac{1}{\sqrt{2\pi\sigma^2}}\exp\!\bigl(-\frac{(x-\mu)^2}{2\sigma^2}\bigr)$.
+The logarithm ``undoes'' the exponential (example~\ref{ex:unif-norm}):
+\[
+\log q(x)=\underbrace{-\tfrac12\log(2\pi\sigma^2)}_{\text{constant}}
+\;-\;\frac{(x-\mu)^2}{2\sigma^2}.
+\]
+Expanding $(x-\mu)^2=x^2-2\mu x+\mu^2$ shows it has the form
+\[
+\log q(x)=a+b\,x+c\,x^2,
+\qquad a=-\tfrac12\log(2\pi\sigma^2)-\frac{\mu^2}{2\sigma^2},\quad
+b=\frac{\mu}{\sigma^2},\quad c=-\frac{1}{2\sigma^2}.
+\]
+This is what ``$\log q$ is quadratic'' means: a degree-two polynomial in $x$,
+with no $x^3$, $x^4$, etc. This property is \emph{specific} to the Gaussian.
+For a Laplace law, $\log p(x)=\text{const}-|x|/b$ is not a polynomial; for a
+Student law, $\log p$ contains $\log(1+x^2/\nu)$. In dimension $N$ it is the
+same:
+\[
+\log q(x)=-\tfrac12\bigl[N\log2\pi+\log\det\Sigma\bigr]
+-\tfrac12(x-\mu)^\top\Sigma^{-1}(x-\mu),
+\]
+a constant plus a quadratic form in $x$.
+
+\paragraph{Ingredient 2: the expectation of a degree-two polynomial depends
+only on the first two moments.} By linearity of expectation, for any variable
+$X$ (with any law),
+\[
+\E[a+bX+cX^2]=a+b\,\E[X]+c\,\E[X^2].
+\]
+But $\E[X]=\mu$ and $\E[X^2]=\sigma^2+\mu^2$ are fixed by the mean and
+variance. \textbf{All laws with mean $\mu$ and variance $\sigma^2$ therefore
+give the same value to $\E[\log q(X)]$}, Gaussian or not. This would not hold
+for a function containing $x^4$: its expectation would involve the kurtosis,
+which differs from one law to another.
+
+\paragraph{Consequence.} If $p$ has the same mean and variance as $q$, $p$ can
+be replaced by $q$ in the expectation of $\log q$:
+\[
+\E_p[\log q(X)]=\E_q[\log q(X)]=-h(q).
+\]
+The last equality is the definition of the entropy of $q$.
+
+\begin{proof}
+Put the pieces together. By definition of the divergence, then of entropy,
+\[
+\KL{p}{q}=\E_p[\log p(X)]-\E_p[\log q(X)]
+=-h(p)-\E_p[\log q(X)].
+\]
+Replace $\E_p[\log q(X)]$ by $-h(q)$ (consequence above):
+\[
+\KL{p}{q}=-h(p)+h(q)=h(q)-h(p).
+\]
+By Gibbs, $\KL{p}{q}\ge0$, so $h(p)\le h(q)$. Equality holds if and only if
+$\KL{p}{q}=0$, that is $p=q$: the Gaussian is the unique maximum.
+\end{proof}
+
+\begin{exemple}[Numerical check, mean $0$ and variance $1$]
+\leavevmode
+\begin{itemize}
+\item \emph{Gaussian} $\N(0,1)$: $h=\tfrac12\log(2\pi e)\approx1.419$.
+\item \emph{Uniform on $[-\sqrt3,\sqrt3]$} (its variance is
+$(2\sqrt3)^2/12=1$): $h=\log(2\sqrt3)\approx1.242$.
+\item \emph{Laplace} with density $\frac{1}{2b}e^{-|x|/b}$ and $b=1/\sqrt2$
+(variance $2b^2=1$): $h=1+\log(2b)\approx1.347$.
+\end{itemize}
+The Gaussian does have the highest entropy. Let us also check ingredient~2 on
+the uniform: $\log q(x)=-\tfrac12\log2\pi-\tfrac12x^2$, so
+$\E_p[\log q]=-\tfrac12\log2\pi-\tfrac12\E_p[X^2]
+=-\tfrac12\log2\pi-\tfrac12=-1.419=-h(q)$, although $p$ is not Gaussian.
+Finally $\KL{p}{q}=1.419-1.242=0.177$ nat: the ``entropy deficit'' of the
+uniform, what the Gaussian does not see.
+\end{exemple}
+
+\begin{intuition}
+Fixing a mean and a variance, and assuming nothing else, leads to the
+Gaussian. Any other law with the same moments ``knows more'': it contains
+additional information (skewness, fat tails, nonlinear dependence). Measuring
+the departure from the Gaussian therefore measures this information.
+\end{intuition}
+
+\begin{remarque}
+One can also find the Gaussian with a Lagrangian: maximising $-\int p\log p$
+subject to $\int p=1$, $\int xp=\mu$, $\int xx^\top p=\Sigma+\mu\mu^\top$ gives
+a first-order condition in which $\log p$ is quadratic, hence $p$ Gaussian.
+This route explains the form of the result but proves neither that it is a
+maximum nor that it is unique; the divergence proof does both in three lines.
+\end{remarque}
+
+\paragraph{Where does the variance come from? (the ``bridge'' of the online appendix).}
+Maximum entropy takes the variance as given without saying where it comes
+from. The paper proposes measuring time in traded volume. Over an interval,
+let $V$ be volume and $Q$ net order flow. Two assumptions: (i) the change in
+log price is $\lambda Q$ (linear Kyle-type impact); (ii) given $V$, all we
+know about $Q$ is $\E[Q\mid V]=m$ and $\operatorname{Var}(Q\mid V)=\varsigma^2V$.
+Proposition~\ref{prop:maxent} in one dimension then gives
+\[
+\Delta X\mid V\sim\N(\lambda m,\ \lambda^2\varsigma^2V).
+\]
+Unconditionally, $\Delta X$ is a \emph{mixture} of Gaussians with random
+variances, hence fat-tailed. The moral: fat tails in calendar time do not
+contradict maximum entropy; they can come from a random clock. No empirical
+result depends on this bridge: it only justifies the Gaussian as the
+reference.
+
+\begin{exercice}[A mixture has fat tails]
+Let $X=\sqrt{V}\,Z$ with $Z\sim\N(0,1)$ independent of $V>0$. Show that the
+kurtosis of $X$ is $3\,\E[V^2]/\E[V]^2\ge3$, with equality if and only if $V$
+is constant.
+\end{exercice}
+\noindent\emph{Solution.} $\E[X^2]=\E[V]$ and $\E[X^4]=\E[V^2]\E[Z^4]=3\E[V^2]$.
+The ratio is $\E[X^4]/\E[X^2]^2=3\E[V^2]/\E[V]^2$, and $\E[V^2]\ge\E[V]^2$ by
+Jensen (or because the variance of $V$ is non-negative).
+
+%======================================================================
+\section{The entropy of a multivariate Gaussian}
+\label{sec:gauss}
+
+\begin{proposition}
+\label{prop:hgauss}
+For $q=\N(\mu,\Sigma)$ on $\R^N$,
+\[
+h(q)=\tfrac12\log\bigl((2\pi e)^N\det\Sigma\bigr).
+\]
+\end{proposition}
+
+\begin{proof}
+Start from the expression of $\log q$ above:
+$h(q)=\tfrac N2\log2\pi+\tfrac12\log\det\Sigma
++\tfrac12\E[(X-\mu)^\top\Sigma^{-1}(X-\mu)]$.
+For the last expectation, use \textbf{the trace trick}: a scalar equals its
+trace, and the trace is invariant under cyclic permutation
+($\tr(ABC)=\tr(CAB)$). Hence
+\[
+\E\bigl[(X-\mu)^\top\Sigma^{-1}(X-\mu)\bigr]
+=\E\bigl[\tr\bigl(\Sigma^{-1}(X-\mu)(X-\mu)^\top\bigr)\bigr]
+=\tr\bigl(\Sigma^{-1}\Sigma\bigr)=\tr(I_N)=N .
+\]
+So $h(q)=\tfrac12\bigl[N\log2\pi+\log\det\Sigma+N\bigr]$.
+\end{proof}
+
+\begin{remarque}
+The trace trick comes back several times. Remember: for any $X$ with
+covariance $\Sigma$ and any matrix $A$,
+$\E[(X-\mu)^\top A(X-\mu)]=\tr(A\Sigma)$, \emph{whatever the law of $X$}.
+Only the first two moments enter.
+\end{remarque}
+
+\subsection{Separating volatilities and correlations}
+
+With $\Sigma=DRD$, multiplicativity of the determinant gives
+$\det\Sigma=(\det D)^2\det R=\bigl(\prod_i\sigma_i\bigr)^2\det R$, so
+\begin{equation}
+\label{eq:plafond}
+h(q)=\underbrace{\tfrac N2\log(2\pi e)}_{\text{constant}}
++\underbrace{\sum_i\log\sigma_i}_{\text{scale}}
++\underbrace{\tfrac12\log\det R}_{\text{dependence}} .
+\end{equation}
+
+\begin{proposition}[Correlation destroys entropy]
+\label{prop:hadamard}
+For every correlation matrix $R$, $\det R\le1$, with equality if and only if
+$R=I$. The dependence term is therefore always negative or zero.
+\end{proposition}
+
+\begin{proof}
+$R$ is symmetric positive semi-definite, with eigenvalues
+$\lambda_1,\dots,\lambda_N\ge0$ and $\sum_k\lambda_k=\tr R=N$ (the diagonal of
+$R$ contains only $1$s). By the arithmetic--geometric mean inequality,
+\[
+\det R=\prod_k\lambda_k\le\Bigl(\tfrac1N\sum_k\lambda_k\Bigr)^N=1,
+\]
+with equality if and only if every $\lambda_k$ equals $1$, that is $R=I$.
+(This is a special case of Hadamard's inequality.)
+\end{proof}
+
+\begin{papier}
+Equation~\eqref{eq:plafond} is the paper's ``ceiling'': what we would get if
+returns were Gaussian. It also explains why the scale channel is a nuisance:
+in a crisis, volatilities rise, so $h(q)$ \emph{rises} (by $5.97$ nats on the
+main panel), whereas we would like a crisis to show up as a
+\emph{constraint}. Hence the idea of removing scale.
+\end{papier}
+
+%======================================================================
+\section{Mutual information and coupling}
+\label{sec:couplage}
+
+\begin{definition}
+The mutual information of two vectors $X$ and $Y$ is
+$I(X;Y)=\KL{p_{XY}}{p_X\otimes p_Y}$: the gap between the joint law and the
+law we would have if $X$ and $Y$ were independent. For $N$ variables, the
+\emph{total correlation} (or multi-information, Watanabe 1960) is
+$\KL{p}{\prod_ip_i}$.
+\end{definition}
+
+By Gibbs, $I\ge0$, with equality if and only if the variables are
+independent. By proposition~\ref{prop:invariance}, $I$ does not depend on
+units.
+
+\begin{proposition}[The Gaussian case]
+\label{prop:migauss}
+If $X\sim\N(0,\Sigma)$ with $\Sigma=DRD$, the total correlation is
+\[
+C(R)=\KL{\N(0,\Sigma)}{\N(0,D^2)}=-\tfrac12\log\det R .
+\]
+For two variables with correlation $\rho$: $I=-\tfrac12\log(1-\rho^2)$.
+\end{proposition}
+
+\begin{proof}
+The marginals of a Gaussian are Gaussian, so $\prod_ip_i=\N(0,D^2)$. For a
+Gaussian vector, $\KL{p}{\prod_ip_i}=\sum_ih(p_i)-h(p)$ (same argument as
+proposition~\ref{prop:maxent}: $\log\prod_ip_i$ is quadratic and $p$ has the
+same variances). With~\eqref{eq:plafond}:
+$\sum_ih(p_i)=\tfrac N2\log(2\pi e)+\sum_i\log\sigma_i$, and the difference
+with $h(p)$ is $-\tfrac12\log\det R$. For $N=2$, $\det R=1-\rho^2$.
+\end{proof}
+
+\begin{exemple}
+For $\rho=0.9$, $I=-\tfrac12\log0.19=0.83$ nat. For $\rho=0.3$,
+$I=0.047$ nat: mutual information rises very fast as $\rho$ approaches $1$.
+\end{exemple}
+
+\paragraph{Constant correlation.} If every correlation equals $\rho$,
+$R=(1-\rho)I+\rho\,\mathbf 1\mathbf 1^\top$. The vector $\mathbf 1$ is an
+eigenvector with eigenvalue $1+(N-1)\rho$ (the ``market mode''), and every
+vector orthogonal to $\mathbf 1$ has eigenvalue $1-\rho$. Hence
+\[
+\det R=(1-\rho)^{N-1}\bigl(1+(N-1)\rho\bigr),\qquad
+C=-\tfrac12\bigl[(N-1)\log(1-\rho)+\log(1+(N-1)\rho)\bigr].
+\]
+For $N=20$: $C=1.97$ nats if $\rho=0.26$ and $C=2.69$ nats if $\rho=0.32$.
+These are the average calm and stress correlations of the main panel; the
+gap, $0.72$ nat, gives the order of magnitude of the $0.99$-nat rise measured
+on the actual matrix.
+
+\paragraph{Effective number of modes.} A related spectral reading: with
+$\tilde\lambda_k=\lambda_k/N$ (which sum to $1$, like probabilities), define
+$N^{\text{eff}}=\exp\bigl(-\sum_k\tilde\lambda_k\log\tilde\lambda_k\bigr)$.
+It is the exponential of the entropy of the spectrum: $N^{\text{eff}}=N$ if
+$R=I$, and $N^{\text{eff}}\to1$ if a single mode carries all the variance.
+With the constant correlation above, $N^{\text{eff}}$ goes from $14.6$ to
+$12.8$ (on the actual matrix, the paper finds $13.1$ then $11.4$).
+
+\begin{intuition}
+$C$ and $N^{\text{eff}}$ say the same thing in two ways: under stress, there
+are fewer independent sources of risk. But $C=-\tfrac12\sum_k\log\lambda_k$
+\emph{weighs the small eigenvalues heavily} (the $\log$ blows up as
+$\lambda_k\to0$). And these are the ones that collapse when assets couple.
+This is the explanation offered for the robustness of $C$ compared with
+measures that look only at the largest eigenvalue (absorption ratio).
+\end{intuition}
+
+\begin{exercice}
+Show that for small $\rho$, $C\approx\tfrac14N(N-1)\rho^2$.
+\end{exercice}
+\noindent\emph{Solution.} $\log(1-\rho)\approx-\rho-\rho^2/2$ and
+$\log(1+(N-1)\rho)\approx(N-1)\rho-(N-1)^2\rho^2/2$. The first-order terms
+cancel; at second order,
+$C\approx\tfrac12\bigl[(N-1)\rho^2/2+(N-1)^2\rho^2/2\bigr]=\tfrac14N(N-1)\rho^2$.
+Consequence: $C$ grows like $N^2$; comparing panels of different sizes
+requires normalisation.
+
+%======================================================================
+\section{The three channels and the structural index}
+\label{sec:canaux}
+
+\subsection{The entropy deficit, or shape channel}
+
+\begin{definition}
+Let $q$ be the Gaussian with the same mean and covariance as the true law $p$.
+The \emph{entropy deficit} is $\DD=\KL{p}{q}$.
+\end{definition}
+
+\begin{proposition}
+\label{prop:deficit}
+$\DD=h(q)-h(p)\ge0$, with equality if and only if $p$ is Gaussian.
+\end{proposition}
+
+\begin{proof}
+This is exactly the proof of proposition~\ref{prop:maxent} read backwards:
+$\E_p[\log q]=-h(q)$ because $\log q$ is quadratic and $p$, $q$ share the same
+moments, so $\KL{p}{q}=-h(p)+h(q)$.
+\end{proof}
+
+\begin{piege}
+The identity $\KL{p}{q}=h(q)-h(p)$ is false in general. It holds only because
+$q$ is Gaussian \emph{and} has the same first two moments as $p$.
+\end{piege}
+
+\subsection{The exact decomposition}
+
+Combining~\eqref{eq:plafond} and proposition~\ref{prop:deficit} gives the
+central equation of the framework (eq.~(1) of the paper):
+\begin{equation}
+\label{eq:trois}
+h(p)=\tfrac N2\log(2\pi e)
++\underbrace{\sum_i\log\sigma_i}_{\text{scale}}
++\underbrace{\tfrac12\log\det R}_{\text{dependence }=-C}
+-\underbrace{\DD}_{\text{shape}} .
+\end{equation}
+There is no approximation: it is an identity.
+
+\subsection{The structural index is a divergence}
+
+We remove the scale channel and keep the other two: $\JJ=\DD+C$. This choice
+might look like a hack. It is not:
+
+\begin{proposition}
+\label{prop:J}
+Let $q_i=\N(\mu_i,\sigma_i^2)$ be the Gaussians with the same means and
+volatilities as each asset. Then
+\[
+\JJ=\DD+C=\KL{p}{\textstyle\prod_iq_i}\ \ge0 .
+\]
+\end{proposition}
+
+\begin{proof}
+$\log\prod_iq_i(x)=-\sum_i\bigl[\tfrac12\log(2\pi\sigma_i^2)
++\tfrac{(x_i-\mu_i)^2}{2\sigma_i^2}\bigr]$. Under $p$,
+$\E[(X_i-\mu_i)^2]=\sigma_i^2$, so
+\[
+\KL{p}{\textstyle\prod_iq_i}=-h(p)+\tfrac N2\log(2\pi e)+\sum_i\log\sigma_i .
+\]
+Substitute~\eqref{eq:trois} for $h(p)$: the constant and the scale term
+cancel, leaving $-\tfrac12\log\det R+\DD=C+\DD$.
+\end{proof}
+
+Being a divergence gives $\JJ$ three properties for free: it is
+non-negative; it is zero if and only if returns are \emph{Gaussian and
+independent} (a well-defined reference); and it depends neither on units nor
+on the level of volatility.
+
+\paragraph{The chain rule.} We also have the general identity
+\[
+\KL{p}{\textstyle\prod_iq_i}=\sum_i\KL{p_i}{q_i}+\KL{p}{\textstyle\prod_ip_i},
+\]
+(marginal deficits + full multi-information). The paper estimates the first
+term asset by asset and replaces the second by its Gaussian part $C$.
+Nonlinear tail dependence is therefore left out: the estimated $\JJ$
+\emph{understates} the true divergence (a limit stated in the paper).
+
+\subsection{How the marginal deficit is estimated}
+
+For a standardised variable with skewness $S$ and excess kurtosis $K$, close
+to Gaussian, the Edgeworth expansion gives
+\[
+\DD\approx\frac{S^2}{12}+\frac{K^2}{48}.
+\]
+This helps understanding (a skewness channel and a tail channel, additive)
+but is unusable as an estimator on daily returns: the estimated $K$ is
+dominated by a few extreme days, and squaring it amplifies the problem (the
+paper reports a factor-69 overstatement for a Student~$t$ with 4 degrees of
+freedom). Instead we use the Hyvärinen (1998) approximation, of the form
+\[
+\DD\approx k_1\bigl(\E[G_1(Z)]\bigr)^2+k_2\bigl(\E[G_2(Z)]-\E[G_2(\nu)]\bigr)^2,
+\qquad\nu\sim\N(0,1),
+\]
+where $G_1$ is a bounded odd function (it captures skewness) and $G_2$ a
+slowly growing even function (it captures tails). Since $G_1,G_2$ grow more
+slowly than any polynomial, the estimator is much less sensitive to extreme
+values.
+
+\paragraph{An important property: $\JJ$ is even in skewness.} The reference
+$\N(0,1)$ is symmetric, so replacing $Z$ by $-Z$ does not change
+$\KL{p_Z}{\varphi}$. Edgeworth shows it too: $S$ enters squared. \textbf{A
+crash and its mirror image (a rally) have the same $\JJ$.} The index measures
+the \emph{size} of information, never its direction. Hence the need for an
+outside postulate on the sign (next section).
+
+%======================================================================
+\section{Dynamics: a theorem and two postulates}
+\label{sec:dynamique}
+
+\subsection{The theorem: information lowers uncertainty on average}
+
+Let $h(X\mid Y=y)$ be the entropy of the conditional law of $X$ given $Y=y$,
+and $\E_Y[h(X\mid Y)]$ its average over the values of the signal.
+
+\begin{proposition}
+\label{prop:cond}
+$\E_Y[h(X\mid Y)]=h(X)-I(X;Y)\le h(X)$.
+\end{proposition}
+
+\begin{proof}
+By definition, $p(x\mid y)=p(x,y)/p(y)$, so
+$\E_Y[h(X\mid Y)]=-\E[\log p(X,Y)]+\E[\log p(Y)]=h(X,Y)-h(Y)$. Moreover
+$I(X;Y)=\E\bigl[\log\tfrac{p(X,Y)}{p(X)p(Y)}\bigr]=h(X)+h(Y)-h(X,Y)$. Adding,
+$\E_Y[h(X\mid Y)]=h(X)-I(X;Y)$, and $I\ge0$ by Gibbs.
+\end{proof}
+
+\begin{piege}
+The theorem holds \emph{on average}. A particular realisation of the signal
+can increase entropy. Example: $X$ equals $a$ with probability $0.99$, so
+$H(X)=0.056$ nat. With probability $0.98$ the signal removes all doubt
+($H=0$); with probability $0.02$ it makes the two outcomes equally likely
+($H=\log2=0.693$, twelve times more than before). The average,
+$0.02\times0.693=0.014$, is indeed below $0.056$. This is why the framework
+predicts jumps that are \emph{mainly}, not exclusively, one-sided.
+\end{piege}
+
+\begin{exemple}[A noisy Gaussian signal]
+Let $X\sim\N(0,\sigma^2)$ be tomorrow's return and $Y=X+\varepsilon$ with
+$\varepsilon\sim\N(0,\sigma_\varepsilon^2)$ independent. The pair $(X,Y)$ is
+Gaussian with $\rho^2=\sigma^2/(\sigma^2+\sigma_\varepsilon^2)$, so by
+proposition~\ref{prop:migauss}
+\[
+I(X;Y)=-\tfrac12\log(1-\rho^2)=\tfrac12\log\Bigl(1+\frac{\sigma^2}{\sigma_\varepsilon^2}\Bigr).
+\]
+With $\sigma=1\,\%$: a sharp signal ($\sigma_\varepsilon=0.5\,\%$) brings
+$0.80$ nat, an average signal ($1\,\%$) $0.35$ nat, a rumour ($3\,\%$)
+$0.05$ nat. A factor of fifteen separates clear news from a rumour.
+\end{exemple}
+
+\subsection{Postulate 1: relaxation (Ornstein--Uhlenbeck process)}
+
+Without news, we postulate that $\JJ$ reverts to its normal level $\bar\JJ$:
+\[
+d\JJ_t=-\kappa(\JJ_t-\bar\JJ)\,dt+\sigma_\JJ\,dW_t .
+\]
+
+\paragraph{The half-life.} Taking expectations, the Brownian term vanishes and
+$m(t)=\E[\JJ_t]-\bar\JJ$ satisfies $m'=-\kappa m$, so $m(t)=m(0)e^{-\kappa t}$.
+The gap halves when $e^{-\kappa t}=1/2$, that is
+\[
+t_{1/2}=\frac{\ln2}{\kappa}.
+\]
+In discrete time (daily data), the model becomes an AR(1),
+$\JJ_{t+1}-\bar\JJ=\phi(\JJ_t-\bar\JJ)+\varepsilon_t$ with $\phi=e^{-\kappa}$,
+and the half-life is $\ln2/(-\ln\phi)$ days. This is how the $121$-day
+half-life (against $92$ under the null) is estimated.
+
+\paragraph{Why this process?} Doob's theorem (1942) says that the
+Ornstein--Uhlenbeck process is the only continuous process that is Markovian,
+Gaussian and stationary. If we want a process with no memory beyond the
+current state, a long-run level, and noise about which we assume nothing
+beyond its variance (maximum entropy again), there is no choice. We then add
+the jumps caused by news:
+\[
+d\JJ_t=-\kappa(\JJ_t-\bar\JJ)\,dt+\sigma_\JJ\,dW_t+dZ_t ,
+\]
+where $Z_t=\sum_{j:\,t_j\le t}z_j$ is the sum of positive jumps up to $t$
+(Barndorff-Nielsen and Shephard, 2001, class). What remains arbitrary:
+constant $\kappa$, linear mean reversion, and the fact that the Brownian term
+could make $\JJ$ negative.
+
+\subsection{Postulate 2: the sign}
+
+Since $\JJ$ does not see direction (section~\ref{sec:canaux}), we add a
+minimal assumption: jumps come with negative skewness, justified by the
+leverage effect (falls raise volatility more than rises of the same size).
+This is hypothesis H5.
+
+\subsection{Why dependence and tails should rise together}
+
+Major news hits every asset on the same day. On that day, they move together
+(coupling $C$ rises) and each records an unusual loss (its deficit $\DD$
+rises). The two channels describe the same day seen from two places: the
+cross-section and each asset's time series. This is hypothesis H6, which we
+will see the null reproduces.
+
+%======================================================================
+\section{Inference: why and how the placebo nulls work}
+\label{sec:temoin}
+
+This is the most important section for understanding the results of the
+journal version. It explains why estimated entropy measures are biased and
+move on their own, how a resampling null corrects for it, why a second,
+volatility-preserving null is needed for claims about dependence, and how the
+size and power of the test are checked.
+
+\subsection{The bias of a convex function of estimated moments}
+
+\begin{lemme}[Jensen applied to an estimator]
+If $\hat\theta$ is an (approximately) unbiased estimator of $\theta$ and $f$
+is convex, then $\E[f(\hat\theta)]\ge f(\theta)$.
+\end{lemme}
+
+\noindent $C=-\tfrac12\log\det R$ is a convex function of $R$ ($-\log\det$ is
+convex on positive definite matrices), and $\DD$ is non-negative and zero only
+at the Gaussian point. Both are therefore \textbf{biased upward}: estimation
+noise looks like information.
+
+\subsection{How large is the bias of coupling? (Proposition 3 of the paper)}
+
+Take $N$ \emph{independent} Gaussian assets, so the true coupling is $C=0$,
+and $T$ observations. The likelihood-ratio statistic for testing $H_0:R=I$
+(``sphericity'' of the correlation matrix) is
+\[
+\Lambda=-T\log\det\hat R .
+\]
+Classical asymptotic theory says that $-2\log(\text{likelihood ratio})$ is
+approximately $\chi^2$ with as many degrees of freedom as free parameters
+restricted by $H_0$. Here $H_0$ fixes the $N(N-1)/2$ off-diagonal
+correlations, so $\Lambda\approx\chi^2_{N(N-1)/2}$. Bartlett (1950) showed that
+replacing $T$ by $T'=T-1-(2N+5)/6$ makes the approximation much better in
+small samples. Since a $\chi^2_k$ variable has mean $k$,
+\[
+\E\bigl[-\log\det\hat R\bigr]\approx\frac{N(N-1)}{2T'}
+\quad\Longrightarrow\quad
+\E\bigl[C(\hat R)\bigr]\approx b(N,T)=\frac{N(N-1)}{4\bigl(T-1-(2N+5)/6\bigr)} .
+\]
+
+\begin{exemple}[The paper's panels]
+For $N=20$, $T=252$: $T'=251-7.5=243.5$ and $b=380/974=\BIASTWENTY$~nat. For
+$N=48$, $T=252$: $T'=251-16.8=234.2$ and $b=2256/936.8=\BIASFORTYEIGHT$~nats.
+The simulation of the paper (table~2) gives \BIASTWENTYMC~nat for $N=20$: the
+formula is accurate. The bias is as large as a third of the effect we want
+to measure on stocks ($0.99$ nat).
+\end{exemple}
+
+\begin{intuition}
+Why fourth moments barely matter: for two independent variables with finite
+fourth moments, $\sqrt T\hat\rho\to\N(0,1)$ whatever their marginal laws,
+because $\operatorname{Var}(XY)=\operatorname{Var}(X)\operatorname{Var}(Y)$
+when $X$ and $Y$ are independent. The bias formula only uses the variance of
+$\hat\rho$, so it holds for Student-$t_5$ data too (the simulation gives
+\BIASTWENTYT).
+\end{intuition}
+
+\paragraph{Two practical consequences.} (1) Coupling levels on panels of
+different size are not comparable: subtract $b(N,T)$ first. The
+bias-corrected effective number of modes is $N\exp\{-2[C(\hat R)-b]/N\}$.
+(2) A \emph{difference} between two windows of the same length (stress minus
+calm) has the bias removed to first order. This is why every test in the
+paper is on a gap, not on a level.
+
+\begin{piege}
+Shrinkage (Ledoit--Wolf) pulls $\hat R$ towards $I$ and therefore removes most
+of the bias (\BIASTWENTYLW~nat in the simulation). It does not remove the
+\emph{dynamic} artefact of the next subsection.
+\end{piege}
+
+\subsection{The mechanical sawtooth}
+
+When an extreme day enters the window, the estimated moments jump, and a
+convex function of these moments jumps \emph{upward whatever the sign of the
+day}. As the day ages (exponential weighting) or leaves the window, the index
+decays slowly.
+
+\paragraph{A short calculation.} Take a window of $T$ standardised returns
+whose sample correlation is exactly $I$ (independent assets), and add one day
+on which every asset moves by the same amount $a$ standard deviations. Ignoring
+the change in the means, the new second-moment matrix is $I+x\mathbf 1\mathbf
+1^\top$ with $x=a^2/T$, and the new correlation matrix is
+$R'=(I+x\mathbf 1\mathbf 1^\top)/(1+x)$. By the matrix determinant lemma,
+$\det(I+x\mathbf 1\mathbf 1^\top)=1+Nx$, so
+\[
+\Delta C=-\tfrac12\log\det R'=\tfrac12\bigl[N\log(1+x)-\log(1+Nx)\bigr]
+\approx\frac{N(N-1)}{4}\,x^2\quad(x\text{ small}).
+\]
+The first-order terms cancel and what remains is positive: a single common day
+raises coupling, whatever its sign. For $N=20$, $T=252$ and a 10-standard-deviation
+day ($x=0.40$), $\Delta C=\tfrac12[20\log1.40-\log8.94]=2.2$~nats. The day then
+leaves the estimate only at the rate at which the window forgets: with
+exponential weights of half-life 60 days, its weight halves every 60 days.
+
+On i.i.d.\ Gaussian data the paper's pipeline finds $37$ positive jumps of
+$\JJ$, no negative one, and an apparent half-life of $35$ days, with no event
+at all.
+
+\subsection{The resampling test and why its $p$-value is valid}
+
+\paragraph{Construction.} Let $S(X)$ be a statistic computed by the
+\emph{whole} pipeline on the $T\times N$ panel $X$ (rolling estimation, stress
+regime, jump detection, gap). A null is a way of generating panels $X^*$ that
+keep some features of $X$ and destroy others. We draw $B=200$ of them and
+compute $S(X^*_1),\dots,S(X^*_B)$.
+
+\paragraph{The $p$-value.} In the predicted direction,
+\[
+\hat p=\frac{1+\#\{b:\ S(X^*_b)\ge S(X)\}}{B+1}.
+\]
+If, under the null hypothesis, the observed panel is just one more draw from
+the same mechanism, then $S(X),S(X^*_1),\dots,S(X^*_B)$ are
+\emph{exchangeable}: the observed value is equally likely to have any rank
+among the $B+1$ values. The probability that it ranks in the top $k$ is
+$k/(B+1)$, so $P(\hat p\le\alpha)\le\alpha$ exactly, without any asymptotic
+argument. The ``$+1$'' is what makes this exact; with $B=200$ the smallest
+possible $p$-value is $1/201\approx0.005$.
+
+\begin{piege}
+Reporting $z=(S(X)-\bar S^*)/s_{S^*}$ (``six standard deviations above the
+null'') is a useful effect size, but it is not a $p$-value: the null
+distribution need not be normal. The paper reports $\hat p$ for inference and
+$z$ only as a description.
+\end{piege}
+
+\subsection{Null 1: i.i.d.\ resampling of days}
+
+Draw rows of $X$ with replacement. Each row (one day, $N$ returns) is intact,
+so the null keeps each asset's fat tails, each day's cross-sectional
+correlation and common extreme days. It destroys \emph{all} dynamics: there
+is no volatility clustering, no persistence, no crisis that lasts. It answers
+the question ``beyond the fact that turbulent periods contain big days, does
+the measure detect any dynamics?''
+
+\subsection{Null 2: constant-correlation GARCH (filtered historical simulation)}
+
+\paragraph{Why a second null.} Under the i.i.d.\ null, a ``stress'' period is
+a random cluster of big days. In real data, stress comes with volatility
+clustering: high-volatility days follow each other for weeks. Could
+volatility clustering alone, with correlations that never change, produce the
+coupling gap? Two mechanisms make this plausible. Forbes and Rigobon (2002)
+showed that measured correlation rises mechanically when the variance of a
+common factor rises. And our stress regime is defined by high volatility, so
+it selects precisely the windows where this happens.
+
+\paragraph{Construction.} For each asset $i$, fit a GJR-GARCH(1,1):
+\[
+r_{i,t}=\mu_i+\varepsilon_{i,t},\qquad \varepsilon_{i,t}=\sqrt{h_{i,t}}\,z_{i,t},\qquad
+h_{i,t}=\omega_i+\bigl(\alpha_i+\gamma_i\mathbf 1\{\varepsilon_{i,t-1}<0\}\bigr)\varepsilon_{i,t-1}^2+\beta_ih_{i,t-1}.
+\]
+The term $\gamma_i$ makes volatility react more to falls than to rises (the
+leverage effect). Estimate by maximising the Gaussian likelihood (quasi-MLE,
+consistent even if $z$ is not Gaussian). Compute the standardised residuals
+$\hat z_{i,t}=\hat\varepsilon_{i,t}/\sqrt{\hat h_{i,t}}$ and store them as a
+$T\times N$ matrix $\hat Z$.
+
+To simulate: draw rows of $\hat Z$ with replacement (as in null 1), then
+rebuild each asset's returns by running its own GARCH recursion forward with
+the drawn shocks. The result has three properties:
+\begin{enumerate}
+\item each asset keeps its own volatility clustering and leverage effect;
+\item all assets receive the shocks of the same historical day, so a common
+large day still hits everyone, and volatility bursts are common;
+\item the correlation of the shocks $z_t$ is the same every day: the
+\emph{conditional} correlation is constant (Bollerslev's CCC model).
+\end{enumerate}
+So volatility moves as in a GARCH world and correlations do not. A coupling
+gap beyond this null is a genuine dependence dynamic.
+
+\begin{intuition}
+Null 1 says: ``it is not just big days''. Null 2 says: ``it is not just
+volatility''. The 21-day block null that the earlier version rejected kept
+\emph{both} volatility and correlation dynamics over a month, i.e.\ the crisis
+itself. Null 2 keeps the volatility part only, which is exactly the
+counterfactual the coupling claim needs.
+\end{intuition}
+
+\subsection{A trend is not a stress effect: the within-year gap}
+
+Correlations between stocks rose over 1990--2022, and stress dates cluster in
+a few years (2008, 2020). If coupling simply trends up and stress dates happen
+to be late, the stress-minus-calm gap picks up the trend. The fix is a
+regression with year fixed effects:
+\[
+C_t=\theta\,\mathbf 1\{t\in\text{stress}\}+\sum_y\delta_y\mathbf 1\{t\in\text{year }y\}+u_t .
+\]
+By the Frisch--Waugh--Lovell theorem, $\hat\theta$ is the slope of the
+regression of the within-year demeaned $C_t$ on the within-year demeaned
+stress dummy: it compares stress and calm dates \emph{of the same year}. The
+paper finds that $\hat\theta$ is about \FESHRINK\ smaller than the raw gap, but
+still beyond both nulls.
+
+\subsection{Checking size and power by Monte Carlo}
+
+A test has the right \emph{size} if, when the null hypothesis is true, it
+rejects in about $5\%$ of samples at the $5\%$ level; its \emph{power} is the
+rejection rate when the hypothesis is false. To check both, simulate panels
+from known processes, apply the whole test to each, and count rejections:
+\begin{itemize}
+\item i.i.d.\ Student-$t$, constant correlation: no dynamics at all. Both
+nulls should reject about 5\%.
+\item GARCH with constant correlation: volatility clustering, no
+correlation dynamics. A good test of \emph{dependence} should still reject
+about 5\%. The i.i.d.\ null rejects \MCGARCHIID\ of the time, the GARCH null
+\MCGARCHFHS.
+\item Markov-switching volatility, constant correlation: same question with
+regime-type volatility.
+\item Markov-switching volatility \emph{and} correlation (0.30 calm, 0.50 in
+stress): the effect is real; rejection rates measure power
+(\MCPOWFHS\ for the GARCH null).
+\end{itemize}
+
+Each null fails somewhere. The i.i.d.\ null over-rejects under GARCH
+clustering (17\%); the GARCH null over-rejects when volatility switches
+regimes (11\%), because a smooth GARCH recursion cannot copy abrupt
+switches. The paper therefore asks a result to pass \emph{both} nulls. Under
+this joint rule the worst rejection rate over the three null processes is
+6.5\% at the 5\% level and 1.0\% at the 1\% level, while the power against
+the correlation-switching process stays at 46\%. With 200 simulations, a
+rate of 6.5\% is within about one standard error ($\sqrt{0.05\cdot0.95/200}
+\approx1.5$ points) of 5\%.
+
+\subsection{Testing many hypotheses at once: Holm's procedure}
+
+The verdict table tests $m$ statistics. If each is tested at 5\%, the chance
+of at least one false rejection grows quickly with $m$. The Holm (1979)
+procedure controls this \emph{family-wise error rate}. Sort the $p$-values
+$p_{(1)}\le\dots\le p_{(m)}$; reject $H_{(1)}$ if $p_{(1)}\le\alpha/m$, then
+$H_{(2)}$ if $p_{(2)}\le\alpha/(m-1)$, and so on, stopping at the first
+failure. Equivalently, the adjusted $p$-value of the $k$-th smallest is
+$\max_{j\le k}\min\{1,(m-j+1)p_{(j)}\}$. Holm is always at least as powerful
+as Bonferroni (which uses $\alpha/m$ for all) and needs no assumption on the
+dependence between tests.
+
+\paragraph{A detail specific to resampling $p$-values.} With $B=200$
+placebo draws, the smallest possible rank $p$-value is $1/201\approx0.005$.
+With $m=23$ tests, Holm requires $p_{(1)}\le0.05/23\approx0.0022$: no rank
+$p$-value can ever pass, even for a gap far outside the null distribution.
+The paper therefore applies Holm to a Gaussian-tail $p$-value,
+$p=1-\Phi(z)$ with $z=(\text{observed}-\text{null mean})/\text{null sd}$,
+which can be arbitrarily small. A result passes the verdict table only if
+both its rank $p$-value and its Holm-adjusted Gaussian $p$-value are below
+5\%. Nine of the 23 tests pass; two results that pass individually (the
+compensation slope on industries and the share of episodes where skewness
+falls) do not survive the adjustment.
+
+\subsection{Comparing nested forecasts: Clark--West}
+
+H7 compares a small model (volatility only, forecast $f_1$) with a larger one
+that adds an entropy regressor (forecast $f_2$). Under the null that the extra
+regressor is useless, its true coefficient is zero, but the larger model
+\emph{estimates} it, which adds noise: $f_2$ has a slightly larger mean squared
+error even when the regressor is irrelevant. The Diebold--Mariano test on
+$d_t=(y_t-f_{1,t})^2-(y_t-f_{2,t})^2$ is therefore biased against the larger
+model and under-rejects. Clark and West (2007) add back the noise term:
+\[
+\tilde d_t=(y_t-f_{1,t})^2-\bigl[(y_t-f_{2,t})^2-(f_{1,t}-f_{2,t})^2\bigr],
+\]
+and test $\E[\tilde d_t]=0$ against $\E[\tilde d_t]>0$ with a HAC standard
+error. Why this works: if the extra regressor is useless, $f_2$ equals $f_1$
+plus pure estimation noise $\nu_t$ uncorrelated with the forecast error, so
+$\E[(y-f_2)^2]=\E[(y-f_1)^2]+\E[\nu^2]$. The DM differential then has mean
+$-\E[\nu^2]<0$, and $(f_1-f_2)^2=\nu^2$ is exactly the term that re-centres it
+at zero. The test is one-sided and approximately normal.
+
+\begin{papier}
+Verdicts (tables 4 and 5 of the journal version): coupling under stress
+passes both nulls on both panels, also within years; crisis composition (H8),
+the range and daily half-life of $\JJ$ and the largest episode pass the
+i.i.d.\ null. One-sided jumps, the shape deficit under stress, the
+tails--correlation link (H6) and the daily sign (H5) are produced just as
+strongly, or more, by the null.
+\end{papier}
+
+%======================================================================
+\section{The geometry of stress scenarios}
+\label{sec:scenarios}
+
+\subsection{The divergence between two arbitrary Gaussians}
+
+\begin{proposition}
+\label{prop:klgauss}
+For $p_1=\N(\mu_1,\Sigma_1)$, $p_0=\N(\mu_0,\Sigma_0)$ and $\delta=\mu_1-\mu_0$,
+\[
+\KL{p_1}{p_0}=\tfrac12\Bigl[\underbrace{\delta^\top\Sigma_0^{-1}\delta}_{\text{shift}}
++\underbrace{\tr(\Sigma_0^{-1}\Sigma_1)-N-\log\det(\Sigma_0^{-1}\Sigma_1)}_{\text{deformation}}\Bigr].
+\]
+\end{proposition}
+
+\begin{proof}
+$\KL{p_1}{p_0}=\E_{p_1}[\log p_1]-\E_{p_1}[\log p_0]$. The first term is
+$-h(p_1)=-\tfrac12[N\log2\pi+\log\det\Sigma_1+N]$. For the second, the trace
+trick gives
+$\E_{p_1}[(X-\mu_0)^\top\Sigma_0^{-1}(X-\mu_0)]=\tr(\Sigma_0^{-1}\Sigma_1)
++\delta^\top\Sigma_0^{-1}\delta$, so
+$-\E_{p_1}[\log p_0]=\tfrac12[N\log2\pi+\log\det\Sigma_0+\tr(\Sigma_0^{-1}\Sigma_1)
++\delta^\top\Sigma_0^{-1}\delta]$. Add them and use
+$\log\det\Sigma_0-\log\det\Sigma_1=-\log\det(\Sigma_0^{-1}\Sigma_1)$.
+\end{proof}
+
+\paragraph{Spectral reading of the deformation.} If $\nu_1,\dots,\nu_N$ are
+the (positive) eigenvalues of $\Sigma_0^{-1}\Sigma_1$,
+\[
+\text{deformation}=\tfrac12\sum_k(\nu_k-1-\log\nu_k).
+\]
+Each term is $\ge0$ (since $\log\nu\le\nu-1$) and zero if and only if
+$\nu_k=1$: every deformed eigendirection costs something.
+
+\paragraph{In one dimension.} For a portfolio with mean $m_0$ and standard
+deviation $s_0$ under $p_0$, stressed to $(m,s)$, let $u=(m-m_0)/s_0$ (shift
+in standard deviations) and $v=s/s_0$ (volatility multiplier). Then
+\begin{equation}
+\label{eq:g}
+g(u,v)=\tfrac12\bigl(u^2+v^2-1-2\log v\bigr).
+\end{equation}
+
+\subsection{The entropy-ball scenario}
+
+\begin{definition}
+Given the current law $p_0$, a risk measure $\rho$ and a radius $\eta$, the
+scenario of severity $\eta$ is
+$p^\star_\eta=\arg\max\{\rho(p):\ \KL{p}{p_0}\le\eta\}$: the worst law within
+$\eta$ nats of the current one.
+\end{definition}
+
+For a Gaussian loss, VaR and expected shortfall have the form $\rho=-m+c\,s$.
+For the $99\,\%$ ES, $c=\varphi(z_{0.99})/0.01=\varphi(2.326)/0.01\approx2.665$.
+
+\begin{proposition}[Solution]
+\label{prop:boule}
+The maximum of $-m+cs$ subject to $g(u,v)\le\eta$ is reached on the boundary
+$g=\eta$, at a point such that
+\[
+u=-t,\qquad v-\frac1v=c\,t,\qquad t>0 .
+\]
+For $c=0$ (purely directional shock): $v=1$ and $u=-\sqrt{2\eta}$.
+\end{proposition}
+
+\begin{proof}
+\emph{Step 1: convexity.} $g$ is the sum of $u^2/2$ (convex) and
+$(v^2-1-2\log v)/2$, whose second derivative $1+1/v^2$ is positive: $g$ is
+convex on $\R\times(0,\infty)$. The objective $s_0(-u+cv)$ (up to a constant)
+is linear. We maximise a linear function over a convex set: the
+Karush--Kuhn--Tucker conditions are necessary and sufficient.
+
+\emph{Step 2: the constraint binds.} A non-constant linear function has no
+interior maximum; the optimum lies on $g=\eta$.
+
+\emph{Step 3: the Lagrangian.} $\mathcal L=-u+cv-\lambda(g(u,v)-\eta)$. The
+first-order conditions are $-1=\lambda u$ and $c=\lambda(v-1/v)$. With
+$t=1/\lambda>0$: $u=-t$ and $v-1/v=ct$. The scalar $t$ is pinned down by
+$g(-t,v(t))=\eta$.
+
+\emph{Step 4: case $c=0$.} $v-1/v=0$ and $v>0$ force $v=1$, then
+$g=u^2/2=\eta$ gives $u=-\sqrt{2\eta}$.
+\end{proof}
+
+\begin{exemple}[Checking a row of the severity ladder (online appendix)]
+Ten-year rung: $u=-0.38$, $v=1.63$. We check
+$g=\tfrac12(0.144+2.657-1-0.977)=0.412\approx\eta=0.408$, and
+$v-1/v=1.017\approx c\,t=2.665\times0.38=1.013$. With annual volatility of
+$20\,\%$, that is $s_0=0.2/\sqrt{252}=1.26\,\%$ per day, ES goes from
+$c\,s_0=3.4\,\%$ to $(0.38+2.665\times1.63)\,s_0=5.9\,\%$. The scenario spends
+its budget mostly on volatility ($v$) rather than direction ($u$), because ES
+is more sensitive to scale ($c\approx2.7$) than to location (coefficient $1$).
+\end{exemple}
+
+\subsection{Calibrating the radius}
+
+We measure how much the market itself revises its law over $h=21$ days:
+$I^{(21)}_t=\KL{p_t^w}{p_{t-21}^w}=g(u_t,v_t)$, computed on the portfolio,
+with $u_t$, $v_t$ the shift and volatility multiplier observed between $t-21$
+and $t$. The history is cut into non-overlapping 21-day blocks (about 12 per
+year); a ``ten-year'' radius is the quantile exceeded on average once every
+$120$ blocks, that is the $1-1/120$ quantile. Limit: compared with the history
+of volatility increases, this radius is about twice too mild; only the
+\emph{relative} comparisons that follow are robust.
+
+\subsection{From the portfolio to all assets}
+
+\begin{proposition}[Data-processing inequality]
+\label{prop:dpi}
+For any function $f$, if $p^f$ and $p_0^f$ are the laws of $f(X)$ under $p$
+and $p_0$, then $\KL{p^f}{p_0^f}\le\KL{p}{p_0}$.
+\end{proposition}
+
+\begin{proof}[Proof sketch]
+Let $Y=f(X)$. The chain rule gives
+$\KL{p_{X,Y}}{p_{0,X,Y}}=\KL{p^f}{p_0^f}+\E_{Y}\bigl[\KL{p_{X\mid Y}}{p_{0,X\mid Y}}\bigr]$.
+The second term is $\ge0$. Applying the same rule in the other order,
+$\KL{p_{X,Y}}{p_{0,X,Y}}=\KL{p}{p_0}+\E_X\bigl[\KL{p_{Y\mid X}}{p_{0,Y\mid X}}\bigr]$,
+and this last term is zero because, $Y=f(X)$ being deterministic given $X$,
+the two conditional laws coincide. Hence $\KL{p}{p_0}\ge\KL{p^f}{p_0^f}$.
+\end{proof}
+
+\begin{intuition}
+By looking at less (only the portfolio $w^\top X$), you cannot see more
+difference. The cost of a scenario on all assets is always at least its cost
+``seen by the portfolio''. Table~7 of the journal version confirms it: $9.97$ nats on 20
+assets against $7.24$ seen by the portfolio.
+\end{intuition}
+
+\begin{proposition}[Minimal lift]
+\label{prop:lift}
+Let $p_0=\N(\mu_0,\Sigma_0)$, $s_0^2=w^\top\Sigma_0w$ and
+$\beta=\Sigma_0w/s_0^2$ (the vector of asset betas on the portfolio). Among
+Gaussians that give the portfolio mean $m_0+us_0$ and standard deviation
+$vs_0$, the cheapest is
+\[
+\mu_1=\mu_0+u\,s_0\,\beta,\qquad\Sigma_1=\Sigma_0+(v^2-1)\,s_0^2\,\beta\beta^\top,
+\]
+and its cost is exactly $g(u,v)$.
+\end{proposition}
+
+\begin{proof}
+By proposition~\ref{prop:dpi}, every candidate costs at least $g(u,v)$. It is
+enough to show that this candidate attains the bound. We have $w^\top\beta=1$
+and $\beta^\top\Sigma_0^{-1}\beta=w^\top\Sigma_0w/s_0^4=1/s_0^2$. Hence:
+$\delta^\top\Sigma_0^{-1}\delta=u^2s_0^2\cdot(1/s_0^2)=u^2$;
+$\tr(\Sigma_0^{-1}\Sigma_1)=N+(v^2-1)s_0^2\,\beta^\top\Sigma_0^{-1}\beta=N+v^2-1$;
+and, by the matrix determinant lemma ($\det(I+ab^\top)=1+b^\top a$),
+$\det(\Sigma_0^{-1}\Sigma_1)=1+(v^2-1)s_0^2\,\beta^\top\Sigma_0^{-1}\beta=v^2$.
+In proposition~\ref{prop:klgauss}: $\tfrac12(u^2+v^2-1-2\log v)=g(u,v)$.
+\end{proof}
+
+\paragraph{Reading.} Write $X=\beta f+e$ with $f=w^\top X$ the portfolio
+factor and $e$ uncorrelated with $f$. The minimal scenario touches \emph{only}
+the factor: it shifts its mean by $u$ standard deviations and multiplies its
+volatility by $v$, leaving $e$ intact. High-beta assets take the shock, and
+their correlations rise. \textbf{The least improbable scenario is a
+one-factor scenario.}
+
+\begin{proposition}[Cost of uniform dilation]
+\label{prop:uniforme}
+If all volatilities are multiplied by $v$ with correlations unchanged
+($\Sigma_1=v^2\Sigma_0$), the deformation is $N\cdot\tfrac12(v^2-1-2\log v)$:
+$N$ times that of the minimal lift.
+\end{proposition}
+
+\begin{proof}
+Every eigenvalue of $\Sigma_0^{-1}\Sigma_1=v^2I$ equals $v^2$; we sum $N$
+identical terms $\tfrac12(v^2-1-\log v^2)$.
+\end{proof}
+
+\noindent Numerically, for $v=1.63$ and $N=20$: $0.34$ nat per direction, so
+$6.80$ nats in total, against $0.34$ for the minimal lift. This is the
+``default: uniform dilation'' row of the composition example in section~6.5 of the journal version.
+
+\subsection{Composing a scenario: volatility or correlation?}
+
+\begin{proposition}
+If $w^\top\Sigma_aw=w^\top\Sigma_bw=s^2$, then for every $\alpha\in[0,1]$,
+$\Sigma_\alpha=(1-\alpha)\Sigma_a+\alpha\Sigma_b$ satisfies
+$w^\top\Sigma_\alpha w=s^2$.
+\end{proposition}
+
+\begin{proof}
+$\Sigma\mapsto w^\top\Sigma w$ is linear.
+\end{proof}
+
+One can therefore mix an ``all-volatility'' covariance and an
+``all-correlation'' covariance without changing portfolio severity; $\alpha$
+is the \emph{dependence share}. Since $\Sigma_1\mapsto\KL{\N(\mu,\Sigma_1)}{p_0}$
+is convex (linear trace, convex $-\log\det$), the cost of a mixture is at most
+the mixture of the costs.
+
+\paragraph{A ceiling for correlation.} With volatilities fixed,
+$w^\top\Sigma w=\sum_{i,j}w_iw_j\sigma_i\sigma_j\rho_{ij}$ is largest when
+every $\rho_{ij}$ equals $1$, and then equals $(\sum_iw_i\sigma_i)^2$. On the
+main panel, this is only about $1.5$ times current volatility: beyond that,
+volatilities must also be dilated.
+
+\paragraph{Calibrating $\alpha$.} H1 gives the share of dependence in the move
+of Gaussian entropy under stress: $0.99/(0.99+5.97)\approx14\,\%$. H8 refines
+it to $49\,\%$ over the most severe episodes. The larger $\alpha$, the closer
+we get to the one-factor scenario, and the lower the cost
+($6.80\to2.88\to0.71$ nats): proposition~\ref{prop:uniforme} makes this result
+expected rather than surprising.
+
+\subsection{Pricing a published scenario: the EBA example}
+
+A published scenario sets shocks on some variables $S$ only (equities, long
+rates), not on the others $U$. The minimal cost is obtained by letting the
+unshocked variables take their most likely value.
+
+\begin{proposition}[Cost of a partial shock]
+\label{prop:partiel}
+For $p_0=\N(0,\Sigma)$ and a shift $\delta=(\delta_S,\delta_U)$ of which only
+$\delta_S$ is imposed,
+\[
+\min_{\delta_U}\ \tfrac12\delta^\top\Sigma^{-1}\delta
+=\tfrac12\,\delta_S^\top\Sigma_{SS}^{-1}\delta_S ,
+\qquad\text{reached at }\delta_U^\star=\Sigma_{US}\Sigma_{SS}^{-1}\delta_S .
+\]
+\end{proposition}
+
+\begin{proof}
+Let $P=\Sigma^{-1}$, partitioned into blocks. The function
+$\delta_U\mapsto\delta^\top P\delta$ is strictly convex quadratic; its
+derivative vanishes at $\delta_U^\star=-P_{UU}^{-1}P_{US}\delta_S$, and the
+minimum is $\delta_S^\top(P_{SS}-P_{SU}P_{UU}^{-1}P_{US})\delta_S$. The matrix
+in brackets is the Schur complement of $P_{UU}$ in $P$, and the block
+inversion formula says precisely that it equals $\Sigma_{SS}^{-1}$. Finally
+$-P_{UU}^{-1}P_{US}=\Sigma_{US}\Sigma_{SS}^{-1}$ (same formula): this is the
+Gaussian conditional expectation of $X_U$ given $X_S=\delta_S$.
+\end{proof}
+
+\begin{exemple}[Why correlation makes a shock cheaper]
+Two indices with the same volatility, correlated at $\rho$, each fall by $k$
+standard deviations. With $\delta=(k,k)$ and $R^{-1}=\frac1{1-\rho^2}
+\begin{pmatrix}1&-\rho\\-\rho&1\end{pmatrix}$,
+\[
+\tfrac12\delta^\top R^{-1}\delta=\frac{k^2}{1+\rho},
+\]
+whereas the sum of the costs taken one by one is $k^2$. With $\rho=0.87$
+(average correlation of European indices), the joint cost is only $53\,\%$ of
+the sum. This is the mechanism that takes the EBA scenario from $31.9$ nats
+(variable by variable) to $10.5$ nats (joint): a common shock to highly
+correlated indices follows the most likely direction in the data.
+\end{exemple}
+
+\paragraph{The EBA figures.} For the DAX alone, $\Delta=\log0.5=-0.693$ and
+$\sigma=20.3\,\%$ per year: the shock is $3.41$ standard deviations and costs
+$\tfrac12(3.41)^2=5.8$ nats. The full scenario costs $10.5$ nats, that is
+$\sqrt{2\times10.5}=4.6$ standard deviations on a single factor.
+
+\begin{exercice}
+Show that the cost of a $k$-standard-deviation fall in $N$ indices with
+constant correlation $\rho$ is $\tfrac{N k^2}{2(1+(N-1)\rho)}$.
+\end{exercice}
+\noindent\emph{Solution.} $\delta=k\mathbf 1$ is an eigenvector of $R$ with
+eigenvalue $1+(N-1)\rho$, so $\delta^\top R^{-1}\delta=k^2N/(1+(N-1)\rho)$.
+
+\subsection{Reverse stress testing}
+
+We reverse the question: what is the cheapest scenario that produces a given
+loss $L$? In the Gaussian setting, it is proposition~\ref{prop:boule} read
+backwards. In the non-parametric setting, the solution is an
+\emph{exponential tilting} of the sample: observed days are reweighted with
+weights proportional to $e^{\theta\,\text{loss}_t}$. As $\theta$ grows, almost
+all the weight goes to a few days; the effective sample size
+$(\sum_t\omega_t)^2/\sum_t\omega_t^2$ collapses (it is $1.0$ at $9$ nats on
+the main panel), and one must go back to the Gaussian version.
+
+%======================================================================
+\section{Decomposition by segment: the entropic CISS}
+\label{sec:blocs}
+
+Split the $N$ series into blocks $B_1,\dots,B_K$ (money market, bonds,
+equities, intermediaries, FX). Let $R_{kk}$ be the diagonal blocks of $R$ and
+$R_D=\operatorname{diag}(R_{11},\dots,R_{KK})$ the block-diagonal matrix.
+
+\begin{proposition}
+\label{prop:blocs}
+\[
+\underbrace{C(R)}_{\text{total}}
+=\sum_{k=1}^K\underbrace{C(R_{kk})}_{\text{within block }k}
++\underbrace{\Bigl(-\tfrac12\log\det\bigl(R_D^{-1/2}RR_D^{-1/2}\bigr)\Bigr)}_{\text{between blocks}},
+\]
+and each of the $K+1$ terms is non-negative. The between-block term is the
+Gaussian mutual information between the blocks; it is zero if and only if the
+blocks are pairwise uncorrelated.
+\end{proposition}
+
+\begin{proof}
+\emph{Identity.} $R=R_D^{1/2}\,\tilde R\,R_D^{1/2}$ with
+$\tilde R=R_D^{-1/2}RR_D^{-1/2}$. Since the determinant is multiplicative,
+$\log\det R=\log\det R_D+\log\det\tilde R$, and
+$\log\det R_D=\sum_k\log\det R_{kk}$ (determinant of a block-diagonal matrix).
+Multiply by $-\tfrac12$.
+
+\emph{Signs.} Each $R_{kk}$ is a correlation matrix, so $C(R_{kk})\ge0$ by
+proposition~\ref{prop:hadamard}. The matrix $\tilde R$ has identity diagonal
+blocks, hence a diagonal of $1$s: it is again a correlation matrix, and the
+same argument applies. (Equivalently, $\det R\le\prod_k\det R_{kk}$ is
+Fischer's inequality.)
+\end{proof}
+
+\paragraph{Two blocks: canonical correlations.} For $K=2$, let
+$M=R_{11}^{-1/2}R_{12}R_{22}^{-1/2}$; its singular values $\rho_1,\dots,\rho_r$
+are the \emph{canonical correlations} between the two segments. We have
+$\tilde R=\begin{pmatrix}I&M\\M^\top&I\end{pmatrix}$ and, by the Schur
+complement formula, $\det\tilde R=\det(I-MM^\top)=\prod_j(1-\rho_j^2)$. Hence
+\[
+I(B_1;B_2)=-\tfrac12\sum_j\log(1-\rho_j^2):
+\]
+the sum of the information carried by each canonical pair, each computed as
+in proposition~\ref{prop:migauss}.
+
+\begin{intuition}
+Total coupling splits exactly into ``what happens inside each market'' and
+``what ties markets together''. The second term is the systemic part. Unlike
+the CISS, which aggregates, this decomposition says \emph{which} segments
+stress ties together, and by how much, in a single unit.
+\end{intuition}
+
+\paragraph{The rank version.} Replace each series by
+$\Phi^{-1}(\hat F_i(x_i))$, where $\hat F_i$ is its empirical distribution
+function: this gives ``normal scores''. A monotone transformation of the
+marginals does not change ranks, so the measure becomes insensitive to each
+series' fat tails: it estimates the multi-information of a \emph{Gaussian
+copula}. This is the most robust version against the null ($9.6$ and $12.7$
+standard deviations).
+
+\paragraph{Link with the structural index.} With the chain rule,
+\[
+\JJ\approx\underbrace{\textstyle\sum_i\DD_i}_{\text{shape}}
++\underbrace{\textstyle\sum_kC(R_{kk})}_{\text{within}}
++\underbrace{(-\tfrac12\log\det\tilde R)}_{\text{between}} .
+\]
+The entropic CISS keeps the last two terms and drops shape, which is what the
+null reproduces. It is the structural index stripped of its non-robust
+channel.
+
+%======================================================================
+\section{Summary: each formula and its role}
+\label{sec:recap}
+
+\begin{center}
+\small
+\begin{tabular}{@{}p{0.42\linewidth}p{0.52\linewidth}@{}}
+\toprule
+Result & Role in the paper \\
+\midrule
+$h(aX)=h(X)+\log|a|$ & the level of entropy has no absolute meaning; we work
+with divergences \\
+$\KL{p}{q}\ge0$, invariant under change of variables & common unit across all
+asset classes \\
+$\tfrac12\Delta^\top\Sigma^{-1}\Delta$; $k\sigma\leftrightarrow k^2/2$ nats &
+nats--standard deviations exchange rate; scenario audit \\
+Gaussian maximum entropy & the Gaussian is the zero point \\
+$h(q)=\tfrac N2\log(2\pi e)+\sum\log\sigma_i+\tfrac12\log\det R$ & separating
+scale and dependence \\
+$\det R\le1$ & coupling $C$ is non-negative \\
+$\DD=h(q)-h(p)$; $\JJ=\DD+C=\KL{p}{\prod q_i}$ & the structural index is a
+true divergence \\
+$\E_Y[h(X\mid Y)]=h(X)-I(X;Y)$ & upward jumps of $\JJ$ (theorem) \\
+OU, $t_{1/2}=\ln2/\kappa$ & relaxation (postulate), half-life \\
+Jensen on a convex estimator & upward bias; need for a null \\
+Bartlett: $\E[C(\hat R)]\approx N(N-1)/(4T')$ & size of the bias; compare gaps, not levels \\
+Matrix determinant lemma, one common day & the mechanical jump of coupling \\
+Exchangeability, $(1+k)/(B+1)$ & exact resampling $p$-values \\
+CCC-GARCH filtered historical simulation & null that keeps volatility, not correlation, dynamics \\
+Year fixed effects (Frisch--Waugh--Lovell) & stress effect within a year, not a trend \\
+Holm step-down & family-wise error control in the verdict table \\
+Clark--West & forecast test for nested models (H7) \\
+KL of two Gaussians, $g(u,v)$ & cost of a scenario on a portfolio \\
+KKT: $u=-t$, $v-1/v=ct$ & entropy-ball scenario \\
+Data processing; minimal lift & the minimal scenario is one-factor \\
+Uniform dilation $=N\times$ minimum & why classical scenarios are too
+expensive \\
+Schur complement & cost of a partial shock (EBA) \\
+Within / between-block decomposition & entropic CISS, contagion map \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\paragraph{Further reading.} Cover and Thomas, \emph{Elements of Information
+Theory} (2006), chapters 2, 8 and 12, cover entropy, divergence, differential
+entropy and maximum entropy. Breuer and Csiszár (2013) and Glasserman and Xu
+(2014) develop Kullback--Leibler ball scenarios. The project's theoretical
+supplement gives the proofs in the paper's exact notation.
+
+\end{document}
