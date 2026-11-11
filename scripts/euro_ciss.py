@@ -17,6 +17,7 @@ Steps, all from the files written by ``telechargement_zone_euro/telecharger.py``
 Usage::
 
     python -m scripts.euro_ciss --data data/zone_euro --n-rep 200 --jobs 4
+    python -m scripts.euro_ciss --data data/zone_euro --overnight-only --n-rep 999 --nulls iid,ccc_fhs
 """
 from __future__ import annotations
 
@@ -44,7 +45,8 @@ from src.euro_panel import build_euro_panel
 from src.regimes import past_only_stress
 
 SEED = 11
-NULLS = {'iid': 1, 'block21': 21}
+NULLS = {'iid': 1, 'block21': 21, 'ccc_fhs': 0}   # 0: GJR-GARCH filtered historical simulation
+_FITS: dict = {}
 WINDOW = 252
 # CEPR Euro Area Business Cycle Dating Committee, peak quarter -> trough quarter.
 CEPR_RECESSIONS = [('2008-01-01', '2009-06-30'), ('2011-07-01', '2013-03-31'),
@@ -82,8 +84,19 @@ def run_task(folder: str, mm_substitute: bool, null: str, rep: int) -> dict:
         data = M
     else:
         ss = np.random.SeedSequence([SEED, 7, NULLS[null], rep])
-        idx = _resample_index(len(M), NULLS[null], np.random.default_rng(ss))
-        data = pd.DataFrame(M.to_numpy()[idx], index=M.index, columns=M.columns)
+        if null == 'ccc_fhs':
+            # Volatility-preserving null of the JFEC paper (scripts/garch_null.py):
+            # each series keeps its GJR-GARCH dynamics, correlations are constant.
+            from scripts.garch_null import fit_gjr, simulate_gjr
+            key = (folder, mm_substitute)
+            if key not in _FITS:
+                _FITS[key] = fit_gjr(M)
+            par, Z = _FITS[key]
+            idx = np.random.default_rng(ss).integers(0, len(M), size=len(M))
+            data = pd.DataFrame(simulate_gjr(par, Z, idx), index=M.index, columns=M.columns)
+        else:
+            idx = _resample_index(len(M), NULLS[null], np.random.default_rng(ss))
+            data = pd.DataFrame(M.to_numpy()[idx], index=M.index, columns=M.columns)
     dec = rolling_block_coupling(data, blocks, WINDOW, 'rank')
     return {'null': null, 'rep': rep, 'seconds': round(time.time() - t0, 1),
             'stats': statistics(dec, data, blocks)}
@@ -157,6 +170,8 @@ def main() -> None:
     p.add_argument('--out-dir', default='outputs/euro_ciss')
     p.add_argument('--overnight-only', action='store_true',
                    help='no Euribor substitute: money-market block = overnight rate alone')
+    p.add_argument('--nulls', default='iid,block21',
+                   help='comma list among iid, block21, ccc_fhs')
     args = p.parse_args()
 
     folder = Path(args.data)
@@ -181,7 +196,8 @@ def main() -> None:
     done = set()
     if ckpt.exists():
         done = {(r['null'], r['rep']) for r in map(json.loads, ckpt.read_text().splitlines()) if r}
-    tasks = [('observed', -1)] + [(nu, r) for nu in NULLS for r in range(args.n_rep)]
+    nulls = args.nulls.split(',')
+    tasks = [('observed', -1)] + [(nu, r) for nu in nulls for r in range(args.n_rep)]
     todo = [t for t in tasks if t not in done]
     t_start = time.time()
     if todo:
@@ -201,8 +217,8 @@ def main() -> None:
     long = long.drop_duplicates(['null', 'rep', 'statistic'], keep='last')
     obs = long[long.null == 'observed'].set_index('statistic')['value']
     rows = []
-    for null in NULLS:
-        nl = long[long.null == null]
+    for null in nulls:
+        nl = long[(long.null == null) & (long.rep < args.n_rep)]
         for stat, v in obs.items():
             col = nl.loc[nl.statistic == stat, 'value'].dropna()
             sd = col.std()
@@ -211,10 +227,13 @@ def main() -> None:
                          'null_q95': col.quantile(0.95),
                          'z_vs_null': (v - col.mean()) / sd if sd > 0 else np.nan,
                          'p_greater': float((col >= v).mean()),
-                         'p_less': float((col <= v).mean()), 'n_rep': len(col)})
+                         'p_less': float((col <= v).mean()),
+                         'p_greater_exact': (1 + int((col >= v).sum())) / (1 + len(col)),
+                         'p_less_exact': (1 + int((col <= v).sum())) / (1 + len(col)),
+                         'n_rep': len(col)})
     summary = pd.DataFrame(rows)
-    long.to_csv(dest / f'euro_null_200rep_replications_long{tag}.csv', index=False, float_format='%.6g')
-    summary.to_csv(dest / f'euro_null_200rep_summary{tag}.csv', index=False, float_format='%.4f')
+    long.to_csv(dest / f'euro_null_{args.n_rep}rep_replications_long{tag}.csv', index=False, float_format='%.6g')
+    summary.to_csv(dest / f'euro_null_{args.n_rep}rep_summary{tag}.csv', index=False, float_format='%.4f')
     pd.set_option('display.width', 180)
     print(summary.round(3).to_string(index=False))
 

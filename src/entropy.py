@@ -16,7 +16,7 @@ All entropies are in nats.
 from __future__ import annotations
 
 import numpy as np
-from sklearn.covariance import LedoitWolf
+from src.lw import ledoit_wolf_cov
 
 __all__ = [
     'maxent_entropy_from_cov',
@@ -130,7 +130,7 @@ def estimate_covariance(
     the resulting entropy series.
     """
     if method == 'ledoit_wolf':
-        return LedoitWolf().fit(X).covariance_
+        return ledoit_wolf_cov(X)
     if method == 'sample':
         return np.cov(X, rowvar=False, ddof=1)
     if method == 'ewma':

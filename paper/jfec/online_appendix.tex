@@ -16,6 +16,7 @@
 \newtheorem{definition}{Definition}
 \newcommand{\JJ}{\mathcal{J}}
 \newcommand{\DD}{\mathcal{D}}
+\input{numbers}
 \newcommand{\KL}[2]{D_{\mathrm{KL}}\!\left(#1\,\Vert\,#2\right)}
 \begin{document}
 \begin{center}
@@ -448,28 +449,7 @@ contains only the overnight rate.
 
 \subsection{Results}
 
-\begin{table}[htbp]
-\centering
-\small
-\begin{tabular}{@{}lccc@{}}
-\toprule
-Component & Rise under stress (nats) & Null (mean) & $p$ \\
-\midrule
-Total coupling & $+1.61$ & $+0.21$ & $<0.005$ \\
-\textbf{Between segments} & $\mathbf{+0.19}$ & $+0.02$ & $\mathbf{<0.005}$ \\
-Within: equities / intermediaries & $+0.46$ / $+0.48$ & $+0.05$ / $+0.14$ & $<0.005$ \\
-Within: bonds / FX & $+0.34$ / $+0.14$ & $0.00$ / $0.00$ & $<0.005$ \\
-Equities -- intermediaries & $+0.096$ & $+0.011$ & $<0.005$ \\
-Bonds -- FX & $+0.055$ & $+0.004$ & $<0.005$ \\
-Bonds -- intermediaries & $+0.040$ & $+0.003$ & $<0.005$ \\
-Money market -- other segments & $\approx 0$ & $\approx 0$ & n.s. \\
-\bottomrule
-\end{tabular}
-\caption{Euro area: stress-minus-calm rise against the i.i.d.\ null
-(200 repetitions). Stress is the top decile of equity-block volatility, with
-the threshold computed on the past only.}
-\label{tab:cb-euro}
-\end{table}
+\input{tables/tab_euro}
 
 \begin{figure}[htbp]
 \centering
@@ -483,10 +463,14 @@ Grey areas: CEPR recessions.}
 
 Three readings (table~\ref{tab:cb-euro} and figure~\ref{fig:cb-euro}).
 \begin{itemize}
-\item \emph{Stress ties segments together}, far beyond the null (the
-between-segment rise is nine times the null's). Every pair outside the money
-market rises; the links between equities and intermediaries and with FX are
-the clearest.
+\item \emph{Stress ties segments together}, far beyond both nulls: the
+between-segment rise is nine times the i.i.d.\ null's and six times that of
+the volatility-preserving null, which keeps each series' GARCH dynamics. Every
+pair outside the money market rises beyond both nulls; the links between
+equities and intermediaries and with FX are the clearest. The weakest result
+is coupling within the intermediaries block ($p=\euIntermFhsP$ against the
+volatility-preserving null): bank and insurer stocks move together partly
+because their volatilities rise together.
 \item \emph{The sovereign--bank link stands out.} Mutual information between
 bonds and intermediaries peaks in late 2011, at the height of the sovereign
 debt crisis ($0.46$~nat against $0.10$ in late 2006). The aggregate CISS
