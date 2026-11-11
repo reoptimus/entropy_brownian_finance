@@ -2,6 +2,7 @@
 \usepackage{amsmath,amssymb,amsthm,booktabs,geometry,graphicx}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
+\usepackage[english]{babel}
 \usepackage[round,authoryear]{natbib}
 \usepackage{enumitem}
 \usepackage[colorlinks=true,linkcolor=black,citecolor=black,urlcolor=blue!50!black]{hyperref}
@@ -20,8 +21,8 @@
 \newcommand{\KL}[2]{D_{KL}\!\left(#1\,\Vert\,#2\right)}
 
 \title{Measuring the severity of stress scenarios in nats:\\
-what entropy offers to stress-test designers}
-\author{S\'ebastien Gallet}
+what entropy offers stress-test designers}
+\author{Sébastien Gallet}
 \date{November 2026}
 
 \begin{document}
@@ -31,90 +32,86 @@ what entropy offers to stress-test designers}
 \noindent Authorities that design stress scenarios, such as the adverse
 scenario of the EU-wide stress test coordinated by the European Banking
 Authority (EBA), must answer two questions: is the scenario severe enough, and
-is it still plausible? This paper proposes to measure both on a single scale,
-entropy, expressed in nats. A nat is a quantity of information. For a pure
-shift of the mean, a scenario of $\eta$~nats is a shock of $\sqrt{2\eta}$
-standard deviations: one nat buys $1.4$ standard deviations. We apply this
-scale to 33~years of returns on twenty US stocks, to Kenneth French's
-48~industry portfolios, and to a euro-area panel covering the five segments of
-the ECB's Composite Indicator of Systemic Stress (CISS). Three results stand
-out. \textbf{(1)} A simple robustness test, which reruns every computation on
-data whose time order has been shuffled, removes most of the crisis signals
-that entropy appears to show: one-sided jumps, thickening tails and the link
-between tails and correlations are artefacts of estimation. The most robust
-fact, common to every panel, is that under stress markets couple, meaning that
-the number of independent sources of risk falls; crises are also more often
-dominated by this coupling, and the index travels further and persists longer
-than the mechanics of estimation can explain. \textbf{(2)} Measured in nats, classical
-scenarios that shock volatilities, correlations and levels separately pay
-$15$ to $33\,\%$ too much for their tail loss, and the split of the shock
-between volatility and correlation can be calibrated on history instead of
-being assumed. \textbf{(3)} The coupling measure decomposes exactly across
-market segments. In the euro area it flags recessions as well as the CISS
-does and shows which segments stress ties together, but it does not forecast
-growth.
+is it still plausible? This paper measures both on a single scale, entropy,
+expressed in nats. A nat is a quantity of information. For a pure shift of the
+mean, a scenario of $\eta$~nats is a shock of $\sqrt{2\eta}$ standard
+deviations: one nat buys $1.4$ standard deviations. We apply this scale to
+33~years of returns on twenty US stocks, to Kenneth French's 48~industry
+portfolios, and to a euro-area panel covering the five segments of the ECB's
+Composite Indicator of Systemic Stress (CISS). Three results stand out.
+\textbf{(1)} A simple robustness test, which reruns every computation on data
+whose time order has been shuffled, removes most of the crisis signals that
+entropy seems to show: one-sided jumps, fattening tails and the link between
+tails and correlations are estimation artefacts. The most robust fact, common
+to every panel, is that markets couple under stress: the number of independent
+sources of risk falls. Crises are also more often dominated by this coupling,
+and the index travels further and persists longer than estimation mechanics
+can explain. \textbf{(2)} Measured in nats, classical scenarios that shock
+volatilities, correlations and levels separately pay $15$ to $33\,\%$ too much
+for their tail loss, and the split of the shock between volatility and
+correlation can be calibrated on history instead of assumed. \textbf{(3)} The
+coupling measure decomposes exactly across market segments. In the euro area
+it flags recessions as well as the CISS and shows which segments stress ties
+together, but it does not forecast growth.
 \end{abstract}
+
 
 \section{Introduction}
 \label{sec:intro}
 
-Two facts about financial prices sit uneasily together. The first is that the
-Gaussian model is the natural answer to a question of ignorance: fix a mean and
-a variance, know nothing else, and the maximum-entropy distribution is
-Gaussian. The second is that returns are not Gaussian: they have fat tails,
-negative skewness, and their dependence tightens precisely when it matters.
+Two facts about financial prices sit uneasily together. First, the Gaussian
+model is the natural answer to a question of ignorance: fix a mean and a
+variance, know nothing else, and the maximum-entropy distribution is Gaussian.
+Second, returns are not Gaussian: they have fat tails and negative skewness,
+and their dependence tightens precisely when it matters.
 
 The usual reaction treats the second fact as a defect of the first model and
-patches it: add jumps to the price, add a stochastic volatility factor, add a
-copula. This paper goes the other way. If the Gaussian is what maximum entropy
-delivers, then any departure from the Gaussian measures how far the market is
-from maximal ignorance, that is, a measure of information. The question is
-therefore not how to patch the Gaussian, but how to read the size, dynamics and
-direction of the departure.
+patches it: add jumps, add a stochastic volatility factor, add a copula. This
+paper goes the other way. If the Gaussian is what maximum entropy delivers,
+any departure from it measures how far the market is from maximal ignorance:
+it is a measure of information. The question is then not how to patch the
+Gaussian, but how to read the size, dynamics and direction of the departure.
 
-The paper is organised around an asymmetry in that departure. Information
-arrives in bursts and is absorbed gradually. A central-bank surprise, a
-default, a war removes uncertainty in an instant; the market then spends weeks
-working out the implications, and uncertainty rebuilds. If entropy is the right
-currency of uncertainty, its dynamics should be a sawtooth: sharp drops, slow
-recoveries. Half of that shape is a theorem: receiving information cannot, on
-average, increase uncertainty. The other half, the slow recovery, is a
-hypothesis that we test.
+The paper is built around an asymmetry in this departure. Information arrives
+in bursts and is absorbed gradually. A central-bank surprise, a default or a
+war removes uncertainty at once; the market then spends weeks working out the
+implications, and uncertainty rebuilds. If entropy is the right currency of
+uncertainty, its path should be a sawtooth: sharp drops, slow recoveries. Half
+of this shape is a theorem: receiving information cannot, on average, increase
+uncertainty. The other half, the slow recovery, is a hypothesis we test.
 
 \paragraph{Who this paper is for.} It is written first for institutions that
 design stress scenarios for others: the European Systemic Risk Board (ESRB)
 and the ECB, which write the adverse scenario of the EBA stress test, national
-central banks, the IMF in its financial sector assessment programmes, and
+central banks, the IMF in its Financial Sector Assessment Programs, and
 insurance supervisors. These institutions must produce scenarios that are
-``severe but plausible'' \citep{bcbs2018}. In practice severity is measured in
-losses and plausibility is judged by experts. A common unit for both is
+``severe but plausible'' \citep{bcbs2018}. In practice, severity is measured in
+losses and plausibility is left to expert judgement. A common unit for both is
 missing. Entropy provides one: it measures in nats the distance between a
-scenario and the current state of the market, whatever the asset class, and it
-reduces to standard deviations in simple cases. Judging the plausibility of a
-scenario by a statistical distance is not new
-\citep{breuer2009,breuer2013,glasserman2014}. What we add is a calibration of
-that distance on data, a test that separates real signals from artefacts, and
-an application to the euro area.
+scenario and the current state of the market, for any asset class, and it
+reduces to standard deviations in simple cases. Judging plausibility by a
+statistical distance is not new \citep{breuer2009,breuer2013,glasserman2014}.
+What we add is a data-based calibration of that distance, a test that
+separates real signals from artefacts, and an application to the euro area.
 
 \paragraph{Four contributions.}
 \begin{enumerate}
 \item \emph{A measurement framework} (section~\ref{sec:cadre}). The
 uncertainty of a return vector splits exactly into three channels: scale
 (volatilities), dependence (correlations) and shape (skewness and fat tails).
-Removing scale leaves a unit-free index, the structural index $\JJ$, which
+Removing scale gives a unit-free index, the structural index $\JJ$, which
 measures the market's distance from maximal ignorance.
 \item \emph{A robustness test} (sections~\ref{sec:methode}
 and~\ref{sec:resultats}). An entropy measure estimated on real data jumps up
 and decays slowly even when no information arrives: this is a mechanical
 effect of estimation. We therefore judge every result against \emph{placebo
-nulls}, that is, against the same computations run on resampled data. The
-most robust result, present on every panel, is that under stress markets
-couple.
+nulls}, that is, against the same computations run on resampled data. The most
+robust result, present on every panel, is that markets couple under stress.
 \item \emph{A severity unit for scenarios} (section~\ref{sec:stress}). A
 scenario of severity $\eta$ is the worst distribution within $\eta$~nats of
-the current distribution. The radius $\eta$ is calibrated on how fast the
-market itself revises its distribution. The same unit can audit an existing
-scenario and choose how to split the shock between volatility and correlation.
+the current one. The radius $\eta$ is calibrated on how fast the market itself
+revises its distribution. The same unit lets one audit an existing scenario
+and choose how to split the shock between volatility and correlation.
 \item \emph{A monitoring indicator} (section~\ref{sec:cb}). The coupling
 measure decomposes exactly across market segments. Applied to the five
 segments of the ECB's CISS, it shows which segments stress ties together,
@@ -123,21 +120,21 @@ which directly informs the correlation structure of a scenario.
 
 \paragraph{A warning.} The structural index is computed from estimated
 moments (variances, correlations, skewness, kurtosis). On fat-tailed data,
-estimation noise pushes such an index \emph{up} abruptly and lets it come down
+estimation noise pushes such an index \emph{up} abruptly and lets it fall back
 \emph{slowly}. That is exactly the sawtooth the theory predicts. The result is
-uncomfortable and, we think, the most useful thing in the paper: a good part
-of the signals that look overwhelming do not survive the null. Anyone building a
-crisis indicator from estimated moments should run this null before believing
+uncomfortable and, we believe, the most useful thing in the paper: many
+signals that look overwhelming do not survive the null. Anyone who builds a
+crisis indicator from estimated moments should run this null before trusting
 their own chart.
 
 \paragraph{Outline.} Section~\ref{sec:concepts} defines the concepts used.
-Section~\ref{sec:cadre} presents the framework and the eight hypotheses
-tested. Section~\ref{sec:methode} describes the data and the placebo test,
+Section~\ref{sec:cadre} presents the framework and the eight hypotheses tested.
+Section~\ref{sec:methode} describes the data and the placebo test,
 section~\ref{sec:resultats} the results. Sections~\ref{sec:stress}
-and~\ref{sec:cb} present the two applications: measuring scenario severity
-and the entropic CISS. Section~\ref{sec:reco} summarises recommendations and
-limitations. Technical justifications are in the appendix; full proofs are in
-a separate theoretical supplement.
+and~\ref{sec:cb} present the two applications: measuring scenario severity and
+the entropic CISS. Section~\ref{sec:reco} summarises recommendations and
+limits. Technical justifications are in the appendix; full proofs are in a
+separate theoretical supplement.
 
 \section{The concepts used}
 \label{sec:concepts}
@@ -146,46 +143,45 @@ This section defines, in the order they are needed, every concept the rest of
 the paper uses. No calculation is needed to follow what comes next.
 
 \begin{description}
-\item[Entropy.] The entropy $h(p)$ of a distribution $p$ measures its degree of
-uncertainty: the more spread out the distribution, the higher the entropy. For
+\item[Entropy.] The entropy $h(p)$ of a distribution $p$ measures its
+uncertainty: the more spread out the distribution, the higher its entropy. For
 a continuous variable, $h(p)=-\int p\log p$. Its level depends on units
-(expressing returns in percent rather than decimals shifts it by a constant):
-only its \emph{changes} and the \emph{divergences} below have absolute
+(expressing returns in per cent rather than decimals shifts it by a constant):
+only its \emph{changes} and the \emph{divergences} below have an absolute
 meaning.
 
 \item[Nat.] The unit of information obtained with the natural logarithm.
-$1$~nat $\approx 1.44$~bit. All quantities in the paper are in nats.
+$1$~nat $\approx 1.44$~bits. Every quantity in the paper is in nats.
 
 \item[Maximum entropy.] Among all distributions with a given mean and
-covariance, the Gaussian has maximal entropy: it is the distribution that
-assumes the least beyond those two moments. Any departure from the Gaussian is
+covariance, the Gaussian has the highest entropy: it is the distribution that
+assumes least beyond these two moments. Any departure from the Gaussian is
 therefore additional information.
 
 \item[Kullback--Leibler (KL) divergence.] $\KL{p}{q}=\int p\log(p/q)\ge0$
-measures in nats the gap between a distribution $p$ and a reference
-distribution $q$. It is zero if and only if $p=q$ and does not depend on
-units. It is not a distance (it is not symmetric), hence the word
-``divergence''. Practical reading: if two Gaussians share the covariance
-$\Sigma$ and have means $\mu_0$ and $\mu_1$,
+measures in nats the gap between a distribution $p$ and a reference $q$. It
+is zero if and only if $p=q$ and does not depend on units. It is not a
+distance (it is not symmetric), hence the word ``divergence''. In practice: if
+two Gaussians share the covariance $\Sigma$ and have means $\mu_0$ and $\mu_1$,
 $\KL{p_1}{p_0}=\tfrac12(\mu_1-\mu_0)^\top\Sigma^{-1}(\mu_1-\mu_0)$, half the
 squared Mahalanobis distance. A shock of $k$ standard deviations therefore
 costs $k^2/2$~nats.
 
 \item[Mutual information.] $I(X;Y)$ is the KL divergence between the joint law
 of $X$ and $Y$ and the product of their separate laws. It measures what $X$
-and $Y$ share and is zero if they are independent. For two Gaussian variables
-with correlation $\rho$, $I=-\tfrac12\log(1-\rho^2)$: $0.83$~nat for
+and $Y$ share and is zero when they are independent. For two Gaussian
+variables with correlation $\rho$, $I=-\tfrac12\log(1-\rho^2)$: $0.83$~nat for
 $\rho=0.9$.
 
 \item[Total correlation (coupling).] For $N$ assets with correlation matrix
-$R$, $C(R)=-\tfrac12\log\det R\ge0$ extends mutual information to more than two
-variables \citep{watanabe1960}. It is zero if the assets are independent and
-rises when they start to move together. We call it \emph{coupling}. An
+$R$, $C(R)=-\tfrac12\log\det R\ge0$ extends mutual information to more than
+two variables \citep{watanabe1960}. It is zero when the assets are independent
+and rises when they start moving together. We call it \emph{coupling}. An
 equivalent reading is the \emph{effective number of risk modes}, which equals
-$N$ when assets are independent and tends to $1$ when a single common factor
+$N$ for independent assets and tends to $1$ when a single common factor
 explains everything.
 
-\item[The three entropy channels.] The entropy of a return vector splits
+\item[The three channels of entropy.] The entropy of a return vector splits
 exactly into three terms (section~\ref{sec:cadre}): \emph{scale} (the level of
 volatilities), \emph{dependence} (coupling, counted negatively) and
 \emph{shape} (the deficit defined below).
@@ -203,22 +199,22 @@ independent, and it does not depend on the level of volatility.
 threshold of the top $10\,\%$ observed \emph{up to that date}. The threshold
 never uses future information.
 
-\item[Placebo null.] The same computations, rerun on data whose time order
-has been shuffled. The \emph{i.i.d.} null draws days one by one: it keeps fat
-tails and each day's cross-asset correlation, and destroys all dynamics. It is
-repeated 200~times. A result \emph{passes} the null if at most $5\,\%$ of the
-200~repetitions produce a result as strong as the real data.
+\item[Placebo null.] The same computations, rerun on data whose time order has
+been shuffled. The \emph{i.i.d.} null draws days one at a time: it keeps fat
+tails and the cross-asset correlation of each day, and destroys all dynamics.
+It is repeated 200~times. A result \emph{passes} the null if at most $5\,\%$ of
+the 200~repetitions produce a result as strong as the real data.
 
 \item[Information flow.] $I^{(h)}_t=\KL{p_t}{p_{t-h}}$: by how many nats the
 market has revised its own distribution over $h$ days.
 
 \item[Scenario of severity $\eta$ and return period.] The worst distribution
-within $\eta$~nats of the current distribution. It is assigned the return
-period of an information flow of the same size: a radius the market travels
-in one month only once a decade is a ``ten-year'' scenario.
+within $\eta$~nats of the current one. It is given the return period of the
+information flow of the same size: a radius the market covers in one month
+only once a decade is a ``ten-year'' scenario.
 
 \item[Tail loss (ES$_{99}$).] The $99\,\%$ expected shortfall: the average
-loss on the worst $1\,\%$ of days.
+loss over the worst $1\,\%$ of days.
 \end{description}
 
 \section{The framework: from maximal ignorance to three channels}
@@ -227,21 +223,22 @@ loss on the worst $1\,\%$ of days.
 \subsection{Why the Gaussian is the reference}
 
 The step from ``maximum entropy gives a Gaussian'' to ``prices are Gaussian''
-is often asserted and rarely argued, because maximum entropy takes the variance
-as given without saying where it comes from. Appendix~\ref{app:pont} closes
-that bridge. If time is measured in traded volume rather than in days, volume
-fixes the variance, and the least committal distribution of the price
-increment is Gaussian. This is the mixture-of-distributions hypothesis
-\citep{clark1973,ane2000}, derived rather than assumed. In calendar time,
-returns depart from the Gaussian for two reasons: the volume clock is random,
-or information constrains the market. No empirical result in the paper depends
-on this bridge; it motivates the Gaussian as the zero point.
+is often asserted and rarely argued, because maximum entropy takes the
+variance as given without saying where it comes from.
+Appendix~\ref{app:pont} closes this gap. If time is measured in traded volume
+rather than in days, volume fixes the variance, and the least committal
+distribution of the price increment is Gaussian. This is the
+mixture-of-distributions hypothesis \citep{clark1973,ane2000}, derived rather
+than assumed. In calendar time, returns depart from the Gaussian for two
+reasons: the volume clock is random, or information constrains the market. No
+empirical result in the paper depends on this bridge; it motivates the
+Gaussian as the zero point.
 
 \subsection{Three channels and the structural index}
 
-Write the covariance $\Sigma=DRD$, where $D$ holds the volatilities $\sigma_i$
-and $R$ the correlations. The entropy of the true distribution $p$ splits
-exactly (appendix~\ref{app:preuves}):
+Write the covariance as $\Sigma=DRD$, where $D$ holds the volatilities
+$\sigma_i$ and $R$ the correlations. The entropy of the true distribution $p$
+splits exactly (appendix~\ref{app:preuves}):
 \begin{equation}
 \label{eq:three}
 h(p) \;=\; \tfrac{N}{2}\log(2\pi e)
@@ -253,34 +250,34 @@ The first two terms form the entropy of the Gaussian with the same covariance,
 the ceiling. The deficit $\DD$ says how far below it the true distribution
 lies.
 
-The scale channel is a problem: it rises with volatility. In a crisis, entropy
-computed from the covariance matrix alone \emph{rises} (by $5$~nats on our main
-panel), whereas intuition says a crisis is a moment when information
-constrains the market. Using the level of Gaussian entropy as a stress
-indicator therefore gets the sign wrong. We remove that channel and keep the
-other two:
+The scale channel is a problem: it rises with volatility. In a crisis, the
+entropy computed from the covariance matrix alone \emph{increases} (by
+$5$~nats on our main panel), whereas intuition says a crisis is a time when
+information constrains the market. Using the level of Gaussian entropy as a
+stress indicator therefore gives the wrong sign. We remove this channel and
+keep the other two:
 \begin{equation}
 \label{eq:J}
 \JJ \;=\; \DD \;+\; C \;=\; \KL{p}{\textstyle\prod_i q_i} \;\ge\; 0 ,
 \end{equation}
-where the $q_i$ are Gaussians with each asset's volatility. $\JJ$ is a genuine
-divergence (appendix~\ref{app:preuves}): it is positive, zero if and only if
-returns are Gaussian and independent, and unit-free. It rises when assets
-couple ($C$) or when their distributions depart from the Gaussian ($\DD$), and
-one can always say which part of a move comes from each channel.
+where the $q_i$ are Gaussians with the same volatility as each asset. $\JJ$ is
+a true divergence (appendix~\ref{app:preuves}): it is non-negative, zero if and
+only if returns are Gaussian and independent, and unit-free. It rises when
+assets couple ($C$) or when their distributions depart from the Gaussian
+($\DD$), and one can always say which share of a move comes from each channel.
 
 \subsection{What the framework predicts, and the eight hypotheses}
 
 News reduces uncertainty. Formally, receiving a signal $Y$ lowers the
 \emph{average} entropy of the return $X$ by exactly the mutual information
-$I(X;Y)$ \citep{cover2006}. The entropy jump therefore has a size measurable in
+$I(X;Y)$ \citep{cover2006}. The entropy jump thus has a measurable size in
 nats: the information content of the news. The framework adds two postulates,
 detailed in appendix~\ref{app:dynamique}. The first (\emph{relaxation}) says
-that, absent new information, $\JJ$ slowly returns to its normal level. The
-second (\emph{sign}) says that jumps come with negative skewness, because $\JJ$
-alone cannot tell a crash from a rally. The result is a sawtooth: $\JJ$ rises
-by jumps and comes down slowly. The framework also predicts that important
-news, because it hits every asset on the same day, raises coupling and tail
+that, without new information, $\JJ$ decays slowly back to its normal level.
+The second (\emph{sign}) says that jumps come with negative skewness, because
+$\JJ$ alone cannot tell a crash from a rally. The result is a sawtooth: $\JJ$
+rises in jumps and decays slowly. The framework also predicts that major news,
+because it hits every asset on the same day, raises coupling and tail
 thickness together.
 
 Table~\ref{tab:hyp} turns these predictions into eight testable hypotheses.
@@ -296,22 +293,23 @@ H1 & \emph{Regime signature.} Under stress, coupling rises, the shape deficit
 rises, hence $\JJ$ rises. \\
 H2 & \emph{Compensation.} When volatilities rise, dependence absorbs part of
 the entropy increase (slope $\beta>0$). \\
-H3 & \emph{One-sided jumps.} Large moves of $\JJ$ are increases, small ones
-decreases: upward episodes are more numerous and larger than downward ones. \\
-H4 & \emph{Relaxation.} After an episode, $\JJ$ decays with a half-life longer than
-the estimator's own memory. \\
-H5 & \emph{Sign.} Jumps and upward episodes of $\JJ$ coincide with negative market skewness. \\
+H3 & \emph{One-sided jumps.} Large moves in $\JJ$ are rises, small ones are
+falls: rising episodes are more numerous and larger than falling ones. \\
+H4 & \emph{Relaxation.} After an episode, $\JJ$ decays with a half-life longer
+than the estimator's memory. \\
+H5 & \emph{Sign.} Jumps and rising episodes of $\JJ$ coincide with negative
+market skewness. \\
 H6 & \emph{Channel coupling.} Dependence and tails move independently in calm
 markets and together under stress. \\
 H7 & \emph{Forecasting.} Today's entropy improves, out of sample, the
-short-term forecast of risk beyond volatility. \\
-H8 & \emph{Crisis composition.} In crisis episodes, dependence is the dominant
-channel more often than in data without dynamics. \\
+short-term risk forecast beyond volatility. \\
+H8 & \emph{Crisis composition.} In crisis episodes, dependence is more often
+the dominant channel than in data without dynamics. \\
 \bottomrule
 \end{tabular}
 \caption{The eight hypotheses tested. H3, H4, H5 and H8 concern jumps: they
-are tested day by day and by \emph{episode}, an episode merging jumps less
-than 40 days apart.}
+are tested day by day and by \emph{episode}, an episode grouping jumps less
+than 40~days apart.}
 \label{tab:hyp}
 \end{table}
 
@@ -325,57 +323,56 @@ than 40 days apart.}
 (8,312 days), covering the Asian crisis, LTCM, the dot-com bubble, 2008, the
 sovereign debt crisis, COVID-19 and 2022. Individual stocks rather than
 portfolios, because sector aggregation mechanically creates dependence.
-\item \emph{Industry panel:} Kenneth French's 48 daily industry portfolios,
+\item \emph{Industry panel:} Kenneth French's 48~daily industry portfolios,
 1990--2026 (about 9,000 days).
 \item \emph{Control panel:} the DAX, SMI, CAC and FTSE indices, 1991--1998
 \citep{bollerslev1996}, too small to carry a result on its own.
-\item \emph{Euro-area panel:} 28 daily series across the five CISS segments,
-2005--2026 (section~\ref{sec:cb}).
+\item \emph{Euro-area panel:} 28~daily series spread across the five CISS
+segments, 2005--2026 (section~\ref{sec:cb}).
 \end{itemize}
 
 \subsection{Estimation}
 
 Correlations and volatilities are estimated on a 252-day rolling window with
 the \citet{ledoit2004} correction, or with exponential weighting (60-day
-half-life) for everything to do with jumps. The shape deficit is estimated
+half-life) for everything related to jumps. The shape deficit is estimated
 asset by asset with the \citet{hyvarinen1998} approximation, accurate to a few
-percent on fat-tailed laws like those of daily returns. A jump is flagged when
-the daily change in $\JJ$ exceeds four times a local scale that is robust to
-jumps \citep{bns2004}. Regime comparisons use a 252-day block bootstrap;
+per cent on fat-tailed laws such as daily returns. A jump is flagged when the
+daily change in $\JJ$ exceeds four times a jump-robust local scale
+\citep{bns2004}. Regime comparisons use a block bootstrap with 252-day blocks;
 forecasts are evaluated out of sample with the \citet{dm1995} test.
 Appendix~\ref{app:details} gives the details.
 
 \subsection{Why a placebo null is indispensable}
 \label{sec:placebo}
 
-The index $\JJ$ is a convex, positive function of estimated moments. This
+The index $\JJ$ is a convex, non-negative function of estimated moments. This
 creates a trap. When an extreme day enters the estimation window, the index
-jumps up; it then comes down slowly as that day loses weight. This movement
-mimics exactly the sawtooth the theory predicts, without any information
-having arrived.
+jumps; it then decays slowly as that day loses weight. This movement mimics
+exactly the sawtooth the theory predicts, without any information arriving.
 
 A simulation shows it. Feed independent Gaussian returns with constant
-covariance through the same pipeline: a world without any dynamics. A single
-injected stress day raises $\JJ$ by $2.1$~nats, and the index decays with a
-half-life of $35$~days, through estimator memory alone. With no event at all,
-the detector finds $37$ positive jumps and no negative one.
+covariance, a world with no dynamics at all, through the same pipeline. A
+single injected stress day raises $\JJ$ by $2.1$~nats, and the index decays
+with a half-life of $35$~days, purely through the estimator's memory. With no
+event at all, the detector finds $37$~positive jumps and no negative ones.
 
 A result is therefore evidence only if it exceeds what data without dynamics
-produce. Hence the i.i.d.\ null defined in section~\ref{sec:concepts}. It runs
-exactly the same pipeline, including the definition of the stress regime, and
-answers the question: beyond the fact that turbulent periods contain large
-days, does the measure detect any dynamics? A result that passes this null is
-established.
+produce. Hence the i.i.d.\ null defined in section~\ref{sec:concepts}. It
+applies exactly the same pipeline, including the definition of the stress
+regime, and answers the question: beyond the fact that turbulent periods
+contain big days, does the measure detect any dynamics? A result that passes
+this null is established.
 
 \paragraph{Why not a block null.} One could also draw blocks of 21
 consecutive days. Such a null keeps the clustering of turbulent days and all
-dynamics shorter than a month, and destroys only longer-run dynamics. But a
-market crisis plays out precisely on that scale: COVID raised the index by
-16~nats in three weeks, and a typical crisis is a few weeks of turbulent days
-in a row. A null that keeps those weeks keeps the very phenomenon we want to
-measure, and counting it as ``noise'' would amount to requiring the measure to
-detect something other than crises themselves. We therefore do not use it as
-a criterion.
+dynamics shorter than a month, and destroys only longer-run dynamics. Yet a
+market crisis plays out precisely at that scale: COVID raised the index by
+16~nats in three weeks, and a typical crisis consists of a few weeks of
+consecutive turbulent days. A null that keeps these weeks keeps the very
+phenomenon we want to measure; counting it as ``noise'' would require the
+measure to detect something other than the crises themselves. We therefore do
+not use it as a criterion.
 
 \section{Results: what survives the null}
 \label{sec:resultats}
@@ -390,14 +387,14 @@ and~\ref{tab:placebo-ff49}).
 \resizebox{\linewidth}{!}{%
 \begin{tabular}{@{}llll@{}}
 \toprule
-& Raw result (S\&P~500) & Verdict S\&P~500 & Verdict FF49 industries \\
+& Raw result (S\&P~500) & S\&P~500 verdict & FF49 industries verdict \\
 \midrule
 H1 coupling & rise under stress $+0.99$ nat & \textbf{passes} & \textbf{passes} \\
 H1 index $\JJ$ & $+1.93$ nat & fails & null stronger \\
 H1 shape $\DD$ & $+0.27$ nat & null stronger & null stronger \\
 H2 compensation & $\beta=0.20$ under stress & fails & \textbf{passes} \\
-H3 jumps, daily & 158 up, 9 down & null stronger & fails \\
-H3 jumps, by episode & 65 up, 7 down & null stronger & not tested \\
+H3 jumps, daily & 158 rises, 9 falls & null stronger & fails \\
+H3 jumps, by episode & 65 rises, 7 falls & null stronger & not tested \\
 H3 largest episode & $15.8$ nats (COVID) & \textbf{passes} & not tested \\
 H4 half-life, daily & 121 days & \textbf{passes} & \textbf{passes} \\
 H4 half-life from peak & 18 days (74 for the 5 largest) & fails & not tested \\
@@ -405,76 +402,76 @@ H4 range of $\JJ$ & $18.95$ nats & \textbf{passes} & \textbf{passes} \\
 H5 sign, daily & correlation $-0.24$ & fails ($p=0.10$) & fails \\
 H5 sign, by episode & skewness falls in $62\,\%$ & \textbf{passes} & not tested \\
 H6 channel coupling & $0.04$ calm, $0.63$ stress & null stronger & null stronger \\
-H7 forecasting, 5--10 days & gain of $3.5\,\%$ ($p=0.03$ at 5~days) & not robust to multiple testing & \textbf{passes} (gain $5\,\%$) \\
+H7 forecasting, 5--10 days & $3.5\,\%$ gain ($p=0.03$ at 5~days) & not robust to multiple testing & \textbf{passes} ($5\,\%$ gain) \\
 H7 forecasting, 21--63 days & zero or negative gain & rejected & rejected \\
-H8 composition & dependence dominant $46\,\%$ & \textbf{passes} & \textbf{passes} \\
+H8 composition & dependence dominant in $46\,\%$ & \textbf{passes} & \textbf{passes} \\
 \bottomrule
 \end{tabular}}
 \caption{Verdicts against the i.i.d.\ null (200 repetitions). ``Null
-stronger'': resampled data produce a larger effect than the real data. For
+stronger'': the resampled data produce a larger effect than the real data. For
 H7, the test is out of sample and covers the main and control panels.}
 \label{tab:verdicts}
 \end{table}
 
 \subsection{The central fact: under stress, markets couple}
 
-Under stress, coupling among the twenty stocks rises by $0.99$~nat. The i.i.d.\
-null produces only $0.21$~nat, and none of the 200 repetitions reaches the
-observed value. Concretely, the effective number of independent risk sources
-falls from $13.1$ to $11.4$ out of $20$. The same result holds on French's
-48 industries: $3.65$~nats against $0.56$, again with no repetition reaching
-it. It is the strongest result in the paper, six standard deviations from the
-null on stocks and twelve on industries. Its presence on individual stocks as
-well as on industries rules out an aggregation artefact.
+Under stress, the coupling of the twenty stocks rises by $0.99$~nat. The
+i.i.d.\ null produces only $0.21$~nat, and none of the 200~repetitions reaches
+the observed value. In concrete terms, the effective number of independent
+sources of risk falls from $13.1$ to $11.4$ out of $20$. The same result holds
+on the 48~French industries: $3.65$~nats against $0.56$, again with no
+repetition reaching it. This is the paper's strongest result, six standard
+deviations above the null on stocks and twelve on industries. Its presence on
+both individual stocks and industries rules out an aggregation artefact.
 
-\paragraph{Amplitude and persistence of the index.} Real markets also move
-the index further and for longer than any resampling of the same returns. The
+\paragraph{Range and persistence of the index.} Real markets also move the
+index further and for longer than any reshuffling of the same returns. The
 \emph{range} of $\JJ$ reaches $18.95$~nats on the main panel, against $10.05$
-in the null, and $54.5$ against $36.9$ on industries; no repetition reaches it
-on either panel. The daily \emph{half-life} of $\JJ$ is $121$~days, against
-$92$ in the null, and $190$ against $101$ on industries, again beyond every
-repetition. Once the mechanical memory of the estimator is removed, a
-persistence specific to the data remains: the index takes longer to return to
-its normal level than a world without dynamics allows. This is what the
-relaxation postulate predicts. We show below that this persistence comes from
-turbulent days following one another, not from slower relaxation after each
-peak.
+under the null, and $54.5$ against $36.9$ on industries; no repetition reaches
+it on either panel. The \emph{half-life} of $\JJ$ measured day by day is
+$121$~days, against $92$ under the null, and $190$ against $101$ on
+industries, again beyond every repetition. Once the estimator's mechanical
+memory is removed, a persistence specific to the data remains: the index takes
+longer to return to its normal level than a world without dynamics allows.
+This is what the relaxation postulate predicts. We show below that this
+persistence comes from the succession of turbulent days, not from slower
+relaxation after each peak.
 
 \paragraph{A jump is not an event.} The detector judges \emph{daily} changes
 in $\JJ$. A crisis lasting several weeks therefore produces several jumps:
-the COVID crisis yields nine between 24 February and 16 March 2020, while the
-index rises by 16~nats, whereas the largest single-day jump is only
-$3.2$~nats. We therefore also count by \emph{episode}, merging jumps less than
-40 days apart: the 158 jumps of the main panel form 65 episodes. Measured this
-way, the largest shock ($15.8$~nats, COVID) clearly exceeds the null:
-$8.1$~nats on average, and none of the 200 repetitions reaches it. This
-result echoes the range of $\JJ$ and rests on a single episode. Jumps also
-cluster more than in the null ($2.4$ per episode against $2.0$, $p=0.015$):
-turbulent days follow one another, which is the very signature of a crisis
-that lasts. The five largest episodes ($7.9$~nats on average against $6.3$,
-$p=0.025$) also pass the null. The average episode ($1.4$~nat), by contrast,
-is smaller than in the null: most real episodes are modest, only a few are
+COVID yields nine between 24~February and 16~March 2020, while the index rises
+by 16~nats, whereas the largest single-day jump is only $3.2$~nats. We
+therefore also count by \emph{episode}, merging jumps less than 40~days apart:
+the 158~jumps of the main panel form 65~episodes. Measured this way, the
+largest shock ($15.8$~nats, COVID) clearly exceeds the null: $8.1$~nats on
+average, and none of the 200~repetitions reaches it. This result matches the
+one on the range of $\JJ$ and rests on a single episode. Jumps also cluster
+more than under the null ($2.4$ per episode against $2.0$, $p=0.015$):
+turbulent days follow one another, which is the very signature of a lasting
+crisis. The five largest episodes ($7.9$~nats on average against $6.3$,
+$p=0.025$) also pass the null. The average episode ($1.4$~nat), however, is
+smaller than under the null: most real episodes are modest, and only a few are
 exceptional.
 
 \paragraph{Coupling is not just a volatility effect.} Three checks, in
 table~\ref{tab:cb-measures}, rule out the usual objections.
 \begin{itemize}
-\item \emph{Volatility.} Measured correlations rise mechanically when variances
-rise \citep{forbes2002}. We therefore divide each return by its recent
-volatility before computing correlations (``devolatilisation''). Coupling falls
-by about $30\,\%$ but still passes the null, by more than five standard
-deviations, on both panels.
+\item \emph{Volatility.} Measured correlations rise mechanically when
+variances rise \citep{forbes2002}. We therefore divide each return by its
+recent volatility before computing correlations (``devolatilisation'').
+Coupling falls by about $30\,\%$ but still passes the null, by more than five
+standard deviations, on both panels.
 \item \emph{Extreme days.} We replace each return by its rank, converted to a
 Gaussian score, which makes the measure insensitive to extreme values. This
 ``rank'' version is the strongest of the three ($9.6$ and $12.7$ standard
 deviations).
 \item \emph{Existing measures.} The absorption ratio of \citet{kritzman2011},
-which measures the share of variance explained by the first factors, fails the
-null on the twenty stocks ($p=0.215$) and passes it only on industries. The
-first-eigenvalue share passes the null on both panels, but with a smaller gap
-than coupling. The likely reason is that $\log\det R$ accounts for
-the whole spectrum of the correlation matrix, including the small eigenvalues
-that collapse when assets couple.
+which measures the share of variance explained by the first factors, fails
+the null on the twenty stocks ($p=0.215$) and passes only on industries. The
+share of the first eigenvalue passes on both panels, but by a smaller margin
+than coupling. The likely reason is that $\log\det R$ uses the whole spectrum
+of the correlation matrix, including the small eigenvalues that collapse when
+assets couple.
 \end{itemize}
 
 \begin{table}[htbp]
@@ -486,68 +483,66 @@ Measure & S\&P~500, 20 stocks & FF49, 48 industries \\
 \midrule
 Coupling $C$, raw & $6.2$ ($<0.005$) & $11.9$ ($<0.005$) \\
 Coupling $C$, devolatilised & $5.1$ ($<0.005$) & $7.9$ ($<0.005$) \\
-Coupling $C$, ranks & $\mathbf{9.6}$ ($\mathbf{<0.005}$) & $\mathbf{12.7}$ ($\mathbf{<0.005}$) \\
+Coupling $C$, rank & $\mathbf{9.6}$ ($\mathbf{<0.005}$) & $\mathbf{12.7}$ ($\mathbf{<0.005}$) \\
 Absorption ratio & $0.7$ ($0.215$) & $6.9$ ($<0.005$) \\
 First-eigenvalue share & $5.3$ ($<0.005$) & $6.7$ ($<0.005$) \\
 \bottomrule
 \end{tabular}
 \caption{Which dependence measure best separates stress from calm? For each
-measure, we compute its average rise in stress periods relative to calm
-periods, then compare it with the same rise in the i.i.d.\ null. The number
-says by how many standard deviations the observed rise exceeds the null's: the
-larger it is, the more the measure detects stress beyond chance. In
-parentheses, the $p$-value (share of the 200 null repetitions that do at least
-as well).}
+measure, we compute its average rise under stress relative to calm periods and
+compare it with the same rise under the i.i.d.\ null. The figure gives by how
+many standard deviations the observed rise exceeds the null's: the larger it
+is, the more the measure detects stress beyond chance. In parentheses, the
+$p$-value (share of the 200~null repetitions that do at least as well).}
 \label{tab:cb-measures}
 \end{table}
 
 \subsection{What does not survive}
 
 \begin{itemize}
-\item \emph{One-sided jumps (H3).} The detector finds 158 upward jumps against
-9 downward, and the chart of $\JJ$ is visibly a sawtooth
-(figure~\ref{fig:index} in the appendix). But the i.i.d.\ null produces as
-many: 148 up and 3 down on average, with stronger asymmetry than the data. The
-sawtooth is what a fat-tailed law produces when passed through the estimator,
-whether or not information arrives in bursts. Counting by episode changes
-nothing: 65 upward episodes against 7 downward, but the null is even more
-one-sided (31 up per down on average, against 9 in the data).
-\item \emph{Shape under stress (H1, $\DD$).} Tails thicken under stress
-($+0.27$~nat), but less than in the null ($+1.25$). A ``stress'' window in a
-shuffled world contains isolated extreme days, which thicken the measured
-tails more.
+\item \emph{One-sided jumps (H3).} The detector finds 158~upward jumps against
+9 downward, and the chart of $\JJ$ is visibly a sawtooth (figure~\ref{fig:index}
+in the appendix). But the i.i.d.\ null produces as many: 148 rises and 3 falls
+on average, with a stronger asymmetry than in the data. The sawtooth is what a
+fat-tailed law produces once passed through the estimator, whether or not
+information arrives in bursts. Counting by episode changes nothing:
+65~rising episodes against 7 falling, but the null is even more one-sided
+(31 rises per fall on average, against 9 in the data).
+\item \emph{Shape under stress (H1, $\DD$).} Tails fatten under stress
+($+0.27$~nat), but less than under the null ($+1.25$). A ``stress'' window in a
+shuffled world contains isolated extreme days, which fatten measured tails
+more.
 \item \emph{Relaxation after each peak (H4, by episode).} The overall
 persistence of $\JJ$ exceeds the null (previous section), but episode by
-episode, from the peak until the index is halfway back, relaxation takes
-18 days at the median (74 for the five largest episodes), no longer than in
-the null (23 days; 68 for the five largest). Persistence therefore comes from
-turbulent days following one another, not from slower absorption of each
-shock.
-\item \emph{Daily sign (H5).} Jumps of $\JJ$ do coincide with negative
+episode, from peak to halfway back, relaxation takes a median of 18~days (74
+for the five largest episodes), no longer than under the null (23~days; 68 for
+the five largest). Persistence therefore comes from the succession of
+turbulent days, not from slower absorption of each shock.
+\item \emph{Daily sign (H5).} Jumps in $\JJ$ do coincide with negative
 skewness (correlation $-0.24$), but the null produces the same effect in
 $10\,\%$ of cases, above the $5\,\%$ threshold. By episode, however, market
-skewness falls between the start and the peak in $62\,\%$ of episodes,
-against $50\,\%$ in the null ($p=0.015$): the sign is established at the
-scale of episodes, not of days.
+skewness falls between the start and the peak in $62\,\%$ of episodes, against
+$50\,\%$ under the null ($p=0.015$): the sign is established at the episode
+scale, not the daily one.
 \item \emph{Channel coupling (H6).} Dependence and tails move together under
-stress ($0.63$ against $0.04$ in calm markets), but the null couples them even
-more ($0.90$). A window containing a large common day shows both higher
-correlation and thicker tails, real or shuffled.
+stress ($0.63$ against $0.04$ in calm), but the null couples them even more
+($0.90$). A window containing one big common day shows both more correlation
+and fatter tails, real or shuffled.
 \item \emph{Compensation (H2).} The compensation slope ($\beta=0.20$) does not
-exceed the null on the twenty stocks ($p=0.40$); it does on industries
-($0.23$ against $0.08$, $p=0.03$), where coupling weighs more. The result is
+exceed the null on the twenty stocks ($p=0.40$); it does on industries ($0.23$
+against $0.08$, $p=0.03$), where coupling weighs more. The result is
 therefore not common to both panels.
 \end{itemize}
 
 \subsection{A weak short-term predictive power (H7)}
 
-The question is: does knowing today's entropy say anything about risk over the
+The question is: does knowing entropy today say anything about risk over the
 next few days that today's volatility does not already say? We compare a model
-using volatility only with a model that adds an entropy channel. Both are
-estimated on the past only, re-estimated each year, and compared on dates they
-have not seen, spaced by the forecast horizon so that forecast periods do not
-overlap (\citet{dm1995} test). We repeat the test at four horizons: 5, 10, 21
-and 63 trading days (table~\ref{tab:h7}).
+that uses only volatility with one that adds an entropy channel. Both are
+estimated on the past only, re-estimated every year, and compared on dates
+they have not seen, spaced by the forecast horizon so that forecast periods do
+not overlap (\citealp{dm1995} test). We repeat the test at four horizons: 5,
+10, 21 and 63 trading days (table~\ref{tab:h7}).
 
 \begin{table}[htbp]
 \centering
@@ -557,73 +552,73 @@ and 63 trading days (table~\ref{tab:h7}).
 Horizon (trading days) & 5 & 10 & 21 & 63 \\
 \midrule
 S\&P~500, 20 stocks & $-3.5\,\%$ ($0.03$) & $-3.5\,\%$ ($0.09$) & $-3.3\,\%$ ($0.23$) & $+1.0\,\%$ ($1.00$) \\
-FF49, 48 sectors & $\mathbf{-5.4\,\%}$ ($\mathbf{0.001}$) & $-5.2\,\%$ ($0.009$) & $-4.2\,\%$ ($0.09$) & $+4.2\,\%$ ($0.16$) \\
+FF49, 48 industries & $\mathbf{-5.4\,\%}$ ($\mathbf{0.001}$) & $-5.2\,\%$ ($0.009$) & $-4.2\,\%$ ($0.09$) & $+4.2\,\%$ ($0.16$) \\
 \bottomrule
 \end{tabular}
-\caption{Change in the squared error of the realised-volatility forecast when
-the unhealed-shock indicator ($\JJ_t/\max_{252\,\text{d}}\JJ$) is added to
-volatility; negative = better forecast. In parentheses, Diebold--Mariano
-$p$-value. In bold: the only case that remains significant after a Bonferroni
-correction for the 15 tests of a horizon (5 indicators, 3 targets).}
+\caption{Change in the mean squared error of the realised-volatility forecast
+when the unhealed-shock indicator ($\JJ_t/\max_{252\,\text{d}}\JJ$) is added
+to volatility; negative = better forecast. In parentheses, the
+Diebold--Mariano $p$-value. In bold: the only case that remains significant
+after a Bonferroni correction for the 15~tests of one horizon (5~indicators,
+3~targets).}
 \label{tab:h7}
 \end{table}
 
-The result depends on the horizon. At 5 and 10 days, the unhealed-shock
+The result depends on the horizon. At 5 and 10~days, the unhealed-shock
 indicator, which measures the share of the last peak of $\JJ$ not yet
-reabsorbed, improves the forecast by $3$ to $5\,\%$ on both panels, and in the
-same direction for drawdown and worst loss. The gain shrinks at 21 days, where
-it is no longer significant, and reverses at 63 days: at long horizons, adding
-entropy worsens the forecast. The signal is therefore real but weak and short
-lived, consistent with an index that jumps and is reabsorbed within a few
-weeks. Two caveats limit its reach: only the FF49 case at 5 days survives the
-multiple-testing correction, and the 21-day horizon was fixed before the
-others. Finally, in the estimation sample every coefficient looks highly
-significant ($p<10^{-4}$): the trap of overlapping windows, which would
-suggest a much stronger predictive power. Entropy measures are first of all
+absorbed, improves the forecast by $3$ to $5\,\%$ on both panels, and in the
+same direction for drawdown and worst loss. The gain shrinks at 21~days, where
+it is no longer significant, and reverses at 63~days: at long horizons, adding
+entropy worsens the forecast. The signal is therefore real but weak and
+short-lived, consistent with an index that jumps and then heals within a few
+weeks. Two caveats limit its reach: only the FF49 case at 5~days survives the
+multiple-testing correction, and the 21-day horizon had been set before the
+others. Finally, in sample, all coefficients look highly significant
+($p<10^{-4}$): this is the overlapping-window trap, which would suggest a much
+stronger predictive power. Entropy measures are above all
 \emph{diagnostic}, with a modest short-term predictive contribution.
 
 \subsection{How crises split their intensity (H8)}
 \label{sec:h8}
 
 The previous hypotheses compare averages over a whole regime. H8 looks at each
-crisis. We merge jumps less than 40 days apart into \emph{episodes}, and split
-the rise of $\JJ$ in each episode exactly into dependence, skewness and tails.
-Skewness almost never dominates (1 episode out of 139). The split between
-dependence and tails varies: dependence dominates $46\,\%$ of the 65 episodes
-on the main panel, against $26\,\%$ on average under the null (range
-$18$--$33\,\%$, no repetition reaches it); $79\,\%$ of the 61 industry
+crisis. We group jumps less than 40~days apart into \emph{episodes} and split
+the rise in $\JJ$ in each episode exactly into dependence, skewness and tails.
+Skewness almost never dominates (1~episode out of 139). The split between
+dependence and tails varies: dependence dominates $46\,\%$ of the 65~episodes
+of the main panel, against $26\,\%$ on average under the null (range
+$18$--$33\,\%$, no repetition reaches it); and $79\,\%$ of the 61~industry
 episodes, against $43\,\%$. The largest episode of each panel also gives more
-weight to dependence than in the null ($45\,\%$ against $33\,\%$, $p=0.015$,
-on stocks).
+weight to dependence than under the null ($45\,\%$ against $33\,\%$,
+$p=0.015$, on stocks).
 
-The result echoes that on coupling: when turbulent days follow one another,
-what distinguishes a real crisis from a random cluster of large days is that
-assets start moving together. It underpins the calibration of the
-composition of a stress scenario (section~\ref{sec:composition}). The size of an episode
-does not predict its composition (rank correlation $0.05$).
+The result matches the coupling result: when turbulent days follow one
+another, what distinguishes a real crisis from a random cluster of big days is
+that assets start moving together. It underpins the calibration of scenario
+composition (section~\ref{sec:composition}). The size of an episode does not
+predict its composition (rank correlation $0.05$).
 
-\paragraph{The takeaway.} What distinguishes a real crisis from a series of
-large days is not the thickening of each asset's tails; it is that assets
-couple, that crises are more often dominated by this coupling, and that the
-index goes further and stays high longer than a world without dynamics
-allows. For a scenario designer, this means that the dependence structure of a
-scenario deserves as much attention as the level of the shocks, and that any
-crisis indicator based on estimated moments should be confronted with a null
-before use.
+\paragraph{Takeaway.} What distinguishes a real crisis from a series of big
+days is not the fattening of each asset's tails; it is that assets couple,
+that crises are more often dominated by this coupling, and that the index goes
+further and stays high longer than a world without dynamics allows. For a
+scenario designer, this means the dependence structure of a scenario deserves
+as much attention as the size of the shocks, and that any crisis indicator
+built from estimated moments must be checked against a null before use.
 
 \section{Application 1: measuring and calibrating scenario severity}
 \label{sec:stress}
 
-This section does not depend on any of H1--H7: it is a measurement convention
-plus an optimisation. It speaks directly to the design of market scenarios,
-such as the financial shocks of the European adverse scenario or the global
-market shocks of US stress tests.
+This section relies on none of the hypotheses H1--H7: it is a measurement
+convention plus an optimisation. It speaks directly to the design of market
+scenarios, such as the financial shocks of the European adverse scenario or
+the global market shocks of the US tests.
 
 \subsection{An entropy-ball scenario}
 
 \begin{definition}[Scenario of severity $\eta$]
-Let $p_0$ be the current distribution of returns and $\rho$ a risk measure
-(for example a portfolio's ES$_{99}$). The scenario of severity $\eta$ is the
+Let $p_0$ be the current return distribution and $\rho$ a risk measure (for
+example the ES$_{99}$ of a portfolio). The scenario of severity $\eta$ is the
 most adverse distribution within $\eta$~nats of $p_0$:
 \begin{equation}
 \label{eq:ball}
@@ -639,68 +634,67 @@ and risk:
 \begin{equation}
 \text{a purely directional shock of }\eta\text{ nats is a move of }\sqrt{2\eta}\text{ standard deviations.}
 \end{equation}
-One nat buys $1.41$ standard deviations, two nats buy two, and a
+One nat buys $1.41$~standard deviations, two nats buy two, and a
 three-standard-deviation shock costs $4.5$~nats. The severity parameter is
 therefore not an abstraction: it translates directly into the language of
 committees.
 
 \subsection{Calibrating the radius on the market itself}
 
-It remains to choose $\eta$. We read it off the market's information flow,
-that is, off how much the market revises its own distribution over 21 days,
-$I^{(21)}_t=\KL{p_t}{p_{t-21}}$, measured on the same object as the constraint
-(the portfolio's distribution). The historical quantiles of this flow give a
-radius for each return period (table~\ref{tab:ladder}).
+It remains to choose $\eta$. We read it from the market's information flow,
+that is, from how much the market itself revises its distribution over
+21~days, $I^{(21)}_t=\KL{p_t}{p_{t-21}}$, measured on the same quantity as the
+constraint (the portfolio distribution). Historical quantiles of this flow give
+a radius for each return period (table~\ref{tab:ladder}).
 
 \begin{table}[htbp]
 \centering
 \small
 \begin{tabular}{@{}lrrrrrr@{}}
 \toprule
-Return period & 1~yr & 2~yr & 5~yr & 10~yr & 20~yr & 50~yr$^\dagger$ \\
+Return period & 1~yr & 2~yrs & 5~yrs & 10~yrs & 20~yrs & 50~yrs$^\dagger$ \\
 \midrule
 radius $\eta$ (nats) & 0.017 & 0.045 & 0.149 & 0.408 & 0.634 & 1.369 \\
 directional shock (std.\ dev.) & $-0.08$ & $-0.13$ & $-0.24$ & $-0.38$ & $-0.47$ & $-0.66$ \\
 volatility multiplier & 1.12 & 1.20 & 1.37 & 1.63 & 1.80 & 2.21 \\
 one-day ES$_{99}$ & $3.9\%$ & $4.2\%$ & $4.9\%$ & $5.9\%$ & $6.6\%$ & $8.3\%$ \\
 \midrule
-\emph{history:} realised volatility increase & 1.54 & 1.77 & 2.28 & 3.25 & 3.57 & 4.43 \\
+\emph{historical:} realised volatility increase & 1.54 & 1.77 & 2.28 & 3.25 & 3.57 & 4.43 \\
 \bottomrule
 \end{tabular}
 \caption{Severity ladder for an equally weighted portfolio of the twenty
 stocks, calibrated on the 21-day information flow (383 non-overlapping
 observations). Current state: annual volatility $20\,\%$, one-day ES$_{99}$
-$3.4\,\%$. Last row: quantile, at the same return period, of the ratio of the
-next 21 days' volatility to that of the previous 252 days. $^\dagger$
-Extrapolated beyond 33 years of data.}
+$3.4\,\%$. Last row: quantile, at the same return period, of the ratio of
+next-21-day volatility to past-252-day volatility. $^\dagger$ Extrapolated
+beyond 33~years of data.}
 \label{tab:ladder}
 \end{table}
 
 The scenario spends its budget mostly on volatility rather than direction: at
-the ten-year rung, $63\,\%$ more volatility and a shift of $0.38$ standard
-deviation, because ES is more sensitive to scale than to location. The radius
-depends on the portfolio: a ladder must be calibrated for the portfolio it
-will be applied to.
+the ten-year rung, $63\,\%$ more volatility and a $0.38$-standard-deviation
+shift, because ES is more sensitive to scale than to location. The radius
+depends on the portfolio: a ladder must be calibrated for the portfolio it is
+applied to.
 
-\paragraph{A serious limitation.} The last row of the table confronts the
-ladder with history. A ten-year scenario multiplies volatility by $1.6$,
-whereas the ten-year quantile of the realised volatility increase is $3.2$. The
-ladder is therefore \emph{too mild} by a factor close to two. Either the
-information flow, measured on smoothed estimators, understates the true
-revision; or a Gaussian ball is not the right geometry for volatility shocks
-this abrupt. We do not decide between the two. The return periods in the
-table should therefore not be quoted as frequencies. What survives this
-limitation are the \emph{relative} comparisons of the next two sections.
+\paragraph{A serious limit.} The last row confronts the ladder with history.
+A ten-year scenario multiplies volatility by $1.6$, whereas the ten-year
+quantile of the realised volatility increase is $3.2$. The ladder is therefore
+\emph{too mild} by a factor close to two. Either the information flow,
+measured on smoothed estimators, understates the true revision, or a Gaussian
+ball is the wrong geometry for such abrupt volatility shocks. We do not
+settle between the two. The return periods in the table must therefore not be
+quoted as frequencies. What withstands this limit are the \emph{relative}
+comparisons of the next two subsections.
 
 \subsection{Auditing an existing scenario}
 
 The same unit prices a scenario built by expert judgement. Take the type of
-scenario common in stress exercises: every volatility multiplied by the same
-factor, every correlation forced to a high value, and a directional shock of
-several standard deviations. Its cost in nats,
-$\KL{p_{\text{scenario}}}{p_0}$, is available in closed form. It can then be
-compared with the entropy-ball scenario that produces \emph{the same tail
-loss} (table~\ref{tab:classical}).
+scenario common in stress exercises: all volatilities multiplied by the same
+factor, all correlations forced to a high value, and a directional shock of
+several standard deviations. Its cost in nats, $\KL{p_{\text{scenario}}}{p_0}$,
+has a closed form. It can then be compared with the entropy-ball scenario that
+produces \emph{the same tail loss} (table~\ref{tab:classical}).
 
 \begin{table}[htbp]
 \centering
@@ -714,9 +708,9 @@ all correlations forced to & $0.70$ & $0.90$ & $0.95$ \\
 directional shock & $-2\sigma$ & $-3\sigma$ & $-4\sigma$ \\
 \midrule
 resulting one-day ES$_{99}$ & $9.1\%$ & $13.7\%$ & $20.3\%$ \\
-cost seen from the portfolio (nats) & $2.75$ & $7.24$ & $16.22$ \\
+cost seen by the portfolio (nats) & $2.75$ & $7.24$ & $16.22$ \\
 \textbf{cost of the entropic scenario with the same ES$_{99}$} & $\mathbf{1.85}$ & $\mathbf{5.47}$ & $\mathbf{13.74}$ \\
-overpayment of the classical scenario & $33\,\%$ & $24\,\%$ & $15\,\%$ \\
+excess cost of the classical scenario & $33\,\%$ & $24\,\%$ & $15\,\%$ \\
 \midrule
 \multicolumn{4}{@{}l}{\emph{Cost of each component alone, on the 20 assets (nats)}} \\
 \quad directional shock & $2.00$ & $4.50$ & $8.00$ \\
@@ -726,32 +720,31 @@ overpayment of the classical scenario & $33\,\%$ & $24\,\%$ & $15\,\%$ \\
 \bottomrule
 \end{tabular}
 \caption{Cost in nats of classical scenarios, compared with the entropic
-scenario that produces the same tail loss. The ``cost seen from the
-portfolio'' is the divergence on the portfolio's distribution, the only one
-comparable with the radius of a ball. For reference, the largest radius
-observed in 33 years is about 2~nats, and the worst day in the sample costs
-9~nats.}
+scenario that produces the same tail loss. The ``cost seen by the portfolio''
+is the divergence on the portfolio distribution, the only one comparable to
+the radius of a ball. For reference, the largest radius observed in 33~years
+is about 2~nats, and the worst day in the sample costs 9~nats.}
 \label{tab:classical}
 \end{table}
 
 Three readings.
 \begin{itemize}
-\item \emph{The classical scenario is too expensive.} For the same tail loss
-it costs $15$ to $33\,\%$ more nats than necessary ($6$ to $15\,\%$ on French's
-industries). The reason is structural: it also distorts directions the
+\item \emph{The classical scenario is too expensive.} For the same tail loss,
+it costs $15$ to $33\,\%$ more nats than necessary ($6$ to $15\,\%$ on the
+French industries). The reason is structural: it also distorts directions the
 portfolio does not see.
-\item \emph{The expensive component is the uniform dilation of volatilities.}
-Shifting the mean by three standard deviations costs $4.5$~nats. Doubling every
+\item \emph{The expensive component is uniform volatility dilation.} Shifting
+the mean by three standard deviations costs $4.5$~nats. Doubling every
 volatility costs $16.1$~nats on its own, more than the whole scenario.
 \item \emph{Volatility and correlation pay for each other.} The three
 components cost $28.7$~nats separately but $10.0$ together. Forcing
-correlations up concentrates risk on a single market factor, and dilating
-that factor is far cheaper than dilating every direction. This is exactly what
+correlations concentrates risk on a single market factor, and dilating that
+factor is far cheaper than dilating every direction. This is exactly what
 observed crises do: they load risk onto a few common factors
 (section~\ref{sec:resultats}). A scenario that shocks volatility and
-correlation as two separate dials cannot represent it.
+correlation as two separate sliders cannot represent this.
 \end{itemize}
-For an authority, the practical value is the ability to \emph{audit} an
+For an authority, the practical benefit is the ability to \emph{audit} an
 existing scenario without replacing it: each scenario receives a cost in nats,
 comparable across exercises and asset classes, and one can check that it does
 not buy its severity through a needlessly improbable route.
@@ -761,48 +754,47 @@ not buy its severity through a needlessly improbable route.
 
 We apply the measure to the adverse scenario of the 2025 EU-wide stress test,
 designed by the ESRB and published by the EBA \citep{eba2025}. Its first year,
-the most severe, cuts EU stock prices by $50\%$, raises long-term rates by
-$110$~basis points in Germany and $168$ for the EU, and leaves the euro's
-exchange rates unchanged. Read as a shift of the mean of one-year changes,
-this shock costs $\tfrac12\Delta^\top\Sigma^{-1}\Delta$ nats, where $\Sigma$
-is the historical covariance of the same variables in the euro-area panel
-(full calculation and table~\ref{tab:eba} in appendix~\ref{app:eba}).
+the most severe, lowers EU equities by $50\,\%$, raises long-term rates by
+$110$~basis points in Germany and $168$ for the EU, and leaves euro exchange
+rates unchanged. Read as a shift in the mean of one-year changes, this shock
+costs $\tfrac12\Delta^\top\Sigma^{-1}\Delta$ nats, where $\Sigma$ is the
+historical covariance of the same variables on the euro-area panel (detailed
+calculation and table~\ref{tab:eba} in appendix~\ref{app:eba}).
 
-The scenario costs $10.5$~nats, the equivalent of a $4.6$-standard-deviation
-shock on a single factor. It is therefore \emph{severe but plausible} in a
-precise sense: as improbable as 2008 ($11.2$~nats) or 2022 ($11.9$) as they
-actually unfolded, less than the worst observed year ($14.4$, March 2008 to
-March 2009), far more than 2011 ($3.1$). It uses dependence well: taken one by
-one, the five indices and two rates would cost $31.9$~nats, but national
-indices move almost as a single factor (average correlation $0.87$). Finally,
-the choice of $\Sigma$ is a choice of severity: with a crisis-period
-covariance (2008--2012), the same scenario costs only $8.4$~nats. The measure
-makes that choice explicit.
+The scenario costs $10.5$~nats, a $4.6$-standard-deviation shock on a single
+factor. It is thus \emph{severe but plausible} in the literal sense: as
+improbable as 2008 ($11.2$~nats) or 2022 ($11.9$) as they actually happened,
+less than the worst observed year ($14.4$, March 2008 to March 2009), and far
+more than 2011 ($3.1$). It does use dependence: taken one by one, the five
+indices and two rates would cost $31.9$~nats, but national indices move
+almost as a single factor (average correlation $0.87$). Finally, the choice of
+$\Sigma$ is a severity choice: with a crisis covariance (2008--2012), the same
+scenario costs only $8.4$~nats. The measure makes this choice explicit.
 
 \subsection{Composing a scenario: volatility or correlation?}
 \label{sec:composition}
 
 The entropy ball fixes the severity \emph{of the portfolio} (its stressed mean
-and volatility). It does not say how each asset's covariance should move to get
-there. The default used so far is a uniform dilation of volatilities with
-correlations unchanged. That is a convention, not a fact about crises. Yet
-section~\ref{sec:resultats} shows that, under stress, dependence moves on its
-own.
+and volatility). It does not say how each asset's covariance should move to
+get there. The default choice, used so far, is a uniform dilation of
+volatilities with correlations unchanged. That is a convention, not a fact
+about crises. Yet section~\ref{sec:resultats} shows that, under stress,
+dependence moves on its own.
 
-A simple property lets us account for this without changing severity. A
-portfolio's variance, $w^\top\Sigma w$, is linear in $\Sigma$. If two
-covariances give the same portfolio variance, any mixture of the two does too
-(proposition in appendix~\ref{app:preuves}). One can therefore mix an
-``all-volatility'' covariance and an ``all-correlation'' covariance with a
-weight $\alpha$, the \emph{dependence share}, without touching severity. One
-caveat: correlation alone cannot carry any severity. With every correlation
-equal to one, our portfolio's volatility cannot exceed $1.5$ times its current
-level; beyond that, the rest comes from dilation.
+A simple property allows for this without changing severity. Portfolio
+variance, $w^\top\Sigma w$, is linear in $\Sigma$. If two covariances give the
+same portfolio variance, so does any mixture of the two (proposition in
+appendix~\ref{app:preuves}). One can therefore mix an ``all-volatility''
+covariance and an ``all-correlation'' covariance with a weight $\alpha$, the
+\emph{dependence share}, without touching severity. One caveat: correlation
+alone cannot carry any severity. With all correlations equal to one, our
+portfolio's volatility cannot exceed $1.5$~times its current level; beyond
+that, the rest comes from dilation.
 
 The dependence share is calibrated on the robust results. The \emph{anchor}
 comes from H1: under stress, dependence accounts for $0.99/(0.99+5.97)=14\,\%$
 of the move in Gaussian entropy (scale plus dependence). The
-\emph{refinement} comes from H8: on the more severe half of episodes, that
+\emph{refinement} comes from H8: over the more severe half of episodes, this
 share reaches $49\,\%$.
 
 \begin{table}[htbp]
@@ -818,37 +810,38 @@ refined by H8 (severe episodes) & $0.49$ & $0.71$ \\
 \bottomrule
 \end{tabular}
 \caption{Total cost in nats, on the twenty assets, of three compositions that
-produce exactly the same portfolio severity (ES$_{99}=5.9\,\%$). On French's
+produce exactly the same portfolio severity (ES$_{99}=5.9\,\%$). On the French
 industries: $14.7$, $8.3$ and $5.8$~nats for shares of $0$, $0.20$ and
 $0.75$.}
 \label{tab:composition}
 \end{table}
 
-The result runs against intuition (table~\ref{tab:composition}): the larger the
-dependence share, the \emph{less} improbable the scenario, at equal severity.
-Uniform dilation is therefore not a prudent choice; it is both less realistic
-and costlier in plausibility than a composition anchored on history. This
-finding is specific to this panel and should not be read as a general law.
+The result is counter-intuitive (table~\ref{tab:composition}): the larger the
+dependence share, the \emph{less} improbable the scenario, for the same
+severity. Uniform dilation is therefore not a prudent choice; it is both less
+realistic and more costly in plausibility than a composition anchored on
+history. This finding is specific to this panel and should not be read as a
+general law.
 
 \subsection{Reverse stress testing}
 
 The same unit also answers the reverse question: what is the least improbable
-scenario that produces a given loss? On the main panel, the daily loss exceeded
-one day in a hundred ($3.2\,\%$) costs $1.5$~nats; the one exceeded one day in
-a thousand ($7.7\,\%$) costs $4.8$~nats; the worst day in 33 years
-($11.5\,\%$) costs $9.0$~nats. Beyond a few nats, the non-parametric version of
-this calculation rests on a handful of days only, and the Gaussian version
+scenario that produces a given loss? On the main panel, the daily loss
+exceeded one day in a hundred ($3.2\,\%$) costs $1.5$~nats; the one exceeded
+one day in a thousand ($7.7\,\%$) costs $4.8$~nats; the worst day in 33~years
+($11.5\,\%$) costs $9.0$~nats. Beyond a few nats, the non-parametric version
+of this calculation rests on a handful of days, and the Gaussian version
 should be preferred.
 
 \section{Application 2: an entropic CISS}
 \label{sec:cb}
 
-The paper's only robust result, coupling under stress, becomes here an
+The paper's one robust result, coupling under stress, becomes here an
 indicator in the format of the ECB's CISS \citep{hollo2012}. Like the CISS, it
-covers the money-market, bond, equity, financial-intermediary and foreign
-exchange segments. Unlike the CISS, it says what part of the coupling lies
-within each segment and what part lies \emph{between} segments. For a scenario
-designer, this is precisely the information needed to set the correlations
+covers the money market, bond, equity, financial intermediary and foreign
+exchange segments. Unlike the CISS, it says which share of coupling lies
+within each segment and which lies \emph{between} segments. For a scenario
+designer, this is precisely the information needed to set correlations
 between shocks to different markets.
 
 \subsection{An exact decomposition by segment}
@@ -861,21 +854,21 @@ C(R) \;=\; \underbrace{\sum_{k=1}^{K} C(R_{kk})}_{\text{within segments}}
 \;+\; \underbrace{I(B_1;\dots;B_K)}_{\text{between segments}},
 \end{equation}
 where $R_{kk}$ is the correlation matrix of segment $k$. The between-segment
-term is zero exactly when segments move independently of one another: it is
-the systemic part. For two segments $A$ and $B$, the mutual information
+term is zero exactly when the segments move independently of one another: it
+is the systemic part. For two segments $A$ and $B$, the mutual information
 $I(A;B)$ gives a contagion map in the same unit. Everything is unit-free:
-equity returns, rate changes and exchange rates can sit in the same matrix.
-We use the rank version of coupling.
+equity returns, rate changes and exchange rates can sit in the same matrix. We
+use the rank version of coupling.
 
 \subsection{The euro-area panel}
 
-The panel is daily, from January 2005 to October 2026 (5,690 days), with 28
-series: the overnight rate (EONIA, then \texteuro{}STR) for the money market;
-six ECB sovereign yields and spreads for bonds; five national indices for
-equities; nine banks and three insurers for intermediaries; four euro exchange
-rates. For the money market the CISS uses the Euribor minus overnight spread;
-since Euribor is not available on the ECB data portal, this segment currently
-contains the overnight rate only.
+The panel is daily, from January 2005 to October 2026 (5,690 days), with
+28~series: the overnight rate (EONIA, then \texteuro{}STR) for the money
+market; six ECB sovereign yields and spreads for bonds; five national indices
+for equities; nine banks and three insurers for intermediaries; four euro
+exchange rates. The CISS uses the Euribor minus overnight spread for the money
+market; since Euribor is not available on the ECB portal, this segment for now
+contains only the overnight rate.
 
 \subsection{Results}
 
@@ -896,9 +889,9 @@ Bonds -- intermediaries & $+0.040$ & $+0.003$ & $<0.005$ \\
 Money market -- other segments & $\approx 0$ & $\approx 0$ & n.s. \\
 \bottomrule
 \end{tabular}
-\caption{Euro area: stress-minus-calm rise against the i.i.d.\ null (200
-repetitions). Stress is the top decile of the equity block's volatility,
-threshold computed on the past only.}
+\caption{Euro area: stress-minus-calm rise against the i.i.d.\ null
+(200 repetitions). Stress is the top decile of equity-block volatility, with
+the threshold computed on the past only.}
 \label{tab:cb-euro}
 \end{table}
 
@@ -907,21 +900,21 @@ threshold computed on the past only.}
 \includegraphics[width=0.8\linewidth]{figures/euro_ciss_entropique_overnight_only_en.png}
 \caption{The euro-area entropic CISS. Top: total coupling and the ECB's CISS,
 standardised. Middle: coupling between the five segments, in nats, and its
-share of the total. Bottom: mutual information between pairs of segments. Grey
-areas: CEPR recessions.}
+share of the total. Bottom: mutual information between pairs of segments.
+Grey areas: CEPR recessions.}
 \label{fig:cb-euro}
 \end{figure}
 
 Three readings (table~\ref{tab:cb-euro} and figure~\ref{fig:cb-euro}).
 \begin{itemize}
-\item \emph{Stress ties segments together}, well beyond the null (the
-between-segment rise is nine times that of the null). Every pair
-outside the money market rises; the links between equities and intermediaries
-and with FX are the clearest.
+\item \emph{Stress ties segments together}, far beyond the null (the
+between-segment rise is nine times the null's). Every pair outside the money
+market rises; the links between equities and intermediaries and with FX are
+the clearest.
 \item \emph{The sovereign--bank link stands out.} Mutual information between
-bonds and intermediaries peaks at the end of 2011, at the height of the
-sovereign debt crisis ($0.46$~nat against $0.10$ at the end of 2006). The
-aggregate CISS cannot show which segments an episode ties together.
+bonds and intermediaries peaks in late 2011, at the height of the sovereign
+debt crisis ($0.46$~nat against $0.10$ in late 2006). The aggregate CISS
+cannot show which segments an episode ties together.
 \item \emph{The money market does not couple} in daily data: the overnight
 rate follows monetary policy, not market stress.
 \end{itemize}
@@ -941,79 +934,77 @@ Growth-at-Risk, alone: $p$ & $0.04$ & $<0.001$ & $0.98$ & $<0.001$ \\
 Growth-at-Risk, with CISS and past growth: $p$ & $0.78$ & $0.81$ & & $<0.001$ \\
 \bottomrule
 \end{tabular}}
-\caption{Euro area against official indicators. AUROC is the probability that
-a randomly drawn recession date has a higher indicator than a non-recession
-date ($0.5$: no power; $1$: perfect separation). Growth-at-Risk: regression of
-the lower decile of four-quarter GDP growth on the indicator
-\citep{adrian2019}, 79 quarters.}
+\caption{Euro area against official indicators. The AUROC is the probability
+that a randomly drawn recession date has a higher indicator than a
+non-recession date ($0.5$: no power; $1$: perfect separation).
+Growth-at-Risk: regression of the bottom decile of four-quarter GDP growth on
+the indicator \citep{adrian2019}, 79~quarters.}
 \label{tab:cb-official}
 \end{table}
 
-Against official indicators (table~\ref{tab:cb-official}), total coupling flags
-recessions slightly better than the CISS and than volatility, and it explains
-the CISS beyond what volatility explains. It does not, however, forecast growth
-once the CISS is accounted for. With three recessions and 79 quarters, these
-comparisons remain indicative. The indicator is therefore
+Against official indicators (table~\ref{tab:cb-official}), total coupling
+flags recessions slightly better than the CISS and volatility, and it explains
+the CISS beyond what volatility explains. It does not, however, forecast
+growth once the CISS is accounted for. With three recessions and
+79~quarters, these comparisons are indicative. The indicator is therefore
 \emph{coincident}: a complement to the CISS that says which segments are
-linked, not a better predictor. On US data, against the St.~Louis Fed
-financial stress index \citep{kliesen2010}, coupling adds to volatility on the
-twenty stocks ($t\approx4$ to $5$), mostly before 2015, but not on the 48
-industries.
+linked, not a better predictor. On US data, against the St.~Louis Fed stress
+index \citep{kliesen2010}, coupling adds to volatility on the twenty stocks
+($t\approx4$ to $5$), mainly before 2015, but not on the 48~industries.
 
 \paragraph{Next steps.} Add Euribor from its administrator (EMMI) to rebuild
 the money-market segment as in the CISS; date stress episodes with the ESRB
-crises database \citep{loduca2017} and measure how the contagion map behaves
-around them; confront the indicator with institution-level systemic risk
+crisis database \citep{loduca2017} and measure how the contagion map behaves
+around them; compare the indicator with institution-level systemic-risk
 measures, SRISK \citep{brownlees2017} and $\Delta$CoVaR \citep{adrian2016}.
 
-\section{Recommendations and limitations}
+\section{Recommendations and limits}
 \label{sec:reco}
 
 \subsection{Recommendations for scenario designers}
 
 \begin{enumerate}
 \item \emph{Price every scenario in nats.} The cost
-$\KL{p_{\text{scenario}}}{p_0}$ is available in closed form for a Gaussian
-scenario. It makes scenarios on different markets and in different exercises
-comparable, and it reads in standard deviations ($k$ standard deviations
-$=k^2/2$ nats).
+$\KL{p_{\text{scenario}}}{p_0}$ has a closed form for a Gaussian scenario. It
+makes scenarios on different markets and exercises comparable, and reads in
+standard deviations ($k$~standard deviations $=k^2/2$ nats).
 \item \emph{Check efficiency before severity.} Compare a scenario's cost with
-that of the entropic scenario with the same loss: an overpayment of $15$ to
+that of the entropic scenario with the same loss: an excess cost of $15$ to
 $33\,\%$, as for the classical scenarios tested here, signals severity bought
 through a needlessly improbable route.
 \item \emph{Do not dilate volatilities uniformly by default.} Shocking part of
 the severity through dependence is both more faithful to observed crises and
-less improbable at equal severity.
+less improbable for the same severity.
 \item \emph{Set cross-market correlations from a coupling map.} The
-decomposition \eqref{eq:blocks} says which segments stress ties together and
+decomposition \eqref{eq:blocks} says which segments stress ties together, and
 by how much, in a common unit.
-\item \emph{Run a placebo null} before adopting any crisis indicator based on
-estimated moments.
+\item \emph{Run a placebo null} before adopting any crisis indicator built
+from estimated moments.
 \end{enumerate}
 
-\subsection{Limitations}
+\subsection{Limits}
 
 \begin{itemize}
-\item \emph{Only part of the predictions survives.} Coupling under stress,
-the composition of crises, and the amplitude and persistence of the index
-pass the null on both panels. One-sided jumps, thickening tails, the link
-between tails and correlations and the daily sign are not established.
+\item \emph{Only some predictions survive.} Coupling under stress, crisis
+composition, and the range and persistence of the index pass the null on both
+panels. One-sided jumps, fattening tails, the link between tails and
+correlations, and the daily sign are not established.
 \item \emph{A single null.} The i.i.d.\ null destroys all dynamics. It does not
-say whether the dynamics detected exceed those produced by mere volatility
-clustering at the monthly scale; we count those as part of the phenomenon
-the measure must capture (section~\ref{sec:placebo}).
+say whether the detected dynamics exceed those produced by mere volatility
+clustering at the monthly scale; we count that as part of the phenomenon the
+measure should capture (section~\ref{sec:placebo}).
 \item \emph{Return periods are not validated.} The severity ladder is about
-twice too mild compared with history (table~\ref{tab:ladder}). Only relative
-comparisons (overpayment, composition) withstand this flaw.
-\item \emph{A modest predictive power.} The measures are mainly diagnostic:
+twice too mild against history (table~\ref{tab:ladder}). Only the relative
+comparisons (excess cost, composition) withstand this flaw.
+\item \emph{Modest predictive power.} The measures are mainly diagnostic:
 their contribution to forecasting is $3$ to $5\,\%$ at 5--10~days, nil beyond,
 and survives multiple testing on one panel only.
-\item \emph{Shape is estimated asset by asset.} Non-linear tail dependence is
+\item \emph{Shape is estimated asset by asset.} Nonlinear tail dependence is
 left out of $\JJ$, which therefore understates the true divergence, especially
 under stress.
-\item \emph{Cross-sections are small.} Twenty stocks or 48 industries are not
-enough to make the figures presented constants; a scenario radius is not
-comparable from one asset universe to another.
+\item \emph{Cross-sections are small.} Twenty stocks or 48~industries are not
+enough to make the reported figures constants; a scenario radius is not
+comparable across asset universes.
 \item \emph{The entropic CISS is incomplete.} Its money-market segment awaits
 Euribor, and its comparisons rest on three recessions.
 \end{itemize}
@@ -1021,24 +1012,24 @@ Euribor, and its comparisons rest on three recessions.
 \section{Conclusion}
 \label{sec:conclusion}
 
-If the Gaussian is the distribution of maximal ignorance, any departure from it
-measures information, in nats. This idea gives an exact decomposition of a
+If the Gaussian is the distribution of maximal ignorance, any departure from
+it measures information, in nats. This idea yields an exact decomposition of a
 market's uncertainty into three channels, and a unit-free index, $\JJ$, that
 measures the distance from maximal ignorance.
 
 The empirical result is first a warning. Every prediction of the framework is
-visible in the raw data: the index rises under stress, it moves as a sawtooth,
+visible in the raw data: the index rises under stress, moves in a sawtooth,
 its jumps are one-sided and come with negative skewness. Rerun on data whose
 time order has been shuffled, almost all of it disappears, and several effects
 are even stronger in the shuffled data. Only one thing durably separates a
-crisis from a run of large days: markets couple.
+crisis from a series of big days: markets couple.
 
 For institutions that design stress scenarios, the framework offers three
-tools. A unit, the nat, that measures a scenario's distance from the current
+tools. A unit, the nat, which measures a scenario's distance from the current
 state of the market and reads in standard deviations. An audit, which shows
 that classical scenarios pay $15$ to $33\,\%$ too much for their tail loss,
 because they dilate volatilities uniformly instead of coupling markets as
-crises do. And a map, the entropic CISS, that says which segments stress ties
+crises do. And a map, the entropic CISS, which says which segments stress ties
 together: a complement to the CISS, not a predictor.
 
 \appendix
@@ -1047,9 +1038,9 @@ together: a complement to the CISS, not a predictor.
 \label{app:pont}
 
 Over an interval, let $V$ be traded volume and $Q$ net signed order flow (buys
-minus sells). Two assumptions suffice. \emph{Linear impact}: the log-price
-change equals $\lambda Q$, as in \citet{kyle1985}. \emph{Variance proportional
-to volume}: given $V$, the market knows only the mean of $Q$ and a variance
+minus sells). Two assumptions suffice. \emph{Linear impact}: the change in log
+price is $\lambda Q$, as in \citet{kyle1985}. \emph{Variance proportional to
+volume}: given $V$, the market knows only the mean of $Q$ and a variance
 $\varsigma^2V$. Maximum entropy then gives
 \begin{equation}
 \Delta X \mid V \;\sim\; \mathcal N\!\left(\lambda m,\ \lambda^2\varsigma^2 V\right).
@@ -1059,13 +1050,13 @@ mixture-of-distributions hypothesis of \citet{clark1973} and
 \citet{tauchen1983}, and \citet{ane2000} show that returns measured in
 transaction time are close to Gaussian. Unconditionally, the return is a
 mixture of Gaussians, hence fat-tailed \citep{mandelbrot1967}: fat tails alone
-do not prove that information is present. If, in addition, increments are
-independent in the volume clock, the log-price is a time-changed Brownian
-motion and the price a geometric Brownian motion. Both assumptions are
-imperfect (actual impact is closer to a square root, and order flow is
-autocorrelated), which is why all empirical work is done in calendar time.
+do not prove that information is present. If increments are moreover
+independent in volume time, the log price is a time-changed Brownian motion,
+and the price a geometric Brownian motion. Both assumptions are imperfect
+(real impact is closer to a square root, and order flow is autocorrelated),
+which is why all empirical work is done in calendar time.
 
-\section{The dynamics of the index: a theorem and two postulates}
+\section{Index dynamics: a theorem and two postulates}
 \label{app:dynamique}
 
 \paragraph{The theorem.} For a return $X$ and a signal $Y$,
@@ -1074,10 +1065,10 @@ information lowers entropy \emph{on average} by exactly the mutual
 information. A particular realisation can raise it (a confusing signal); the
 jump component is therefore mainly, not exclusively, one-sided.
 
-\paragraph{Postulate 1 (relaxation).} Absent new information, $\JJ$ returns to
-a long-run level: $d\JJ_t=-\kappa(\JJ_t-\bar\JJ)\,dt+\sigma_\JJ\,dW_t$. An
-Ornstein--Uhlenbeck process is the only process that is Markov, Gaussian and
-stationary at once \citep{doob1942}. Adding the jumps caused by news gives
+\paragraph{Postulate 1 (relaxation).} Without new information, $\JJ$ reverts
+to a long-run level: $d\JJ_t=-\kappa(\JJ_t-\bar\JJ)\,dt+\sigma_\JJ\,dW_t$. An
+Ornstein--Uhlenbeck process is the only process that is Markovian, Gaussian
+and stationary \citep{doob1942}. Adding the jumps caused by news gives
 \begin{equation}
 d\JJ_t \;=\; -\kappa(\JJ_t-\bar\JJ)\,dt \;+\; \sigma_\JJ\,dW_t \;+\; dZ_t ,
 \end{equation}
@@ -1086,13 +1077,13 @@ where $Z_t$ is the sum of positive jumps up to $t$: the class of
 
 \paragraph{Postulate 2 (sign).} $\JJ$ is an even function of skewness: a
 distribution with a long left tail (a crash) and its mirror image (a rally)
-have the same $\JJ$. To say anything about direction, an outside ingredient is
-needed. We postulate that jumps come with negative skewness, relying on the
-leverage effect \citep{black1976,engle1993}.
+have the same $\JJ$. Saying anything about direction requires an outside
+ingredient. We postulate that jumps come with negative skewness, relying on
+the leverage effect \citep{black1976,engle1993}.
 
-\paragraph{Why dependence and tails should rise together.} Important news hits
-every asset on the same day. On that day assets move together (coupling rises)
-and each records an unusual loss (its tails thicken). The two channels
+\paragraph{Why dependence and tails should rise together.} Major news hits
+every asset on the same day. On that day, assets move together (coupling
+rises) and each records an unusual loss (its tails fatten). The two channels
 describe the same day seen from two places. In calm markets, large moves are
 asset-specific and couple nothing. This is H6. The null shows, however, that
 this coincidence is also produced mechanically by estimation.
@@ -1103,57 +1094,56 @@ this coincidence is also produced mechanically by estimation.
 Code: scripts/eba\_nats.py; results: paper/tables/eba\_nats.csv.
 
 \paragraph{1. The shocks.} We take the adverse macro-financial scenario
-\citep{eba2025} for 2025, as a deviation from the baseline (annual averages):
-EU stock prices $-50\%$, the baseline assuming them unchanged (table~4.1.7 of
-the document); long-term rates for Germany $3.50\%$ against $2.40\%$ and for
-the EU $4.80\%$ against $3.12\%$ (table~4.1.6); euro exchange rates against
+\citep{eba2025} for 2025, as deviations from the baseline (annual averages):
+EU equities $-50\,\%$, the baseline assuming them unchanged (table~4.1.7 of
+the document); German long rate $3.50\,\%$ against $2.40\,\%$ and EU long
+rate $4.80\,\%$ against $3.12\,\%$ (table~4.1.6); euro exchange rates against
 the dollar, pound, yen and Swiss franc unchanged (table~4.1.10). Each shock is
-mapped to the matching series of the euro-area panel (section~\ref{sec:cb}),
-giving an eleven-component vector $\Delta$:
+mapped to the corresponding series of the euro-area panel
+(section~\ref{sec:cb}), giving an eleven-component vector $\Delta$:
 \begin{center}
 \small
 \resizebox{\textwidth}{!}{\begin{tabular}{@{}llrrr@{}}
 \toprule
-EBA shock & Panel series & $\Delta_i$ & $\sigma_i$ (1 year) & cost alone (nats) \\
+EBA shock & Panel series & $\Delta_i$ & $\sigma_i$ (1 yr) & cost alone (nats) \\
 \midrule
-EU stocks $-50\%$ & DAX, CAC~40, FTSE~MIB, IBEX~35, AEX & $\ln0.5=-0.693$ & $19$--$23\%$ & $4.4$--$6.5$ \\
-German long rate & ECB AAA 10-year yield & $+1.10$~pt & $0.65$~pt & $1.4$ \\
-EU long rate & ECB all-ratings 10-year yield & $+1.68$~pt & $0.68$~pt & $3.0$ \\
-FX unchanged & EUR/USD, GBP, JPY, CHF & $0$ & $7$--$11\%$ & $0$ \\
+EU equities $-50\,\%$ & DAX, CAC~40, FTSE~MIB, IBEX~35, AEX & $\ln0.5=-0.693$ & $19$--$23\,\%$ & $4.4$--$6.5$ \\
+German long rate & 10-year AAA yield (ECB) & $+1.10$~pt & $0.65$~pt & $1.4$ \\
+EU long rate & 10-year all-ratings yield (ECB) & $+1.68$~pt & $0.68$~pt & $3.0$ \\
+FX unchanged & EUR/USD, GBP, JPY, CHF & $0$ & $7$--$11\,\%$ & $0$ \\
 \bottomrule
 \end{tabular}}
 \end{center}
-Equities enter as log returns, rates as level changes; the document does not
-state the maturity of long-term rates, which we take as ten years. GDP,
-unemployment, real estate and inflation, which are not market prices, are not
-used.
+Equities as log returns, rates as level changes; the maturity of long rates is
+not specified by the document and is taken at ten years. GDP, unemployment,
+real estate and inflation, which are not market prices, are not used.
 
-\paragraph{2. The reference.} $p_0=\mathcal N(0,\Sigma)$, where $\Sigma$ is the
-covariance of one-year changes of the eleven series, estimated on daily
+\paragraph{2. The reference.} $p_0=\mathcal N(0,\Sigma)$, where $\Sigma$ is
+the covariance of one-year changes in the eleven series, estimated on daily
 changes from 6~September 2004 to 31~December 2024 (the data available to the
 designer) and multiplied by 252.
 
 \paragraph{3. The formula.} The scenario fixes means, not volatilities or
 correlations. We read it as a pure mean shift, hence
-(appendix~\ref{app:preuves}) $\KL{p_{\text{scenario}}}{p_0}=\tfrac12
-\Delta^\top\Sigma^{-1}\Delta$. This is the \emph{minimum} cost compatible with
-the scenario: among all distributions with mean $\Delta$, the shifted Gaussian
-is closest to $p_0$. Variables the scenario does not fix (two- and five-year
-yields, banks, etc.) are left free; completing them with their conditional
-expectation is cheapest, and the cost then depends only on the shocked block
-$S$: $\tfrac12\Delta_S^\top\Sigma_{SS}^{-1}\Delta_S$. The cost of a single
-variable is $\tfrac12(\Delta_i/\sigma_i)^2$; for the DAX ($\sigma=20.3\%$),
-the shock is $3.4$ standard deviations and costs $5.8$~nats. $\eta$~nats read
-as $\sqrt{2\eta}$ standard deviations.
+(appendix~\ref{app:preuves}) $\KL{p_{\text{scenario}}}{p_0}=\tfrac12\Delta^\top
+\Sigma^{-1}\Delta$. This is the \emph{minimal} cost consistent with the
+scenario: among all distributions with mean $\Delta$, the shifted Gaussian is
+the closest to $p_0$. Unspecified variables (two- and five-year rates, banks,
+etc.) are left free; filling them with their conditional expectation is the
+cheapest choice, and the cost then depends only on the shocked block $S$:
+$\tfrac12\Delta_S^\top\Sigma_{SS}^{-1}\Delta_S$. The cost of a single variable
+is $\tfrac12(\Delta_i/\sigma_i)^2$; for the DAX ($\sigma=20.3\,\%$), the shock
+is $3.4$~standard deviations and costs $5.8$~nats. Read $\eta$~nats as
+$\sqrt{2\eta}$~standard deviations.
 
 \begin{table}[t]
 \centering
 \small
 \begin{tabular}{@{}lrr@{}}
 \toprule
-Cost in nats & equities and rates & with FX held fixed \\
+Cost in nats & equities and rates & with FX fixed \\
 \midrule
-\textbf{EBA 2025 adverse scenario, first year} & $\mathbf{10.5}$ & $\mathbf{11.1}$ \\
+\textbf{EBA 2025 adverse scenario, year 1} & $\mathbf{10.5}$ & $\mathbf{11.1}$ \\
 \quad equities only / rates only & $6.8$ / $3.1$ & \\
 \quad sum of variable-by-variable costs & $31.9$ & \\
 \midrule
@@ -1162,36 +1152,35 @@ Cost in nats & equities and rates & with FX held fixed \\
 \bottomrule
 \end{tabular}
 \caption{Cost in nats of the EBA 2025 adverse scenario and of observed years,
-on five equity indices, two ten-year yields and four exchange rates, annual
-covariance estimated on 2004--2024.}
+on five equity indices, two ten-year rates and four exchange rates, with the
+annual covariance estimated on 2004--2024.}
 \label{tab:eba}
 \end{table}
 
-\paragraph{4. Reading.} The variable-by-variable costs sum to $31.9$~nats, the
-joint cost is $10.5$: a common shock to highly correlated indices follows the
-most probable direction of the data. Equities alone ($6.8$) plus rates alone
-($3.1$) leave $0.5$~nat of interaction (falling equities with rising rates go
-against the historical correlation, $+0.13$). Holding FX fixed adds
+\paragraph{4. Reading.} The sum of variable-by-variable costs is
+$31.9$~nats, the joint cost $10.5$: a common shock to highly correlated indices
+follows the most likely direction in the data. Equities alone ($6.8$) plus
+rates alone ($3.1$) leave $0.5$~nat of interaction (falling equities with
+rising rates go against the historical correlation, $+0.13$). Fixing FX adds
 $0.7$~nat.
 
-\paragraph{5. Observed years.} Same calculation, same $\Sigma$, on the realised
-changes of the eleven series (31~December to 31~December; worst 252-day window
-ending 17~March 2009). The median year costs $4.1$~nats. The scenario combines
-the equity fall of 2008 (when rates fell) and the rate rise of 2022 (nearly
-$3$~points).
+\paragraph{5. Observed years.} Same calculation, same $\Sigma$, on the
+realised changes of the eleven series (31~December to 31~December; worst
+252-day window ending 17~March 2009). The median year costs $4.1$~nats. The
+scenario combines the equity fall of 2008 (when rates fell) and the rate rise
+of 2022 (close to $3$~points).
 
 \paragraph{6. Variants} (equities and rates / with FX fixed). Covariance of
-overlapping annual changes: $12.8$ / $18.7$; sample to 2026: $10.6$ /
-$11.3$; crisis covariance 2008--2012: $8.4$ / $9.0$. At the end of the
-three-year horizon (2027: $-42\%$, $+87$ and $+112$~bp, three-year
-covariance), the cost falls to $2.1$ / $2.2$: the severity is concentrated in
-the first year.
+rolling annual changes: $12.8$ / $18.7$; sample to 2026: $10.6$ / $11.3$;
+crisis covariance 2008--2012: $8.4$ / $9.0$. At the end of the three-year
+horizon (2027: $-42\,\%$, $+87$ and $+112$~bp, three-year covariance), the cost
+falls to $2.1$ / $2.2$: severity is concentrated in the first year.
 
-\paragraph{7. Limits.} Shocks are annual averages; the EU equity fall is
-applied to each national index; the Gaussian reference has no fat tails, which
-tends to overstate the cost. The ECB's instantaneous market-risk scenario is
-not priced (detailed tables not accessible), but the same formula applies.
-These costs (eleven series, one year) are not directly comparable to
+\paragraph{7. Limits.} Shocks in annual averages; the EU equity fall applied
+to each index; a Gaussian reference without fat tails, which tends to
+overstate the cost. The ECB's instantaneous market-risk scenario is not priced
+(detailed tables not accessible), but the same formula applies. These costs
+(eleven series, one year) are not directly comparable with
 table~\ref{tab:ladder} (equity portfolio, 21~days).
 
 \section{Empirical details}
@@ -1201,22 +1190,24 @@ table~\ref{tab:ladder} (equity portfolio, 21~days).
 rolling window with the \citet{ledoit2004} correction, and exponential
 weighting with a 60-day half-life and $10\,\%$ shrinkage towards the diagonal.
 The second prevents an extreme day \emph{leaving} the window from creating a
-spurious jump. The shape deficit uses the \citet{hyvarinen1998} approximation,
-whose two terms separate a skewness channel and a tail channel; the
-better-known Edgeworth expansion $S^2/12+K^2/48$ overstates the deficit of a
-Student law with 4 degrees of freedom by a factor of 69. Jumps are flagged at
-four times a local bipower-variation scale lagged by one day \citep{bns2004}.
+false jump. The shape deficit uses the \citet{hyvarinen1998} approximation,
+whose two terms separate a skewness channel and a tail channel; the better
+known Edgeworth expansion $S^2/12+K^2/48$ overstates the deficit of a
+Student~$t$ with 4 degrees of freedom by a factor of 69. Jumps are detected at
+four times a local scale given by bipower variation lagged by one day
+\citep{bns2004}.
 
-\paragraph{Inference.} Two consecutive rolling windows share 251 of their 252
-days. Regime comparisons therefore use a 252-day circular block bootstrap. The
-relaxation $p$-value follows the Dickey--Fuller distribution. Forecasts (H7)
-are re-estimated each year on the past, compared on dates spaced by the forecast horizon, with
-the \citet{dm1995} test.
+\paragraph{Inference.} Two consecutive rolling windows share 251 of their
+252~days. Regime comparisons therefore use a circular block bootstrap with
+252-day blocks. The relaxation $p$-value follows the Dickey--Fuller
+distribution. Forecasts (H7) are re-estimated every year on the past and
+compared on dates spaced by the forecast horizon, with the \citet{dm1995}
+test.
 
 \paragraph{Raw stress-regime results (S\&P~500).} Under stress ($1,076$ dates
-against $6,481$), scale rises by $5.97$~nats, dependence falls by $0.99$, shape
-rises by $0.27$ ($p=0.16$), $\JJ$ rises by $1.94$ ($p<0.001$, but without
-passing the null). Average correlation goes from $0.26$ to $0.32$, the
+against $6,481$), scale rises by $5.97$~nats, dependence falls by $0.99$,
+shape rises by $0.27$ ($p=0.16$), and $\JJ$ rises by $1.94$ ($p<0.001$, but
+without passing the null). Average correlation goes from $0.26$ to $0.32$, the
 effective number of modes from $13.1$ to $11.4$. Market skewness does not
 change significantly between regimes: the skewness signature is a property of
 jumps, not of the regime. The index shares about a fifth of its variance with
@@ -1236,7 +1227,8 @@ volatility ($r=0.46$), and the shape channel is orthogonal to it ($r=0.08$).
 \end{tabular}}
 \caption{S\&P~500: observed statistics against the i.i.d.\ null, 200
 repetitions. $p$: share of repetitions at least as extreme in the predicted
-direction. ``Wrong side'': the null exceeds the data. Gaps: stress minus calm.}
+direction. ``Wrong side'': the null exceeds the data. Gaps: stress minus
+calm.}
 \label{tab:placebo}
 \end{table}
 
@@ -1261,12 +1253,12 @@ table~\ref{tab:placebo}.}
 \centering
 \includegraphics[width=0.6\linewidth]{figures/sp500_structural_index_jumps.png}
 \caption{The structural index $\JJ_t$ on twenty S\&P~500 stocks, 1990--2022,
-with detected jumps (red: up, blue: down). The sawtooth is visible, but the
-i.i.d.\ null reproduces it.}
+with detected jumps (red: rises, blue: falls). The sawtooth is visible, but
+the i.i.d.\ null reproduces it.}
 \label{fig:index}
 \end{figure}
 
-\section{Essential proofs}
+\section{Key proofs}
 \label{app:preuves}
 
 \paragraph{Gaussian entropy and equation~\eqref{eq:three}.} For
@@ -1279,29 +1271,29 @@ destroys entropy.
 
 \paragraph{The deficit is a divergence.} If $q$ is the Gaussian with the mean
 and covariance of $p$, then $\mathbb{E}_p[\log q]=\mathbb{E}_q[\log q]$ because
-$\log q$ is quadratic. Hence $\KL{p}{q}=h(q)-h(p)=\DD\ge0$, with equality if and
-only if $p$ is Gaussian.
+$\log q$ is quadratic. Hence $\KL{p}{q}=h(q)-h(p)=\DD\ge0$, with equality if
+and only if $p$ is Gaussian.
 
 \paragraph{The structural index is a divergence.} With $q_i$ the Gaussians
-with each asset's mean and volatility,
+with the same means and volatilities as each asset,
 $\KL{p}{\prod_i q_i}=-h(p)+\sum_i\log\sigma_i+\tfrac N2\log(2\pi e)$.
 Substituting \eqref{eq:three} for $h(p)$ leaves $\DD-\tfrac12\log\det R
 =\DD+C=\JJ$.
 
-\paragraph{Mixing compositions.} If $w^\top\Sigma_aw=w^\top\Sigma_bw=s^2$, then
-for every $\alpha\in[0,1]$,
+\paragraph{Mixing compositions.} If $w^\top\Sigma_aw=w^\top\Sigma_bw=s^2$,
+then for every $\alpha\in[0,1]$,
 $w^\top\bigl((1-\alpha)\Sigma_a+\alpha\Sigma_b\bigr)w=s^2$, by linearity.
 
 \paragraph{The price of a directional shock.} For two Gaussians with the same
-covariance, $\KL{p_1}{p_0}=\tfrac12\Delta^\top\Sigma^{-1}\Delta$ where $\Delta$
-is the difference in means. A shock of $k$ standard deviations on a portfolio
-therefore costs $k^2/2$~nats, and $\eta$~nats buy $\sqrt{2\eta}$ standard
-deviations.
+covariance, $\KL{p_1}{p_0}=\tfrac12\Delta^\top\Sigma^{-1}\Delta$, where
+$\Delta$ is the difference in means. A shock of $k$ standard deviations on a
+portfolio therefore costs $k^2/2$~nats, and $\eta$~nats buy $\sqrt{2\eta}$
+standard deviations.
 
 \paragraph{Decomposition by segment.} Applying the definition of $C$ to each
 block,
 \[C(R)-\textstyle\sum_kC(R_{kk})=\tfrac12\bigl(\sum_k\log\det R_{kk}-\log\det R\bigr),\]
-which is the Gaussian mutual information between blocks, non-negative by
+which is the Gaussian mutual information between the blocks, non-negative by
 Fischer's inequality.
 
 \begin{thebibliography}{99}
