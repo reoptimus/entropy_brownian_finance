@@ -32,7 +32,7 @@ def pct(x: float) -> str:
 F_PATH = max(T.glob('full_null_*rep_summary.csv'),
              key=lambda q: int(q.stem.split('_')[2].removesuffix('rep')))
 F = pd.read_csv(F_PATH)
-B = int(F.n_rep.min())
+B = int(F.n_rep.max())   # nominal B; a few statistics are undefined on some replications
 P_MIN = 1.0 / (B + 1)
 
 
@@ -71,6 +71,10 @@ for pa, tag in (('sp500', 'Sp'), ('ff49', 'Ff')):
     macros[f'gn{tag}FeDevolP'] = fp(gn(pa, 'ccc_fhs', 'CPL_h_dep_devol_gap_fe', 'p'))
 
 mc = pd.read_csv(T / 'mc_size_power.csv')
+if 'est' not in mc:
+    mc['est'] = 'sample'
+mc_lw = mc[mc.est == 'lw'].copy()
+mc = mc[mc.est == 'sample'].copy()
 SIZE_DGPS = ['iid_t', 'ccc_gjr', 'ms_vol']
 MC_N = sorted(mc.N.unique())
 
@@ -124,6 +128,29 @@ def h7row(pa, h, col, target='future_rv', extra='unhealed'):
 for pa, tag in (('sp500', 'Sp'), ('ff49', 'Ff')):
     macros[f'cw{tag}Five'] = f'{h7row(pa, 5, "cw_pvalue"):.3f}'
     macros[f'cw{tag}Ten'] = f'{h7row(pa, 10, "cw_pvalue"):.3f}'
+
+# ------------------------------------------------- numbers quoted in the text
+QUOTE = {  # macro stem: (statistic, format, sign)
+    'Cpl': ('CPL_h_dep_gap', '{:.2f}', -1), 'JumpUp': ('PL_n_jump_up', '{:.0f}', 1),
+    'JumpDown': ('PL_n_jump_down', '{:.0f}', 1), 'EpUp': ('EP_n_episodes', '{:.0f}', 1),
+    'EpDown': ('EP_n_down_episodes', '{:.0f}', 1), 'Dgap': ('PL_H1_D_stress_minus_calm', '{:.2f}', 1),
+    'Jgap': ('PL_H1_J_stress_minus_calm', '{:.2f}', 1),
+    'HsixStress': ('PL_H6_corr_dep_shape_stress', '{:.2f}', 1),
+    'HfiveCorr': ('PL_H5_corr_dJ_dskew', '{:.2f}', 1), 'Range': ('PL_range_J', '{:.1f}', 1),
+    'HalfLife': ('PL_half_life_days', '{:.0f}', 1), 'MaxEp': ('EP_max_episode_dJ', '{:.1f}', 1),
+    'EpHalfLife': ('EP_median_episode_half_life', '{:.0f}', 1),
+    'DepDom': ('EP_share_dependence_dominant', '{:.0f}', 100),
+}
+for stem, (stat, f, sg) in QUOTE.items():
+    for pa, tag in (('sp500', 'Sp'), ('ff49', 'Ff')):
+        macros[f'q{stem}{tag}Obs'] = f.format(sg * gn(pa, 'iid', stat, 'observed'))
+        macros[f'q{stem}{tag}Iid'] = f.format(sg * gn(pa, 'iid', stat, 'null_mean'))
+        macros[f'q{stem}{tag}Fhs'] = f.format(sg * gn(pa, 'ccc_fhs', stat, 'null_mean'))
+        for nu, nt in (('iid', 'Iid'), ('ccc_fhs', 'Fhs')):
+            r = F[(F.panel == pa) & (F.null == nu) & (F.statistic == stat)]
+            if len(r):
+                macros[f'q{stem}{tag}P{nt}Hi'] = fp(float(r.p_greater.iloc[0]))
+                macros[f'q{stem}{tag}P{nt}Lo'] = fp(float(r.p_less.iloc[0]))
 
 # ------------------------------------------------------- verdicts with Holm
 TESTS = [  # (hypothesis, description, statistic in the full-null summary, direction, fmt)
@@ -237,6 +264,23 @@ for n in MC_N:
         kind = 'power' if d.startswith('ms_corr') else 'size'
         lines.append(f"{names[d]} & {kind} & {-r.mean_gap:.2f} & {r.reject_iid_5:.3f} & {r.reject_fhs_5:.3f} & "
                      f"{r.reject_both_5:.3f} & {r.reject_iid_1:.3f} & {r.reject_fhs_1:.3f} & {r.reject_both_1:.3f} \\\\")
+if len(mc_lw):
+    for n in sorted(mc_lw.N.unique()):
+        lines.append(r'\midrule\multicolumn{9}{@{}l}{\emph{$N=' + str(n) + "$ assets, Ledoit--Wolf estimator (the paper's), "
+                     + f'{int(mc_lw[mc_lw.N == n].n_mc.min()):,}' + r' panels, 99 null replications}} \\')
+        for d in ('iid_t', 'ccc_gjr', 'ms_vol', 'ms_corr'):
+            r = mc_lw[(mc_lw.N == n) & (mc_lw.dgp == d)].iloc[0]
+            kind = 'power' if d.startswith('ms_corr') else 'size'
+            lines.append(f"{names[d]} & {kind} & {-r.mean_gap:.2f} & {r.reject_iid_5:.3f} & {r.reject_fhs_5:.3f} & "
+                         f"{r.reject_both_5:.3f} & {r.reject_iid_1:.3f} & {r.reject_fhs_1:.3f} & {r.reject_both_1:.3f} \\\\")
+    lw48 = mc_lw[mc_lw.N == 48].set_index('dgp')
+    macros['mcLwBothWorst'] = pct(lw48.loc[SIZE_DGPS, 'reject_both_5'].max())
+    macros['mcLwMsvolBoth'] = pct(lw48.loc['ms_vol', 'reject_both_5'])
+    macros['mcLwPow'] = pct(lw48.loc['ms_corr', 'reject_both_5'])
+    macros['mcLwN'] = f"{int(lw48.n_mc.min()):,}"
+s48 = mc[mc.N == 48].set_index('dgp')
+macros['mcSampleMsvolBothFortyEight'] = pct(s48.loc['ms_vol', 'reject_both_5'])
+macros['mcBothWorstSmallN'] = f"{100 * mc[(mc.N < 48) & mc.dgp.isin(SIZE_DGPS)].reject_both_5.max():.1f}\\%"
 add(r'''\begin{table}[p]\centering\small
 \caption{Size and power of the coupling test: Monte Carlo}\label{tab:mc}
 \resizebox{\linewidth}{!}{%
@@ -250,8 +294,9 @@ Data-generating process & & (nats) & i.i.d. & CCC-FHS & both & i.i.d. & CCC-FHS 
 $T=4{,}000$ days; coupling of the sample correlation on 250-day windows evaluated every fifth day; stress = past-only 90\% quantile
 of the 21-day volatility of the equal-weight portfolio. Each test uses 199 null replications; the CCC-FHS null re-estimates the
 GJR-GARCH models on each simulated panel. ``Both'': rejection by both nulls, the rule used in the paper. Mean gap: stress-minus-calm
-coupling, positive when assets couple under stress. Monte Carlo standard error of a rejection rate near 5\%: 0.7 points with 1,000
-panels, 1.0 with 500, 1.3 with 300.
+coupling, positive when assets couple under stress. Upper blocks: plain sample correlation, which the Monte Carlo uses for speed;
+last block: the Ledoit--Wolf estimator of the empirical work, on the same simulated panels. Monte Carlo standard error of a
+rejection rate near 5\%: 0.7 points with 1,000 panels, 1.0 with 500, 1.3 with 300, 1.5 with 200.
 \end{minipage}
 \end{table}
 ''')
@@ -391,6 +436,43 @@ the threshold computed on the past only. The CCC-FHS null fits a GJR-GARCH(1,1) 
 \end{table}
 ''')
 
+# online appendix: every placebo statistic against both nulls
+from scripts.make_placebo_latex import ROWS as _PROWS  # noqa: E402
+
+for pa in ('sp500', 'ff49'):
+    out = []
+    for row in _PROWS:
+        if row is None:
+            out.append(r'\midrule')
+            continue
+        grp, _, lab, st, direc, d = row
+        cells = [grp, lab, f"${gn(pa, 'iid', 'PL_' + st, 'observed'):.{d}f}$"]
+        ps = {}
+        for nu in ('iid', 'ccc_fhs'):
+            r = F[(F.panel == pa) & (F.null == nu) & (F.statistic == 'PL_' + st)].iloc[0]
+            cells.append(f"${float(r.null_mean):.{d}f}$")
+            if direc == 'none':
+                cells.append('---')
+                continue
+            pp = float(r['p_greater' if direc == 'greater' else 'p_less'])
+            po = float(r['p_less' if direc == 'greater' else 'p_greater'])
+            ps[nu] = (pp, po)
+            cells.append(f'${fp(pp)}$')
+        if direc == 'none':
+            ver = '---'
+        elif all(v[0] <= 0.05 for v in ps.values()):
+            ver = r'\textbf{passes both}'
+        elif ps['iid'][0] <= 0.05:
+            ver = 'i.i.d.\\ only'
+        elif ps['ccc_fhs'][0] <= 0.05:
+            ver = 'CCC-FHS only'
+        elif all(v[1] <= 0.05 for v in ps.values()):
+            ver = 'wrong side'
+        else:
+            ver = 'fails'
+        out.append(' & '.join(cells + [ver]) + r' \\')
+    (OUT / 'tables' / f'tab_full_{pa}.tex').write_text('\n'.join(out) + '\n\\bottomrule\n')
+
 # H7
 lines = []
 for pa, lab in (('sp500', 'S\\&P~500, 20 stocks'), ('ff49', '48 industries')):
@@ -466,6 +548,8 @@ central-bank version of this work.
 (OUT / 'tables' / 'tables.tex').write_text('\n'.join(tex))
 
 FR = [
+    ("GJR-GARCH models on each simulated panel. ``Both'': rejection by both nulls, the rule used in the paper. Mean gap: stress-minus-calm\ncoupling, positive when assets couple under stress. Upper blocks: plain sample correlation, which the Monte Carlo uses for speed;\nlast block: the Ledoit--Wolf estimator of the empirical work, on the same simulated panels. Monte Carlo standard error of a\nrejection rate near 5\\%: 0.7 points with 1,000 panels, 1.0 with 500, 1.3 with 300, 1.5 with 200.",
+     "modèles GJR-GARCH sur chaque panel simulé. « Les deux » : rejet par les deux témoins, règle utilisée dans l'article. Écart moyen : couplage\nstress moins calme, positif quand les actifs se couplent sous stress. Blocs supérieurs : corrélation empirique simple, que le Monte-Carlo utilise pour la vitesse ;\ndernier bloc : l'estimateur de Ledoit--Wolf de la partie empirique, sur les mêmes panels simulés. Erreur type Monte-Carlo d'un\ntaux de rejet proche de 5\\,\\% : 0,7 point avec 1\\,000 panels, 1,0 avec 500, 1,3 avec 300, 1,5 avec 200."),
     ('Hypotheses tested', 'Hypothèses testées'), ('Statement', 'Énoncé'),
     ('\\emph{Regime signature.} Under stress, coupling rises, the shape deficit rises, hence $\\JJ$ rises.',
      '\\emph{Signature de régime.} Sous stress, le couplage monte, le déficit de forme monte, donc $\\JJ$ monte.'),
@@ -486,7 +570,7 @@ FR = [
     ('H3, H4, H5 and H8 concern jumps of $\\JJ$; they are tested day by day and by episode (jumps less than 40 days apart).',
      'H3, H4, H5 et H8 portent sur les sauts de $\\JJ$ ; elles sont testées jour par jour et par épisode (sauts distants de moins de 40 jours).'),
     ('Finite-sample bias of sample coupling under independence', 'Biais à distance finie du couplage empirique sous indépendance'),
-    ('Window $T$', 'Fenêtre $T$'), ('Law', 'Loi'), ('Gaussian', 'Gaussienne'),
+    ('Window $T$', 'Fenêtre $T$'), ('Law', 'Loi'), (' & Gaussian & ', ' & Gaussienne & '),
     ('Sample correlation', 'Corrélation empirique'),
     ('Mean (standard deviation) of', 'Moyenne (écart-type) de'),
     ('in nats over 2,000 simulated windows (500 for $N=48$) of independent assets.',
@@ -507,6 +591,22 @@ FR = [
      'de la volatilité à 21 jours du portefeuille équipondéré. Chaque test utilise 99 répétitions du témoin ; le témoin CCC-FHS réestime les'),
     ("GJR-GARCH models on each simulated panel. ``Both'': rejection by both nulls, the rule used in the paper. Mean gap: stress-minus-calm coupling, positive when assets couple under stress.",
      "modèles GJR-GARCH sur chaque panel simulé. « Les deux » : rejet par les deux témoins, règle utilisée dans l'article. Écart moyen : couplage stress moins calme, positif quand les actifs se couplent sous stress."),
+    ('Markov-switching volatility, correlation $0.30\\to0.40$ in stress', 'volatilité à régimes, corrélation $0.30\\to0.40$ sous stress'),
+    ('$T=4{,}000$ days; coupling of the sample correlation on 250-day windows evaluated every fifth day; stress = past-only 90\\% quantile',
+     '$T=4\\,000$ jours ; couplage de la corrélation empirique sur des fenêtres de 250 jours évaluées tous les cinq jours ; stress = quantile à 90\\,\\% passé seulement'),
+    ('of the 21-day volatility of the equal-weight portfolio. Each test uses 199 null replications; the CCC-FHS null re-estimates the',
+     'de la volatilité à 21 jours du portefeuille équipondéré. Chaque test utilise 199 répétitions du témoin ; le témoin CCC-FHS réestime les'),
+    ('Verdicts against both placebo nulls with multiple-testing control', 'Verdicts face aux deux témoins placebo avec contrôle des tests multiples'),
+    ('& Statistic & Panel & Observed & mean & $p$ & mean & $p$ & Holm $p$ & Verdict', '& Statistique & Panel & Observé & moy. & $p$ & moy. & $p$ & $p$ de Holm & Verdict'),
+    (' & i.i.d.\\ only \\\\', ' & i.i.d.\\ seulement \\\\'), (' & not after Holm \\\\', ' & pas après Holm \\\\'),
+    ('replications of each null. $p$: exact rank $p$-value $(1+k)/(1+B)$, one-sided in the direction the hypothesis\npredicts. Holm $p$: the \\citet{holm1979} step-down adjustment over the',
+     "répétitions de chaque témoin. $p$ : $p$-valeur exacte de rang $(1+k)/(1+B)$, unilatérale dans le sens prédit\npar l'hypothèse. $p$ de Holm : l'ajustement séquentiel de \\citet{holm1979} sur les"),
+    ("tests of the table, applied to\n$\\max(p_{\\text{i.i.d.}},p_{\\text{CCC-FHS}})$, the $p$-value of the test that rejects only when both nulls do. ``Passes'': Holm $p\\le0.05$.\n``i.i.d.\\ only'': beats the i.i.d.\\ null but not the volatility-preserving one. ``Not after Holm'': beats both nulls at 5\\% but not after the adjustment.\n``Null stronger'': both nulls produce a larger effect than the data ($p>0.95$). The coupling gap is in nats, positive for coupling.",
+     "tests du tableau, appliqué à\n$\\max(p_{\\text{i.i.d.}},p_{\\text{CCC-FHS}})$, la $p$-valeur du test qui ne rejette que si les deux témoins rejettent. « Passe » : $p$ de Holm $\\le0.05$.\n« i.i.d.\\ seulement » : bat le témoin i.i.d. mais pas celui qui préserve la volatilité. « Pas après Holm » : bat les deux témoins à 5\\,\\% mais pas après ajustement.\n« Témoin plus fort » : les deux témoins produisent un effet plus grand que les données ($p>0.95$). L'écart de couplage est en nats, positif pour un couplage."),
+    ('replications at least as extreme in the predicted direction;', 'répétitions au moins aussi extrêmes dans le sens prédit ;'),
+    ('$p$: $(1+k)/(1+B)$ with $k$ the number of the $B=', '$p$ : $(1+k)/(1+B)$, $k$ étant le nombre des $B='),
+    ('means no replication reached the observed value. Devolatilised: returns divided by their RiskMetrics volatility.',
+     "signifie qu'aucune répétition n'a atteint la valeur observée. Dévolatilisé : rendements divisés par leur volatilité RiskMetrics."),
     ('Coupling under stress against two placebo nulls', 'Couplage sous stress face à deux témoins placebo'),
     ('S\\&P~500, 20 stocks', 'S\\&P~500, 20 actions'), ('48 industries', '48 secteurs'),
     ('i.i.d.\\ null', 'témoin i.i.d.'), ('CCC-FHS null', 'témoin CCC-FHS'),
@@ -558,9 +658,9 @@ FR = [
     ('Cost in nats of classical stress scenarios', 'Coût en nats de scénarios de stress classiques'),
     ('Classical scenario & moderate & standard & severe', 'Scénario classique & modéré & standard & sévère'),
     ('volatility multiplier', 'multiplicateur de volatilité'), ('all correlations forced to', 'toutes les corrélations forcées à'),
-    ('directional shock &', 'choc directionnel &'), ('one-day ES$_{99}$', 'ES$_{99}$ à un jour'),
-    ('full cost (20 assets)', 'coût total (20 actifs)'), ('cost seen by the portfolio', 'coût vu par le portefeuille'),
-    ('minimal cost for the same ES$_{99}$', 'coût minimal pour la même ES$_{99}$'),
+    ('directional shock &', 'choc directionnel &'), ('one-day ES$_{99}$ &', 'ES$_{99}$ à un jour &'),
+    ('full cost (20 assets) &', 'coût total (20 actifs) &'), ('cost seen by the portfolio &', 'coût vu par le portefeuille &'),
+    ('minimal cost for the same ES$_{99}$ (Proposition', 'coût minimal pour la même ES$_{99}$ (proposition'),
     ('ratio full / minimal', 'rapport total / minimal'), ('\\emph{Cost of each component alone}', '\\emph{Coût de chaque composante seule}'),
     ('\\quad directional shock', '\\quad choc directionnel'), ('\\quad volatility dilation', '\\quad dilatation des volatilités'),
     ('\\quad forced correlations', '\\quad corrélations forcées'),
@@ -594,6 +694,10 @@ import re as _re
 fr = '\n'.join(tex)
 for a_, b_ in FR:
     fr = fr.replace(a_, b_)
+fr = _re.sub(r'\\emph\{\$N=(\d+)\$ assets, ([\d,]+) panels per process\}', r'\\emph{$N=\1$ actifs, \2 panels par processus}', fr)
+fr = _re.sub(r"\\emph\{\$N=(\d+)\$ assets, Ledoit--Wolf estimator \(the paper's\), ([\d,]+) panels, 99 null replications\}",
+             r"\\emph{$N=\1$ actifs, estimateur de Ledoit--Wolf (celui de l'article), \2 panels, 99 répétitions du témoin}", fr)
+fr = _re.sub(r'(\d),(\d{3}) (panels|répétitions)', r'\1\\,\2 \3', fr)
 fr = _re.sub(r'(?<=\d)\.(?=\d)', '{,}', fr)
 fr = _re.sub(r'(\d)\{,\}(\d+\\linewidth)', r'\1.\2', fr)
 (OUT / 'tables' / 'tables_fr.tex').write_text(fr)

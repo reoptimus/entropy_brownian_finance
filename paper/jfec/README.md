@@ -35,22 +35,20 @@ mkdir -p paper/tables && cp ../data/results/*.csv paper/tables/
 
 | Paper item | Command | Output (in `paper/tables/`) | Time (4 cores) |
 | --- | --- | --- | --- |
-| Table 4, i.i.d. columns; online table OA.2 | `python -m scripts.coupling_null --jobs 4` | `coupling_null_200rep_*.csv` | ~1 h |
-| Table 4, CCC-FHS columns and within-year rows; Figure 1 | `python -m scripts.garch_null --jobs 4 --nulls ccc_fhs,iid` | `garch_null_200rep_*.csv`, `*_gjr_params.csv` | ~1.5 h |
-| Tables 2 and 3 (bias, Monte Carlo) | `python -m scripts.mc_coupling_test --jobs 4` | `mc_bias.csv`, `mc_size_power*.csv` | ~20 min |
-| Table 5 (verdicts) | `python -m scripts.placebo_null` (200-rep placebo nulls; `calcul_local/lancer_calcul.py` is the stand-alone version), then `python -m scripts.episode_null` | `*_placebo_null.csv`, `sp500_episode_null_200rep.csv` | ~7 CPU-hours |
+| Tables 4 and 5 (coupling, verdicts), Figures 1–2, online tables OA.1–OA.2 | `python -m scripts.full_null --n-rep 999 --jobs 4` (resumable; every placebo statistic under the i.i.d. and CCC-FHS nulls on the same draws) | `full_null_999rep_*`, `*_gjr_params.csv` | ~10 h |
+| Tables 2 and 3 (bias, Monte Carlo) | `python -m scripts.mc_coupling_test --sizes 10:1000,20:500,48:300 --n-boot 199 --jobs 4`, then `python -m scripts.mc_coupling_test --sizes 48:200 --n-boot 99 --est lw --dgps iid_t,ccc_gjr,ms_vol,ms_corr --skip-bias --jobs 4` | `mc_bias.csv`, `mc_size_power*.csv` | ~10 h + 2 h |
 | Table 6 (forecasts, DM and Clark–West) | `python scripts/h7_horizons.py config/sp500.yaml config/default.yaml` | `*_h7_horizons.csv` | ~10 min |
 | Table 7 (classical scenarios) | `python -m src.run_empirical --config config/sp500.yaml` | `outputs/sp500/tables/` (copied to `paper/tables/sp500_classical_comparison.csv`) | ~5 min |
 | Table 8 (EBA) | `python scripts/eba_nats.py <unzipped euro panel>` | `eba_nats.csv` | 1 min |
-| Online appendix, entropic CISS | `python -m scripts.euro_ciss` (needs the euro panel) | `euro_*.csv` | ~2 h |
+| Online appendix, entropic CISS and its two nulls | `python -m scripts.euro_ciss --data <unzipped euro panel> --overnight-only --n-rep 999 --nulls iid,ccc_fhs` | `euro_null_999rep_*`, `euro_*` | ~4 h |
 | All LaTeX tables, number macros and figures | `python -m scripts.jfec_build` | `paper/jfec/` | 1 min |
 
 Then compile `paper/main.tex` with `pdflatex`, `bibtex`, `pdflatex` ×2.
 
-Random seeds are fixed in every script (`SeedSequence`), so reruns reproduce the published numbers exactly; the i.i.d. replications of `garch_null.py` use the same seeds as `coupling_null.py` and match its raw gaps.
+Random seeds are fixed in every script (one `SeedSequence` per replication), so reruns reproduce the published numbers exactly, whatever the number of workers. `src/lw.py` is a lean copy of scikit-learn's Ledoit–Wolf estimator (identical to 1e-15, checked by `tests/test_lw.py`) that makes the runs about three times faster.
 
 ## What was and was not recomputed for this version
 
-Recomputed in November 2026 for the JFEC version: the CCC-FHS null and the within-year gaps (both US panels), the Monte Carlo study, the bias table, the H7 forecasts with the Clark–West test, the Holm-adjusted verdicts, the two main-text figures.
+Recomputed in November 2026 for the submission version: every placebo statistic of both US panels under both nulls with 999 replications, the within-year gaps, the euro-area block coupling under both nulls with 999 replications, the Monte Carlo study (10, 20 and 48 assets, plus the Ledoit–Wolf check), the bias table, the H7 forecasts with the Clark–West test, the Holm-adjusted verdicts and the figures.
 
-Carried over unchanged from the stored result tables of the project (same code, same data): the 200-replication i.i.d. placebo nulls of all hypotheses, the episode null, the classical-scenario audit, the EBA 2025 pricing and the euro-area entropic CISS. The euro-area panel is not redistributed here, so the CCC-FHS null was not run on it.
+Carried over unchanged from the stored result tables of the project (same code, same data): the classical-scenario audit and the EBA 2025 pricing. The euro-area panel (ECB, FRED and Yahoo Finance series) is not redistributed; `telecharger.py` in the project rebuilds it.

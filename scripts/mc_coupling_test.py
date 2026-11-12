@@ -79,6 +79,21 @@ def rolling_half_logdet_corr(X: np.ndarray, w: int = WINDOW, step: int = STEP):
     return 0.5 * np.linalg.slogdet(R)[1], ends
 
 
+def rolling_half_logdet_lw(X: np.ndarray, w: int = WINDOW, step: int = STEP):
+    """Same as ``rolling_half_logdet_corr`` with the paper's estimator: the
+    correlation implied by Ledoit-Wolf shrinkage on each window."""
+    from src.lw import ledoit_wolf_cov
+    Tn = X.shape[0]
+    ends = np.arange(w - 1, (Tn // step) * step, step)
+    ends = ends[(ends + 1) % step == 0]
+    out = np.empty(len(ends))
+    for i, e in enumerate(ends):
+        c = ledoit_wolf_cov(X[e - w + 1:e + 1])
+        d = np.sqrt(np.diag(c))
+        out[i] = 0.5 * np.linalg.slogdet(c / np.outer(d, d))[1]
+    return out, ends
+
+
 def stress_labels(X: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
     sig = pd.Series(X.mean(axis=1)).rolling(21).std()
     thr = sig.expanding(min_periods=MIN_HIST).quantile(Q).shift(1)
@@ -87,9 +102,9 @@ def stress_labels(X: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
     return stress, valid
 
 
-def coupling_gap(X: np.ndarray) -> float:
+def coupling_gap(X: np.ndarray, est: str = 'sample') -> float:
     """Stress-minus-calm gap of ``1/2 log det R`` (negative = coupling)."""
-    h, ends = rolling_half_logdet_corr(X)
+    h, ends = (rolling_half_logdet_lw if est == 'lw' else rolling_half_logdet_corr)(X)
     stress, valid = stress_labels(X)
     s, v = stress[ends], valid[ends]
     calm = v & ~s
@@ -169,15 +184,15 @@ def sim_fhs(P: np.ndarray, Z: np.ndarray, idx: np.ndarray) -> np.ndarray:
 
 
 def one_mc(args) -> dict:
-    dgp, m, n_boot, N = args
+    dgp, m, n_boot, N, est = args
     rng = np.random.default_rng(np.random.SeedSequence([41, DGPS.index(dgp), m, N]))
     X = simulate(dgp, rng, N)
-    obs = coupling_gap(X)
-    iid = np.array([coupling_gap(X[rng.integers(0, T, T)]) for _ in range(n_boot)])
+    obs = coupling_gap(X, est)
+    iid = np.array([coupling_gap(X[rng.integers(0, T, T)], est) for _ in range(n_boot)])
     P, Z = fit_gjr(X)
     sims = sim_fhs(P, Z, rng.integers(0, T, (n_boot, T)))
-    fhs = np.array([coupling_gap(x) for x in sims])
-    return {'dgp': dgp, 'N': N, 'mc': m, 'observed_gap': obs,
+    fhs = np.array([coupling_gap(x, est) for x in sims])
+    return {'dgp': dgp, 'N': N, 'mc': m, 'est': est, 'observed_gap': obs,
             'p_iid': (1 + (iid <= obs).sum()) / (n_boot + 1),
             'p_fhs': (1 + (fhs <= obs).sum()) / (n_boot + 1)}
 
@@ -213,6 +228,7 @@ def main() -> None:
     ap.add_argument('--checkpoint', default='outputs/mc/checkpoint.jsonl')
     ap.add_argument('--skip-bias', action='store_true')
     ap.add_argument('--summarise-only', action='store_true')
+    ap.add_argument('--est', default='sample', help='sample or lw (Ledoit-Wolf, the paper estimator)')
     args = ap.parse_args()
     dest = Path('paper/tables')
     t0 = time.time()
@@ -224,10 +240,11 @@ def main() -> None:
     ck = Path(args.checkpoint)
     ck.parent.mkdir(parents=True, exist_ok=True)
     ck.touch()
-    done = {(r['dgp'], r['N'], r['mc']) for r in map(json.loads, ck.read_text().splitlines())}
+    done = {(r['dgp'], r['N'], r['mc'], r.get('est', 'sample'))
+            for r in map(json.loads, ck.read_text().splitlines())}
     sizes = [tuple(int(v) for v in x.split(':')) for x in args.sizes.split(',')]
-    tasks = [(d, m, args.n_boot, n) for n, n_mc in sizes for m in range(n_mc)
-             for d in args.dgps.split(',') if (d, n, m) not in done]
+    tasks = [(d, m, args.n_boot, n, args.est) for n, n_mc in sizes for m in range(n_mc)
+             for d in args.dgps.split(',') if (d, n, m, args.est) not in done]
     if args.summarise_only:
         tasks = []
     print(f'{len(tasks)} Monte Carlo runs to do ({len(done)} done)', flush=True)
@@ -242,12 +259,13 @@ def main() -> None:
                 print(f'  [{i}/{len(tasks)}] ~{el / i * (len(tasks) - i) / 60:.0f} min left', flush=True)
 
     long = pd.DataFrame([json.loads(x) for x in ck.read_text().splitlines()])
-    long = long.drop_duplicates(['dgp', 'N', 'mc']).sort_values(['N', 'dgp', 'mc'])
+    long['est'] = long['est'].fillna('sample') if 'est' in long else 'sample'
+    long = long.drop_duplicates(['est', 'dgp', 'N', 'mc']).sort_values(['est', 'N', 'dgp', 'mc'])
     long.to_csv(dest / 'mc_size_power_replications.csv', index=False, float_format='%.5g')
     both = lambda a: (lambda d: ((d.p_iid <= a) & (d.p_fhs <= a)).mean())
     rows = []
-    for (n, dgp), d in long.groupby(['N', 'dgp']):
-        rows.append({'N': n, 'dgp': dgp, 'n_mc': len(d), 'mean_gap': d.observed_gap.mean(),
+    for (est, n, dgp), d in long.groupby(['est', 'N', 'dgp']):
+        rows.append({'est': est, 'N': n, 'dgp': dgp, 'n_mc': len(d), 'mean_gap': d.observed_gap.mean(),
                      'reject_iid_5': (d.p_iid <= .05).mean(), 'reject_fhs_5': (d.p_fhs <= .05).mean(),
                      'reject_both_5': both(.05)(d),
                      'reject_iid_1': (d.p_iid <= .01).mean(), 'reject_fhs_1': (d.p_fhs <= .01).mean(),

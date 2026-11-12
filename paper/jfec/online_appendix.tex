@@ -159,18 +159,19 @@ volatility ($r=0.46$), and the shape channel is orthogonal to it ($r=0.08$).
 \centering
 \footnotesize
 \resizebox{\linewidth}{!}{%
-\begin{tabular}{@{}llrrrrl@{}}
+\begin{tabular}{@{}llrrrrrl@{}}
 \toprule
-& & & \multicolumn{3}{c}{i.i.d.\ null} & \\
-\cmidrule(lr){4-6}
-& Statistic & Obs. & mean & 5--95\,\% & $p$ & Verdict \\
+& & & \multicolumn{2}{c}{i.i.d.\ null} & \multicolumn{2}{c}{CCC-FHS null} & \\
+\cmidrule(lr){4-5}\cmidrule(lr){6-7}
+& Statistic & Obs. & mean & $p$ & mean & $p$ & Verdict \\
 \midrule
-\input{tables/tab_placebo_sp500_en.tex}
+\input{tables/tab_full_sp500.tex}
 \end{tabular}}
-\caption{S\&P~500: observed statistics against the i.i.d.\ null, 200
-repetitions. $p$: share of repetitions at least as extreme in the predicted
-direction. ``Wrong side'': the null exceeds the data. Gaps: stress minus
-calm.}
+\caption{S\&P~500: every placebo statistic against the two nulls, \nRep\
+replications each. $p$: exact rank $p$-value $(1+k)/(1+B)$ in the predicted
+direction. ``Wrong side'': both nulls exceed the data. Gaps: stress minus
+calm. Episode statistics and the verdicts with multiple-testing control are
+in the paper's table~5.}
 \label{tab:placebo}
 \end{table}
 
@@ -178,13 +179,13 @@ calm.}
 \centering
 \footnotesize
 \resizebox{\linewidth}{!}{%
-\begin{tabular}{@{}llrrrrl@{}}
+\begin{tabular}{@{}llrrrrrl@{}}
 \toprule
-& & & \multicolumn{3}{c}{i.i.d.\ null} & \\
-\cmidrule(lr){4-6}
-& Statistic & Obs. & mean & 5--95\,\% & $p$ & Verdict \\
+& & & \multicolumn{2}{c}{i.i.d.\ null} & \multicolumn{2}{c}{CCC-FHS null} & \\
+\cmidrule(lr){4-5}\cmidrule(lr){6-7}
+& Statistic & Obs. & mean & $p$ & mean & $p$ & Verdict \\
 \midrule
-\input{tables/tab_placebo_ff49_en.tex}
+\input{tables/tab_full_ff49.tex}
 \end{tabular}}
 \caption{FF49 industries, 1990--2026: same conventions as
 table~\ref{tab:placebo}.}
