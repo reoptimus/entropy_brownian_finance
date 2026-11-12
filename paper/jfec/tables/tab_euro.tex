@@ -1,0 +1,26 @@
+\begin{table}[htbp]
+\centering\small
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{@{}lrrrrr@{}}\toprule
+& Rise under & \multicolumn{2}{c}{i.i.d.\ null} & \multicolumn{2}{c}{CCC-FHS null} \\
+\cmidrule(lr){3-4}\cmidrule(lr){5-6}
+Component & stress (nats) & mean & $p$ & mean & $p$ \\\midrule
+Total coupling & +1.61 & +0.20 & <0.001 & +0.32 & <0.001 \\
+\textbf{Between segments} & +0.19 & +0.02 & <0.001 & +0.03 & 0.002 \\
+Within: equities & +0.46 & +0.05 & <0.001 & +0.08 & <0.001 \\
+Within: intermediaries & +0.48 & +0.13 & <0.001 & +0.21 & 0.020 \\
+Within: bonds & +0.34 & -0.01 & <0.001 & +0.00 & <0.001 \\
+Within: FX & +0.14 & +0.00 & <0.001 & +0.00 & <0.001 \\
+Equities -- intermediaries & +0.096 & +0.010 & <0.001 & +0.016 & 0.012 \\
+Bonds -- FX & +0.055 & +0.004 & <0.001 & +0.005 & 0.002 \\
+Bonds -- intermediaries & +0.040 & +0.003 & <0.001 & +0.008 & 0.016 \\
+Bonds -- equities & +0.029 & +0.003 & 0.002 & +0.004 & 0.013 \\
+Equities -- FX & +0.046 & +0.006 & <0.001 & +0.005 & 0.002 \\
+Intermediaries -- FX & +0.040 & +0.007 & <0.001 & +0.006 & 0.004 \\
+Money market -- other segments & $\approx 0$ & $\approx 0$ & n.s. & $\approx 0$ & n.s. \\
+\bottomrule\end{tabular}}
+\caption{Euro area: stress-minus-calm rise of each coupling component against the two placebo nulls
+(999 replications each; $p$ exact, one-sided). Stress is the top decile of equity-block volatility, with
+the threshold computed on the past only. The CCC-FHS null fits a GJR-GARCH(1,1) to each of the 28 series.}
+\label{tab:cb-euro}
+\end{table}
