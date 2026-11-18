@@ -20,7 +20,7 @@ from __future__ import annotations
 
 import numpy as np
 from scipy.stats import norm
-from sklearn.covariance import ledoit_wolf
+from src.lw import ledoit_wolf_cov
 
 __all__ = [
     'ewma_devolatilize',
@@ -108,10 +108,10 @@ def coupling_from_window(cov_base: np.ndarray, Xw: np.ndarray,
     rec = {
         'absorption_ratio': absorption_ratio(cov_base),
         'eig1_share': float(np.linalg.eigvalsh(R)[-1] / R.shape[0]),
-        'h_dep_rank': _half_logdet_corr(ledoit_wolf(normal_scores(Xw))[0]),
+        'h_dep_rank': _half_logdet_corr(ledoit_wolf_cov(normal_scores(Xw))),
     }
     if Zw is not None and np.isfinite(Zw).all():
-        rec['h_dep_devol'] = _half_logdet_corr(ledoit_wolf(Zw)[0])
+        rec['h_dep_devol'] = _half_logdet_corr(ledoit_wolf_cov(Zw))
     else:
         rec['h_dep_devol'] = np.nan
     return rec
@@ -133,7 +133,7 @@ def rolling_coupling(logret, window: int = 252):
     rows, dates = [], []
     for end in range(window, T + 1):
         Xw = X[end - window:end]
-        cov = ledoit_wolf(Xw)[0]
+        cov = ledoit_wolf_cov(Xw)
         rec = {'h_dep': _half_logdet_corr(cov)}
         rec.update(coupling_from_window(cov, Xw, Z[end - window:end]))
         rows.append(rec)

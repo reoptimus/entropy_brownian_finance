@@ -70,11 +70,12 @@ Statistical Data Warehouse and the EBA 2025 stress-test scenario.\par
 display jumps, slow relaxation and fattening tails in crises. We show that a
 resampling null with no dynamics reproduces almost all of these signatures:
 they are estimation artefacts. One fact survives, including a
-volatility-preserving GARCH null and a within-year comparison: under stress,
-correlations couple and the effective number of independent risk sources
-falls. We give the finite-sample bias of the coupling estimator, the size and
-power of the test, and use the same divergence to price stress scenarios in
-nats, auditing classical scenarios and the EBA 2025 adverse scenario.
+volatility-preserving GARCH null and a within-year comparison, on US stocks,
+industries and euro-area markets: under stress, correlations couple and the
+effective number of independent risk sources falls. We give the
+finite-sample bias of the coupling estimator and the size and power of the
+test, and price stress scenarios in nats, including the EBA 2025 adverse
+scenario.
 \end{abstract}
 
 \vspace{0.5cm}
@@ -123,8 +124,8 @@ the predicted crisis signatures. Against an i.i.d.\ null that keeps fat tails
 and same-day correlation, one-sided jumps, fattening tails, the co-movement of
 tails and correlation and the daily sign of jumps all disappear; several are
 \emph{stronger} in the shuffled data. What survives is the dependence channel.
-Under stress, total correlation (``coupling'') rises by $0.99$~nat on stocks
-and $3.65$~nats on industries, against $0.21$ and $0.56$ under the null.
+Under stress, total correlation (``coupling'') rises by \qCplSpObs~nat on stocks
+and \qCplFfObs~nats on industries, against \qCplSpIid\ and \qCplFfIid\ under the null.
 
 The obvious objection is that the i.i.d.\ null also destroys volatility
 clustering, so coupling under stress might be volatility clustering plus the
@@ -133,18 +134,28 @@ historical simulation \citep{baroneadesi1999}: GJR-GARCH volatility
 \citep{gjr1993} with constant conditional correlation \citep{bollerslev1990}.
 This null keeps each asset's volatility dynamics and common volatility bursts,
 and kills only correlation dynamics. Coupling exceeds it on both panels
-(none of 200 replications reaches the observed gap), and so do its
-rank and devolatilised versions; the absorption ratio does not. Because correlations
-also trend over three decades, we add a within-year comparison with
-calendar-year fixed effects; the gap shrinks by about \gnSpFeShrink\ but,
-for the raw and rank measures, still exceeds both nulls on both panels. A Monte Carlo study shows why both nulls are
-needed. When volatility follows a GARCH process with constant correlation,
-the i.i.d.\ null rejects in \mcGarchIid\ of samples at a nominal 5\% level,
-while the GARCH null keeps its size (\mcGarchFhs). When volatility switches
-between regimes, the roles reverse (\mcMsvolIid\ and \mcMsvolFhs). Each null
-is reliable where the other is not, and the joint rule (pass both) has the
-right size in every case we simulate while keeping power against genuine
-correlation regimes.
+(none of \nRep\ replications reaches the observed gap), and so do its
+rank and devolatilised versions; the absorption ratio does not. The same holds
+on a euro-area panel of 28 series spanning the five segments of the CISS.
+Because correlations also trend over three decades, we add a within-year
+comparison with calendar-year fixed effects; the gap shrinks by about
+\gnSpFeShrink\ but, for the raw and rank measures, still exceeds both nulls on
+both panels. The second null also changes the verdict elsewhere: the claim
+that crises are dominated by dependence passes the i.i.d.\ null but not the
+GARCH one, so it reflects volatility clustering rather than correlation
+dynamics.
+
+A Monte Carlo study shows why both nulls are needed. When volatility follows a
+GARCH process with constant correlation, the i.i.d.\ null rejects in up to
+\mcIidWorst\ of samples at a nominal 5\% level, while the GARCH null keeps its
+size. When volatility switches between regimes, the GARCH null over-rejects.
+Each null is reliable where the other is not, and the joint rule (pass both)
+has the right size for 10 and 20 assets (at most \mcBothWorstSmallN) while
+keeping power against genuine correlation regimes. For 48 assets, the joint
+rule over-rejects with the plain sample correlation (\mcSampleMsvolBothFortyEight\
+under regime-switching volatility) but not with the Ledoit--Wolf estimator we
+use (at most \mcLwBothWorst, power \mcLwPow): shrinkage removes the bias that
+abrupt volatility regimes induce in large correlation matrices.
 
 \paragraph{Contributions.} First, a methodological warning with a remedy:
 moment-based crisis indicators must be calibrated against a null, and the null
@@ -153,10 +164,9 @@ the finite-sample bias of sample coupling under independence
 (Proposition~\ref{prop:bias}), which makes nats comparable across panels of
 different size, and the size and power of the test. Second, an empirical fact
 stated with the right standard of evidence: markets couple under stress beyond
-volatility, beyond estimation mechanics and beyond secular trends, and real
-crises are more often dominated by coupling than random clusters of large
-days. Coupling uses the whole correlation spectrum and passes the null where
-the absorption ratio fails. Third, an application to stress testing.
+volatility, beyond estimation mechanics and beyond secular trends, on three
+markets. Coupling uses the whole correlation spectrum and passes both nulls
+where the absorption ratio fails. Third, an application to stress testing.
 Supervisors must design scenarios that are ``severe but plausible''
 \citep{bcbs2018}. Following \citet{breuer2009,breuer2013} and
 \citet{glasserman2014}, we measure plausibility by a divergence. We show that
@@ -343,7 +353,7 @@ Let $S(X)$ be any statistic computed by the full pipeline on the return panel
 $X$ (a regime gap, a jump count, a half-life). A null is a resampling scheme
 $X^*$ that preserves some features of $X$ and destroys others; the $p$-value is
 $\hat p=(1+\#\{b:S(X^*_b)\ge S(X)\})/(B+1)$ in the predicted direction, with
-$B=200$ replications. The stress regime is recomputed on each replication.
+$B=\nRep$ replications. The stress regime is recomputed on each replication.
 
 \paragraph{i.i.d.\ null.} Rows of $X$ are drawn with replacement. It preserves
 each day's cross-section (fat tails, same-day correlation, common extreme
@@ -371,28 +381,39 @@ monthly volatility dynamics but not correlation dynamics.
 \subsection{Size and power}
 
 Table~\ref{tab:mc} reports a Monte Carlo study of the coupling-gap test
-($N=10$, $T=4{,}000$, 252-day windows, the paper's past-only regime rule,
-200 samples of 99 replications each). Under i.i.d.\ Student-$t_5$ returns
-with constant correlation, both nulls have about the right size
-(\mcSizeIidIid\ and \mcSizeIidFhs). Under a constant-correlation GJR-GARCH,
-the i.i.d.\ null rejects in \mcGarchIid\ of samples: volatility clustering
-alone creates a spurious coupling gap that a dynamics-free null cannot
-absorb. The CCC-FHS null keeps its size (\mcGarchFhs). Under Markov-switching
-volatility with constant correlation, the situation reverses: the i.i.d.\
-null is correct (\mcMsvolIid) but the GARCH null, now misspecified,
-over-rejects (\mcMsvolFhs). When correlation genuinely rises in the
-high-volatility regime, from 0.30 to 0.50, the rejection rates are
-\mcPowIid\ and \mcPowFhs.
+with $N=10$, 20 and 48 assets (the sizes of our panels), $T=4{,}000$ days and
+the paper's past-only regime rule, with 1,000, 500 and 300 simulated panels
+and 199 null replications per test. For speed, the simulation uses the plain
+sample correlation on 250-day windows evaluated every fifth day. Under
+i.i.d.\ Student-$t_5$ returns with constant correlation, both nulls have about
+the right size. Under a constant-correlation GJR-GARCH, the i.i.d.\ null
+rejects in \mcGarchIidTen\ of samples with ten assets and \mcGarchIidFortyEight\
+with 48: volatility clustering alone creates a spurious coupling gap that a
+dynamics-free null cannot absorb. The CCC-FHS null keeps its size
+(\mcGarchFhsTen\ and \mcGarchFhsFortyEight). Under Markov-switching volatility
+with constant correlation, the GARCH null, now misspecified, over-rejects
+(\mcMsvolFhsTen\ with ten assets). When correlation genuinely rises in the
+high-volatility regime, from 0.30 to 0.50, both nulls reject often
+(\mcPowIidTwenty\ and \mcPowFhsTwenty\ with twenty assets); a rise to 0.40 is
+harder to detect (\mcPowSmallIidTwenty\ and \mcPowSmallFhsTwenty).
 
 Neither null is uniformly valid, but their failures occur under different
 processes. The paper therefore uses a joint rule: a dependence result is
-established only if it passes both. Table~\ref{tab:mc} shows that this rule
-has the right size under all three constant-correlation processes (at most
-\mcBothWorst\ at the 5\% level and \mcBothWorstOne\ at the 1\% level) and
-keeps power against the correlation regime (\mcBothPow\ at 5\%). For claims
-about dependence, a dynamics-free null is not enough when volatility
-clusters, and a parametric volatility null is not enough when volatility moves
-in regimes; together they are.
+established only if it passes both. With 10 and 20 assets this rule has the
+right size under all three constant-correlation processes (at most
+\mcBothWorstSmallN\ at the 5\% level) and keeps power against the correlation
+regime (\mcBothPowTwenty\ with twenty assets). With 48 assets and the sample
+correlation, it over-rejects under regime-switching volatility
+(\mcSampleMsvolBothFortyEight): both nulls miss a bias that abrupt variance
+shifts create in a large sample correlation matrix, whose finite-sample bias
+(Proposition~\ref{prop:bias}) grows like $N^2/T$. The last block of
+Table~\ref{tab:mc} reruns the 48-asset case on the same simulated panels with
+the Ledoit--Wolf estimator of the empirical work: the joint rule then has the
+right size (at most \mcLwBothWorst) and power \mcLwPow. For claims about
+dependence, a dynamics-free null is not enough when volatility clusters, a
+parametric volatility null is not enough when volatility moves in regimes,
+and in large cross-sections the estimator must be shrunk; together they are
+enough in every case we simulate.
 
 % =========================================================================
 \section{Data}
@@ -417,12 +438,12 @@ segments of the CISS (2005--2026) and the EBA 2025 scenario
 \subsection{Coupling under stress}
 
 Table~\ref{tab:coupling} is the paper's central result. Under stress, the
-coupling of the twenty stocks rises by $0.99$~nat, the effective number of
-modes falling from $13.1$ to $11.4$. The i.i.d.\ null produces $0.21$~nat and
-the CCC-FHS null \gnSpRawNull; none of the 200 replications of either reaches
-the observed gap. On industries the rise is $3.65$~nats against $0.56$ and
+coupling of the twenty stocks rises by \qCplSpObs~nat, the effective number of
+modes falling from $13.1$ to $11.4$. The i.i.d.\ null produces \qCplSpIid~nat and
+the CCC-FHS null \gnSpRawNull; none of the \nRep\ replications of either reaches
+the observed gap. On industries the rise is \qCplFfObs~nats against \qCplFfIid\ and
 \gnFfRawNull. On industries the volatility-preserving null thus generates a
-quarter of the observed gap, more than the i.i.d.\ null, as the Monte Carlo
+fifth of the observed gap, more than the i.i.d.\ null, as the Monte Carlo
 predicts; on stocks it generates none (its mean gap is slightly negative),
 plausibly because firm-specific volatility paths, which differ more across
 twenty firms than across 48 diversified industries, lower measured
@@ -432,75 +453,87 @@ Three variants address the usual objections. Dividing each return by its
 RiskMetrics volatility before computing correlations
 (``devolatilised'') removes the \citet{forbes2002} effect directly; replacing
 returns by normal scores of their ranks makes the measure insensitive to
-extreme values. Both exceed both nulls on both panels ($\hat p\le0.01$).
+extreme values. Both exceed both nulls on both panels ($\hat p\le0.004$).
 Finally, correlations trend over three decades and stress dates cluster in a
 few years, so a regime gap can absorb a trend. With calendar-year fixed
 effects, the raw stock gap falls to \gnSpFeObs~nat (industries \gnFfFeObs),
 but it remains beyond both nulls (CCC-FHS means \gnSpFeNull\ and
-\gnFfFeNull, $\hat p<0.005$), and so does the rank version. The
-devolatilised version is the weakest within years: it passes on stocks
-($\hat p=\gnSpFeDevolP$) but not on industries ($\hat p=\gnFfFeDevolP$),
-where the within-year stress effect is partly a volatility effect. Coupling
+\gnFfFeNull, $\hat p\le0.004$), and so does the rank version ($\hat p\le0.006$). The
+devolatilised version is the weakest within years: it is borderline on stocks
+($\hat p=\gnSpFeDevolP$) and fails on industries ($\hat p=\gnFfFeDevolP$),
+so within a year part of the stress effect is a volatility effect. Coupling
 under stress is therefore mostly a within-year phenomenon, not an artefact of
 slow trends, and its rank version, which is insensitive to extreme values,
 is the most robust measure throughout.
 
 Among existing measures, the absorption ratio of \citet{kritzman2011} fails
-the i.i.d.\ null on stocks ($p=0.21$) and the CCC-FHS null on both panels;
+the i.i.d.\ null on stocks and the CCC-FHS null on both panels;
 the first-eigenvalue share passes both, by a smaller margin than coupling. $\log\det R$ uses the whole spectrum,
 including the small eigenvalues that collapse when assets couple, whereas the
 absorption ratio uses only the top fifth.
 
 Figure~\ref{fig:null} shows the observed gap against the two null
 distributions, and Figure~\ref{fig:series} the coupling series with the
-stress dates.
+stress dates. The euro-area panel of the online appendix gives the same
+answer: total coupling and coupling between the five CISS segments beat both
+nulls ($\hat p\le\euInterFhsP$).
 
 \subsection{What does not survive}
 
-Table~\ref{tab:verdicts} summarises all hypotheses against the i.i.d.\ null,
-with the \citet{holm1979} step-down adjustment over the \holmNtests\ tests of
-the table.\footnote{With 200 replications the smallest rank $p$-value is
-$1/201$, so no rank $p$-value can survive an adjustment over 23 tests. The
-adjustment is applied to the Gaussian-tail approximation implied by each
-statistic's distance to the null mean; a result passes if both its rank
-$p$-value and its adjusted tail $p$-value are below 5\%.} \holmNsurv\ of them
-pass: coupling, the range and half-life of $\JJ$, the largest episode and
-crisis composition. Two results that pass individually do not survive the
-adjustment: the compensation slope on industries (H2, $p=0.035$) and the share
-of episodes in which skewness falls (H5, $p=0.020$). The failures are
-informative.
+Table~\ref{tab:verdicts} confronts every hypothesis with both nulls. A result
+passes if it beats both, after the \citet{holm1979} step-down adjustment over
+the \holmNtests\ tests of the table, applied to the larger of its two
+$p$-values (the intersection-union test). With \nRep\ replications the
+smallest $p$-value is \pMin, below the first Holm threshold
+($0.05/\holmNtests=\holmThreshold$), so the adjustment can be passed by exact
+rank $p$-values. \holmNsurv\ results pass: coupling on both panels, the range of
+$\JJ$ on stocks, its daily half-life on both panels and the largest episode on
+stocks. Two more beat both nulls at 5\% but not after adjustment: the range of
+$\JJ$ and the largest episode on industries. The failures are informative.
 
-\emph{One-sided jumps (H3).} The detector finds 158 upward and 9 downward
-jumps on stocks, but the null produces 148 and 3: it is \emph{more} one-sided
-than the data. Counting by episode (jumps less than 40 days apart) changes
-nothing (65 rising against 7 falling, but 31 to 1 under the null).
+\emph{One-sided jumps (H3).} The detector finds \qJumpUpSpObs\ upward and
+\qJumpDownSpObs\ downward jumps on stocks, but the i.i.d.\ null produces
+\qJumpUpSpIid\ and \qJumpDownSpIid: it is \emph{more} one-sided than the data, and
+so is the GARCH null (\qJumpUpSpFhs\ and \qJumpDownSpFhs). Counting by episode
+(jumps less than 40 days apart) changes nothing (\qEpUpSpObs\ rising against
+\qEpDownSpObs\ falling, but \qEpUpSpIid\ to \qEpDownSpIid\ under the i.i.d.\ null).
 \emph{Shape under stress (H1, $\DD$).} Tails fatten under stress by
-$0.27$~nat, but by $1.25$ under the null, because a stress window in a
-shuffled world contains isolated extreme days. \emph{Co-movement of channels
-(H6).} Dependence and tails move together under stress ($0.63$), but the null
-couples them more ($0.90$). \emph{Daily sign (H5).} Jumps coincide with
-negative skewness (correlation $-0.24$), but the null produces as much in 10\%
-of replications. These are exactly the signatures an entropy story of crises
-predicts, and none is distinguishable from estimation mechanics.
+\qDgapSpObs~nat, but by \qDgapSpIid\ under the i.i.d.\ null, because a stress
+window in a shuffled world contains isolated extreme days; the GARCH null
+matches the data (\qDgapSpFhs). \emph{Co-movement of channels (H6).}
+Dependence and tails move together under stress (\qHsixStressSpObs), but the
+i.i.d.\ null couples them more (\qHsixStressSpIid). \emph{Daily sign (H5).}
+Jumps coincide with negative skewness (correlation \qHfiveCorrSpObs), but the
+GARCH null, whose leverage effect ties volatility bursts to falling prices,
+produces more (\qHfiveCorrSpFhs). These are exactly the signatures an entropy
+story of crises predicts, and none is distinguishable from estimation
+mechanics or from volatility dynamics.
 
-Three dynamic facts pass the i.i.d.\ null. On both panels, the \emph{range}
-of $\JJ$ ($18.95$~nats against $10.05$ on stocks; $54.5$ against $36.9$ on
-industries) and its daily \emph{half-life} ($121$ days against $92$; $190$
-against $101$) exceed every replication. On stocks, where the episode null was
-run, the largest episode (COVID-19, $15.8$~nats) exceeds every replication
-($8.1$ on average). Episode by episode,
-however, relaxation from peak to half-way is no slower than under the null
-(median 18 days against 23): persistence comes from the succession of
-turbulent days, not from slower absorption of each shock.
+Three dynamic facts pass both nulls. The \emph{range} of $\JJ$
+(\qRangeSpObs~nats on stocks, against \qRangeSpIid\ and \qRangeSpFhs) and its
+daily \emph{half-life} (\qHalfLifeSpObs\ days against \qHalfLifeSpIid\ and
+\qHalfLifeSpFhs; on industries \qHalfLifeFfObs\ against \qHalfLifeFfIid\ and
+\qHalfLifeFfFhs) exceed what either null produces, and so does the largest
+episode on stocks (COVID-19, \qMaxEpSpObs~nats against \qMaxEpSpIid\ and
+\qMaxEpSpFhs). Episode by episode, however, relaxation from peak to half-way is
+no slower than under the i.i.d.\ null (median \qEpHalfLifeSpObs\ days against
+\qEpHalfLifeSpIid): persistence comes from the succession of turbulent days,
+not from slower absorption of each shock.
 
 \subsection{Crisis composition}
 
 We split the rise of $\JJ$ within each episode exactly into dependence,
 skewness and tail terms. Skewness almost never dominates. Dependence
-dominates $46\%$ of the 65 stock episodes against $26\%$ under the null (no
-replication reaches it) and $79\%$ of the 61 industry episodes against
-$43\%$. What distinguishes a real crisis from a random cluster of large days
-is that assets start to move together.
+dominates \qDepDomSpObs\% of the \qEpUpSpObs\ stock episodes and \qDepDomFfObs\%
+of the \qEpUpFfObs\ industry episodes, far more than under the i.i.d.\ null
+(\qDepDomSpIid\% and \qDepDomFfIid\%, no replication reaching either). The
+GARCH null, however, produces as many dependence-dominated episodes
+(\qDepDomSpFhs\% and \qDepDomFfFhs\%). When volatility clusters and bursts are
+common to all assets, the large days of an episode share a common component,
+and the decomposition attributes the episode to dependence even though the
+correlation is constant. Composition therefore does not separate real crises
+from volatility clusters; the regime gap of section~\ref{sec:results}, which
+compares correlation levels rather than episode budgets, does.
 
 \subsection{Forecasting}
 
@@ -615,7 +648,9 @@ Because portfolio variance is linear in $\Sigma$, any mixture of an
 ``all-volatility'' and an ``all-correlation'' covariance with the same
 portfolio variance has that variance too. The dependence share $\alpha$ of a
 scenario can therefore be chosen without changing its severity. Calibrated on
-the regime gap ($\alpha=0.14$) or on severe episodes ($\alpha=0.49$), the
+the regime gap ($\alpha=0.14$) or on severe episodes ($\alpha=0.49$, a
+descriptive share since episode composition does not separate crises from
+volatility clusters), the
 ten-year scenario costs $2.88$ and $0.71$~nats against $6.80$ under uniform
 dilation, moving towards the minimal lift ($0.41$). For a given severity,
 more dependence means a \emph{less} improbable scenario.
@@ -634,20 +669,21 @@ plot. Most of what they show in crises is produced by the estimator: a
 resampled world without dynamics reproduces the jumps, the slow decays, the
 fattening tails and the co-movement of tails and correlation, and often
 exaggerates them. One fact survives a dynamics-free null, a
-volatility-preserving null and a within-year comparison: under stress,
-correlations couple and the number of independent sources of risk falls, and
-crises are more often dominated by this coupling than random clusters of large
-days. The test has correct size when volatility clusters, which the usual
-dynamics-free null does not.
+volatility-preserving null and a within-year comparison, on US stocks,
+industries and euro-area markets: under stress, correlations couple and the
+number of independent sources of risk falls. Other appealing facts, such as
+crises being dominated by dependence, pass the first null but not the second.
+The joint test has correct size when volatility clusters or switches regimes,
+provided the correlation matrix is shrunk in large cross-sections.
 
 For stress testing, the same divergence prices scenarios in a unit that reads
 in standard deviations. The cheapest way to reach a severity is a one-factor
 scenario; uniform dilation costs $N$ times more in deformation, and classical
 scenarios pay up to $3.7$ times the minimum. The EBA 2025 adverse scenario
 costs as much as 2008 or 2022. Two extensions are natural: a
-survivorship-free panel of individual stocks, and a dynamic-correlation null
-fitted to calm periods only, which would ask whether crisis coupling exceeds
-what ordinary correlation dynamics produce.
+broad survivorship-free panel of individual stocks, and a dynamic-correlation
+null fitted to calm periods only, which would ask whether crisis coupling
+exceeds what ordinary correlation dynamics produce.
 
 % =========================================================================
 \appendix
@@ -741,7 +777,7 @@ $(y-f_1)^2-[(y-f_2)^2-(f_1-f_2)^2]$, with $f_1$ the volatility-only forecast.
 \includegraphics[width=\linewidth]{figures/fig_null_distributions.png}
 \caption{Coupling under stress against two placebo nulls. Each panel shows
 the stress-minus-calm gap in coupling $C$ (nats; positive means assets couple
-under stress) for the observed data (vertical line) and for 200 replications
+under stress) for the observed data (vertical line) and for \nRep\ replications
 of the i.i.d.\ null and of the CCC-FHS (constant-correlation GJR-GARCH) null.
 Left: twenty S\&P~500 stocks, 1990--2022. Right: 48 industry portfolios,
 1990--2026.\\

@@ -62,15 +62,28 @@ def fit_gjr(logret: pd.DataFrame) -> tuple[pd.DataFrame, np.ndarray]:
     params, Z = [], []
     for col in logret.columns:
         x = 100.0 * logret[col].to_numpy()
-        res = arch_model(x, mean='Constant', vol='GARCH', p=1, o=1, q=1,
-                         dist='normal', rescale=False).fit(disp='off')
-        p = res.params
-        params.append({'asset': col, 'mu': p['mu'], 'omega': p['omega'],
-                       'alpha': p['alpha[1]'], 'gamma': p['gamma[1]'],
-                       'beta': p['beta[1]'],
-                       'persistence': p['alpha[1]'] + 0.5 * p['gamma[1]'] + p['beta[1]']})
-        z = np.asarray(res.std_resid)
-        Z.append((z - np.nanmean(z)) / np.nanstd(z))
+        try:
+            res = arch_model(x, mean='Constant', vol='GARCH', p=1, o=1, q=1,
+                             dist='normal', rescale=False).fit(disp='off')
+            p = res.params
+            z = np.asarray(res.std_resid)
+            ok = np.isfinite(p.to_numpy()).all() and np.isfinite(z).mean() > 0.99
+        except Exception:                               # pragma: no cover
+            ok = False
+        if ok:
+            params.append({'asset': col, 'mu': p['mu'], 'omega': p['omega'],
+                           'alpha': p['alpha[1]'], 'gamma': p['gamma[1]'],
+                           'beta': p['beta[1]'],
+                           'persistence': p['alpha[1]'] + 0.5 * p['gamma[1]'] + p['beta[1]']})
+        else:
+            # Fallback for a series GJR cannot fit (e.g. a policy rate that
+            # rarely moves): constant volatility, i.i.d. standardised moves.
+            mu, sd = float(np.mean(x)), float(np.std(x)) or 1.0
+            params.append({'asset': col, 'mu': mu, 'omega': sd * sd, 'alpha': 0.0,
+                           'gamma': 0.0, 'beta': 0.0, 'persistence': 0.0})
+            z = (x - mu) / sd
+        z = np.nan_to_num((z - np.nanmean(z)) / np.nanstd(z))
+        Z.append(z)
     return pd.DataFrame(params).set_index('asset'), np.column_stack(Z)
 
 

@@ -36,9 +36,9 @@
 \newcommand{\BIASTWENTYT}{0.39}
 \newcommand{\BIASTWENTYLW}{0.002}
 \newcommand{\FESHRINK}{61\%}
-\newcommand{\MCGARCHIID}{17\%}
-\newcommand{\MCGARCHFHS}{6.5\%}
-\newcommand{\MCPOWFHS}{68\%}
+\newcommand{\MCGARCHIID}{18\%}
+\newcommand{\MCGARCHFHS}{5\%}
+\newcommand{\MCPOWFHS}{72\%}
 
 
 \newtcolorbox{intuition}[1][]{colback=blue!3,colframe=blue!40!black,
@@ -890,7 +890,7 @@ convex on positive definite matrices), and $\DD$ is non-negative and zero only
 at the Gaussian point. Both are therefore \textbf{biased upward}: estimation
 noise looks like information.
 
-\subsection{How large is the bias of coupling? (Proposition 3 of the paper)}
+\subsection{How large is the bias of coupling? (Proposition 3 of the paper)}\label{sec:bias-note}
 
 Take $N$ \emph{independent} Gaussian assets, so the true coupling is $C=0$,
 and $T$ observations. The likelihood-ratio statistic for testing $H_0:R=I$
@@ -973,7 +973,7 @@ at all.
 \paragraph{Construction.} Let $S(X)$ be a statistic computed by the
 \emph{whole} pipeline on the $T\times N$ panel $X$ (rolling estimation, stress
 regime, jump detection, gap). A null is a way of generating panels $X^*$ that
-keep some features of $X$ and destroy others. We draw $B=200$ of them and
+keep some features of $X$ and destroy others. We draw $B=999$ of them and
 compute $S(X^*_1),\dots,S(X^*_B)$.
 
 \paragraph{The $p$-value.} In the predicted direction,
@@ -985,8 +985,8 @@ the same mechanism, then $S(X),S(X^*_1),\dots,S(X^*_B)$ are
 \emph{exchangeable}: the observed value is equally likely to have any rank
 among the $B+1$ values. The probability that it ranks in the top $k$ is
 $k/(B+1)$, so $P(\hat p\le\alpha)\le\alpha$ exactly, without any asymptotic
-argument. The ``$+1$'' is what makes this exact; with $B=200$ the smallest
-possible $p$-value is $1/201\approx0.005$.
+argument. The ``$+1$'' is what makes this exact; with $B=999$ the smallest
+possible $p$-value is $1/1000=0.001$.
 
 \begin{piege}
 Reporting $z=(S(X)-\bar S^*)/s_{S^*}$ (``six standard deviations above the
@@ -1073,24 +1073,36 @@ from known processes, apply the whole test to each, and count rejections:
 nulls should reject about 5\%.
 \item GARCH with constant correlation: volatility clustering, no
 correlation dynamics. A good test of \emph{dependence} should still reject
-about 5\%. The i.i.d.\ null rejects \MCGARCHIID\ of the time, the GARCH null
+about 5\%. With ten assets, the i.i.d.\ null rejects \MCGARCHIID\ of the time, the GARCH null
 \MCGARCHFHS.
 \item Markov-switching volatility, constant correlation: same question with
 regime-type volatility.
 \item Markov-switching volatility \emph{and} correlation (0.30 calm, 0.50 in
 stress): the effect is real; rejection rates measure power
-(\MCPOWFHS\ for the GARCH null).
+(\MCPOWFHS\ for the GARCH null with ten assets).
 \end{itemize}
 
-Each null fails somewhere. The i.i.d.\ null over-rejects under GARCH
-clustering (17\%); the GARCH null over-rejects when volatility switches
-regimes (11\%), because a smooth GARCH recursion cannot copy abrupt
-switches. The paper therefore asks a result to pass \emph{both} nulls. Under
-this joint rule the worst rejection rate over the three null processes is
-6.5\% at the 5\% level and 1.0\% at the 1\% level, while the power against
-the correlation-switching process stays at 46\%. With 200 simulations, a
-rate of 6.5\% is within about one standard error ($\sqrt{0.05\cdot0.95/200}
-\approx1.5$ points) of 5\%.
+Each null fails somewhere. With ten assets, the i.i.d.\ null over-rejects
+under GARCH clustering (18\%); the GARCH null over-rejects when volatility
+switches regimes (10\%), because a smooth GARCH recursion cannot copy abrupt
+switches. The paper therefore asks a result to pass \emph{both} nulls. With 10
+and 20 assets, the worst rejection rate of this joint rule over the three null
+processes is 5.0\% at the 5\% level, while the power against the
+correlation-switching process is about 50\%. With 1{,}000 simulations, the
+Monte Carlo standard error of a rate near 5\% is
+$\sqrt{0.05\cdot0.95/1000}\approx0.7$ points.
+
+\paragraph{What happens with 48 assets.} With the plain sample correlation,
+the joint rule rejects 16\% of the time under regime-switching volatility.
+Both nulls miss the same thing: in a window that mixes calm and
+2.5-times-more-volatile days, the sample correlation matrix is noisier, and
+its finite-sample bias (section~\ref{sec:bias-note}, of order $N^2/T$) is
+larger in stress windows than in calm ones. With $N=48$ that bias difference
+is large enough to look like coupling. Redoing the 48-asset case with the
+Ledoit--Wolf estimator, which the paper uses for all its empirical work,
+removes the problem: worst size 6\% (200 simulations, standard error 1.5
+points) and power 84\%. The lesson is that in large cross-sections the
+\emph{estimator} matters as much as the null.
 
 \subsection{Testing many hypotheses at once: Holm's procedure}
 
@@ -1104,17 +1116,17 @@ $\max_{j\le k}\min\{1,(m-j+1)p_{(j)}\}$. Holm is always at least as powerful
 as Bonferroni (which uses $\alpha/m$ for all) and needs no assumption on the
 dependence between tests.
 
-\paragraph{A detail specific to resampling $p$-values.} With $B=200$
-placebo draws, the smallest possible rank $p$-value is $1/201\approx0.005$.
-With $m=23$ tests, Holm requires $p_{(1)}\le0.05/23\approx0.0022$: no rank
-$p$-value can ever pass, even for a gap far outside the null distribution.
-The paper therefore applies Holm to a Gaussian-tail $p$-value,
-$p=1-\Phi(z)$ with $z=(\text{observed}-\text{null mean})/\text{null sd}$,
-which can be arbitrarily small. A result passes the verdict table only if
-both its rank $p$-value and its Holm-adjusted Gaussian $p$-value are below
-5\%. Nine of the 23 tests pass; two results that pass individually (the
-compensation slope on industries and the share of episodes where skewness
-falls) do not survive the adjustment.
+\paragraph{Why 999 draws.} With $B$ placebo draws the smallest possible
+rank $p$-value is $1/(B+1)$. With $m=26$ tests, Holm first requires
+$p_{(1)}\le0.05/26\approx0.0019$. With $B=200$ no rank $p$-value can reach
+that ($1/201\approx0.005$), even for a gap far outside the null distribution;
+with $B=999$ the floor is $0.001$ and the adjustment can be passed with exact
+$p$-values. A result counts only if it beats both nulls, so the paper applies
+Holm to $\max(p_{\text{i.i.d.}},p_{\text{GARCH}})$, which is itself a valid
+$p$-value for the joint hypothesis (if either null is true, the maximum is at
+least as large as a valid $p$-value). Six of the 26 tests pass: coupling on
+both panels, the range of $\mathcal J$ on stocks, its half-life on both panels
+and the largest episode on stocks.
 
 \subsection{Comparing nested forecasts: Clark--West}
 
@@ -1136,12 +1148,15 @@ $-\E[\nu^2]<0$, and $(f_1-f_2)^2=\nu^2$ is exactly the term that re-centres it
 at zero. The test is one-sided and approximately normal.
 
 \begin{papier}
-Verdicts (tables 4 and 5 of the journal version): coupling under stress
-passes both nulls on both panels, also within years; crisis composition (H8),
-the range and daily half-life of $\JJ$ and the largest episode pass the
-i.i.d.\ null. One-sided jumps, the shape deficit under stress, the
+Verdicts (tables 4 and 5 of the journal version, 999 draws of each null):
+coupling under stress passes both nulls on both panels, also within years,
+and on the euro-area panel. The range and daily half-life of $\JJ$ and the
+largest episode pass both nulls on stocks (half-life also on industries).
+Crisis composition (H8) passes the i.i.d.\ null but not the GARCH null: a
+GARCH world with constant correlation produces as many dependence-dominated
+episodes. One-sided jumps, the shape deficit under stress, the
 tails--correlation link (H6) and the daily sign (H5) are produced just as
-strongly, or more, by the null.
+strongly, or more, by one of the nulls.
 \end{papier}
 
 %======================================================================
@@ -1343,8 +1358,10 @@ main panel, this is only about $1.5$ times current volatility: beyond that,
 volatilities must also be dilated.
 
 \paragraph{Calibrating $\alpha$.} H1 gives the share of dependence in the move
-of Gaussian entropy under stress: $0.99/(0.99+5.97)\approx14\,\%$. H8 refines
-it to $49\,\%$ over the most severe episodes. The larger $\alpha$, the closer
+of Gaussian entropy under stress: $0.99/(0.99+5.97)\approx14\,\%$. The
+episode budgets of H8 give $49\,\%$ over the most severe episodes; that share
+is descriptive (a GARCH world produces similar shares), which is enough for
+calibrating a scenario but not evidence of correlation dynamics. The larger $\alpha$, the closer
 we get to the one-factor scenario, and the lower the cost
 ($6.80\to2.88\to0.71$ nats): proposition~\ref{prop:uniforme} makes this result
 expected rather than surprising.

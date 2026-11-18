@@ -24,7 +24,7 @@ from itertools import combinations
 
 import numpy as np
 import pandas as pd
-from sklearn.covariance import ledoit_wolf
+from src.lw import ledoit_wolf_cov
 
 from .coupling import ewma_devolatilize, normal_scores
 
@@ -112,7 +112,7 @@ def rolling_block_coupling(logret: pd.DataFrame, blocks: dict[str, list[str]],
             continue
         if version == 'rank':
             Xw = normal_scores(Xw)
-        rows.append(block_decomposition(_corr(ledoit_wolf(Xw)[0]), pos))
+        rows.append(block_decomposition(_corr(ledoit_wolf_cov(Xw)), pos))
         dates.append(logret.index[end - 1])
     return pd.DataFrame(rows, index=pd.Index(dates, name='date'))
 

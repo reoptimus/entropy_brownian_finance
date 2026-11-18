@@ -41,16 +41,38 @@ Les tirages Student-$t_5$ sont indépendants entre actifs. La colonne Ledoit--Wo
 \begin{tabular}{@{}llrrrrrrr@{}}\toprule
 & & Écart moyen & \multicolumn{3}{c}{Rejet à 5\%} & \multicolumn{3}{c}{Rejet à 1\%} \\
 \cmidrule(lr){4-6}\cmidrule(lr){7-9}
-Processus générateur & & (nats) & i.i.d. & CCC-FHS & les deux & i.i.d. & CCC-FHS & les deux \\\midrule
-Student-$t_5$ i.i.d., corrélation constante $0{,}30$ & taille & 0{,}11 & 0{,}030 & 0{,}040 & 0{,}025 & 0{,}005 & 0{,}000 & 0{,}000 \\
-GJR-GARCH(1,1), chocs $t_5$, corrélation constante $0{,}30$ & taille & 0{,}13 & 0{,}170 & 0{,}065 & 0{,}065 & 0{,}050 & 0{,}010 & 0{,}005 \\
-volatilité à régimes markoviens ($\times2{,}5$), corrélation constante & taille & 0{,}12 & 0{,}045 & 0{,}110 & 0{,}045 & 0{,}025 & 0{,}030 & 0{,}010 \\
-volatilité à régimes, corrélation $0{,}30\to0{,}50$ sous stress & puissance & 0{,}40 & 0{,}475 & 0{,}680 & 0{,}460 & 0{,}235 & 0{,}385 & 0{,}190 \\
+Processus générateur & & (nats) & i.i.d. & CCC-FHS & les deux & i.i.d. & CCC-FHS & les deux \\
+\midrule\multicolumn{9}{@{}l}{\emph{$N=10$ actifs, 1\,000 panels par processus}} \\
+Student-$t_5$ i.i.d., corrélation constante $0{,}30$ & taille & 0{,}11 & 0{,}048 & 0{,}047 & 0{,}040 & 0{,}005 & 0{,}005 & 0{,}002 \\
+GJR-GARCH(1,1), chocs $t_5$, corrélation constante $0{,}30$ & taille & 0{,}12 & 0{,}176 & 0{,}048 & 0{,}047 & 0{,}061 & 0{,}004 & 0{,}004 \\
+volatilité à régimes markoviens ($\times2{,}5$), corrélation constante & taille & 0{,}12 & 0{,}048 & 0{,}102 & 0{,}046 & 0{,}014 & 0{,}027 & 0{,}011 \\
+volatilité à régimes, corrélation $0{,}30\to0{,}40$ sous stress & puissance & 0{,}24 & 0{,}200 & 0{,}361 & 0{,}196 & 0{,}068 & 0{,}152 & 0{,}056 \\
+volatilité à régimes, corrélation $0{,}30\to0{,}50$ sous stress & puissance & 0{,}40 & 0{,}500 & 0{,}718 & 0{,}495 & 0{,}260 & 0{,}470 & 0{,}242 \\
+\midrule\multicolumn{9}{@{}l}{\emph{$N=20$ actifs, 500 panels par processus}} \\
+Student-$t_5$ i.i.d., corrélation constante $0{,}30$ & taille & 0{,}24 & 0{,}046 & 0{,}048 & 0{,}036 & 0{,}006 & 0{,}002 & 0{,}002 \\
+GJR-GARCH(1,1), chocs $t_5$, corrélation constante $0{,}30$ & taille & 0{,}33 & 0{,}218 & 0{,}038 & 0{,}036 & 0{,}058 & 0{,}004 & 0{,}004 \\
+volatilité à régimes markoviens ($\times2{,}5$), corrélation constante & taille & 0{,}31 & 0{,}068 & 0{,}110 & 0{,}050 & 0{,}010 & 0{,}020 & 0{,}004 \\
+volatilité à régimes, corrélation $0{,}30\to0{,}40$ sous stress & puissance & 0{,}62 & 0{,}292 & 0{,}468 & 0{,}276 & 0{,}124 & 0{,}242 & 0{,}104 \\
+volatilité à régimes, corrélation $0{,}30\to0{,}50$ sous stress & puissance & 0{,}94 & 0{,}560 & 0{,}732 & 0{,}552 & 0{,}324 & 0{,}462 & 0{,}294 \\
+\midrule\multicolumn{9}{@{}l}{\emph{$N=48$ actifs, 300 panels par processus}} \\
+Student-$t_5$ i.i.d., corrélation constante $0{,}30$ & taille & 0{,}65 & 0{,}033 & 0{,}023 & 0{,}023 & 0{,}013 & 0{,}013 & 0{,}013 \\
+GJR-GARCH(1,1), chocs $t_5$, corrélation constante $0{,}30$ & taille & 1{,}03 & 0{,}303 & 0{,}037 & 0{,}033 & 0{,}117 & 0{,}007 & 0{,}003 \\
+volatilité à régimes markoviens ($\times2{,}5$), corrélation constante & taille & 1{,}23 & 0{,}183 & 0{,}243 & 0{,}157 & 0{,}060 & 0{,}110 & 0{,}047 \\
+volatilité à régimes, corrélation $0{,}30\to0{,}40$ sous stress & puissance & 1{,}97 & 0{,}447 & 0{,}537 & 0{,}423 & 0{,}207 & 0{,}273 & 0{,}170 \\
+volatilité à régimes, corrélation $0{,}30\to0{,}50$ sous stress & puissance & 2{,}66 & 0{,}653 & 0{,}740 & 0{,}620 & 0{,}380 & 0{,}457 & 0{,}337 \\
+\midrule\multicolumn{9}{@{}l}{\emph{$N=48$ actifs, estimateur de Ledoit--Wolf (celui de l'article), 200 panels, 99 répétitions du témoin}} \\
+Student-$t_5$ i.i.d., corrélation constante $0{,}30$ & taille & 0{,}39 & 0{,}045 & 0{,}045 & 0{,}040 & 0{,}010 & 0{,}005 & 0{,}005 \\
+GJR-GARCH(1,1), chocs $t_5$, corrélation constante $0{,}30$ & taille & 0{,}22 & 0{,}075 & 0{,}060 & 0{,}050 & 0{,}025 & 0{,}020 & 0{,}010 \\
+volatilité à régimes markoviens ($\times2{,}5$), corrélation constante & taille & 0{,}26 & 0{,}060 & 0{,}115 & 0{,}060 & 0{,}020 & 0{,}030 & 0{,}015 \\
+volatilité à régimes, corrélation $0{,}30\to0{,}50$ sous stress & puissance & 1{,}93 & 0{,}835 & 0{,}925 & 0{,}835 & 0{,}565 & 0{,}780 & 0{,}555 \\
 \bottomrule\end{tabular}}
 \par\medskip\begin{minipage}{0.95\linewidth}\footnotesize
-200 panels simulés par processus, $N=10$ actifs, $T=4\,000$ jours, fenêtres de 252 jours, stress = quantile à 90\,\% passé seulement
-de la volatilité à 21 jours du portefeuille équipondéré. Chaque test utilise 99 répétitions du témoin ; le témoin CCC-FHS réestime les
-GJR-GARCH models on each simulated panel. ``Both'': rejection by both nulls, the rule used in the paper. Écart moyen: stress-minus-calm coupling, positive when assets couple under stress.
+$T=4\,000$ jours ; couplage de la corrélation empirique sur des fenêtres de 250 jours évaluées tous les cinq jours ; stress = quantile à 90\,\% passé seulement
+de la volatilité à 21 jours du portefeuille équipondéré. Chaque test utilise 199 répétitions du témoin ; le témoin CCC-FHS réestime les
+modèles GJR-GARCH sur chaque panel simulé. « Les deux » : rejet par les deux témoins, règle utilisée dans l'article. Écart moyen : couplage
+stress moins calme, positif quand les actifs se couplent sous stress. Blocs supérieurs : corrélation empirique simple, que le Monte-Carlo utilise pour la vitesse ;
+dernier bloc : l'estimateur de Ledoit--Wolf de la partie empirique, sur les mêmes panels simulés. Erreur type Monte-Carlo d'un
+taux de rejet proche de 5\,\% : 0,7 point avec 1\,000 panels, 1,0 avec 500, 1,3 avec 300, 1,5 avec 200.
 \end{minipage}
 \end{table}
 
@@ -63,58 +85,65 @@ GJR-GARCH models on each simulated panel. ``Both'': rejection by both nulls, the
 & & \multicolumn{2}{c}{témoin i.i.d.} & \multicolumn{2}{c}{témoin CCC-FHS} & & \multicolumn{2}{c}{témoin i.i.d.} & \multicolumn{2}{c}{témoin CCC-FHS} \\
 \cmidrule(lr){3-4}\cmidrule(lr){5-6}\cmidrule(lr){8-9}\cmidrule(lr){10-11}
 Mesure & Obs. & moy. & $p$ & moy. & $p$ & Obs. & moy. & $p$ & moy. & $p$ \\\midrule
-Couplage, brut & 0{,}99 & 0{,}21 & <0{,}005 & -0{,}06 & <0{,}005 & 3{,}65 & 0{,}56 & <0{,}005 & 0{,}83 & <0{,}005 \\
-Couplage, dévolatilisé & 0{,}69 & 0{,}27 & <0{,}005 & 0{,}27 & <0{,}005 & 2{,}58 & 0{,}73 & <0{,}005 & 1{,}43 & 0{,}010 \\
-Couplage, rangs & 0{,}80 & 0{,}18 & <0{,}005 & 0{,}24 & <0{,}005 & 3{,}15 & 0{,}54 & <0{,}005 & 1{,}18 & <0{,}005 \\
-Ratio d'absorption & 0{,}012 & 0{,}007 & 0{,}219 & 0{,}037 & 0{,}756 & 0{,}025 & 0{,}006 & <0{,}005 & 0{,}020 & 0{,}264 \\
-Part de la 1re valeur propre & 0{,}063 & 0{,}018 & <0{,}005 & -0{,}000 & <0{,}005 & 0{,}048 & 0{,}018 & <0{,}005 & 0{,}017 & <0{,}005 \\
+Couplage, brut & 0{,}99 & 0{,}22 & <0{,}001 & -0{,}06 & <0{,}001 & 3{,}65 & 0{,}58 & <0{,}001 & 0{,}67 & <0{,}001 \\
+Couplage, dévolatilisé & 0{,}69 & 0{,}26 & <0{,}001 & 0{,}28 & 0{,}003 & 2{,}58 & 0{,}75 & <0{,}001 & 1{,}34 & 0{,}004 \\
+Couplage, rangs & 0{,}80 & 0{,}17 & <0{,}001 & 0{,}24 & <0{,}001 & 3{,}15 & 0{,}56 & <0{,}001 & 1{,}13 & <0{,}001 \\
+Ratio d'absorption & 0{,}012 & 0{,}008 & 0{,}270 & 0{,}037 & 0{,}751 & 0{,}025 & 0{,}006 & <0{,}001 & 0{,}021 & 0{,}305 \\
+Part de la 1re valeur propre & 0{,}063 & 0{,}019 & <0{,}001 & -0{,}000 & <0{,}001 & 0{,}048 & 0{,}019 & <0{,}001 & 0{,}014 & <0{,}001 \\
 \midrule\multicolumn{11}{@{}l}{\emph{Écart au sein de l'année (effets fixes par année civile)}} \\
-Couplage, brut & 0{,}38 & 0{,}11 & <0{,}005 & -0{,}02 & <0{,}005 & 1{,}43 & 0{,}30 & <0{,}005 & 0{,}54 & <0{,}005 \\
-Couplage, dévolatilisé & 0{,}24 & 0{,}14 & <0{,}005 & 0{,}13 & 0{,}045 & 0{,}90 & 0{,}42 & <0{,}005 & 0{,}68 & 0{,}129 \\
-Couplage, rangs & 0{,}36 & 0{,}09 & <0{,}005 & 0{,}12 & <0{,}005 & 1{,}28 & 0{,}29 & <0{,}005 & 0{,}62 & <0{,}005 \\
+Couplage, brut & 0{,}38 & 0{,}11 & <0{,}001 & -0{,}03 & <0{,}001 & 1{,}43 & 0{,}31 & <0{,}001 & 0{,}50 & 0{,}004 \\
+Couplage, dévolatilisé & 0{,}24 & 0{,}14 & 0{,}017 & 0{,}14 & 0{,}052 & 0{,}90 & 0{,}43 & 0{,}003 & 0{,}65 & 0{,}117 \\
+Couplage, rangs & 0{,}36 & 0{,}09 & <0{,}001 & 0{,}13 & 0{,}002 & 1{,}28 & 0{,}30 & <0{,}001 & 0{,}60 & 0{,}006 \\
 \bottomrule\end{tabular}}
 \par\medskip\begin{minipage}{0.95\linewidth}\footnotesize
 Écart stress moins calme de chaque mesure (couplage en nats, signé pour qu'une valeur positive signifie plus de couplage sous stress ;
 ratio d'absorption et part de la première valeur propre en parts de variance). Stress : quantile à 90\,\% passé seulement de la volatilité équipondérée à 21 jours.
-$p$ : $(1+k)/(1+B)$, $k$ étant le nombre des $B=200$ répétitions au moins aussi extrêmes dans le sens prédit ;
-$<0{,}005$ signifie qu'aucune répétition n'a atteint la valeur observée. Dévolatilisé : rendements divisés par leur volatilité RiskMetrics.
+$p$ : $(1+k)/(1+B)$, $k$ étant le nombre des $B=999$ répétitions au moins aussi extrêmes dans le sens prédit ;
+$<0{,}001$ signifie qu'aucune répétition n'a atteint la valeur observée. Dévolatilisé : rendements divisés par leur volatilité RiskMetrics.
 Rangs : scores normaux. CCC-FHS : simulation historique filtrée GJR-GARCH à corrélation constante.
 \end{minipage}
 \end{table}
 
 \begin{table}[p]\centering\small
-\caption{Verdicts against the témoin i.i.d. with multiple-testing control}\label{tab:verdicts}
+\caption{Verdicts face aux deux témoins placebo avec contrôle des tests multiples}\label{tab:verdicts}
 \resizebox{\linewidth}{!}{%
-\begin{tabular}{@{}lllrrrrrl@{}}\toprule
-& Statistique & Panel & Observé & Moy. témoin & $p$ & $z$ & $p$ de Holm & Verdict \\\midrule
-H1 & écart de couplage (nats) & actions & 0{,}99 & 0{,}21 & <0{,}005 & 6{,}2 & <0{,}001 & \textbf{passe} \\
-H1 & écart de couplage (nats) & secteurs & 3{,}65 & 0{,}56 & <0{,}005 & 11{,}9 & <0{,}001 & \textbf{passe} \\
-H1 & écart de l'indice $\JJ$ (nats) & actions & 1{,}93 & 2{,}14 & 0{,}667 & -0{,}6 & 1{,}000 & échoue \\
-H1 & écart de l'indice $\JJ$ (nats) & secteurs & 5{,}93 & 7{,}95 & 0{,}960 & -1{,}6 & 1{,}000 & témoin plus fort \\
-H1 & écart de forme $\DD$ (nats) & actions & 0{,}27 & 1{,}25 & 1{,}000 & -3{,}6 & 1{,}000 & témoin plus fort \\
-H1 & écart de forme $\DD$ (nats) & secteurs & 0{,}98 & 4{,}81 & 1{,}000 & -4{,}2 & 1{,}000 & témoin plus fort \\
-H2 & pente de compensation $\beta$ (stress) & actions & 0{,}20 & 0{,}05 & 0{,}398 & 0{,}6 & 1{,}000 & échoue \\
-H2 & pente de compensation $\beta$ (stress) & secteurs & 0{,}23 & 0{,}08 & 0{,}035 & 1{,}8 & 0{,}449 & échoue \\
-H3 & sauts vers le haut (nombre) & actions & 158 & 148 & 0{,}139 & 1{,}2 & 1{,}000 & échoue \\
-H3 & sauts vers le haut (nombre) & secteurs & 182 & 182 & 0{,}498 & 0{,}0 & 1{,}000 & échoue \\
-H3 & plus grand épisode (nats) & actions & 15{,}8 & 8{,}1 & <0{,}005 & 6{,}0 & <0{,}001 & \textbf{passe} \\
-H4 & demi-vie de $\JJ$ (jours) & actions & 121 & 92 & <0{,}005 & 4{,}4 & <0{,}001 & \textbf{passe} \\
-H4 & demi-vie de $\JJ$ (jours) & secteurs & 190 & 101 & <0{,}005 & 13{,}0 & <0{,}001 & \textbf{passe} \\
-H4 & étendue de $\JJ$ (nats) & actions & 19{,}0 & 10{,}1 & <0{,}005 & 6{,}4 & <0{,}001 & \textbf{passe} \\
-H4 & étendue de $\JJ$ (nats) & secteurs & 54{,}5 & 36{,}9 & <0{,}005 & 3{,}7 & 0{,}002 & \textbf{passe} \\
-H4 & demi-vie médiane depuis le pic (jours) & actions & 18 & 23 & 0{,}965 & -1{,}5 & 1{,}000 & témoin plus fort \\
-H5 & corr$(\Delta\JJ,\Delta S)$, quotidienne & actions & -0{,}24 & -0{,}03 & 0{,}104 & 1{,}3 & 1{,}000 & échoue \\
-H5 & corr$(\Delta\JJ,\Delta S)$, quotidienne & secteurs & -0{,}44 & -0{,}20 & 0{,}100 & 1{,}4 & 0{,}956 & échoue \\
-H5 & épisodes à asymétrie décroissante & actions & 0{,}62 & 0{,}51 & 0{,}020 & 2{,}6 & 0{,}061 & échoue \\
-H6 & écart de co-mouvement des canaux & actions & 0{,}59 & 0{,}77 & 0{,}990 & -2{,}9 & 1{,}000 & témoin plus fort \\
-H6 & écart de co-mouvement des canaux & secteurs & 0{,}41 & 0{,}64 & 1{,}000 & -3{,}0 & 1{,}000 & témoin plus fort \\
-H8 & épisodes dominés par la dépendance & actions & 0{,}46 & 0{,}26 & <0{,}005 & 4{,}3 & <0{,}001 & \textbf{passe} \\
-H8 & épisodes dominés par la dépendance & secteurs & 0{,}79 & 0{,}43 & <0{,}005 & 6{,}3 & <0{,}001 & \textbf{passe} \\
+\begin{tabular}{@{}lllrrrrrrl@{}}\toprule
+& & & & \multicolumn{2}{c}{témoin i.i.d.} & \multicolumn{2}{c}{témoin CCC-FHS} & & \\
+\cmidrule(lr){5-6}\cmidrule(lr){7-8}
+& Statistique & Panel & Observé & moy. & $p$ & moy. & $p$ & $p$ de Holm & Verdict \\\midrule
+H1 & écart de couplage (nats) & actions & 0{,}99 & 0{,}22 & <0{,}001 & -0{,}06 & <0{,}001 & 0{,}026 & \textbf{passe} \\
+H1 & écart de couplage (nats) & secteurs & 3{,}65 & 0{,}58 & <0{,}001 & 0{,}67 & <0{,}001 & 0{,}026 & \textbf{passe} \\
+H1 & écart de l'indice $\JJ$ (nats) & actions & 1{,}93 & 2{,}13 & 0{,}698 & 0{,}81 & 0{,}003 & 1{,}000 & échoue \\
+H1 & écart de l'indice $\JJ$ (nats) & secteurs & 5{,}93 & 8{,}04 & 0{,}971 & 3{,}54 & 0{,}016 & 1{,}000 & échoue \\
+H1 & écart de forme $\DD$ (nats) & actions & 0{,}27 & 1{,}24 & 1{,}000 & 0{,}30 & 0{,}554 & 1{,}000 & échoue \\
+H1 & écart de forme $\DD$ (nats) & secteurs & 0{,}98 & 4{,}86 & 1{,}000 & 1{,}04 & 0{,}461 & 1{,}000 & échoue \\
+H2 & pente de compensation $\beta$ (stress) & actions & 0{,}20 & 0{,}06 & 0{,}415 & -0{,}20 & 0{,}012 & 1{,}000 & échoue \\
+H2 & pente de compensation $\beta$ (stress) & secteurs & 0{,}23 & 0{,}09 & 0{,}055 & 0{,}12 & 0{,}396 & 1{,}000 & échoue \\
+H3 & sauts vers le haut (nombre) & actions & 158 & 148 & 0{,}136 & 163 & 0{,}728 & 1{,}000 & échoue \\
+H3 & sauts vers le haut (nombre) & secteurs & 182 & 182 & 0{,}527 & 193 & 0{,}888 & 1{,}000 & échoue \\
+H3 & plus grand épisode (nats) & actions & 15{,}8 & 8{,}0 & <0{,}001 & 3{,}8 & <0{,}001 & 0{,}026 & \textbf{passe} \\
+H3 & plus grand épisode (nats) & secteurs & 46{,}3 & 30{,}9 & 0{,}010 & 15{,}8 & 0{,}003 & 0{,}190 & pas après Holm \\
+H4 & demi-vie de $\JJ$ (jours) & actions & 121 & 91 & 0{,}002 & 50 & <0{,}001 & 0{,}042 & \textbf{passe} \\
+H4 & demi-vie de $\JJ$ (jours) & secteurs & 190 & 101 & <0{,}001 & 53 & <0{,}001 & 0{,}026 & \textbf{passe} \\
+H4 & étendue de $\JJ$ (nats) & actions & 19{,}0 & 10{,}0 & <0{,}001 & 4{,}8 & <0{,}001 & 0{,}026 & \textbf{passe} \\
+H4 & étendue de $\JJ$ (nats) & secteurs & 54{,}5 & 37{,}3 & 0{,}004 & 18{,}5 & <0{,}001 & 0{,}080 & pas après Holm \\
+H4 & demi-vie médiane depuis le pic (jours) & actions & 18 & 24 & 0{,}963 & 15 & 0{,}056 & 1{,}000 & échoue \\
+H4 & demi-vie médiane depuis le pic (jours) & secteurs & 25 & 25 & 0{,}551 & 17 & <0{,}001 & 1{,}000 & échoue \\
+H5 & corr$(\Delta\JJ,\Delta S)$, quotidienne & actions & -0{,}24 & -0{,}03 & 0{,}107 & -0{,}38 & 0{,}948 & 1{,}000 & échoue \\
+H5 & corr$(\Delta\JJ,\Delta S)$, quotidienne & secteurs & -0{,}44 & -0{,}21 & 0{,}076 & -0{,}52 & 0{,}824 & 1{,}000 & échoue \\
+H5 & épisodes à asymétrie décroissante & actions & 0{,}62 & 0{,}50 & 0{,}006 & 0{,}60 & 0{,}375 & 1{,}000 & i.i.d.\ seulement \\
+H5 & épisodes à asymétrie décroissante & secteurs & 0{,}57 & 0{,}53 & 0{,}160 & 0{,}68 & 0{,}985 & 1{,}000 & échoue \\
+H6 & écart de co-mouvement des canaux & actions & 0{,}59 & 0{,}76 & 0{,}992 & 0{,}42 & 0{,}140 & 1{,}000 & échoue \\
+H6 & écart de co-mouvement des canaux & secteurs & 0{,}41 & 0{,}64 & 1{,}000 & 0{,}53 & 0{,}843 & 1{,}000 & échoue \\
+H8 & épisodes dominés par la dépendance & actions & 0{,}46 & 0{,}26 & <0{,}001 & 0{,}40 & 0{,}168 & 1{,}000 & i.i.d.\ seulement \\
+H8 & épisodes dominés par la dépendance & secteurs & 0{,}79 & 0{,}42 & <0{,}001 & 0{,}86 & 0{,}956 & 1{,}000 & i.i.d.\ seulement \\
 \bottomrule\end{tabular}}
 \par\medskip\begin{minipage}{0.95\linewidth}\footnotesize
-200 replications of the témoin i.i.d.. $p$: exact rank $p$-value $(1+k)/201$, one-sided in the direction the hypothesis predicts (minimum $0{,}005$). $z$: distance to the null mean in null standard deviations, in the predicted direction. Holm $p$: the
-\citet{holm1979} sur les 23 tests of the table, applied to the Gaussienne-tail $p$-value implied by $z$, because with 200 replications no rank $p$-value can survive it. ``Passes'': rank $p\le0{,}05$ and Holm $p\le0{,}05$. ``Null stronger'': the null produces a larger effect
-que les données ($p>0{,}95$). Les statistiques par épisode ne sont calculées que sur le panel d'actions. L'écart de couplage est en nats, positif pour un couplage.
+999 répétitions de chaque témoin. $p$ : $p$-valeur exacte de rang $(1+k)/(1+B)$, unilatérale dans le sens prédit
+par l'hypothèse. $p$ de Holm : l'ajustement séquentiel de \citet{holm1979} sur les 26 tests du tableau, appliqué à
+$\max(p_{\text{i.i.d.}},p_{\text{CCC-FHS}})$, la $p$-valeur du test qui ne rejette que si les deux témoins rejettent. « Passe » : $p$ de Holm $\le0{,}05$.
+« i.i.d.\ seulement » : bat le témoin i.i.d. mais pas celui qui préserve la volatilité. « Pas après Holm » : bat les deux témoins à 5\,\% mais pas après ajustement.
+« Témoin plus fort » : les deux témoins produisent un effet plus grand que les données ($p>0{,}95$). L'écart de couplage est en nats, positif pour un couplage.
 \end{minipage}
 \end{table}
 
@@ -146,7 +175,7 @@ choc directionnel & $-2\sigma$ & $-3\sigma$ & $-4\sigma$ \\\midrule
 ES$_{99}$ à un jour & $9{,}1\%$ & $13{,}7\%$ & $20{,}3\%$ \\
 coût total (20 actifs) & $6{,}80$ & $9{,}97$ & $20{,}19$ \\
 coût vu par le portefeuille & $2{,}75$ & $7{,}24$ & $16{,}22$ \\
-coût minimal pour la même ES$_{99}$ (Proposition~\ref{prop:lift}) & $\mathbf{1{,}85}$ & $\mathbf{5{,}47}$ & $\mathbf{13{,}74}$ \\
+coût minimal pour la même ES$_{99}$ (proposition~\ref{prop:lift}) & $\mathbf{1{,}85}$ & $\mathbf{5{,}47}$ & $\mathbf{13{,}74}$ \\
 rapport total / minimal & $3{,}7$ & $1{,}8$ & $1{,}5$ \\\midrule
 \multicolumn{4}{@{}l}{\emph{Coût de chaque composante seule}} \\
 \quad choc directionnel & $2{,}00$ & $4{,}50$ & $8{,}00$ \\
@@ -154,8 +183,8 @@ rapport total / minimal & $3{,}7$ & $1{,}8$ & $1{,}5$ \\\midrule
 \quad corrélations forcées & $2{,}43$ & $8{,}10$ & $13{,}50$ \\
 \bottomrule\end{tabular}
 \par\medskip\begin{minipage}{0.95\linewidth}\footnotesize
-Equal-weight portfolio of the twenty stocks; current state: annual volatility 20\%, ES$_{99}$ à un jour 3{,}4\%. The full cost is the
-Gaussienne divergence \eqref{eq:klgauss} on the 20 assets; the coût vu par le portefeuille is the divergence of the portfolio's law.
+Portefeuille équipondéré des vingt actions ; état actuel : volatilité annuelle 20\,\%, ES$_{99}$ à un jour 3{,}4\,\%. Le coût total est la
+divergence gaussienne \eqref{eq:klgauss} sur les 20 actifs ; le coût vu par le portefeuille est la divergence de la loi du portefeuille.
 Le coût minimal est la divergence $g(u,v)$ du scénario de boule d'entropie de même ES$_{99}$, atteinte en pleine
 dimension par le relèvement de rang un \eqref{eq:lift}. Le plus grand flux d'information à 21 jours observé en 33 ans est d'environ 2 nats.
 \end{minipage}
