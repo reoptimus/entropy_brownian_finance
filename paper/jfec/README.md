@@ -1,4 +1,4 @@
-# Replication package — "What Survives a Placebo? Entropy, Market Coupling and the Plausibility of Stress Scenarios"
+# Replication package — "Markets Couple under Stress: A Placebo-Tested Entropy Measure and the Plausibility of Stress Scenarios"
 
 Sébastien Gallet, November 2026. Prepared for submission to the *Journal of Financial Econometrics* (JFEC).
 

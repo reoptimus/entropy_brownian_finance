@@ -35,8 +35,8 @@
 
 \begin{titlepage}
 \begin{center}
-{\Large\bfseries Que reste-t-il après un placebo ?\\[4pt]
-Entropie, couplage des marchés et plausibilité des scénarios de stress\par}
+{\Large\bfseries Les marchés se couplent sous stress :\\[4pt]
+une mesure entropique éprouvée par placebo et la plausibilité des scénarios de stress\par}
 \vspace{1.5cm}
 {\large Sébastien Gallet\par}
 \vspace{0.3cm}
@@ -62,17 +62,17 @@ soumis en anglais au Journal of Financial Econometrics.}
 
 \begin{doublespace}
 \begin{abstract}
-\noindent Les indicateurs de stress fondés sur l'entropie, calculés à partir
-de moments glissants, montrent en crise des sauts, une relaxation lente et un
-épaississement des queues. Nous montrons qu'un témoin par rééchantillonnage
-sans dynamique reproduit presque toutes ces signatures : ce sont des
-artefacts d'estimation. Un fait résiste, y compris à un témoin GARCH qui
-préserve la volatilité et à une comparaison au sein de chaque année, sur les
-actions et les secteurs américains et sur les marchés de la zone euro : sous
-stress, les corrélations se couplent et le nombre effectif de sources de
-risque indépendantes diminue. Nous donnons le biais à distance finie de
-l'estimateur du couplage et la taille et la puissance du test, et chiffrons
-en nats des scénarios de stress, dont le scénario adverse 2025 de l'ABE.
+\noindent Nous construisons une mesure entropique du couplage des marchés et
+la confrontons à deux témoins placebo, l'un sans dynamique, l'autre qui
+préserve une volatilité GARCH. Sur les actions et les secteurs américains et
+sur les marchés de la zone euro, le couplage passe les deux témoins et une
+comparaison au sein de chaque année : sous stress, les corrélations se
+couplent et le nombre effectif de sources de risque indépendantes diminue.
+Les mêmes tests montrent que d'autres signatures de crise des indicateurs
+entropiques glissants, comme les sauts et l'épaississement des queues, sont
+des artefacts d'estimation. Nous donnons le biais à distance finie de
+l'estimateur et la taille et la puissance du test, et chiffrons en nats des
+scénarios de stress, dont le scénario adverse 2025 de l'ABE.
 \end{abstract}
 
 \vspace{0.5cm}
@@ -100,8 +100,9 @@ connectivité en composantes principales \citep{billio2012}. Tracés à travers
 les crises, ces indicateurs sont convaincants : ils sautent au début, décroissent
 lentement, et coïncident avec des queues épaisses et une asymétrie négative.
 
-Cet article demande lesquelles de ces signatures sont réelles. La réponse est
-inconfortable : presque aucune. Tout indicateur entropique est une fonction
+Cet article demande lesquelles de ces signatures sont réelles et donne une
+méthode pour le savoir. La réponse sépare un noyau robuste de la mécanique
+d'estimation. Tout indicateur entropique est une fonction
 convexe et positive de moments estimés. Sur des données à queues épaisses, un
 jour extrême qui entre dans la fenêtre d'estimation fait monter l'indice
 brutalement, puis l'indice décroît lentement à mesure que ce jour perd du
@@ -120,14 +121,16 @@ Kullback--Leibler entre la loi des rendements et des gaussiennes indépendantes
 de mêmes variances \citep{cardoso2003}. Sur vingt actions du S\&P~500
 (1990--2022) et les 48 portefeuilles sectoriels de \citet{french2026}
 (1990--2026), les données brutes montrent toutes les signatures de crise
-prévues. Face à un témoin i.i.d.\ qui conserve les queues épaisses et la
-corrélation du jour, les sauts unilatéraux, l'épaississement des queues, le
-co-mouvement des queues et des corrélations et le signe quotidien des sauts
-disparaissent tous ; plusieurs sont même \emph{plus forts} dans les données
-mélangées. Ce qui résiste, c'est le canal de dépendance. Sous stress, la
+prévues. Le canal de dépendance en est le noyau robuste. Sous stress, la
 corrélation totale (le « couplage ») augmente de \qCplSpObs~nat sur les
 actions et de \qCplFfObs~nats sur les secteurs, contre \qCplSpIid\ et \qCplFfIid\
-sous le témoin.
+sous un témoin i.i.d.\ qui conserve les queues épaisses et la corrélation du
+jour. Les autres signatures ne passent pas ce témoin : les sauts unilatéraux,
+l'épaississement des queues, le co-mouvement des queues et des corrélations et
+le signe quotidien des sauts sont tous reproduits par lui, et plusieurs sont
+même \emph{plus forts} dans les données mélangées. Cela indique à qui
+construit de tels indicateurs quels traits portent de l'information et
+lesquels viennent de l'estimateur.
 
 L'objection évidente est que le témoin i.i.d.\ détruit aussi le regroupement
 de la volatilité ; le couplage sous stress pourrait donc n'être que ce
@@ -145,7 +148,7 @@ corrélations ont aussi une tendance sur trois décennies, nous ajoutons une
 comparaison au sein de chaque année, avec des effets fixes par année civile ;
 l'écart diminue d'environ \gnSpFeShrink\ mais, pour les mesures brute et par
 rangs, dépasse encore les deux témoins sur les deux panels. Le second témoin
-change aussi le verdict ailleurs : l'idée que les crises sont dominées par la
+précise aussi l'interprétation ailleurs : l'idée que les crises sont dominées par la
 dépendance passe le témoin i.i.d.\ mais pas le témoin GARCH ; elle reflète
 donc le regroupement de la volatilité, pas la dynamique des corrélations.
 
@@ -163,10 +166,10 @@ l'estimateur de Ledoit--Wolf que nous utilisons (au plus \mcLwBothWorst,
 puissance \mcLwPow) : le rétrécissement supprime le biais que des régimes de
 volatilité abrupts induisent dans les grandes matrices de corrélation.
 
-\paragraph{Contributions.} D'abord, un avertissement méthodologique assorti
-d'un remède : les indicateurs de crise fondés sur des moments doivent être
-calibrés face à un témoin, et ce témoin doit préserver la dynamique de
-volatilité quand l'affirmation porte sur la dépendance. Nous donnons le biais
+\paragraph{Contributions.} D'abord, une méthode de test pour les indicateurs
+de crise fondés sur des moments : les calibrer face à des témoins placebo,
+dont l'un préserve la dynamique de volatilité quand l'affirmation porte sur la
+dépendance, et exiger qu'un résultat passe les deux. Nous donnons le biais
 à distance finie du couplage empirique sous indépendance
 (proposition~\ref{prop:bias}), qui rend les nats comparables entre panels de
 tailles différentes, ainsi que la taille et la puissance du test. Ensuite, un
@@ -521,7 +524,7 @@ de stress. Le panel de la zone euro de l'annexe en ligne donne la même
 réponse : le couplage total et le couplage entre les cinq segments du CISS
 battent les deux témoins ($\hat p\le\euInterFhsP$).
 
-\subsection{Ce qui ne résiste pas}
+\subsection{Chaque signature à l'épreuve}
 
 Le tableau~\ref{tab:verdicts} confronte chaque hypothèse aux deux témoins.
 Un résultat passe s'il bat les deux, après l'ajustement séquentiel de
@@ -534,7 +537,9 @@ le couplage sur les deux panels, l'étendue de $\JJ$ sur les actions, sa
 demi-vie quotidienne sur les deux panels et le plus grand épisode sur les
 actions. Deux autres battent les deux témoins à 5\,\% mais pas après
 ajustement : l'étendue de $\JJ$ et le plus grand épisode sur les secteurs. Les
-échecs sont instructifs.
+signatures que les témoins reproduisent sont instructives elles aussi : elles
+montrent quels traits des indicateurs entropiques ne doivent pas être lus
+comme de l'information.
 
 \emph{Sauts unilatéraux (H3).} Le détecteur trouve \qJumpUpSpObs\ sauts vers
 le haut et \qJumpDownSpObs\ vers le bas sur les actions, mais le témoin i.i.d.\
@@ -553,8 +558,9 @@ GARCH reproduit les données (\qDgapSpFhs). \emph{Co-mouvement des canaux
 asymétrie négative (corrélation \qHfiveCorrSpObs), mais le témoin GARCH, dont
 l'effet de levier lie les poussées de volatilité aux baisses de prix, en
 produit davantage (\qHfiveCorrSpFhs). Ce sont exactement les signatures que
-prédit un récit entropique des crises, et aucune ne se distingue de la
-mécanique d'estimation ni de la dynamique de volatilité.
+prédit un récit entropique des crises, et le test montre qu'aucune ne se
+distingue de la mécanique d'estimation ni de la dynamique de volatilité ; un
+indicateur fondé sur elles refléterait l'estimateur plutôt que le marché.
 
 Trois faits dynamiques passent les deux témoins. L'\emph{étendue} de $\JJ$
 (\qRangeSpObs~nats sur les actions, contre \qRangeSpIid\ et \qRangeSpFhs) et sa
@@ -723,19 +729,19 @@ n'en dépendent pas.
 \section{Conclusion}
 \label{sec:conclusion}
 
-Les indicateurs entropiques du stress financier sont faciles à construire et
-convaincants à tracer. L'essentiel de ce qu'ils montrent en crise est produit
-par l'estimateur : un monde rééchantillonné sans dynamique reproduit les
-sauts, les décroissances lentes, l'épaississement des queues et le
-co-mouvement des queues et des corrélations, et souvent les exagère. Un fait
-résiste à un témoin sans dynamique, à un témoin qui préserve la volatilité et
-à une comparaison au sein de chaque année, sur les actions et les secteurs
-américains et sur les marchés de la zone euro : sous stress, les corrélations
-se couplent et le nombre de sources de risque indépendantes diminue. D'autres
-faits séduisants, comme la domination des crises par la dépendance, passent
-le premier témoin mais pas le second. Le test conjoint a la bonne taille
-quand la volatilité se regroupe ou change de régime, à condition de rétrécir
-la matrice de corrélation dans les grandes coupes transversales.
+L'entropie donne une mesure précise de la force du couplage des marchés et
+de la plausibilité d'un scénario de stress. Confronté à un témoin sans
+dynamique, à un témoin qui préserve la volatilité et à une comparaison au sein
+de chaque année, sur les actions et les secteurs américains et sur les marchés
+de la zone euro, le couplage tient : sous stress, les corrélations se couplent
+et le nombre de sources de risque indépendantes diminue. Le test conjoint a la
+bonne taille quand la volatilité se regroupe ou change de régime, à condition
+de rétrécir la matrice de corrélation dans les grandes coupes transversales.
+Les mêmes tests montrent aussi ce qu'il ne faut pas lire dans les indicateurs
+entropiques : un monde rééchantillonné sans dynamique reproduit leurs sauts,
+leurs décroissances lentes, l'épaississement des queues et le co-mouvement des
+queues et des corrélations, souvent en les exagérant, et l'idée que les crises
+sont dominées par la dépendance passe le premier témoin mais pas le second.
 
 Pour les tests de résistance, la même divergence chiffre les scénarios dans
 une unité qui se lit en écarts-types. La façon la moins coûteuse d'atteindre
