@@ -40,8 +40,8 @@
 % ------------------------------------------------------------- title page
 \begin{titlepage}
 \begin{center}
-{\Large\bfseries What Survives a Placebo?\\[4pt]
-Entropy, Market Coupling and the Plausibility of Stress Scenarios\par}
+{\Large\bfseries Markets Couple under Stress:\\[4pt]
+A Placebo-Tested Entropy Measure and the Plausibility of Stress Scenarios\par}
 \vspace{1.5cm}
 {\large Sébastien Gallet\par}
 \vspace{0.3cm}
@@ -66,16 +66,15 @@ Statistical Data Warehouse and the EBA 2025 stress-test scenario.\par
 % ------------------------------------------------------------- abstract
 \begin{doublespace}
 \begin{abstract}
-\noindent Entropy-based stress indicators computed from rolling moments
-display jumps, slow relaxation and fattening tails in crises. We show that a
-resampling null with no dynamics reproduces almost all of these signatures:
-they are estimation artefacts. One fact survives, including a
-volatility-preserving GARCH null and a within-year comparison, on US stocks,
-industries and euro-area markets: under stress, correlations couple and the
-effective number of independent risk sources falls. We give the
-finite-sample bias of the coupling estimator and the size and power of the
-test, and price stress scenarios in nats, including the EBA 2025 adverse
-scenario.
+\noindent We build an entropy measure of market coupling and test it against
+two placebo nulls, one without dynamics and one that preserves GARCH
+volatility. On US stocks, US industries and euro-area markets, coupling passes
+both nulls and a within-year comparison: under stress, correlations couple
+and the effective number of independent risk sources falls. The same tests
+show that other crisis signatures of rolling entropy indicators, such as jumps
+and fattening tails, are estimation artefacts. We derive the estimator's
+finite-sample bias and the test's size and power, and price stress scenarios
+in nats, including the EBA 2025 adverse scenario.
 \end{abstract}
 
 \vspace{0.5cm}
@@ -103,8 +102,8 @@ correlation-concentration statistics such as the absorption ratio
 they jump at the onset, decay slowly, and coincide with fat tails and negative
 skewness.
 
-This paper asks which of these signatures are real. Our answer is
-uncomfortable: almost none. Every entropy indicator is a convex,
+This paper asks which of these signatures are real, and gives a method to
+tell. The answer separates a robust core from estimation mechanics. Every entropy indicator is a convex,
 non-negative function of estimated moments. On fat-tailed data, an extreme day
 entering an estimation window raises such an index abruptly, and the index
 decays slowly as the day loses weight, whether or not any information arrived.
@@ -120,12 +119,15 @@ into scale, dependence and shape, and study the scale-free part, the
 between the return law and independent Gaussians with the same variances
 \citep{cardoso2003}. On twenty S\&P~500 stocks (1990--2022) and the 48
 \citet{french2026} industry portfolios (1990--2026), the raw data display all
-the predicted crisis signatures. Against an i.i.d.\ null that keeps fat tails
-and same-day correlation, one-sided jumps, fattening tails, the co-movement of
-tails and correlation and the daily sign of jumps all disappear; several are
-\emph{stronger} in the shuffled data. What survives is the dependence channel.
+the predicted crisis signatures. The dependence channel is the robust core.
 Under stress, total correlation (``coupling'') rises by \qCplSpObs~nat on stocks
-and \qCplFfObs~nats on industries, against \qCplSpIid\ and \qCplFfIid\ under the null.
+and \qCplFfObs~nats on industries, against \qCplSpIid\ and \qCplFfIid\ under an
+i.i.d.\ null that keeps fat tails and same-day correlation. The other
+signatures do not pass this null: one-sided jumps, fattening tails, the
+co-movement of tails and correlation and the daily sign of jumps are all
+reproduced by it, and several are \emph{stronger} in the shuffled data. This
+tells anyone who builds such indicators which features carry information and
+which come from the estimator.
 
 The obvious objection is that the i.i.d.\ null also destroys volatility
 clustering, so coupling under stress might be volatility clustering plus the
@@ -140,7 +142,7 @@ on a euro-area panel of 28 series spanning the five segments of the CISS.
 Because correlations also trend over three decades, we add a within-year
 comparison with calendar-year fixed effects; the gap shrinks by about
 \gnSpFeShrink\ but, for the raw and rank measures, still exceeds both nulls on
-both panels. The second null also changes the verdict elsewhere: the claim
+both panels. The second null also sharpens the interpretation elsewhere: the claim
 that crises are dominated by dependence passes the i.i.d.\ null but not the
 GARCH one, so it reflects volatility clustering rather than correlation
 dynamics.
@@ -157,9 +159,10 @@ under regime-switching volatility) but not with the Ledoit--Wolf estimator we
 use (at most \mcLwBothWorst, power \mcLwPow): shrinkage removes the bias that
 abrupt volatility regimes induce in large correlation matrices.
 
-\paragraph{Contributions.} First, a methodological warning with a remedy:
-moment-based crisis indicators must be calibrated against a null, and the null
-must preserve volatility dynamics when the claim concerns dependence. We give
+\paragraph{Contributions.} First, a testing method for moment-based crisis
+indicators: calibrate them against placebo nulls, one of which preserves
+volatility dynamics when the claim concerns dependence, and require a result
+to pass both. We give
 the finite-sample bias of sample coupling under independence
 (Proposition~\ref{prop:bias}), which makes nats comparable across panels of
 different size, and the size and power of the test. Second, an empirical fact
@@ -484,7 +487,7 @@ stress dates. The euro-area panel of the online appendix gives the same
 answer: total coupling and coupling between the five CISS segments beat both
 nulls ($\hat p\le\euInterFhsP$).
 
-\subsection{What does not survive}
+\subsection{Every signature under test}
 
 Table~\ref{tab:verdicts} confronts every hypothesis with both nulls. A result
 passes if it beats both, after the \citet{holm1979} step-down adjustment over
@@ -495,7 +498,8 @@ smallest $p$-value is \pMin, below the first Holm threshold
 rank $p$-values. \holmNsurv\ results pass: coupling on both panels, the range of
 $\JJ$ on stocks, its daily half-life on both panels and the largest episode on
 stocks. Two more beat both nulls at 5\% but not after adjustment: the range of
-$\JJ$ and the largest episode on industries. The failures are informative.
+$\JJ$ and the largest episode on industries. The signatures the nulls reproduce are informative too: they
+show which features of entropy indicators should not be read as information.
 
 \emph{One-sided jumps (H3).} The detector finds \qJumpUpSpObs\ upward and
 \qJumpDownSpObs\ downward jumps on stocks, but the i.i.d.\ null produces
@@ -512,8 +516,9 @@ i.i.d.\ null couples them more (\qHsixStressSpIid). \emph{Daily sign (H5).}
 Jumps coincide with negative skewness (correlation \qHfiveCorrSpObs), but the
 GARCH null, whose leverage effect ties volatility bursts to falling prices,
 produces more (\qHfiveCorrSpFhs). These are exactly the signatures an entropy
-story of crises predicts, and none is distinguishable from estimation
-mechanics or from volatility dynamics.
+story of crises predicts, and the test shows that none is distinguishable
+from estimation mechanics or from volatility dynamics; an indicator built on
+them would signal the estimator rather than the market.
 
 Three dynamic facts pass both nulls. The \emph{range} of $\JJ$
 (\qRangeSpObs~nats on stocks, against \qRangeSpIid\ and \qRangeSpFhs) and its
@@ -670,17 +675,18 @@ radii; the comparisons above are relative and do not depend on it.
 \section{Conclusion}
 \label{sec:conclusion}
 
-Entropy indicators of financial stress are easy to build and persuasive to
-plot. Most of what they show in crises is produced by the estimator: a
-resampled world without dynamics reproduces the jumps, the slow decays, the
-fattening tails and the co-movement of tails and correlation, and often
-exaggerates them. One fact survives a dynamics-free null, a
+Entropy gives a precise measure of how strongly markets couple and of how
+plausible a stress scenario is. Tested against a dynamics-free null, a
 volatility-preserving null and a within-year comparison, on US stocks,
-industries and euro-area markets: under stress, correlations couple and the
-number of independent sources of risk falls. Other appealing facts, such as
-crises being dominated by dependence, pass the first null but not the second.
-The joint test has correct size when volatility clusters or switches regimes,
-provided the correlation matrix is shrunk in large cross-sections.
+industries and euro-area markets, coupling holds up: under stress,
+correlations couple and the number of independent sources of risk falls. The
+joint test has correct size when volatility clusters or switches regimes,
+provided the correlation matrix is shrunk in large cross-sections. The same
+tests show what not to read into entropy indicators: a resampled world without
+dynamics reproduces their jumps, slow decays, fattening tails and the
+co-movement of tails and correlation, often in exaggerated form, and the claim
+that crises are dominated by dependence passes the first null but not the
+second.
 
 For stress testing, the same divergence prices scenarios in a unit that reads
 in standard deviations. The cheapest way to reach a severity is a one-factor
