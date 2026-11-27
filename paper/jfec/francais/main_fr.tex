@@ -268,6 +268,19 @@ $h(q)$ \emph{augmente} en crise, d'environ $5$~nats sur notre panel
 d'actions ; l'indice sans échelle $\JJ$ retire ce canal et garde les deux qui
 mesurent la contrainte.
 
+\paragraph{L'échelle est écartée de $\JJ$, pas de l'analyse.} Les deux membres
+de \eqref{eq:three} bougent en sens opposés en crise : la volatilité fait
+monter l'entropie, le couplage et les queues épaisses la font baisser. La
+volatilité est déjà bien mesurée par les outils usuels, et elle écraserait les
+canaux structurels dans toute somme ; $\JJ$ est donc construit pour y être
+aveugle. L'échelle revient à deux endroits. Dans les tests placebo, le second
+témoin conserve la dynamique de volatilité observée : un couplage qu'il ne
+reproduit pas n'est pas un sous-produit de l'échelle. Dans l'application aux
+scénarios de stress (section~\ref{sec:stress}), un scénario déplace les deux
+canaux à la fois, et la proposition~\ref{prop:split} chiffre chacun d'eux en
+nats. La figure~\ref{fig:scale} les montre côte à côte, pour les crises
+observées et pour les scénarios.
+
 \begin{proposition}[Décomposition exacte par blocs]
 \label{prop:blocks}
 Pour une partition des actifs en blocs $B_1,\dots,B_K$ de sous-matrices de
@@ -725,6 +738,94 @@ face aux hausses de volatilité réalisées ; nous n'associons donc pas de
 périodes de retour aux rayons. Les comparaisons ci-dessus sont relatives et
 n'en dépendent pas.
 
+\subsection{Échelle ou structure : un taux de change en nats}
+
+Un superviseur qui vise une perte donnée peut monter les volatilités, monter
+les corrélations, ou les deux. À moyenne fixée, l'expected shortfall est
+proportionnelle à l'écart-type du portefeuille $vs_0$ ; la question est donc
+de savoir quelle façon d'atteindre un $v$ donné coûte le moins de nats. On
+écrit $\Sigma_k=D_kR_kD_k$ et $S=D_1D_0^{-1}=\mathrm{diag}(s_i)$.
+
+\begin{proposition}[Partage échelle--corrélation]
+\label{prop:split}
+Le coût de déformation $K=\KL{\mathcal N(0,\Sigma_1)}{\mathcal N(0,\Sigma_0)}$
+vérifie exactement
+\begin{equation}
+\label{eq:split}
+K=\underbrace{\KL{\mathcal N(0,SR_0S)}{\mathcal N(0,R_0)}}_{K_\sigma\text{ : volatilités seules}}
++\underbrace{\KL{\mathcal N(0,R_1)}{\mathcal N(0,R_0)}}_{K_R\text{ : corrélations seules}}
++\underbrace{\tfrac12\mathrm{tr}\bigl(R_0^{-1}(SES-E)\bigr)}_{I\text{ : interaction}},
+\end{equation}
+avec $E=R_1-R_0$ et, en notant $\Delta C=C(R_1)-C(R_0)$,
+$K=\tfrac12[\mathrm{tr}(\Sigma_0^{-1}\Sigma_1)-N]-\sum_i\log s_i+\Delta C$.
+L'interaction s'annule quand la référence est indépendante ($R_0=I$), et
+alors $K_R=C(R_1)$ : le couplage est le prix, en nats, de la corrélation
+mesurée depuis l'indépendance. Le relèvement minimal \eqref{eq:lift} déplace
+les deux canaux, avec exactement $\sum_i\log s_i-\Delta C=\log v$.
+\end{proposition}
+
+\begin{proposition}[Taux de change]
+\label{prop:rate}
+On augmente la variance du portefeuille d'un petit facteur $1+\varepsilon$. Le
+relèvement minimal coûte $\varepsilon^2/4$ ; le scénario le moins coûteux qui
+ne déplace que les volatilités coûte $\varepsilon^2/(4e_\sigma)$, et celui qui
+ne déplace que les corrélations $\varepsilon^2/(4e_R)$, avec
+\begin{equation}
+\label{eq:rate}
+e_\sigma=2\,c^\top\bigl(I+R_0\circ R_0^{-1}\bigr)^{-1}c,\qquad
+e_R=1-(\rho^{2})^\top\bigl(R_0\circ R_0\bigr)^{-1}\rho^{2},
+\end{equation}
+où $c_i=w_i(\Sigma_0w)_i/s_0^2$ sont les contributions au risque d'Euler,
+$\rho_i$ est la corrélation de l'actif $i$ avec le portefeuille, $\rho^2$ est
+pris terme à terme et $\circ$ est le produit terme à terme. $e_R/e_\sigma$ est
+le nombre de nats de choc de volatilité qu'il faut pour acheter la perte d'un
+nat de choc de corrélation. En $R_0=I$, $e_\sigma+e_R=1$. Un choc sur les
+seules corrélations ne peut pas porter $v$ au-delà du plafond
+$\sum_i|w_i|\sigma_i/s_0$.
+\end{proposition}
+
+La dilatation uniforme a $e_\sigma=1/N$ (corollaire~\ref{cor:uniform}). Le
+partage répond à la question de l'audit ci-dessus : les jambes d'un scénario
+ne peuvent pas être chiffrées séparément puis additionnées. Dans le scénario
+classique standard, la jambe de volatilité coûte $16{,}1$~nats et la jambe de
+corrélation $8{,}1$, mais l'interaction vaut $-18{,}8$ et la déformation coûte
+$5{,}5$ : les deux canaux sont complémentaires et non substituables, car les
+corrélations forcées placent le risque sur le facteur que la dilatation
+multiplie ensuite.
+
+Sur le panel d'actions, avec la covariance actuelle et un portefeuille
+équipondéré, $e_\sigma=0{,}058$ (dilatation uniforme $0{,}050$) et
+$e_R=0{,}134$ : pour de petits chocs, un choc de corrélation achète la même
+perte pour $2{,}3$ fois moins de nats que le meilleur choc sur les seules
+volatilités. Sur les secteurs, le rapport est de $6{,}7$ ($e_\sigma=0{,}027$,
+$e_R=0{,}181$). L'avantage ne résiste pas aux grands chocs : les corrélations
+seules ne peuvent pas multiplier la volatilité du portefeuille par plus de
+$1{,}55$ sur les actions et $2{,}05$ sur les secteurs, et leur coût explose à
+l'approche du plafond. Calculés exactement, les deux canaux purs coûtent autant
+en $v=1{,}31$ sur les actions ($1{,}5$~nats chacun) et en $v=1{,}97$ sur les
+secteurs ; en dessous, la corrélation est moins chère, au-dessus, la
+volatilité. Aucun n'est efficace : même pour de petits chocs, le meilleur
+canal pur n'atteint que $13\,\%$ de l'efficacité du relèvement minimal sur
+les actions et $18\,\%$ sur les secteurs. Le critère n'est donc pas un choix
+entre les deux mais un rapport : le scénario le moins coûteux monte l'échelle
+et le couplage presque à parts égales, et son entropie gaussienne n'augmente
+que de $\log v$.
+
+La figure~\ref{fig:scale} met échelle et structure côte à côte. À la perte du
+scénario classique standard ($v=2{,}94$), le relèvement minimal monte
+$\sum_i\log\sigma_i$ de $14{,}0$~nats et $C$ de $12{,}9$, pour $2{,}7$~nats de
+déformation ; la dilatation uniforme monte l'échelle de $21{,}6$, laisse $C$
+inchangé et coûte $54{,}9$. Les crises observées se situent entre les deux.
+Entre régimes, l'échelle monte de $8{,}8$~nats sur les actions et $21{,}6$ sur
+les secteurs, le couplage de $1{,}7$ et $4{,}9$. Dans les trois plus grands
+épisodes de chaque panel, le couplage couvre $29$ à $55\,\%$ de la hausse
+d'échelle, et couplage plus forme entre $68\,\%$ et la totalité (COVID-19 :
+échelle $16{,}0$, couplage $7{,}1$, forme $8{,}7$ sur les actions ; $47{,}8$,
+$19{,}6$ et $26{,}7$ sur les secteurs). La forme, l'autre moitié de $\JJ$ dans
+ces épisodes, est nulle dans tout scénario gaussien et ne peut pas être
+chiffrée par \eqref{eq:klgauss} ; il faudrait une référence non gaussienne
+pour la chiffrer.
+
 % =========================================================================
 \section{Conclusion}
 \label{sec:conclusion}
@@ -747,7 +848,10 @@ Pour les tests de résistance, la même divergence chiffre les scénarios dans
 une unité qui se lit en écarts-types. La façon la moins coûteuse d'atteindre
 une sévérité est un scénario à un facteur ; la dilatation uniforme coûte $N$
 fois plus en déformation, et les scénarios classiques paient jusqu'à $3{,}7$
-fois le minimum. Le scénario adverse 2025 de l'ABE coûte autant que 2008 ou
+fois le minimum. Échelle et couplage se chiffrent dans la même unité : pour de
+petites pertes, un choc de corrélation coûte deux à sept fois moins de nats
+qu'un choc de volatilité, mais il bute sur un plafond, et le scénario le moins
+coûteux monte les deux presque à parts égales. Le scénario adverse 2025 de l'ABE coûte autant que 2008 ou
 2022. Deux prolongements sont naturels : un large panel d'actions
 individuelles sans biais de survie, et un témoin à corrélation dynamique estimé sur les
 seules périodes calmes, qui demanderait si le couplage de crise dépasse ce que
@@ -800,6 +904,36 @@ $g(u,v)$.
 
 \paragraph{Corollaire~\ref{cor:uniform}.} Toutes les valeurs propres de
 $\Sigma_0^{-1}\Sigma_1$ valent $v^2$ ; on applique \eqref{eq:klgauss}.
+
+\paragraph{Proposition~\ref{prop:split}.} $\Sigma_0^{-1}\Sigma_1$ est semblable
+à $R_0^{-1}SR_1S$, et $\log\det(\Sigma_0^{-1}\Sigma_1)=2\sum_i\log s_i
+-2\Delta C$, d'où la seconde expression de $K$. En écrivant
+$\mathrm{tr}(R_0^{-1}SR_1S)=\mathrm{tr}(R_0^{-1}SR_0S)+\mathrm{tr}(R_0^{-1}E)
++\mathrm{tr}(R_0^{-1}(SES-E))$ et en regroupant les log-déterminants, on
+obtient \eqref{eq:split}. Si $R_0=I$, $\mathrm{tr}(SES)=\sum_is_i^2E_{ii}=0=
+\mathrm{tr}(E)$ car $E$ est de diagonale nulle, et $K_R=\tfrac12[N-N-
+\log\det R_1]=C(R_1)$. Pour le relèvement minimal, la preuve de la
+proposition~\ref{prop:lift} donne $\det(\Sigma_0^{-1}\Sigma_1)=v^2$.
+
+\paragraph{Proposition~\ref{prop:rate}.} Au second ordre,
+$K\approx\tfrac14\mathrm{tr}[(\Sigma_0^{-1}d\Sigma)^2]$ et la cible de variance
+est linéaire en $d\Sigma$. Pour les volatilités, $s_i=1+x_i$,
+$d\Sigma=D_0(XR_0+R_0X)D_0$ avec $X=\mathrm{diag}(x)$, donc
+$K\approx\tfrac12x^\top Mx$ avec $M=I+R_0\circ R_0^{-1}$, et la cible s'écrit
+$2c^\top x=\varepsilon$ ; la minimisation donne $\varepsilon^2/(8c^\top
+M^{-1}c)$. Pour les corrélations, $d\Sigma=D_0ED_0$ avec $\mathrm{diag}(E)=0$,
+$K\approx\tfrac14\mathrm{tr}(R_0^{-1}ER_0^{-1}E)$ et la cible est
+$a^\top Ea=\varepsilon s_0^2$, $a=D_0w$. Les conditions du premier ordre donnent
+$E\propto R_0(aa^\top+\mathrm{diag}(m))R_0$, où $m$ est fixé par la diagonale
+nulle, $(R_0\circ R_0)m=-b^2$, $b=R_0a=s_0\rho$ ; $R_0\circ R_0$ est définie
+positive par le théorème du produit de Schur. Le minimum vaut
+$\varepsilon^2s_0^4/(4a^\top Ga)$ avec $G=R_0(aa^\top+\mathrm{diag}(m))R_0$ et
+$a^\top Ga=s_0^4(1-(\rho^2)^\top(R_0\circ R_0)^{-1}\rho^2)$. En $R_0=I$,
+$c_i=\rho_i^2$, $M=2I$ et $e_\sigma=\sum_ic_i^2=1-e_R$. Le plafond découle de
+$|R_{1,ij}|\le1$. Les optima à choc fini cités dans le texte sont calculés
+exactement : le problème en volatilités est convexe en $s$, et l'optimum en
+corrélations résout $R_1^{-1}=R_0^{-1}-2\lambda aa^\top/s_0^2-\mathrm{diag}(m)$
+pour $N+1$ multiplicateurs.
 
 \section{Détails d'estimation}
 \label{app:details}
@@ -868,6 +1002,29 @@ effectif de modes de risque $N\exp(-2C/N)$.\\
 \emph{Texte alternatif :} une série temporelle qui culmine en 2008 et 2020,
 alignée sur les périodes de stress grisées.}
 \label{fig:series}
+\end{figure}
+
+\begin{figure}[p]
+\centering
+\includegraphics[width=0.92\linewidth]{../figures/fig_scale_structure_fr.png}
+\caption{Échelle et structure côte à côte. Pour chaque ligne, la barre du haut
+est la variation du canal d'échelle $\sum_i\log\sigma_i$ et celle du bas la
+variation de l'indice structurel $\JJ$, découpée en couplage $C$ et forme
+$\DD$ (nats ; covariance EWMA, de sorte que $\Delta\JJ=\Delta C+\Delta\DD$
+exactement). A : écart stress moins calme et les trois plus grands épisodes
+de sauts de chaque panel (de dix jours avant l'épisode au pic de $\JJ$ ;
+repérés par le mois du pic). B : scénarios sur le panel S\&P~500 depuis la
+covariance actuelle, avec leur coût de déformation
+(proposition~\ref{prop:split}) ; les deux derniers atteignent la même
+volatilité de portefeuille que le scénario classique standard. Les scénarios
+gaussiens ont $\Delta\DD=0$.\\
+\emph{Texte alternatif :} des barres horizontales appariées. Dans les crises
+observées, la barre grise d'échelle est plus longue que celle du couplage, et
+la forme comble l'essentiel de l'écart dans les plus grands épisodes. Parmi
+les scénarios, la dilatation uniforme n'a qu'une barre d'échelle et le coût le
+plus élevé ; le relèvement minimal a des barres d'échelle et de couplage
+presque égales et le coût le plus bas.}
+\label{fig:scale}
 \end{figure}
 
 \end{document}

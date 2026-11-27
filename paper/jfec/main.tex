@@ -255,6 +255,18 @@ Gaussian entropy $h(q)$ \emph{increases} in crises, by about $5$~nats on our
 stock panel; the scale-free index $\JJ$ removes that channel and keeps the two
 that measure constraint.
 
+\paragraph{Scale is set aside in $\JJ$, not in the analysis.} The two sides of
+\eqref{eq:three} move in opposite directions in a crisis: volatility raises
+entropy, coupling and fat tails lower it. Volatility is already measured well
+by standard tools, and it would swamp the structural channels in any sum, so
+$\JJ$ is built to be blind to it. Scale returns in two places. In the
+placebo tests, the second null keeps the observed volatility dynamics, so
+any coupling it cannot reproduce is not a by-product of scale. In the
+stress application of section~\ref{sec:stress}, a scenario moves both
+channels at once, and Proposition~\ref{prop:split} prices each of them in
+nats. Figure~\ref{fig:scale} shows the two side by side, for observed crises
+and for scenarios.
+
 \begin{proposition}[Exact decomposition by blocks]
 \label{prop:blocks}
 For a partition of the assets into blocks $B_1,\dots,B_K$ with correlation
@@ -671,6 +683,88 @@ is reported in the online appendix. It is too mild by a factor close to two
 against realised volatility increases, so we do not attach return periods to
 radii; the comparisons above are relative and do not depend on it.
 
+\subsection{Scale or structure: an exchange rate in nats}
+
+A supervisor who wants a given loss can raise volatilities, raise
+correlations, or both. Expected shortfall at a fixed mean is proportional to
+the portfolio standard deviation $vs_0$, so the question is which way of
+reaching a given $v$ costs fewest nats. Write $\Sigma_k=D_kR_kD_k$ and
+$S=D_1D_0^{-1}=\mathrm{diag}(s_i)$.
+
+\begin{proposition}[Scale--correlation split]
+\label{prop:split}
+The deformation cost $K=\KL{\mathcal N(0,\Sigma_1)}{\mathcal N(0,\Sigma_0)}$
+satisfies, exactly,
+\begin{equation}
+\label{eq:split}
+K=\underbrace{\KL{\mathcal N(0,SR_0S)}{\mathcal N(0,R_0)}}_{K_\sigma\text{: volatilities only}}
++\underbrace{\KL{\mathcal N(0,R_1)}{\mathcal N(0,R_0)}}_{K_R\text{: correlations only}}
++\underbrace{\tfrac12\mathrm{tr}\bigl(R_0^{-1}(SES-E)\bigr)}_{I\text{: interaction}},
+\end{equation}
+with $E=R_1-R_0$, and, with $\Delta C=C(R_1)-C(R_0)$,
+$K=\tfrac12[\mathrm{tr}(\Sigma_0^{-1}\Sigma_1)-N]-\sum_i\log s_i+\Delta C$.
+The interaction vanishes when the reference is independent ($R_0=I$), and
+then $K_R=C(R_1)$: coupling is the price, in nats, of correlation measured
+from independence. The minimal lift \eqref{eq:lift} moves both channels, with
+$\sum_i\log s_i-\Delta C=\log v$ exactly.
+\end{proposition}
+
+\begin{proposition}[Exchange rate]
+\label{prop:rate}
+Raise the portfolio variance by a small factor $1+\varepsilon$. The minimal
+lift costs $\varepsilon^2/4$; the cheapest scenario that moves only
+volatilities costs $\varepsilon^2/(4e_\sigma)$ and the cheapest that moves only
+correlations costs $\varepsilon^2/(4e_R)$, with
+\begin{equation}
+\label{eq:rate}
+e_\sigma=2\,c^\top\bigl(I+R_0\circ R_0^{-1}\bigr)^{-1}c,\qquad
+e_R=1-(\rho^{2})^\top\bigl(R_0\circ R_0\bigr)^{-1}\rho^{2},
+\end{equation}
+where $c_i=w_i(\Sigma_0w)_i/s_0^2$ are the Euler risk contributions, $\rho_i$
+is the correlation of asset $i$ with the portfolio, $\rho^2$ is taken
+elementwise and $\circ$ is the elementwise product. $e_R/e_\sigma$ is the
+number of nats of volatility shock that buy the loss of one nat of
+correlation shock. At $R_0=I$, $e_\sigma+e_R=1$. A correlation-only shock
+cannot raise $v$ beyond the ceiling $\sum_i|w_i|\sigma_i/s_0$.
+\end{proposition}
+
+Uniform dilation has $e_\sigma=1/N$ (Corollary~\ref{cor:uniform}). The split
+answers the question of the audit above: the legs of a scenario cannot be
+priced separately and added. In the standard classical scenario the
+volatility leg costs $16.1$~nats and the correlation leg $8.1$, but the
+interaction is $-18.8$ and the deformation costs $5.5$: the two channels are
+complements, not substitutes, because forced correlations put the risk on the
+factor that the dilation then scales.
+
+On the stock panel, with the current covariance and an equally weighted
+book, $e_\sigma=0.058$ (uniform dilation $0.050$) and $e_R=0.134$: for small
+shocks a correlation shock buys the same loss for $2.3$ times fewer nats than
+the best volatility-only shock. On industries the ratio is $6.7$
+($e_\sigma=0.027$, $e_R=0.181$). The advantage does not survive large
+shocks: correlations alone cannot raise portfolio volatility by more than a
+factor $1.55$ on stocks and $2.05$ on industries, and their cost explodes as
+the ceiling nears. Computed exactly, the two pure channels cost the same at
+$v=1.31$ on stocks ($1.5$~nats each) and $v=1.97$ on industries; below,
+correlation is cheaper, above, volatility is. Neither is efficient: even
+for small shocks the better pure channel reaches only $13\%$ of the
+minimal-lift efficiency on stocks and $18\%$ on industries. The criterion is therefore not a choice
+between the two but a ratio: the cheapest scenario raises scale and coupling
+almost one for one, its Gaussian entropy rising by only $\log v$.
+
+Figure~\ref{fig:scale} puts scale and structure side by side. At the loss of
+the standard classical scenario ($v=2.94$), the minimal lift raises
+$\sum_i\log\sigma_i$ by $14.0$~nats and $C$ by $12.9$, for $2.7$~nats of
+deformation; uniform dilation raises scale by $21.6$, leaves $C$ unchanged and
+costs $54.9$. Observed crises lie between the two. Across regimes, scale
+rises by $8.8$~nats on stocks and $21.6$ on industries, coupling by $1.7$ and
+$4.9$. In the three largest episodes of each panel coupling covers $29$ to
+$55\%$ of the rise in scale, and coupling plus shape between $68\%$ and all
+of it (COVID-19: scale $16.0$, coupling $7.1$, shape $8.7$ on stocks; $47.8$,
+$19.6$ and $26.7$ on industries). Shape, the other half
+of $\JJ$ in these episodes, is zero in any Gaussian scenario and cannot be
+priced by \eqref{eq:klgauss}; a non-Gaussian reference would be needed to
+price it.
+
 % =========================================================================
 \section{Conclusion}
 \label{sec:conclusion}
@@ -691,7 +785,10 @@ second.
 For stress testing, the same divergence prices scenarios in a unit that reads
 in standard deviations. The cheapest way to reach a severity is a one-factor
 scenario; uniform dilation costs $N$ times more in deformation, and classical
-scenarios pay up to $3.7$ times the minimum. The EBA 2025 adverse scenario
+scenarios pay up to $3.7$ times the minimum. Scale and coupling are priced
+in the same unit: for small losses a correlation shock is two to seven times
+cheaper per nat than a volatility shock, but it hits a ceiling, and the
+cheapest scenario raises both almost one for one. The EBA 2025 adverse scenario
 costs as much as 2008 or 2022. Two extensions are natural: a
 broad survivorship-free panel of individual stocks, and a dynamic-correlation
 null fitted to calm periods only, which would ask whether crisis coupling
@@ -740,6 +837,35 @@ divergence is $g(u,v)$.
 
 \paragraph{Corollary~\ref{cor:uniform}.} All eigenvalues of
 $\Sigma_0^{-1}\Sigma_1$ equal $v^2$; apply \eqref{eq:klgauss}.
+
+\paragraph{Proposition~\ref{prop:split}.} $\Sigma_0^{-1}\Sigma_1$ is similar to
+$R_0^{-1}SR_1S$, and $\log\det(\Sigma_0^{-1}\Sigma_1)=2\sum_i\log s_i
+-2\Delta C$, which gives the second expression of $K$. Writing
+$\mathrm{tr}(R_0^{-1}SR_1S)=\mathrm{tr}(R_0^{-1}SR_0S)+\mathrm{tr}(R_0^{-1}E)
++\mathrm{tr}(R_0^{-1}(SES-E))$ and regrouping the log-determinants gives
+\eqref{eq:split}. If $R_0=I$, $\mathrm{tr}(SES)=\sum_is_i^2E_{ii}=0=
+\mathrm{tr}(E)$ because $E$ has a zero diagonal, and $K_R=\tfrac12[N-N-
+\log\det R_1]=C(R_1)$. For the minimal lift, the proof of
+Proposition~\ref{prop:lift} gives $\det(\Sigma_0^{-1}\Sigma_1)=v^2$.
+
+\paragraph{Proposition~\ref{prop:rate}.} To second order,
+$K\approx\tfrac14\mathrm{tr}[(\Sigma_0^{-1}d\Sigma)^2]$ and the variance target
+is linear in $d\Sigma$. For volatilities, $s_i=1+x_i$, $d\Sigma=D_0(XR_0+R_0X)D_0$
+with $X=\mathrm{diag}(x)$, so $K\approx\tfrac12x^\top Mx$ with
+$M=I+R_0\circ R_0^{-1}$, and the target is $2c^\top x=\varepsilon$; minimising
+gives $\varepsilon^2/(8c^\top M^{-1}c)$. For correlations, $d\Sigma=D_0ED_0$ with
+$\mathrm{diag}(E)=0$, $K\approx\tfrac14\mathrm{tr}(R_0^{-1}ER_0^{-1}E)$ and the
+target is $a^\top Ea=\varepsilon s_0^2$, $a=D_0w$. The first-order conditions
+give $E\propto R_0(aa^\top+\mathrm{diag}(m))R_0$ with $m$ fixed by the zero
+diagonal, $(R_0\circ R_0)m=-b^2$, $b=R_0a=s_0\rho$; $R_0\circ R_0$ is
+positive definite by the Schur product theorem. The minimum is
+$\varepsilon^2s_0^4/(4a^\top G a)$ with $G=R_0(aa^\top+\mathrm{diag}(m))R_0$
+and $a^\top Ga=s_0^4(1-(\rho^2)^\top(R_0\circ R_0)^{-1}\rho^2)$. At $R_0=I$,
+$c_i=\rho_i^2$, $M=2I$, and $e_\sigma=\sum_ic_i^2=1-e_R$. The ceiling follows
+from $|R_{1,ij}|\le1$. The finite-shock optima reported in the text are
+computed exactly: the volatility problem is convex in $s$, and the
+correlation optimum solves $R_1^{-1}=R_0^{-1}-2\lambda aa^\top/s_0^2-
+\mathrm{diag}(m)$ for $N+1$ multipliers.
 
 \section{Estimation details}
 \label{app:details}
@@ -809,6 +935,28 @@ risk modes $N\exp(-2C/N)$.\\
 \emph{Alt text:} A time series of coupling with peaks in 2008 and 2020,
 aligned with shaded stress periods.}
 \label{fig:series}
+\end{figure}
+
+\begin{figure}[p]
+\centering
+\includegraphics[width=0.92\linewidth]{figures/fig_scale_structure.png}
+\caption{Scale and structure, side by side. For each item, the upper bar is
+the change in the scale channel $\sum_i\log\sigma_i$ and the lower bar the
+change in the structural index $\JJ$, split into coupling $C$ and shape
+$\DD$ (nats; EWMA covariance, so that $\Delta\JJ=\Delta C+\Delta\DD$
+exactly). A: stress-minus-calm regime gap and the three largest jump
+episodes of each panel (from ten days before the episode to the peak of
+$\JJ$; labelled by the month of the peak). B: scenarios on the S\&P~500 panel
+from the current covariance, with their deformation cost
+(Proposition~\ref{prop:split}); the last two reach the same portfolio
+volatility as the standard classical scenario. Gaussian scenarios have
+$\Delta\DD=0$.\\
+\emph{Alt text:} Paired horizontal bars. In observed crises the grey scale
+bar is longer than the coupling bar, and shape fills most of the gap in the
+largest episodes. Among scenarios, uniform dilation has only a scale bar and
+the highest cost, the minimal lift has nearly equal scale and coupling bars
+and the lowest cost.}
+\label{fig:scale}
 \end{figure}
 
 \end{document}
