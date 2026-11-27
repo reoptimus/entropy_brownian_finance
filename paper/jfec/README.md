@@ -40,6 +40,7 @@ mkdir -p paper/tables && cp ../data/results/*.csv paper/tables/
 | Table 6 (forecasts, DM and Clark–West) | `python scripts/h7_horizons.py config/sp500.yaml config/default.yaml` | `*_h7_horizons.csv` | ~10 min |
 | Table 7 (classical scenarios) | `python -m src.run_empirical --config config/sp500.yaml` | `outputs/sp500/tables/` (copied to `paper/tables/sp500_classical_comparison.csv`) | ~5 min |
 | Table 8 (EBA) | `python scripts/eba_nats.py <unzipped euro panel>` | `eba_nats.csv` | 1 min |
+| Section 7.6, Figure 3 (scale versus structure, exchange rate) | `python -m scripts.scale_structure` | `scale_structure_items.csv`, `scale_structure_exchange.csv`, `paper/jfec/figures/fig_scale_structure{,_fr}.png` | 1 min |
 | Online appendix, entropic CISS and its two nulls | `python -m scripts.euro_ciss --data <unzipped euro panel> --overnight-only --n-rep 999 --nulls iid,ccc_fhs` | `euro_null_999rep_*`, `euro_*` | ~4 h |
 | All LaTeX tables, number macros and figures | `python -m scripts.jfec_build` | `paper/jfec/` | 1 min |
 
